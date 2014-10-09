@@ -6,8 +6,8 @@ LIB_FILES = lex_lexer.c lex_parser.c lib/Statement.cpp lib/SQLParser.cpp
 TESTS_MAIN = sql_tests.cpp
 TESTS_BIN = bin/tests
 
-PARSER_MAIN = sql_parser.cpp
-PARSER_BIN = bin/parser
+EXECUTION_MAIN = sql_execution.cpp
+EXECUTION_BIN = bin/sql_execution
 
 CC = g++
 CFLAGS = -g -O3 -Ilib/ -I./
@@ -17,8 +17,8 @@ tests: $(LIB_FILES) $(TESTS_MAIN)
 	$(CC) $(CFLAGS) $(LIB_FILES) $(TESTS_MAIN) -o $(TESTS_BIN)
 
 
-parser: $(LIB_FILES) $(PARSER_MAIN)
-	$(CC) $(CFLAGS) $(LIB_FILES) $(PARSER_MAIN) -o $(PARSER_BIN)
+execution: $(LIB_FILES) $(EXECUTION_MAIN)
+	$(CC) $(CFLAGS) $(LIB_FILES) $(EXECUTION_MAIN) -o $(EXECUTION_BIN)
 
 
 lex_lexer.c: lex_lexer.l 
@@ -30,4 +30,4 @@ lex_parser.c: lex_parser.y lex_lexer.c
 
 
 clean:
-	rm -f *.o *~ lex_lexer.c lex_lexer.h lex_parser.c lex_parser.h $(PARSER_BIN) $(TESTS_BIN)
+	rm -f *.o *~ lex_lexer.c lex_lexer.h lex_parser.c lex_parser.h $(EXECUTION_BIN) $(TESTS_BIN)
