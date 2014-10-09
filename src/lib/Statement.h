@@ -34,6 +34,7 @@ public:
 	TableRef* _from_table;
 	List<Expr*>* _select_list;
 	List<Expr*>* _group_by;
+	Expr* _where_clause;
 };
 
 

@@ -18,20 +18,28 @@ void SelectTest1() {
 	fflush(stdout);
 
 	const char* sql = "SELECT age, name, address from table WHERE age > 12.5;";
-	Statement* stmt = SQLParser::parseSQL(sql);
-	ASSERT(stmt != NULL);
-	ASSERT(stmt->_type == eSelect);
+	Statement* sqlStatement = SQLParser::parseSQL(sql);
+	ASSERT(sqlStatement != NULL);
+	ASSERT(sqlStatement->_type == eSelect);
 
-	SelectStatement* select = (SelectStatement*) stmt;
+	SelectStatement* stmt = (SelectStatement*) sqlStatement;
 
-	ASSERT(select->_select_list->size() == 3);
-	ASSERT_STR(select->_select_list->at(0)->name, "age");
-	ASSERT_STR(select->_select_list->at(1)->name, "name");
-	ASSERT_STR(select->_select_list->at(2)->name, "address");
+	ASSERT(stmt->_select_list->size() == 3);
+	ASSERT_STR(stmt->_select_list->at(0)->name, "age");
+	ASSERT_STR(stmt->_select_list->at(1)->name, "name");
+	ASSERT_STR(stmt->_select_list->at(2)->name, "address");
 
-	ASSERT(select->_from_table != NULL);
-	ASSERT(select->_from_table->_type == eTableName);
-	ASSERT_STR(select->_from_table->_table_names->at(0), "table");
+	ASSERT(stmt->_from_table != NULL);
+	ASSERT(stmt->_from_table->_type == eTableName);
+	ASSERT_STR(stmt->_from_table->_table_names->at(0), "table");
+
+	// WHERE
+	ASSERT(stmt->_where_clause != NULL);
+	ASSERT(stmt->_where_clause->expr->type == eExprColumnRef);
+	ASSERT_STR(stmt->_where_clause->expr->name, "age");
+	ASSERT_STR(stmt->_where_clause->name, ">");
+	ASSERT(stmt->_where_clause->expr2->type == eExprLiteralFloat);
+	ASSERT(stmt->_where_clause->expr2->float_literal == 12.5);
 
 	printf("passed!\n");
 }

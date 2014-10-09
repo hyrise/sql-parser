@@ -43,13 +43,20 @@ OR		TOK(OR)
 "<"		|
 ">"		|
 "<="	|
-">="	TOK(COMPARISON)
+">="	{
+	yylval->sval = strdup(yytext);
+	return COMPARISON;
+}
+
 
 [-+*/(),.;]	TOK(yytext[0])
 
 [0-9]+	|
 [0-9]+"."[0-9]* |
-"."[0-9]*	TOK(INTNUM)
+"."[0-9]*	{
+	yylval->number = atof(yytext);
+	return INTNUM;
+}
 
 [A-Za-z][A-Za-z0-9_]* {
 	yylval->sval = strdup(yytext);

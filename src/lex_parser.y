@@ -36,7 +36,7 @@ typedef void* yyscan_t;
 %parse-param { yyscan_t scanner }
 
 %union {
-	int value;
+	float number;
 	char* sval;
 
 	Statement* statement;
@@ -49,14 +49,18 @@ typedef void* yyscan_t;
 }
 
 %token SELECT FROM GROUP BY WHERE NOT AND OR
-%token INTNUM COMPARISON STRING
-%token <sval> NAME
+
+%token <sval> NAME STRING COMPARISON
+%token <number> INTNUM
 
 %type <statement> statement
 %type <select_statement> select_statement
-%type <sval> column_name table_name
+%type <sval> table_name
 %type <table> from_clause table_exp
-%type <expr> expr;
+
+%type <expr> expr column_name scalar_exp literal
+%type <expr> comparison_predicate predicate search_condition where_clause
+
 %type <slist> table_ref_commalist
 %type <explist> expr_list group_clause
 %%
@@ -80,6 +84,7 @@ select_statement:
 			SelectStatement* s = new SelectStatement();
 			s->_select_list = $2;
 			s->_from_table = $3;
+			s->_where_clause = $4;
 			s->_group_by = $5;
 			$$ = s;
 		}
@@ -92,8 +97,8 @@ from_clause:
 	;
 
 where_clause:
-		WHERE search_condition
-	|	/* empty */
+		WHERE search_condition { $$ = $2; }
+	|	/* empty */ { $$ = NULL; }
 	;
 
 group_clause:
@@ -126,12 +131,12 @@ predicate:
 	;
 
 comparison_predicate:
-		scalar_exp COMPARISON scalar_exp
+		scalar_exp COMPARISON scalar_exp { $$ = makePredicate($1, $2, $3); }
 	;
 
 
 expr:
-		column_name { $$ = makeColumnRef($1); }
+		column_name
 	|	NAME '(' expr ')' { $$ = makeFunctionRef($1, $3); }
 	;
 
@@ -153,7 +158,7 @@ table_ref_commalist:
 
 
 column_name:
-		NAME
+		NAME { $$ = makeColumnRef($1); }
 	;
 
 table_name:
@@ -162,8 +167,8 @@ table_name:
 	;
 
 literal:
-		STRING
-	|	INTNUM
+		STRING { $$ = makeStringLiteral($1); }
+	|	INTNUM { $$ = makeFloatLiteral($1); }
 	;
 
 scalar_exp:
