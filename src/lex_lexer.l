@@ -31,7 +31,19 @@ using namespace std;
 SELECT	TOK(SELECT)
 FROM	TOK(FROM)
 GROUP	TOK(GROUP)
-BY	TOK(BY)
+BY		TOK(BY)
+WHERE	TOK(WHERE)
+NOT		TOK(NOT)
+AND		TOK(AND)
+OR		TOK(OR)
+
+
+"="		|
+"<>" 	|
+"<"		|
+">"		|
+"<="	|
+">="	TOK(COMPARISON)
 
 [-+*/(),.;]	TOK(yytext[0])
 
@@ -40,6 +52,12 @@ BY	TOK(BY)
 "."[0-9]*	TOK(INTNUM)
 
 [A-Za-z][A-Za-z0-9_]* {
+	yylval->sval = strdup(yytext);
+	return NAME;
+}
+
+
+'[^'\n]*' {
 	yylval->sval = strdup(yytext);
 	return STRING;
 }

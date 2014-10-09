@@ -48,73 +48,131 @@ typedef void* yyscan_t;
 	List<Expression*>* explist;
 }
 
-%token SELECT FROM GROUP BY INTNUM
-%token <sval> STRING
+%token SELECT FROM GROUP BY WHERE NOT AND OR
+%token INTNUM COMPARISON STRING
+%token <sval> NAME
 
 %type <statement> statement
 %type <select_statement> select_statement
-%type <table> from_clause
-%type <slist> string_list
-%type <explist> expr_list group_clause
+%type <sval> column_name table_name
+%type <table> from_clause table_exp
 %type <expr> expr;
+%type <slist> table_ref_commalist
+%type <explist> expr_list group_clause
 %%
 
 
 input: 
-	statement opt_semicolon { *statement = $1; };
-
-
-opt_semicolon:
-	';' | ;
-
+		statement opt_semicolon { *statement = $1; }
+	;
 
 statement:
-	select_statement { $$ = $1; }
-	|  { $$ = NULL; };
+		select_statement { $$ = $1; }
+	|	/* empty */ { $$ = NULL; }
+	;
+
+
 
 
 select_statement:
-	SELECT expr_list from_clause group_clause
+		SELECT expr_list from_clause where_clause group_clause
 		{ 
 			SelectStatement* s = new SelectStatement();
 			s->_select_list = $2;
 			s->_from_table = $3;
-			s->_group_by = $4;
+			s->_group_by = $5;
 			$$ = s;
-		};
+		}
+		;
 
 
-expr_list: 
-	expr { $$ = new List<Expression*>($1); }
-	| expr_list ',' expr { $1->push_back($3); $$ = $1; };
+
+from_clause:
+		FROM table_exp { $$ = $2; }
+	;
+
+where_clause:
+		WHERE search_condition
+	|	/* empty */
+	;
+
+group_clause:
+		GROUP BY expr_list { $$ = $3; }
+	|	/* empty */ { $$ = NULL; }
+	;
+
+
+
+table_exp:
+		table_ref_commalist { 
+			TableRef* t = new TableRef(eTableName);
+			t->_table_names = $1;
+			$$ = t;
+		}
+	|	'(' select_statement ')' {
+			TableRef* t = new TableRef(eTableSelect);
+			t->_stmt = $2;
+			$$ = t;
+		}
+	;
+
+
+search_condition:
+		predicate
+	;
+
+predicate:
+		comparison_predicate
+	;
+
+comparison_predicate:
+		scalar_exp COMPARISON scalar_exp
+	;
 
 
 expr:
-	STRING { $$ = new Expression($1); }
-	| STRING '(' STRING ')' { $$ = new Expression($3, $1); };
+		column_name { $$ = new Expression($1); }
+	|	NAME '(' column_name ')' { $$ = new Expression($3, $1); }
+	;
 
 
-from_clause: 
-	FROM string_list
-		{ 
-			TableRef* t = new TableRef(eTableName);
-			t->_table_names = $2;
-			$$ = t;
-		}
-	| FROM '(' select_statement ')'
-		{
-			TableRef* t = new TableRef(eTableSelect);
-			t->_stmt = $3;
-			$$ = t;
-		};
+
+/* Lists */
+expr_list: 
+		expr { $$ = new List<Expression*>($1); }
+	|	expr_list ',' expr { $1->push_back($3); $$ = $1; }
+	;
 
 
-group_clause:
-	GROUP BY expr_list { $$ = $3; }
-	| { $$ = NULL; };
+// TODO: add table_ref to include names and select queries
+table_ref_commalist:
+		table_name { $$ = new List<char*>($1); }
+	|	table_ref_commalist ',' table_name { $1->push_back($3); $$ = $1; }
+	;
+/* / Lists */
 
-string_list:
-	STRING { $$ = new List<char*>($1); }
-	| string_list ',' STRING { $1->push_back($3); $$ = $1; }
 
+column_name:
+		NAME
+	;
+
+table_name:
+		NAME
+	|	NAME '.' NAME
+	;
+
+literal:
+		STRING
+	|	INTNUM
+	;
+
+scalar_exp:
+		column_name
+	|	literal
+	;
+
+opt_semicolon:
+		';' 
+	|	/* empty */
+	;
 %%
