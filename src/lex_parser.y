@@ -131,8 +131,8 @@ comparison_predicate:
 
 
 expr:
-		column_name { $$ = new Expr($1); }
-	|	NAME '(' column_name ')' { $$ = new Expr($3, $1); }
+		column_name { $$ = makeColumnRef($1); }
+	|	NAME '(' expr ')' { $$ = makeFunctionRef($1, $3); }
 	;
 
 

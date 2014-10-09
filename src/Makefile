@@ -1,6 +1,6 @@
 # Makefile
 
-LIB_FILES = lex_lexer.c lex_parser.c lib/Statement.cpp lib/SQLParser.cpp
+LIB_FILES = lex_lexer.c lex_parser.c lib/Statement.cpp lib/Expr.cpp lib/SQLParser.cpp
 
 
 TESTS_MAIN = sql_tests.cpp

@@ -75,12 +75,10 @@ void SelectTest3() {
 
 	ASSERT(select->_select_list->size() == 2);
 
-	ASSERT(select->_select_list->at(0)->func_name == NULL);
+	ASSERT(select->_select_list->at(0)->type == eExprColumnRef);
+	ASSERT(select->_select_list->at(1)->type == eExprFunctionRef);
 	ASSERT_STR("name", select->_select_list->at(0)->name);
 
-	ASSERT(select->_select_list->at(1)->func_name != NULL);
-	ASSERT_STR("age", select->_select_list->at(1)->name);
-	ASSERT_STR("AVG", select->_select_list->at(1)->func_name);
 
 	ASSERT(select->_group_by != NULL);
 	ASSERT(select->_group_by->size() == 1);
