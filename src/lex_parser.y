@@ -42,10 +42,10 @@ typedef void* yyscan_t;
 	Statement* statement;
 	SelectStatement* select_statement;
 	TableRef* table;
-	Expression* expr;
+	Expr* expr;
 
 	List<char*>* slist;
-	List<Expression*>* explist;
+	List<Expr*>* explist;
 }
 
 %token SELECT FROM GROUP BY WHERE NOT AND OR
@@ -131,15 +131,15 @@ comparison_predicate:
 
 
 expr:
-		column_name { $$ = new Expression($1); }
-	|	NAME '(' column_name ')' { $$ = new Expression($3, $1); }
+		column_name { $$ = new Expr($1); }
+	|	NAME '(' column_name ')' { $$ = new Expr($3, $1); }
 	;
 
 
 
 /* Lists */
 expr_list: 
-		expr { $$ = new List<Expression*>($1); }
+		expr { $$ = new List<Expr*>($1); }
 	|	expr_list ',' expr { $1->push_back($3); $$ = $1; }
 	;
 

@@ -5,7 +5,7 @@
 #ifndef __STATEMENT_H__
 #define __STATEMENT_H__
  
-#include "Expression.h"
+#include "Expr.h"
 #include "List.h"
 
 class TableRef;
@@ -32,8 +32,8 @@ public:
 	SelectStatement();
 
 	TableRef* _from_table;
-	List<Expression*>* _select_list;
-	List<Expression*>* _group_by;
+	List<Expr*>* _select_list;
+	List<Expr*>* _group_by;
 };
 
 
