@@ -2,7 +2,7 @@
  * sql_tests.cpp
  */
 
-#include "lib/SQLParser.h"
+#include "SQLParser.h"
 #include <stdio.h>
 #include <string>
 #include <cassert>
