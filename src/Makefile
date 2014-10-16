@@ -1,6 +1,6 @@
 # Makefile
 
-LIB_FILES = lex_lexer.c lex_parser.c lib/Statement.cpp lib/Expr.cpp lib/SQLParser.cpp
+LIB_FILES = flex_lexer.c bison_parser.c lib/Statement.cpp lib/Expr.cpp lib/SQLParser.cpp
 
 
 TESTS_MAIN = sql_tests.cpp
@@ -21,13 +21,13 @@ execution: $(LIB_FILES) $(EXECUTION_MAIN)
 	$(CC) $(CFLAGS) $(LIB_FILES) $(EXECUTION_MAIN) -o $(EXECUTION_BIN)
 
 
-lex_lexer.c: lex_lexer.l 
-	flex lex_lexer.l
+flex_lexer.c: flex_lexer.l 
+	flex flex_lexer.l
 
 
-lex_parser.c: lex_parser.y lex_lexer.c
-	bison lex_parser.y
+bison_parser.c: bison_parser.y flex_lexer.c
+	bison bison_parser.y
 
 
 clean:
-	rm -f *.o *~ lex_lexer.c lex_lexer.h lex_parser.c lex_parser.h $(EXECUTION_BIN) $(TESTS_BIN)
+	rm -f *.o *~ flex_lexer.c flex_lexer.h bison_parser.c bison_parser.h $(EXECUTION_BIN) $(TESTS_BIN)

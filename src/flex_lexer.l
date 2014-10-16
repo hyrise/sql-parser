@@ -7,7 +7,7 @@
 
 #include "Statement.h"
 #include "List.h"
-#include "lex_parser.h"
+#include "bison_parser.h"
 
 #include <stdio.h>
 #include <iostream>
@@ -18,7 +18,7 @@ using namespace std;
 %}
 
 
-%option outfile="lex_lexer.c" header-file="lex_lexer.h"
+%option outfile="flex_lexer.c" header-file="flex_lexer.h"
 %option warn nodefault
 %option reentrant noyywrap never-interactive nounistd
 %option bison-bridge

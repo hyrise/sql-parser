@@ -1,5 +1,5 @@
-lex_lexer.c
-lex_lexer.h
-lex_parser.c
-lex_parser.h
+flex_lexer.c
+flex_lexer.h
+bison_parser.c
+bison_parser.h
 *.o

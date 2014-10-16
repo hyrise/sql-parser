@@ -7,8 +7,8 @@
 
 #include "Statement.h"
 #include "List.h"
-#include "lex_parser.h"
-#include "lex_lexer.h"
+#include "bison_parser.h"
+#include "flex_lexer.h"
 
 #include <iostream>
 
@@ -27,8 +27,8 @@ typedef void* yyscan_t;
 
 }
 
-%output  "lex_parser.c"
-%defines "lex_parser.h"
+%output  "bison_parser.c"
+%defines "bison_parser.h"
 
 %define api.pure
 %lex-param   { yyscan_t scanner }

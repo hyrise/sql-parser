@@ -1,6 +1,6 @@
 #include "SQLParser.h"
-#include "lex_parser.h"
-#include "lex_lexer.h"
+#include "bison_parser.h"
+#include "flex_lexer.h"
 #include <stdio.h>
 
 int yyparse(Statement **expression, yyscan_t scanner);
