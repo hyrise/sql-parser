@@ -76,7 +76,10 @@ statement:
 	;
 
 
-
+////// TODO:
+// join
+// limit
+// order by
 
 select_statement:
 		SELECT expr_list from_clause where_clause group_clause
