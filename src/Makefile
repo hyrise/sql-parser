@@ -13,7 +13,7 @@ EXECUTION_MAIN = sql_execution.cpp
 EXECUTION_BIN = bin/sql_execution
 
 CC = g++
-CFLAGS = -g -O3 -Ilib/ -I./ -Ibison/
+CFLAGS = -g -O3 -Ilib/ -I./ -I$(PARSER)/ -std=c++11 -pthread
 
 
 tests: $(LIB_FILES) $(TESTS_MAIN)
@@ -27,7 +27,11 @@ execution: $(LIB_FILES) $(EXECUTION_MAIN)
 bison/bison_parser.c:
 	make -C bison/
 
+lemon/lemon_parser.c:
+	make -C lemon/
+
 
 clean:
 	rm -f *.o *~ $(EXECUTION_BIN) $(TESTS_BIN)
 	make clean -C bison/
+	make clean -C lemon/
