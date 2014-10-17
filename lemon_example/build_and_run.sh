@@ -1,4 +1,4 @@
-rm -f lemon_test lemon_parser.c flex_scanner.c
+rm -f lemon_test lemon_parser.c lemon_parser.h flex_scanner.c flex_scanner.h
 echo "Lemon"
 lemon lemon_parser.y
 echo "Flex"
