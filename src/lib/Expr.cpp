@@ -8,7 +8,6 @@ Expr* makeColumnRef(char* name) {
 	return e;
 }
 
-
 Expr* makeFunctionRef(char* func_name, Expr* expr) {
 	ALLOC_EXPR(e, eExprFunctionRef);
 	e->name = func_name;

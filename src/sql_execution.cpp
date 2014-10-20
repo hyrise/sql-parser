@@ -1,5 +1,5 @@
 
-#include "lib/SQLParser.h"
+#include "SQLParser.h"
 #include <stdio.h>
 #include <string>
 
@@ -13,7 +13,7 @@ int main(int argc, char *argv[]) {
         return -1;
     }
 
-    Statement *stmt = NULL;
+    // Statement *stmt = NULL;
 
     for (int n = 1; n < argc; ++n) {
         char* sql = argv[n];
@@ -50,6 +50,7 @@ int getValue(std::string col_name, int row) {
 	if (col_name.compare("col2") == 0) return getValue(1, row);
 	if (col_name.compare("col3") == 0) return getValue(2, row);
 	if (col_name.compare("col4") == 0) return getValue(3, row);
+    return 0;
 }
 
 

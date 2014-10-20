@@ -1,7 +1,8 @@
 #ifndef __EXPRESSION_H__
 #define __EXPRESSION_H__
 
-#include <cstdlib>
+#include <stdlib.h>
+
 
 typedef enum {
 	eExprLiteralFloat,
@@ -11,6 +12,7 @@ typedef enum {
 	eExprPredicate
 } EExprType;
 
+typedef struct Expr Expr;
 
 struct Expr {
 	EExprType type;
