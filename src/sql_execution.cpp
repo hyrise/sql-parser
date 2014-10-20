@@ -26,7 +26,7 @@ int main(int argc, char *argv[]) {
         	continue;
         }
 
-        if (stmt->_type == eSelect) {
+        if (stmt->type == eSelect) {
         	executeSelect((SelectStatement*)stmt);
         } else {
 			fprintf(stderr, "Only Supporting Select Statements!\n");
@@ -64,16 +64,16 @@ Table executeSelect(SelectStatement* stmt) {
 
 	// Step 1:
 	// Determine source table
-	TableRef* from_table = stmt->_from_table;
+	TableRef* from_table = stmt->from_table;
 	Table source;
 
-	if (from_table->_type == eTableSelect) {
+	if (from_table->type == eTableSelect) {
 		// Nested Select Statements
-		source = executeSelect(from_table->_stmt);
+		source = executeSelect(from_table->stmt);
 
-	} else if (from_table->_type == eTableName) {
-		if (from_table->_table_names->size() == 1) {
-			if (std::string(from_table->_table_names->at(0)).compare("table") == 0) {
+	} else if (from_table->type == eTableName) {
+		if (from_table->table_names->size() == 1) {
+			if (std::string(from_table->table_names->at(0)).compare("table") == 0) {
 				source = TABLE;
 			} else {
 				fprintf(stderr, "Couldn't find table!\n");
@@ -88,7 +88,7 @@ Table executeSelect(SelectStatement* stmt) {
 
 	// Step 2
 	// Check if group by
-	if (stmt->_group_by != NULL) {
+	if (stmt->group_by != NULL) {
 		return executeGroupBySelect(stmt, source);
 	}
 

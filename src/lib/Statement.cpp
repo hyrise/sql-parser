@@ -8,8 +8,8 @@
 #include <stdlib.h>
  
 
-Statement::Statement(EStatementType type) : _type(type) {};
+Statement::Statement(EStatementType type) : type(type) {};
 
 SelectStatement::SelectStatement() : Statement(eSelect) {};
 
-TableRef::TableRef(ETableRefType type) : _type(type) {};
+TableRef::TableRef(ETableRefType type) : type(type) {};

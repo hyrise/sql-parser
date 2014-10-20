@@ -21,26 +21,26 @@ void SelectTest1() {
 	const char* sql = "SELECT age, name, address from table WHERE age > 12.5;";
 	Statement* sqlStatement = SQLParser::parseSQL(sql);
 	ASSERT(sqlStatement != NULL);
-	ASSERT(sqlStatement->_type == eSelect);
+	ASSERT(sqlStatement->type == eSelect);
 
 	SelectStatement* stmt = (SelectStatement*) sqlStatement;
 
-	ASSERT(stmt->_select_list->size() == 3);
-	ASSERT_STR(stmt->_select_list->at(0)->name, "age");
-	ASSERT_STR(stmt->_select_list->at(1)->name, "name");
-	ASSERT_STR(stmt->_select_list->at(2)->name, "address");
+	ASSERT(stmt->select_list->size() == 3);
+	ASSERT_STR(stmt->select_list->at(0)->name, "age");
+	ASSERT_STR(stmt->select_list->at(1)->name, "name");
+	ASSERT_STR(stmt->select_list->at(2)->name, "address");
 
-	ASSERT(stmt->_from_table != NULL);
-	ASSERT(stmt->_from_table->_type == eTableName);
-	ASSERT_STR(stmt->_from_table->_table_names->at(0), "table");
+	ASSERT(stmt->from_table != NULL);
+	ASSERT(stmt->from_table->type == eTableName);
+	ASSERT_STR(stmt->from_table->table_names->at(0), "table");
 
 	// WHERE
-	ASSERT(stmt->_where_clause != NULL);
-	ASSERT(stmt->_where_clause->expr->type == eExprColumnRef);
-	ASSERT_STR(stmt->_where_clause->expr->name, "age");
-	ASSERT_STR(stmt->_where_clause->name, ">");
-	ASSERT(stmt->_where_clause->expr2->type == eExprLiteralFloat);
-	ASSERT(stmt->_where_clause->expr2->float_literal == 12.5);
+	ASSERT(stmt->where_clause != NULL);
+	ASSERT(stmt->where_clause->expr->type == eExprColumnRef);
+	ASSERT_STR(stmt->where_clause->expr->name, "age");
+	ASSERT_STR(stmt->where_clause->name, ">");
+	ASSERT(stmt->where_clause->expr2->type == eExprLiteralFloat);
+	ASSERT(stmt->where_clause->expr2->float_literal == 12.5);
 
 	printf("passed!\n");
 }
@@ -52,26 +52,27 @@ void SelectTest2() {
 	const char* sql = "SELECT age, name, address FROM (SELECT age FROM table, table2);";
 	Statement* stmt = SQLParser::parseSQL(sql);
 	ASSERT(stmt != NULL);
-	ASSERT(stmt->_type == eSelect);
+	ASSERT(stmt->type == eSelect);
 
 	SelectStatement* select = (SelectStatement*) stmt;
 
-	ASSERT(select->_select_list->size() == 3);
-	ASSERT_STR(select->_select_list->at(0)->name, "age");
-	ASSERT_STR(select->_select_list->at(1)->name, "name");
-	ASSERT_STR(select->_select_list->at(2)->name, "address");
+	ASSERT(select->select_list->size() == 3);
+	ASSERT_STR(select->select_list->at(0)->name, "age");
+	ASSERT_STR(select->select_list->at(1)->name, "name");
+	ASSERT_STR(select->select_list->at(2)->name, "address");
 
-	ASSERT(select->_from_table != NULL);
-	ASSERT(select->_from_table->_type == eTableSelect);
-	ASSERT(select->_from_table->_stmt != NULL);
-	ASSERT(select->_from_table->_stmt->_select_list->size() == 1);
-	ASSERT_STR(select->_from_table->_stmt->_from_table->_table_names->at(0), "table");
-	ASSERT_STR(select->_from_table->_stmt->_from_table->_table_names->at(1), "table2");
+	ASSERT(select->from_table != NULL);
+	ASSERT(select->from_table->type == eTableSelect);
+	ASSERT(select->from_table->stmt != NULL);
+	ASSERT(select->from_table->stmt->select_list->size() == 1);
+	ASSERT_STR(select->from_table->stmt->from_table->table_names->at(0), "table");
+	ASSERT_STR(select->from_table->stmt->from_table->table_names->at(1), "table2");
 
 	printf("passed!\n");
 }
 
-int parse_count = 0;
+uint parse_count = 0;
+uint conflicts = 0;
 void SelectTest3(bool print) {
 	if (print) printf("Test: SelectTest3... ");
 	fflush(stdout);
@@ -81,24 +82,24 @@ void SelectTest3(bool print) {
 
 	Statement* stmt = SQLParser::parseSQL(sql);
 
-	if (parse_count != 1) printf("+");
+	if (parse_count != 1) conflicts++;
 	parse_count--;
 
 	ASSERT(stmt != NULL);
-	ASSERT(stmt->_type == eSelect);
+	ASSERT(stmt->type == eSelect);
 
 	SelectStatement* select = (SelectStatement*) stmt;
 
-	ASSERT(select->_select_list->size() == 2);
+	ASSERT(select->select_list->size() == 2);
 
-	ASSERT(select->_select_list->at(0)->type == eExprColumnRef);
-	ASSERT(select->_select_list->at(1)->type == eExprFunctionRef);
-	ASSERT_STR("name", select->_select_list->at(0)->name);
+	ASSERT(select->select_list->at(0)->type == eExprColumnRef);
+	ASSERT(select->select_list->at(1)->type == eExprFunctionRef);
+	ASSERT_STR("name", select->select_list->at(0)->name);
 
 
-	ASSERT(select->_group_by != NULL);
-	ASSERT(select->_group_by->size() == 1);
-	ASSERT_STR("name", select->_group_by->at(0)->name);
+	ASSERT(select->group_by != NULL);
+	ASSERT(select->group_by->size() == 1);
+	ASSERT_STR("name", select->group_by->at(0)->name);
 
 	if (print) printf("passed!\n");
 }
@@ -112,6 +113,7 @@ void multithreadTest(int numberOfRuns, int id) {
 }
 void ThreadSafeTest(uint numThreads, uint runsPerThread) {
 	printf("Starting multithread-test... ");
+	conflicts = 0;
 	std::thread* threads = new std::thread[numThreads];
 	for (int n = 0; n < numThreads; ++n) {
 		threads[n] = std::thread(multithreadTest, runsPerThread, n);
@@ -119,6 +121,7 @@ void ThreadSafeTest(uint numThreads, uint runsPerThread) {
 	for (int n = 0; n < numThreads; ++n) {
 		threads[n].join();
 	}
+	printf("there were %u concurrent parses... ", conflicts);
 	printf("finished!\n");
 }
 

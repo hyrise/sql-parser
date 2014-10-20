@@ -39,7 +39,7 @@ void evaluate_statement(Statement* stmt) {
     printf("Statement at %p\n", stmt);
     if (stmt == NULL) return;
 
-    switch (stmt->_type) {
+    switch (stmt->type) {
         case eSelect:
             evaluate_select_statement((SelectStatement*) stmt);
             break;

@@ -20,8 +20,8 @@ int yyerror(Statement **expression, yyscan_t scanner, const char *msg) {
 
 %code requires {
 
-#ifndef YY_TYPEDEF_YY_SCANNER_T
-#define YY_TYPEDEF_YY_SCANNER_T
+#ifndef YYtypeDEF_YY_SCANNER_T
+#define YYtypeDEF_YY_SCANNER_T
 typedef void* yyscan_t;
 #endif
 
@@ -66,7 +66,7 @@ typedef void* yyscan_t;
 %%
 
 
-input: 
+input:
 		statement opt_semicolon { *statement = $1; }
 	;
 
@@ -83,12 +83,12 @@ statement:
 
 select_statement:
 		SELECT expr_list from_clause where_clause group_clause
-		{ 
+		{
 			SelectStatement* s = new SelectStatement();
-			s->_select_list = $2;
-			s->_from_table = $3;
-			s->_where_clause = $4;
-			s->_group_by = $5;
+			s->select_list = $2;
+			s->from_table = $3;
+			s->where_clause = $4;
+			s->group_by = $5;
 			$$ = s;
 		}
 		;
@@ -112,14 +112,14 @@ group_clause:
 
 
 table_exp:
-		table_ref_commalist { 
+		table_ref_commalist {
 			TableRef* t = new TableRef(eTableName);
-			t->_table_names = $1;
+			t->table_names = $1;
 			$$ = t;
 		}
 	|	'(' select_statement ')' {
 			TableRef* t = new TableRef(eTableSelect);
-			t->_stmt = $2;
+			t->stmt = $2;
 			$$ = t;
 		}
 	;
@@ -146,7 +146,7 @@ expr:
 
 
 /* Lists */
-expr_list: 
+expr_list:
 		expr { $$ = new List<Expr*>($1); }
 	|	expr_list ',' expr { $1->push_back($3); $$ = $1; }
 	;
@@ -180,7 +180,7 @@ scalar_exp:
 	;
 
 opt_semicolon:
-		';' 
+		';'
 	|	/* empty */
 	;
 %%

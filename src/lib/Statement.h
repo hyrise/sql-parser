@@ -4,7 +4,7 @@
  */
 #ifndef __STATEMENT_H__
 #define __STATEMENT_H__
- 
+
 #include "Expr.h"
 #include "List.h"
 
@@ -23,7 +23,7 @@ class Statement {
 public:
 	Statement(EStatementType type);
 
-	EStatementType _type;
+	EStatementType type;
 };
 
 
@@ -31,10 +31,10 @@ class SelectStatement : public Statement {
 public:
 	SelectStatement();
 
-	TableRef* _from_table;
-	List<Expr*>* _select_list;
-	List<Expr*>* _group_by;
-	Expr* _where_clause;
+	TableRef* from_table;
+	List<Expr*>* select_list;
+	List<Expr*>* group_by;
+	Expr* where_clause;
 };
 
 
@@ -51,11 +51,11 @@ class TableRef {
 public:
 	TableRef(ETableRefType type);
 
-	ETableRefType _type;
+	ETableRefType type;
 
-	SelectStatement* _stmt;
-	List<char*>* _table_names;
+	SelectStatement* stmt;
+	List<char*>* table_names;
 
 };
- 
+
 #endif // __STATEMENT_H__

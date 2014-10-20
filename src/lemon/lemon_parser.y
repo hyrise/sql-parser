@@ -6,7 +6,7 @@
 %syntax_error { printf("Lemon syntax error\n"); }
 
 %extra_argument { Statement** result }
-%token_type {const char*}
+%tokentype {const char*}
 %type expr {Statement*}
 
 %left PLUS MINUS .
