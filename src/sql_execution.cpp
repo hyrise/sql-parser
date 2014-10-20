@@ -32,7 +32,7 @@ int main(int argc, char *argv[]) {
 			fprintf(stderr, "Only Supporting Select Statements!\n");
 		}
     }
-    
+
 	return 0;
 }
 
