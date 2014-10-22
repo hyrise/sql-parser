@@ -7,6 +7,7 @@
 #include <string>
 #include <cassert>
 #include <thread>
+#include <time.h>
 
 #define STREQUALS(str1, str2) std::string(str1).compare(std::string(str2)) == 0
 
@@ -112,7 +113,7 @@ void multithreadTest(int numberOfRuns, int id) {
 	}
 }
 void ThreadSafeTest(uint numThreads, uint runsPerThread) {
-	printf("Starting multithread-test... ");
+	printf("Multithread-Test... ");
 	conflicts = 0;
 	std::thread* threads = new std::thread[numThreads];
 	for (int n = 0; n < numThreads; ++n) {
@@ -126,6 +127,26 @@ void ThreadSafeTest(uint numThreads, uint runsPerThread) {
 }
 
 
+/** Performance Test **/
+void Benchmark1(uint numRuns) {
+	printf("Benchmarking... ");
+
+	clock_t start, end;
+	const char* sql = "SELECT SUM(age), name, address FROM (SELECT age FROM table, table2) WHERE income > 10 GROUP BY age;";
+
+	start = clock();
+	for (uint n = 0; n < numRuns; ++n) {
+		Statement* stmt = SQLParser::parseSQL(sql);
+	}
+	end = clock();
+	
+	long diff = end-start;
+	printf("Total Time: %ld ticks (~%.4fms)\n", diff, 1000.0*diff/CLOCKS_PER_SEC);
+	printf("Time per exec: ~%.2f ticks (~%.4fms)\n", (double)diff/numRuns, (1000.0*diff/numRuns)/CLOCKS_PER_SEC);
+	printf("Benchmarking done!\n");
+}
+
+
 int main(int argc, char *argv[]) {
 
 	printf("\n######################################\n");
@@ -135,6 +156,7 @@ int main(int argc, char *argv[]) {
 	SelectTest2();
 	SelectTest3(true);
 	ThreadSafeTest(10, 1000);
+	Benchmark1(500000);
 
 	printf("\n## Finished running all tests...\n");
 	printf("######################################\n");
