@@ -17,9 +17,10 @@ typedef struct Expr Expr;
 struct Expr {
 	EExprType type;
 
-	char* name;
 	Expr* expr;
 	Expr* expr2;
+	char* name;
+	uint pred_type;
 	float float_literal;
 };
 
@@ -36,7 +37,7 @@ struct Expr {
 
 Expr* makeColumnRef(char* name);
 Expr* makeFunctionRef(char* func_name, Expr* expr);
-Expr* makePredicate(Expr* expr1, char* op, Expr* expr2);
+Expr* makePredicate(Expr* expr1, uint op, Expr* expr2);
 Expr* makeFloatLiteral(float value);
 Expr* makeStringLiteral(char* string);
 

@@ -15,7 +15,7 @@
 #include "bison_parser.h"
 #include <stdio.h>
 
-#define TOK(name) { return name; }
+#define TOKEN(name) { return name; }
 
 %}
 /***************************
@@ -46,35 +46,33 @@
 
 [ \t\n]+	/* skip whitespace */;
 
-SELECT	TOK(SELECT)
-FROM	TOK(FROM)
-GROUP	TOK(GROUP)
-BY		TOK(BY)
-WHERE	TOK(WHERE)
-NOT		TOK(NOT)
-AND		TOK(AND)
-OR		TOK(OR)
+SELECT	TOKEN(SELECT)
+FROM	TOKEN(FROM)
+GROUP	TOKEN(GROUP)
+BY		TOKEN(BY)
+WHERE	TOKEN(WHERE)
+NOT		TOKEN(NOT)
+AND		TOKEN(AND)
+OR		TOKEN(OR)
+
+"="		TOKEN(EQUALS)
+"<>" 	TOKEN(NOTEQUALS)
+"<"		TOKEN(LESS)
+">"		TOKEN(GREATER)
+"<="	TOKEN(LESSEQ)
+">="	TOKEN(GREATEREQ)
 
 
-"="		|
-"<>" 	|
-"<"		|
-">"		|
-"<="	|
-">="	{
-	yylval->sval = strdup(yytext);
-	return COMPARISON;
-}
+[-+*/(),.;]	TOKEN(yytext[0])
 
-
-[-+*/(),.;]	TOK(yytext[0])
 
 [0-9]+	|
 [0-9]+"."[0-9]* |
 "."[0-9]*	{
 	yylval->number = atof(yytext);
-	return INTNUM;
+	return FLOAT;
 }
+
 
 [A-Za-z][A-Za-z0-9_]* {
 	yylval->sval = strdup(yytext);

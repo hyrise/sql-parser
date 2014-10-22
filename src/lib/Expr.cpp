@@ -15,9 +15,10 @@ Expr* makeFunctionRef(char* func_name, Expr* expr) {
 	return e;
 }
 
-Expr* makePredicate(Expr* expr1, char* op, Expr* expr2) {
+Expr* makePredicate(Expr* expr1, uint op, Expr* expr2) {
 	ALLOC_EXPR(e, eExprPredicate);
-	e->name = op;
+	// printf("Pred: %u\n", op);
+	e->pred_type = op;
 	e->expr = expr1;
 	e->expr2 = expr2;
 	return e;

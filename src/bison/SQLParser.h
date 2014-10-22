@@ -2,6 +2,7 @@
 #define __SQLPARSER_H_
 
 #include "Statement.h"
+#include "bison_parser.h"
 
 class SQLParser {
 public:

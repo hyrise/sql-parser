@@ -61,6 +61,7 @@ typedef void* yyscan_t;
  *********************************/
 %union {
 	float number;
+	uint uintnum;
 	char* sval;
 
 	Statement* statement;
@@ -79,9 +80,8 @@ typedef void* yyscan_t;
  *********************************/
 %token SELECT FROM GROUP BY WHERE NOT AND OR
 %token <sval> NAME STRING COMPARISON
-%token <number> INTNUM
-
-
+%token <number> FLOAT
+%token <uintnum> EQUALS NOTEQUALS LESS GREATER LESSEQ GREATEREQ
 
 /*********************************
  ** Non-Terminal types (http://www.gnu.org/software/bison/manual/html_node/Type-Decl.html)
@@ -182,7 +182,12 @@ predicate:
 
 
 comparison_predicate:
-		scalar_exp COMPARISON scalar_exp { $$ = makePredicate($1, $2, $3); }
+		scalar_exp EQUALS scalar_exp { $$ = makePredicate($1, EQUALS, $3); }
+	|	scalar_exp NOTEQUALS scalar_exp { $$ = makePredicate($1, NOTEQUALS, $3); }
+	|	scalar_exp LESS scalar_exp { $$ = makePredicate($1, LESS, $3); }
+	|	scalar_exp GREATER scalar_exp { $$ = makePredicate($1, GREATER, $3); }
+	|	scalar_exp LESSEQ scalar_exp { $$ = makePredicate($1, LESSEQ, $3); }
+	|	scalar_exp GREATEREQ scalar_exp { $$ = makePredicate($1, GREATEREQ, $3); }
 	;
 
 // TODO: Expression can also be scalar_exp
@@ -209,7 +214,7 @@ table_name:
 
 literal:
 		STRING { $$ = makeStringLiteral($1); }
-	|	INTNUM { $$ = makeFloatLiteral($1); }
+	|	FLOAT { $$ = makeFloatLiteral($1); }
 	;
 
 

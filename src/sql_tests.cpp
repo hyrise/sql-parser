@@ -18,7 +18,7 @@ void SelectTest1() {
 	printf("Test: SelectTest1... ");
 	fflush(stdout);
 
-	const char* sql = "SELECT age, name, address from table WHERE age > 12.5;";
+	const char* sql = "SELECT age, name, address from table WHERE age < 12.5;";
 	Statement* sqlStatement = SQLParser::parseSQL(sql);
 	ASSERT(sqlStatement != NULL);
 	ASSERT(sqlStatement->type == eSelect);
@@ -38,7 +38,7 @@ void SelectTest1() {
 	ASSERT(stmt->where_clause != NULL);
 	ASSERT(stmt->where_clause->expr->type == eExprColumnRef);
 	ASSERT_STR(stmt->where_clause->expr->name, "age");
-	ASSERT_STR(stmt->where_clause->name, ">");
+	ASSERT(stmt->where_clause->pred_type == LESS);
 	ASSERT(stmt->where_clause->expr2->type == eExprLiteralFloat);
 	ASSERT(stmt->where_clause->expr2->float_literal == 12.5);
 
