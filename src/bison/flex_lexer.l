@@ -15,7 +15,7 @@
 #include "bison_parser.h"
 #include <stdio.h>
 
-#define TOKEN(name) { return name; }
+#define TOKEN(name) { return SQL_##name; }
 
 %}
 /***************************
@@ -63,26 +63,26 @@ OR		TOKEN(OR)
 ">="	TOKEN(GREATEREQ)
 
 
-[-+*/(),.;]	TOKEN(yytext[0])
+[-+*/(),.;]	{ return yytext[0]; }
 
 
 [0-9]+	|
 [0-9]+"."[0-9]* |
 "."[0-9]*	{
 	yylval->number = atof(yytext);
-	return FLOAT;
+	return SQL_FLOAT;
 }
 
 
 [A-Za-z][A-Za-z0-9_]* {
 	yylval->sval = strdup(yytext);
-	return NAME;
+	return SQL_NAME;
 }
 
 
 '[^'\n]*' {
 	yylval->sval = strdup(yytext);
-	return STRING;
+	return SQL_STRING;
 }
 
 

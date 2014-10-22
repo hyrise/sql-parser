@@ -54,7 +54,7 @@ typedef void* yyscan_t;
 %parse-param { Statement **statement }
 %parse-param { yyscan_t scanner }
 
-
+%define api.token.prefix {SQL_}
 
 /*********************************
  ** Define all data-types (http://www.gnu.org/software/bison/manual/html_node/Union-Decl.html)
@@ -182,12 +182,12 @@ predicate:
 
 
 comparison_predicate:
-		scalar_exp EQUALS scalar_exp { $$ = makePredicate($1, EQUALS, $3); }
-	|	scalar_exp NOTEQUALS scalar_exp { $$ = makePredicate($1, NOTEQUALS, $3); }
-	|	scalar_exp LESS scalar_exp { $$ = makePredicate($1, LESS, $3); }
-	|	scalar_exp GREATER scalar_exp { $$ = makePredicate($1, GREATER, $3); }
-	|	scalar_exp LESSEQ scalar_exp { $$ = makePredicate($1, LESSEQ, $3); }
-	|	scalar_exp GREATEREQ scalar_exp { $$ = makePredicate($1, GREATEREQ, $3); }
+		scalar_exp EQUALS scalar_exp { $$ = makePredicate($1, SQL_EQUALS, $3); }
+	|	scalar_exp NOTEQUALS scalar_exp { $$ = makePredicate($1, SQL_NOTEQUALS, $3); }
+	|	scalar_exp LESS scalar_exp { $$ = makePredicate($1, SQL_LESS, $3); }
+	|	scalar_exp GREATER scalar_exp { $$ = makePredicate($1, SQL_GREATER, $3); }
+	|	scalar_exp LESSEQ scalar_exp { $$ = makePredicate($1, SQL_LESSEQ, $3); }
+	|	scalar_exp GREATEREQ scalar_exp { $$ = makePredicate($1, SQL_GREATEREQ, $3); }
 	;
 
 // TODO: Expression can also be scalar_exp

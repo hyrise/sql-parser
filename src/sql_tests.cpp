@@ -38,7 +38,7 @@ void SelectTest1() {
 	ASSERT(stmt->where_clause != NULL);
 	ASSERT(stmt->where_clause->expr->type == eExprColumnRef);
 	ASSERT_STR(stmt->where_clause->expr->name, "age");
-	ASSERT(stmt->where_clause->pred_type == LESS);
+	ASSERT(stmt->where_clause->pred_type == SQL_LESS);
 	ASSERT(stmt->where_clause->expr2->type == eExprLiteralFloat);
 	ASSERT(stmt->where_clause->expr2->float_literal == 12.5);
 
