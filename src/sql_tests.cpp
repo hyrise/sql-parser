@@ -151,7 +151,7 @@ int main(int argc, char *argv[]) {
 	SelectTest2();
 	SelectTest3(true);
 	ThreadSafeTest(10, 1000);
-	Benchmark1(500000);
+	Benchmark1(10000);
 
 	printf("\n## Finished running all tests...\n");
 	printf("######################################\n");

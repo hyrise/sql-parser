@@ -7,8 +7,7 @@
 
 #include "Expr.h"
 #include "List.h"
-
-class TableRef;
+#include "Table.h"
 
 typedef enum {
 	eSelect,
@@ -18,17 +17,14 @@ typedef enum {
 } EStatementType;
 
 
-
-class Statement {
-public:
+struct Statement {
 	Statement(EStatementType type);
 
 	EStatementType type;
 };
 
 
-class SelectStatement : public Statement {
-public:
+struct SelectStatement : Statement {
 	SelectStatement();
 
 	TableRef* from_table;
@@ -38,24 +34,17 @@ public:
 };
 
 
-/**
- * TableRef
- * Holds reference to tables. Can be either table names or a select statement.
- */
-typedef enum {
-	eTableName,
-	eTableSelect
-} ETableRefType;
-
-class TableRef {
-public:
-	TableRef(ETableRefType type);
-
-	ETableRefType type;
-
-	SelectStatement* stmt;
-	List<char*>* table_names;
-
+struct DeleteStatement : Statement {
+	// TODO
 };
+
+struct InsertStatement : Statement {
+	// TODO
+};
+
+struct CreateStatement : Statement {
+	// TODO
+};
+
 
 #endif // __STATEMENT_H__
