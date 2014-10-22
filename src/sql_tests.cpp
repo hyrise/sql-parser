@@ -56,7 +56,7 @@ void SelectTest2() {
 	SelectStatement* select = (SelectStatement*) stmt;
 
 	ASSERT(select->select_list->size() == 1);
-	ASSERT_STR(select->select_list->at(0)->name, "*");
+	ASSERT(select->select_list->at(0)->type == eExprStar);
 
 	ASSERT(select->from_table != NULL);
 	ASSERT(select->from_table->type == eTableSelect);

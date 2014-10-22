@@ -138,7 +138,7 @@ select_statement:
 
 
 select_list:
-		'*' { $$ = new List<Expr*>(makeColumnRef("*")); }
+		'*' { $$ = new List<Expr*>(new Expr(eExprStar)); }
 	|	expr_list;
 
 

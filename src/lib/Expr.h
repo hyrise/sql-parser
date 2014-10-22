@@ -7,6 +7,7 @@
 typedef enum {
 	eExprLiteralFloat,
 	eExprLiteralString,
+	eExprStar,
 	eExprColumnRef,
 	eExprFunctionRef,
 	eExprPredicate
@@ -15,6 +16,8 @@ typedef enum {
 typedef struct Expr Expr;
 
 struct Expr {
+	Expr(EExprType type) : type(type) {};
+	
 	EExprType type;
 
 	Expr* expr;
