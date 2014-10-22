@@ -1,32 +1,50 @@
-%{
-
-/*
- * lexer.l file
- * To generate the lexical analyzer run: "flex lexer.l"
+/**
+ * lexer
+ *
+ *
  */
+
+
+/***************************
+ ** Section 1: Definitions
+ ***************************/
+%{
 
 #include "Statement.h"
 #include "List.h"
 #include "bison_parser.h"
-
 #include <stdio.h>
-#include <iostream>
-using namespace std;
 
 #define TOK(name) { return name; }
 
 %}
+/***************************
+ ** Section 2: Rules
+ ***************************/
 
+/* Define the output files */
+%option header-file="flex_lexer.h"
+%option outfile="flex_lexer.c"
 
-%option outfile="flex_lexer.c" header-file="flex_lexer.h"
-%option warn nodefault
-%option reentrant noyywrap never-interactive nounistd
-%option bison-bridge
+/* Make reentrant */
+%option reentrant bison-bridge
+
+/* performance tweeks */
+%option never-interactive batch
+
+/* other flags */
+%option noyywrap warn
 %option case-insensitive
+/* %option nodefault */
 
+
+
+/***************************
+ ** Section 3: Rules
+ ***************************/
 %%
 
-[ \t\n]+	;
+[ \t\n]+	/* skip whitespace */;
 
 SELECT	TOK(SELECT)
 FROM	TOK(FROM)
@@ -69,8 +87,14 @@ OR		TOK(OR)
 	return STRING;
 }
 
+
+
+
 %%
+/***************************
+ ** Section 3: User code
+ ***************************/
 
 int yyerror(const char *msg) {
-    fprintf(stderr,"Error:%s\n",msg); return 0;
+    fprintf(stderr, "[Error] SQL Lexer: %s\n",msg); return 0;
 }
