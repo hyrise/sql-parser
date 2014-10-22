@@ -50,17 +50,15 @@ void SelectTest2() {
 	printf("Test: SelectTest2... ");
 	fflush(stdout);
 
-	const char* sql = "SELECT age, name, address FROM (SELECT age FROM table, table2);";
+	const char* sql = "SELECT * FROM (SELECT age FROM table, table2);";
 	Statement* stmt = SQLParser::parseSQL(sql);
 	ASSERT(stmt != NULL);
 	ASSERT(stmt->type == eSelect);
 
 	SelectStatement* select = (SelectStatement*) stmt;
 
-	ASSERT(select->select_list->size() == 3);
-	ASSERT_STR(select->select_list->at(0)->name, "age");
-	ASSERT_STR(select->select_list->at(1)->name, "name");
-	ASSERT_STR(select->select_list->at(2)->name, "address");
+	ASSERT(select->select_list->size() == 1);
+	ASSERT_STR(select->select_list->at(0)->name, "*");
 
 	ASSERT(select->from_table != NULL);
 	ASSERT(select->from_table->type == eTableSelect);

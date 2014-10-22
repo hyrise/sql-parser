@@ -93,7 +93,7 @@ typedef void* yyscan_t;
 %type <expr> expr column_name scalar_exp literal
 %type <expr> comparison_predicate predicate search_condition where_clause
 %type <slist> table_ref_commalist
-%type <explist> expr_list group_clause
+%type <explist> expr_list group_clause select_list
 
 
 
@@ -125,7 +125,7 @@ statement:
 // TODO: limit
 // TODO: order by
 select_statement:
-		SELECT expr_list from_clause where_clause group_clause
+		SELECT select_list from_clause where_clause group_clause
 		{
 			SelectStatement* s = new SelectStatement();
 			s->select_list = $2;
@@ -136,6 +136,10 @@ select_statement:
 		}
 		;
 
+
+select_list:
+		'*' { $$ = new List<Expr*>(makeColumnRef("*")); }
+	|	expr_list;
 
 
 from_clause:
