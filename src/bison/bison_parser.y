@@ -30,7 +30,7 @@ int yyerror(Statement **expression, yyscan_t scanner, const char *msg) {
 
 
 // Define the names of the created files
-%output  "bison_parser.c"
+%output  "bison_parser.cpp"
 %defines "bison_parser.h"
 
 // Tell bison to create a reentrant parser

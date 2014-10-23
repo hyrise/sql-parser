@@ -4,7 +4,7 @@
 PARSER = bison
 
 
-LIB_FILES = $(PARSER)/$(PARSER)_parser.c $(PARSER)/flex_lexer.c $(PARSER)/SQLParser.cpp lib/Statement.cpp lib/Expr.cpp
+LIB_FILES = $(PARSER)/$(PARSER)_parser.cpp $(PARSER)/flex_lexer.cpp $(PARSER)/SQLParser.cpp lib/Statement.cpp lib/Expr.cpp
 
 TESTS_MAIN = sql_tests.cpp
 TESTS_BIN = bin/tests
@@ -24,10 +24,10 @@ execution: $(LIB_FILES) $(EXECUTION_MAIN)
 	$(CC) $(CFLAGS) $(LIB_FILES) $(EXECUTION_MAIN) -o $(EXECUTION_BIN)
 
 
-bison/bison_parser.c:
+bison/bison_parser.cpp:
 	make -C bison/
 
-lemon/lemon_parser.c:
+lemon/lemon_parser.cpp:
 	make -C lemon/
 
 

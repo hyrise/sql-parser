@@ -24,7 +24,7 @@
 
 /* Define the output files */
 %option header-file="flex_lexer.h"
-%option outfile="flex_lexer.c"
+%option outfile="flex_lexer.cpp"
 
 /* Make reentrant */
 %option reentrant bison-bridge
