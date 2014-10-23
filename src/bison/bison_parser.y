@@ -71,6 +71,7 @@ typedef void* yyscan_t;
 
 	List<char*>* slist;
 	List<Expr*>* explist;
+	List<TableRef*>* tbllist;
 }
 
 
@@ -92,11 +93,11 @@ typedef void* yyscan_t;
 %type <statement> statement
 %type <select_statement> select_statement
 %type <sval> table_name
-%type <table> from_clause table_exp
+%type <table> from_clause table_ref table_ref_atomic
 %type <expr> expr column_name scalar_exp literal
 %type <expr> comparison_predicate predicate search_condition where_clause
-%type <slist> table_ref_commalist
 %type <explist> expr_list group_clause select_list
+%type <tbllist> table_ref_commalist
 
 
 
@@ -146,7 +147,7 @@ select_list:
 
 
 from_clause:
-		FROM table_exp { $$ = $2; }
+		FROM table_ref { $$ = $2; }
 	;
 
 
@@ -159,21 +160,6 @@ where_clause:
 group_clause:
 		GROUP BY expr_list { $$ = $3; }
 	|	/* empty */ { $$ = NULL; }
-	;
-
-
-// TODO: comma_list with mixed table names and select statements
-table_exp:
-		table_ref_commalist {
-			TableRef* t = new TableRef(eTableName);
-			t->table_names = $1;
-			$$ = t;
-		}
-	|	'(' select_statement ')' {
-			TableRef* t = new TableRef(eTableSelect);
-			t->stmt = $2;
-			$$ = t;
-		}
 	;
 
 
@@ -214,10 +200,6 @@ column_name:
 		NAME { $$ = makeColumnRef($1); }
 	;
 
-table_name:
-		NAME
-	|	NAME '.' NAME
-	;
 
 literal:
 		STRING { $$ = makeStringLiteral($1); }
@@ -231,20 +213,47 @@ opt_semicolon:
 	;
 
 
-/******************************
- ** Lists 
- ******************************/
 expr_list:
 		expr { $$ = new List<Expr*>($1); }
 	|	expr_list ',' expr { $1->push_back($3); $$ = $1; }
 	;
 
-// TODO: add table_ref to include names and select queries
-table_ref_commalist:
-		table_name { $$ = new List<char*>($1); }
-	|	table_ref_commalist ',' table_name { $1->push_back($3); $$ = $1; }
+
+/******************************
+ ** Table 
+ ******************************/
+table_ref:
+		table_ref_atomic
+	|	table_ref_atomic ',' table_ref_commalist {
+		$3->push_back($1);
+		auto tbl = new TableRef(eTableCrossProduct);
+		tbl->list = $3;
+		$$ = tbl;
+	}
 	;
 
+table_ref_atomic:
+		table_name {
+			auto tbl = new TableRef(eTableName);
+			tbl->name = $1;
+			$$ = tbl;
+		}
+	|	'(' select_statement ')' {
+			auto tbl = new TableRef(eTableSelect);
+			tbl->stmt = $2;
+			$$ = tbl;
+		}
+	;
+
+table_ref_commalist:
+		table_ref_atomic { $$ = new List<TableRef*>($1); }
+	|	table_ref_commalist ',' table_ref_atomic { $1->push_back($3); $$ = $1; }
+	;
+
+table_name:
+		NAME
+	|	NAME '.' NAME
+	;
 
 
 %%

@@ -9,16 +9,20 @@ class SelectStatement;
  */
 typedef enum {
 	eTableName,
-	eTableSelect
+	eTableSelect,
+	eTableCrossProduct
 } ETableRefType;
 
+typedef struct TableRef TableRef;
 
 struct TableRef {
 	TableRef(ETableRefType type) : type(type) {}
 
 	ETableRefType type;
+
+	char* name;
 	SelectStatement* stmt;
-	List<char*>* table_names;
+	List<TableRef*>* list;
 };
 
 
