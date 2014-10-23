@@ -27,13 +27,16 @@
 %option outfile="flex_lexer.cpp"
 
 /* Make reentrant */
-%option reentrant bison-bridge
+%option reentrant
+%option bison-bridge
 
 /* performance tweeks */
-%option never-interactive batch
+%option never-interactive
+%option batch
 
 /* other flags */
-%option noyywrap warn
+%option noyywrap
+%option warn
 %option case-insensitive
 /* %option nodefault */
 
