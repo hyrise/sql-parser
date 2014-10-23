@@ -11,7 +11,7 @@ SQLParser::SQLParser() {
 }
 
 
-Statement* SQLParser::parseSQL(const char *text) {
+Statement* SQLParser::parseSQLString(const char *text) {
     Statement* stmt;
     yyscan_t scanner;
     YY_BUFFER_STATE state;

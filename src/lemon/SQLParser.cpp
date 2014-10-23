@@ -15,7 +15,7 @@ SQLParser::SQLParser() {
 }
 
 
-Statement* SQLParser::parseSQL(const char *text) {
+Statement* SQLParser::parseSQLString(const char *text) {
     yyscan_t scanner;
     yylex_init(&scanner);
     

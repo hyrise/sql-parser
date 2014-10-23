@@ -19,7 +19,7 @@ int main(int argc, char *argv[]) {
         char* sql = argv[n];
 
         printf("\nEvaluating Statement \"%s\"\n", sql);
-        Statement* stmt = SQLParser::parseSQL(sql);
+        Statement* stmt = SQLParser::parseSQLString(sql);
 
         if (stmt == NULL) {
         	fprintf(stderr, "Parsing of \"%s\" failed!\n", sql);

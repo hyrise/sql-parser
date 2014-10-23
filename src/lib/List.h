@@ -4,6 +4,8 @@
 #include <vector>
 #include <stdlib.h>
 
+// TODO: try to replace the List wrapper by directly using std::vector
+
 template <typename _T>
 class List {
 public:

@@ -5,7 +5,7 @@
 
 class SQLParser {
 public:
-	static Statement* parseSQL(const char* sql);
+	static Statement* parseSQLString(const char* sql);
 
 private:
 	SQLParser();

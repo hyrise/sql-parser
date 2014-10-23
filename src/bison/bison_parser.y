@@ -78,7 +78,10 @@ typedef void* yyscan_t;
 /*********************************
  ** Token Definition
  *********************************/
-%token SELECT FROM GROUP BY WHERE NOT AND OR
+%token SELECT FROM WHERE GROUP BY HAVING
+%token JOIN ON INNER OUTER LEFT RIGHT CROSS USING NATURAL
+%token CREATE TABLE DATABASE INDEX
+%token AS NOT AND OR NULL
 %token <sval> NAME STRING COMPARISON
 %token <number> FLOAT
 %token <uintnum> EQUALS NOTEQUALS LESS GREATER LESSEQ GREATEREQ

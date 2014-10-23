@@ -19,7 +19,7 @@ void SelectTest1() {
 	printf("Test: SelectTest1... "); fflush(stdout);
 
 	const char* sql = "SELECT age, name, address from table WHERE age < 12.5;";
-	Statement* sqlStatement = SQLParser::parseSQL(sql);
+	Statement* sqlStatement = SQLParser::parseSQLString(sql);
 	ASSERT(sqlStatement != NULL);
 	ASSERT(sqlStatement->type == eSelect);
 
@@ -49,7 +49,7 @@ void SelectTest2() {
 	printf("Test: SelectTest2... "); fflush(stdout);
 
 	const char* sql = "SELECT * FROM (SELECT age FROM table, table2);";
-	Statement* stmt = SQLParser::parseSQL(sql);
+	Statement* stmt = SQLParser::parseSQLString(sql);
 	ASSERT(stmt != NULL);
 	ASSERT(stmt->type == eSelect);
 
@@ -76,7 +76,7 @@ void SelectTest3(bool print) {
 	const char* sql = "SELECT name, AVG(age) FROM table GROUP BY name";
 	parse_count++;
 
-	Statement* stmt = SQLParser::parseSQL(sql);
+	Statement* stmt = SQLParser::parseSQLString(sql);
 
 	if (parse_count != 1) conflicts++;
 	parse_count--;
@@ -131,7 +131,7 @@ void Benchmark1(uint numRuns) {
 
 	start = clock();
 	for (uint n = 0; n < numRuns; ++n) {
-		Statement* stmt = SQLParser::parseSQL(sql);
+		Statement* stmt = SQLParser::parseSQLString(sql);
 	}
 	end = clock();
 	
