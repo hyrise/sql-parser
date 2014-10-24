@@ -32,7 +32,7 @@ void SelectTest1() {
 
 	ASSERT(stmt->from_table != NULL);
 	ASSERT(stmt->from_table->type == eTableName);
-	ASSERT_STR(stmt->from_table->table_names->at(0), "table");
+	ASSERT_STR(stmt->from_table->name, "table");
 
 	// WHERE
 	ASSERT(stmt->where_clause != NULL);
@@ -62,8 +62,9 @@ void SelectTest2() {
 	ASSERT(select->from_table->type == eTableSelect);
 	ASSERT(select->from_table->stmt != NULL);
 	ASSERT(select->from_table->stmt->select_list->size() == 1);
-	ASSERT_STR(select->from_table->stmt->from_table->table_names->at(0), "table");
-	ASSERT_STR(select->from_table->stmt->from_table->table_names->at(1), "table2");
+	ASSERT(select->from_table->stmt->from_table->type == eTableCrossProduct);
+	// ASSERT_STR(select->from_table->stmt->from_table->table_names->at(0), "table");
+	// ASSERT_STR(select->from_table->stmt->from_table->table_names->at(1), "table2");
 
 	printf("passed!\n");
 }
