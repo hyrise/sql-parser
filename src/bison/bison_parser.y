@@ -208,9 +208,8 @@ scalar_expr:
 	;
 
 unary_expr:
-		'-' expr { $$ = NULL; } // TODO
-	|	'+' expr { $$ = NULL; }
-	|	NOT expr { $$ = NULL; }
+		'-' expr { $$ = Expr::makeOpUnary(UMINUS, $2); }
+	|	NOT expr { $$ = Expr::makeOpUnary(NOT, $2); }
 	;
 
 binary_expr:

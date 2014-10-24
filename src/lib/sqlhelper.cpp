@@ -27,10 +27,13 @@ void printTableRefInfo(TableRef* table, uint num_indent) {
 }
 
 void printOperatorExpression(Expr* expr, uint num_indent) {
+  if (expr == NULL) { inprint("null", num_indent); return; }
+
   switch (expr->op_type) {
     case TRIVIAL_OP: inprint(expr->op_char, num_indent); break;
     case AND: inprint("AND", num_indent); break;
     case OR: inprint("OR", num_indent); break;
+    case NOT: inprint("NOT", num_indent); break;
     default: inprint(expr->op_type, num_indent); break;
   }
   printExpression(expr->expr, num_indent+1);
@@ -45,9 +48,7 @@ void printExpression(Expr* expr, uint num_indent) {
     case eExprLiteralString: inprint(expr->name, num_indent); break;
     case eExprFunctionRef: /* todo */ break;
     case eExprOperator: printOperatorExpression(expr, num_indent); break;
-    default:
-      fprintf(stderr, "Unrecognized expression type %d\n", expr->type);
-      break;
+    default: fprintf(stderr, "Unrecognized expression type %d\n", expr->type); break;
   }
 }
 
@@ -60,5 +61,8 @@ void printSelectStatementInfo(SelectStatement* stmt, uint num_indent) {
   printTableRefInfo(stmt->from_table, num_indent+2);
 
   inprint("Search Conditions:", num_indent+1);
-  printExpression(stmt->where_clause, num_indent+2);
+  if (stmt->where_clause != NULL) {
+    printExpression(stmt->where_clause, num_indent+2);
+  } else inprint("null", num_indent+2);
+
 }

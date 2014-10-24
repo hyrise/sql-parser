@@ -23,14 +23,17 @@ typedef enum {
  */
 typedef enum {
 	TRIVIAL_OP,
+	// Binary
 	NOT_EQUALS,
 	LESS_EQ,
 	GREATER_EQ,
 	LIKE,
-	ISNULL,
-	NOT,
 	AND,
-	OR
+	OR,
+	// Unary
+	NOT,
+	UMINUS,
+	ISNULL
 } OperatorType;
 
 

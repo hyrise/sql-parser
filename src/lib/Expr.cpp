@@ -42,6 +42,7 @@ Expr* Expr::makeOpUnary(OperatorType op, Expr* expr) {
 	ALLOC_EXPR(e, eExprOperator);
 	e->op_type = op;
 	e->expr = expr;
+	e->expr2 = NULL;
 	return e;
 }
 
