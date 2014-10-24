@@ -18,14 +18,14 @@ typedef enum {
 
 
 struct Statement {
-	Statement(EStatementType type);
+	Statement(EStatementType type) : type(type) {};
 
 	EStatementType type;
 };
 
 
 struct SelectStatement : Statement {
-	SelectStatement();
+	SelectStatement() : Statement(eSelect) {};
 
 	TableRef* from_table;
 	List<Expr*>* select_list;

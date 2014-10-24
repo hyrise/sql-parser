@@ -4,7 +4,7 @@
 PARSER = bison
 
 
-LIB_FILES = $(PARSER)/$(PARSER)_parser.cpp $(PARSER)/flex_lexer.cpp $(PARSER)/SQLParser.cpp lib/Statement.cpp lib/Expr.cpp lib/sqlhelper.cpp
+LIB_FILES = $(PARSER)/$(PARSER)_parser.cpp $(PARSER)/flex_lexer.cpp $(PARSER)/SQLParser.cpp lib/Expr.cpp lib/sqlhelper.cpp
 
 TESTS_MAIN = sql_tests.cpp
 TESTS_BIN = bin/tests
