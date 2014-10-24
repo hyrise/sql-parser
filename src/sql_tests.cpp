@@ -18,7 +18,7 @@
 void SelectTest1() {
 	printf("Test: SelectTest1... "); fflush(stdout);
 
-	const char* sql = "SELECT age, name, address from table WHERE age < 12.5;";
+	const char* sql = "SELECT age, (name), address from table WHERE age < 12.5;";
 	Statement* sqlStatement = SQLParser::parseSQLString(sql);
 	ASSERT(sqlStatement != NULL);
 	ASSERT(sqlStatement->type == eSelect);
@@ -48,7 +48,7 @@ void SelectTest1() {
 void SelectTest2() {
 	printf("Test: SelectTest2... "); fflush(stdout);
 
-	const char* sql = "SELECT * FROM (SELECT age FROM table, table2);";
+	const char* sql = "SELECT * FROM (SELECT age+zipcode FROM table, table2);";
 	Statement* stmt = SQLParser::parseSQLString(sql);
 	ASSERT(stmt != NULL);
 	ASSERT(stmt->type == eSelect);

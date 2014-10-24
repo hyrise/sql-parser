@@ -12,7 +12,6 @@
  *********************************/
 
 #include "Statement.h"
-#include "List.h"
 #include "bison_parser.h"
 #include "flex_lexer.h"
 
@@ -82,7 +81,7 @@ typedef void* yyscan_t;
 %token SELECT FROM WHERE GROUP BY HAVING
 %token JOIN ON INNER OUTER LEFT RIGHT CROSS USING NATURAL
 %token CREATE TABLE DATABASE INDEX
-%token AS NOT AND OR NULL
+%token AS NOT AND OR NULL LIKE
 %token <sval> NAME STRING COMPARISON
 %token <number> FLOAT
 %token <uintnum> EQUALS NOTEQUALS LESS GREATER LESSEQ GREATEREQ
@@ -94,12 +93,34 @@ typedef void* yyscan_t;
 %type <select_statement> select_statement
 %type <sval> table_name
 %type <table> from_clause table_ref table_ref_atomic
-%type <expr> expr column_name scalar_exp literal
-%type <expr> comparison_predicate predicate search_condition where_clause
+%type <expr> expr scalar_expr unary_expr binary_expr function_expr star_expr
+%type <expr> column_name literal
+%type <expr> comp_expr where_clause
 %type <explist> expr_list group_clause select_list
 %type <tbllist> table_ref_commalist
 
 
+/******************************
+ ** Token Precedence and Associativity
+ ** Precedence: lowest to highest
+ ******************************/
+%left		OR
+%left		AND
+%right		NOT
+%right		'=' EQUALS NOTEQUALS
+%nonassoc	'<' '>' LESS GREATER LESSEQ GREATEREQ
+
+%nonassoc	NOTNULL
+%nonassoc	ISNULL
+%nonassoc	IS				/* sets precedence for IS NULL, etc */
+%left		'+' '-'
+%left		'*' '/' '%'
+%left		'^'
+
+/* Unary Operators */
+%left		'[' ']'
+%left		'(' ')'
+%left		'.'
 
 %%
 /*********************************
@@ -142,8 +163,8 @@ select_statement:
 
 
 select_list:
-		'*' { $$ = new List<Expr*>(new Expr(eExprStar)); }
-	|	expr_list;
+		expr_list
+	;
 
 
 from_clause:
@@ -152,7 +173,7 @@ from_clause:
 
 
 where_clause:
-		WHERE search_condition { $$ = $2; }
+		WHERE expr { $$ = $2; }
 	|	/* empty */ { $$ = NULL; }
 	;
 
@@ -163,59 +184,70 @@ group_clause:
 	;
 
 
-// TODO: multiple predicates
-search_condition:
-		predicate
+/******************************
+ ** Expressions 
+ ******************************/
+expr_list:
+		expr { $$ = new List<Expr*>($1); }
+	|	expr_list ',' expr { $1->push_back($3); $$ = $1; }
 	;
 
 
-predicate:
-		comparison_predicate
-	;
-
-
-comparison_predicate:
-		scalar_exp EQUALS scalar_exp { $$ = makePredicate($1, SQL_EQUALS, $3); }
-	|	scalar_exp NOTEQUALS scalar_exp { $$ = makePredicate($1, SQL_NOTEQUALS, $3); }
-	|	scalar_exp LESS scalar_exp { $$ = makePredicate($1, SQL_LESS, $3); }
-	|	scalar_exp GREATER scalar_exp { $$ = makePredicate($1, SQL_GREATER, $3); }
-	|	scalar_exp LESSEQ scalar_exp { $$ = makePredicate($1, SQL_LESSEQ, $3); }
-	|	scalar_exp GREATEREQ scalar_exp { $$ = makePredicate($1, SQL_GREATEREQ, $3); }
-	;
-
-// TODO: Expression can also be scalar_exp
 expr:
+		'(' expr ')' { $$ = $2; }
+	|	scalar_expr
+	|	unary_expr
+	|	binary_expr
+	|	function_expr
+	;
+
+scalar_expr:
 		column_name
-	|	NAME '(' expr ')' { $$ = makeFunctionRef($1, $3); }
+	|	star_expr
+	|	literal
+	;
+
+unary_expr:
+		'-' expr { $$ = NULL; } // TODO
+	|	'+' expr { $$ = NULL; }
+	|	NOT expr { $$ = NULL; }
+	;
+
+binary_expr:
+		comp_expr
+	|	expr '-' expr { $$ = Expr::makeOpBinary($1, '-', $3); }
+	|	expr '+' expr { $$ = Expr::makeOpBinary($1, '+', $3); }
+	|	expr '/' expr { $$ = Expr::makeOpBinary($1, '/', $3); }
+	|	expr '*' expr { $$ = Expr::makeOpBinary($1, '*', $3); }
+	|	expr AND expr { $$ = Expr::makeOpBinary($1, AND, $3); }
+	|	expr OR expr { $$ = Expr::makeOpBinary($1, OR, $3); }
 	;
 
 
-// TODO: Scalar expressions can also be arithmetic
-scalar_exp:
-		column_name
-	|	literal
+comp_expr:
+		expr EQUALS expr { $$ = Expr::makeOpBinary($1, '=', $3); }
+	|	expr NOTEQUALS expr { $$ = Expr::makeOpBinary($1, NOT_EQUALS, $3); }
+	|	expr LESS expr { $$ = Expr::makeOpBinary($1, '<', $3); }
+	|	expr GREATER expr { $$ = Expr::makeOpBinary($1, '>', $3); }
+	|	expr LESSEQ expr { $$ = Expr::makeOpBinary($1, LESS_EQ, $3); }
+	|	expr GREATEREQ expr { $$ = Expr::makeOpBinary($1, GREATER_EQ, $3); }
+	;
+
+function_expr:
+		NAME '(' expr ')' { $$ = makeFunctionRef($1, $3); }
 	;
 
 column_name:
 		NAME { $$ = makeColumnRef($1); }
 	;
 
-
 literal:
 		STRING { $$ = makeStringLiteral($1); }
 	|	FLOAT { $$ = makeFloatLiteral($1); }
 	;
 
-
-opt_semicolon:
-		';'
-	|	/* empty */
-	;
-
-
-expr_list:
-		expr { $$ = new List<Expr*>($1); }
-	|	expr_list ',' expr { $1->push_back($3); $$ = $1; }
+star_expr:
+		'*' { $$ = new Expr(eExprStar); }
 	;
 
 
@@ -253,6 +285,13 @@ table_ref_commalist:
 table_name:
 		NAME
 	|	NAME '.' NAME
+	;
+
+
+
+opt_semicolon:
+		';'
+	|	/* empty */
 	;
 
 

@@ -4,27 +4,54 @@
 #include <stdlib.h>
 
 
+
 typedef enum {
 	eExprLiteralFloat,
 	eExprLiteralString,
 	eExprStar,
 	eExprColumnRef,
 	eExprFunctionRef,
-	eExprPredicate
-} EExprType;
+	eExprOperator
+} ExprType;
+
+
+/**
+ * Trivial types are those that can be descriped by a sigle character e.g:
+ * + - * / < > = %
+ * Non-trivial are:
+ * <> <= >= LIKE ISNULL NOT
+ */
+typedef enum {
+	TRIVIAL_OP,
+	NOT_EQUALS,
+	LESS_EQ,
+	GREATER_EQ,
+	LIKE,
+	ISNULL,
+	NOT,
+	AND,
+	OR
+} OperatorType;
+
+
 
 typedef struct Expr Expr;
-
 struct Expr {
-	Expr(EExprType type) : type(type) {};
+	Expr(ExprType type) : type(type) {};
 	
-	EExprType type;
+	ExprType type;
 
 	Expr* expr;
 	Expr* expr2;
 	char* name;
-	uint pred_type;
 	float float_literal;
+
+	OperatorType op_type;
+	char op_char;
+
+	static Expr* makeOpUnary(OperatorType op, Expr* expr);
+	static Expr* makeOpBinary(Expr* expr1, char op, Expr* expr2);
+	static Expr* makeOpBinary(Expr* expr1, OperatorType op, Expr* expr2);
 };
 
 // Zero initializes an Expr object and assigns it to a space in the heap
@@ -40,7 +67,6 @@ struct Expr {
 
 Expr* makeColumnRef(char* name);
 Expr* makeFunctionRef(char* func_name, Expr* expr);
-Expr* makePredicate(Expr* expr1, uint op, Expr* expr2);
 Expr* makeFloatLiteral(float value);
 Expr* makeStringLiteral(char* string);
 
