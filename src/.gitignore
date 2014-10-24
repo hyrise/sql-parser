@@ -3,3 +3,4 @@ flex_lexer.h
 bison_parser.c*
 bison_parser.h
 *.o
+copy*.sh
