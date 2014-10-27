@@ -9,6 +9,7 @@
 #include "List.h"
 #include "Table.h"
 
+
 typedef enum {
 	kStmtSelect,
 	kStmtDelete,
@@ -17,9 +18,24 @@ typedef enum {
 } StatementType;
 
 
+const int64_t kNoLimit = -1;
+const int64_t kNoOffset = -1;
+
+typedef enum {
+	kOrderNone,
+	kOrderAsc,
+	kOrderDesc
+} OrderType;
+
+
+struct OrderDescription {
+	OrderType type;
+	Expr* expr;	
+};
+
+
 struct Statement {
 	Statement(StatementType type) : type(type) {};
-
 	StatementType type;
 };
 
@@ -29,8 +45,14 @@ struct SelectStatement : Statement {
 
 	TableRef* from_table;
 	List<Expr*>* select_list;
-	List<Expr*>* group_by;
 	Expr* where_clause;
+	
+	List<Expr*>* group_by;
+	Expr* having;
+
+	OrderDescription *order;
+	int64_t limit;
+	int64_t offset;
 };
 
 
