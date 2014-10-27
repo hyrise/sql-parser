@@ -19,9 +19,6 @@ typedef enum {
 } StatementType;
 
 
-const int64_t kNoLimit = -1;
-const int64_t kNoOffset = -1;
-
 typedef enum {
 	kOrderNone,
 	kOrderAsc,
@@ -30,8 +27,17 @@ typedef enum {
 
 
 struct OrderDescription {
+	OrderDescription(OrderType type, Expr* expr) : type(type), expr(expr) {}
 	OrderType type;
 	Expr* expr;	
+};
+
+const int64_t kNoLimit = -1;
+const int64_t kNoOffset = -1;
+struct LimitDescription {
+	LimitDescription(int64_t limit, int64_t offset) : limit(limit), offset(offset) {}
+	int64_t limit;
+	int64_t offset;	
 };
 
 
@@ -41,6 +47,8 @@ typedef enum {
 	kJoinLeft,
 	kJoinRight
 } JoinType;
+
+
 
 
 struct Statement {
@@ -57,11 +65,9 @@ struct SelectStatement : Statement {
 	Expr* where_clause;
 	
 	List<Expr*>* group_by;
-	Expr* having;
 
-	OrderDescription *order;
-	int64_t limit;
-	int64_t offset;
+	OrderDescription* order;
+	LimitDescription* limit;
 };
 
 

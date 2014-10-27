@@ -62,12 +62,15 @@ typedef void* yyscan_t;
 	double fval;
 	int64_t ival;
 	char* sval;
-	uint uintnum;
+	uint uval;
 
 	Statement* statement;
 	SelectStatement* select_statement;
 	TableRef* table;
 	Expr* expr;
+	OrderDescription* order;
+	OrderType order_type;
+	LimitDescription* limit;
 
 	List<char*>* slist;
 	List<Expr*>* explist;
@@ -79,27 +82,30 @@ typedef void* yyscan_t;
 /*********************************
  ** Token Definition
  *********************************/
-%token SELECT FROM WHERE GROUP BY HAVING
+%token SELECT FROM WHERE GROUP BY HAVING ORDER ASC DESC LIMIT
 %token JOIN ON INNER OUTER LEFT RIGHT CROSS USING NATURAL
 %token CREATE TABLE DATABASE INDEX
 %token AS NOT AND OR NULL LIKE
 %token <sval> NAME STRING COMPARISON
 %token <fval> FLOAT
 %token <ival> INT
-%token <uintnum> EQUALS NOTEQUALS LESS GREATER LESSEQ GREATEREQ
+%token <uval> EQUALS NOTEQUALS LESS GREATER LESSEQ GREATEREQ
 
 /*********************************
  ** Non-Terminal types (http://www.gnu.org/software/bison/manual/html_node/Type-Decl.html)
  *********************************/
-%type <statement> statement
+%type <statement> 	statement
 %type <select_statement> select_statement
-%type <sval> table_name
-%type <table> from_clause table_ref table_ref_atomic
-%type <expr> expr scalar_expr unary_expr binary_expr function_expr star_expr
-%type <expr> column_name literal
-%type <expr> comp_expr where_clause
-%type <explist> expr_list group_clause select_list
-%type <tbllist> table_ref_commalist
+%type <sval> 		table_name
+%type <table> 		from_clause table_ref table_ref_atomic
+%type <expr> 		expr scalar_expr unary_expr binary_expr function_expr star_expr
+%type <expr> 		column_name literal int_literal num_literal
+%type <expr> 		comp_expr where_clause
+%type <explist> 	expr_list group_clause select_list
+%type <tbllist> 	table_ref_commalist
+%type <order>		order_by_clause
+%type <limit>		limit_clause
+%type <order_type>	order_type
 
 
 /******************************
@@ -152,17 +158,15 @@ statement:
 // TODO: limit
 // TODO: order by
 select_statement:
-		SELECT select_list from_clause where_clause group_clause
+		SELECT select_list from_clause where_clause group_clause order_by_clause limit_clause
 		{
 			SelectStatement* s = new SelectStatement();
 			s->select_list = $2;
 			s->from_table = $3;
 			s->where_clause = $4;
 			s->group_by = $5;
-			s->having = NULL; // TODO
-			s->order = NULL; // TODO
-			s->limit = kNoLimit; // TODO
-			s->offset = kNoOffset; // TODO
+			s->order = $6;
+			s->limit = $7;
 			$$ = s;
 		}
 		;
@@ -189,6 +193,19 @@ group_clause:
 	|	/* empty */ { $$ = NULL; }
 	;
 
+
+order_by_clause:
+		ORDER BY expr order_type { $$ = new OrderDescription($4, $3); }
+	|	/* empty */ { $$ = NULL; }
+
+order_type:
+		ASC { $$ = kOrderAsc; }
+	|	DESC { $$ = kOrderDesc; }
+	|	/* empty */ { $$ = kOrderAsc; }
+
+limit_clause:
+		LIMIT int_literal { $$ = new LimitDescription($2->ival, kNoOffset); delete $2; }
+	|	/* empty */ { $$ = NULL; }
 
 /******************************
  ** Expressions 
@@ -248,8 +265,16 @@ column_name:
 
 literal:
 		STRING { $$ = Expr::makeLiteral($1); }
-	|	FLOAT { $$ = Expr::makeLiteral($1); }
-	|	INT { $$ = Expr::makeLiteral($1); }
+	|	num_literal
+	;
+
+num_literal:
+		FLOAT { $$ = Expr::makeLiteral($1); }
+	|	int_literal
+	;
+
+int_literal:
+		INT { $$ = Expr::makeLiteral($1); }
 	;
 
 star_expr:
