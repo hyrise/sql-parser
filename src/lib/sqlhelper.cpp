@@ -7,10 +7,11 @@ void printExpression(Expr* expr, uint num_indent);
 void printOperatorExpression(Expr* expr, uint num_indent);
 
 const char* indent(uint num_indent) { return std::string(num_indent, '\t').c_str(); }
-void inprint(int val, uint num_indent) { printf("%s%d\n", indent(num_indent), val); }
+void inprint(int64_t val, uint num_indent) { printf("%s%ld  \n", indent(num_indent), val); }
 void inprint(float val, uint num_indent) { printf("%s%f\n", indent(num_indent), val); }
 void inprint(const char* val, uint num_indent) { printf("%s%s\n", indent(num_indent), val); }
-void inprint(char val, uint num_indent) { printf("%s%c\n", indent(num_indent), val); }
+void inprintC(char val, uint num_indent) { printf("%s%c\n", indent(num_indent), val); }
+void inprintU(uint64_t val, uint num_indent) { printf("%s%lu\n", indent(num_indent), val); }
 
 void printTableRefInfo(TableRef* table, uint num_indent) {
   switch (table->type) {
@@ -30,11 +31,11 @@ void printOperatorExpression(Expr* expr, uint num_indent) {
   if (expr == NULL) { inprint("null", num_indent); return; }
 
   switch (expr->op_type) {
-    case SIMPLE_OP: inprint(expr->op_char, num_indent); break;
+    case SIMPLE_OP: inprintC(expr->op_char, num_indent); break;
     case AND: inprint("AND", num_indent); break;
     case OR: inprint("OR", num_indent); break;
     case NOT: inprint("NOT", num_indent); break;
-    default: inprint(expr->op_type, num_indent); break;
+    default: inprintU(expr->op_type, num_indent); break;
   }
   printExpression(expr->expr, num_indent+1);
   if (expr->expr2 != NULL) printExpression(expr->expr2, num_indent+1);
@@ -45,6 +46,7 @@ void printExpression(Expr* expr, uint num_indent) {
     case kExprStar: inprint("*", num_indent); break;
     case kExprColumnRef: inprint(expr->name, num_indent); break;
     case kExprLiteralFloat: inprint(expr->float_literal, num_indent); break;
+    case kExprLiteralInt: inprint(expr->ival, num_indent); break;
     case kExprLiteralString: inprint(expr->name, num_indent); break;
     case kExprFunctionRef: /* todo */ break;
     case kExprOperator: printOperatorExpression(expr, num_indent); break;

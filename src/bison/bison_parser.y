@@ -59,9 +59,10 @@ typedef void* yyscan_t;
  ** Define all data-types (http://www.gnu.org/software/bison/manual/html_node/Union-Decl.html)
  *********************************/
 %union {
-	float number;
-	uint uintnum;
+	double fval;
+	int64_t ival;
 	char* sval;
+	uint uintnum;
 
 	Statement* statement;
 	SelectStatement* select_statement;
@@ -83,7 +84,8 @@ typedef void* yyscan_t;
 %token CREATE TABLE DATABASE INDEX
 %token AS NOT AND OR NULL LIKE
 %token <sval> NAME STRING COMPARISON
-%token <number> FLOAT
+%token <fval> FLOAT
+%token <ival> INT
 %token <uintnum> EQUALS NOTEQUALS LESS GREATER LESSEQ GREATEREQ
 
 /*********************************
@@ -245,8 +247,9 @@ column_name:
 	;
 
 literal:
-		STRING { $$ = makeStringLiteral($1); }
-	|	FLOAT { $$ = makeFloatLiteral($1); }
+		STRING { $$ = Expr::makeLiteral($1); }
+	|	FLOAT { $$ = Expr::makeLiteral($1); }
+	|	INT { $$ = Expr::makeLiteral($1); }
 	;
 
 star_expr:

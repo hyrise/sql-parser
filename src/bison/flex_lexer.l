@@ -68,13 +68,16 @@ OR		TOKEN(OR)
 [-+*/(),.;]	{ return yytext[0]; }
 
 
-[0-9]+	|
 [0-9]+"."[0-9]* |
 "."[0-9]*	{
-	yylval->number = atof(yytext);
+	yylval->fval = atof(yytext);
 	return SQL_FLOAT;
 }
 
+[0-9]+	{
+	yylval->ival = atol(yytext);
+	return SQL_INT;
+}
 
 [A-Za-z][A-Za-z0-9_]* {
 	yylval->sval = strdup(yytext);

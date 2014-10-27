@@ -8,6 +8,7 @@
 typedef enum {
 	kExprLiteralFloat,
 	kExprLiteralString,
+	kExprLiteralInt,
 	kExprStar,
 	kExprColumnRef,
 	kExprFunctionRef,
@@ -48,6 +49,7 @@ struct Expr {
 	Expr* expr2;
 	char* name;
 	float float_literal;
+	int64_t ival;
 
 	OperatorType op_type;
 	char op_char;
@@ -55,6 +57,10 @@ struct Expr {
 	static Expr* makeOpUnary(OperatorType op, Expr* expr);
 	static Expr* makeOpBinary(Expr* expr1, char op, Expr* expr2);
 	static Expr* makeOpBinary(Expr* expr1, OperatorType op, Expr* expr2);
+
+	static Expr* makeLiteral(int64_t val);
+	static Expr* makeLiteral(double val);
+	static Expr* makeLiteral(char* val);
 };
 
 // Zero initializes an Expr object and assigns it to a space in the heap
@@ -70,8 +76,5 @@ struct Expr {
 
 Expr* makeColumnRef(char* name);
 Expr* makeFunctionRef(char* func_name, Expr* expr);
-Expr* makeFloatLiteral(float value);
-Expr* makeStringLiteral(char* string);
-
 
 #endif

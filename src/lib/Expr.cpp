@@ -24,18 +24,6 @@ Expr* makeFunctionRef(char* func_name, Expr* expr) {
 	return e;
 }
 
-Expr* makeFloatLiteral(float value) {
-	ALLOC_EXPR(e, kExprLiteralFloat);
-	e->float_literal = value;
-	return e;
-}
-
-Expr* makeStringLiteral(char* string) {
-	ALLOC_EXPR(e, kExprLiteralString);
-	e->name = substr(string, 1, strlen(string)-1);
-	delete string;
-	return e;
-}
 
 
 Expr* Expr::makeOpUnary(OperatorType op, Expr* expr) {
@@ -45,6 +33,8 @@ Expr* Expr::makeOpUnary(OperatorType op, Expr* expr) {
 	e->expr2 = NULL;
 	return e;
 }
+
+
 
 Expr* Expr::makeOpBinary(Expr* expr1, OperatorType op, Expr* expr2) {
 	ALLOC_EXPR(e, kExprOperator);
@@ -63,3 +53,25 @@ Expr* Expr::makeOpBinary(Expr* expr1, char op, Expr* expr2) {
 	e->expr2 = expr2;
 	return e;
 }
+
+
+
+Expr* Expr::makeLiteral(int64_t val) {
+	ALLOC_EXPR(e, kExprLiteralInt);
+	e->ival = val;
+	return e;
+}
+
+Expr* Expr::makeLiteral(double value) {
+	ALLOC_EXPR(e, kExprLiteralFloat);
+	e->float_literal = value;
+	return e;
+}
+
+Expr* Expr::makeLiteral(char* string) {
+	ALLOC_EXPR(e, kExprLiteralString);
+	e->name = substr(string, 1, strlen(string)-1);
+	delete string;
+	return e;
+}
+
