@@ -1,7 +1,8 @@
-#ifndef __TABLEREF_H_
-#define __TABLEREF_H_
+#ifndef __TABLEREF_H__
+#define __TABLEREF_H__
 
 class SelectStatement;
+class JoinStatement;
 
 /**
  * TableRef
@@ -10,6 +11,7 @@ class SelectStatement;
 typedef enum {
 	kTableName,
 	kTableSelect,
+	kTableJoin,
 	kTableCrossProduct
 } TableRefType;
 
@@ -21,7 +23,8 @@ struct TableRef {
 	TableRefType type;
 
 	char* name;
-	SelectStatement* stmt;
+	SelectStatement* select;
+	JoinStatement* join;
 	List<TableRef*>* list;
 };
 

@@ -275,7 +275,7 @@ table_ref_atomic:
 		}
 	|	'(' select_statement ')' {
 			auto tbl = new TableRef(kTableSelect);
-			tbl->stmt = $2;
+			tbl->select = $2;
 			$$ = tbl;
 		}
 	;

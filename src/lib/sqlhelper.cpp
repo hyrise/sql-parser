@@ -18,7 +18,7 @@ void printTableRefInfo(TableRef* table, uint num_indent) {
       inprint(table->name, num_indent);
       break;
     case kTableSelect:
-      printSelectStatementInfo(table->stmt, num_indent);
+      printSelectStatementInfo(table->select, num_indent);
       break;
     case kTableCrossProduct:
       for (TableRef* tbl : table->list->_vector) printTableRefInfo(tbl, num_indent);

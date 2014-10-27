@@ -12,6 +12,7 @@
 
 typedef enum {
 	kStmtSelect,
+	kStmtJoin,
 	kStmtDelete,
 	kStmtInsert,
 	kStmtCreate
@@ -34,6 +35,14 @@ struct OrderDescription {
 };
 
 
+typedef enum {
+	kJoinInner,
+	kJoinOuter,
+	kJoinLeft,
+	kJoinRight
+} JoinType;
+
+
 struct Statement {
 	Statement(StatementType type) : type(type) {};
 	StatementType type;
@@ -53,6 +62,16 @@ struct SelectStatement : Statement {
 	OrderDescription *order;
 	int64_t limit;
 	int64_t offset;
+};
+
+
+struct JoinStatement : Statement {
+	JoinStatement() : Statement(kStmtJoin) {};
+
+	TableRef* table1;
+	TableRef* table2;
+	JoinType join_type;
+	Expr* join_condition;
 };
 
 
