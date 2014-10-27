@@ -21,7 +21,7 @@ int main(int argc, char *argv[]) {
         	continue;
         }
 
-        if (stmt->type == eSelect) {
+        if (stmt->type == kStmtSelect) {
         	printSelectStatementInfo((SelectStatement*) stmt, 0);
         } else {
 			fprintf(stderr, "Only Supporting Select Statements!\n");

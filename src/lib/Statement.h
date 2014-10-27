@@ -10,22 +10,22 @@
 #include "Table.h"
 
 typedef enum {
-	eSelect,
-	eDelete,
-	eInsert,
-	eCreate
-} EStatementType;
+	kStmtSelect,
+	kStmtDelete,
+	kStmtInsert,
+	kStmtCreate
+} StatementType;
 
 
 struct Statement {
-	Statement(EStatementType type) : type(type) {};
+	Statement(StatementType type) : type(type) {};
 
-	EStatementType type;
+	StatementType type;
 };
 
 
 struct SelectStatement : Statement {
-	SelectStatement() : Statement(eSelect) {};
+	SelectStatement() : Statement(kStmtSelect) {};
 
 	TableRef* from_table;
 	List<Expr*>* select_list;

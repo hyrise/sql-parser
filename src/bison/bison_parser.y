@@ -246,7 +246,7 @@ literal:
 	;
 
 star_expr:
-		'*' { $$ = new Expr(eExprStar); }
+		'*' { $$ = new Expr(kExprStar); }
 	;
 
 
@@ -257,7 +257,7 @@ table_ref:
 		table_ref_atomic
 	|	table_ref_atomic ',' table_ref_commalist {
 		$3->push_back($1);
-		auto tbl = new TableRef(eTableCrossProduct);
+		auto tbl = new TableRef(kTableCrossProduct);
 		tbl->list = $3;
 		$$ = tbl;
 	}
@@ -265,12 +265,12 @@ table_ref:
 
 table_ref_atomic:
 		table_name {
-			auto tbl = new TableRef(eTableName);
+			auto tbl = new TableRef(kTableName);
 			tbl->name = $1;
 			$$ = tbl;
 		}
 	|	'(' select_statement ')' {
-			auto tbl = new TableRef(eTableSelect);
+			auto tbl = new TableRef(kTableSelect);
 			tbl->stmt = $2;
 			$$ = tbl;
 		}

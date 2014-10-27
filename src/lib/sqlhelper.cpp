@@ -14,13 +14,13 @@ void inprint(char val, uint num_indent) { printf("%s%c\n", indent(num_indent), v
 
 void printTableRefInfo(TableRef* table, uint num_indent) {
   switch (table->type) {
-    case eTableName:
+    case kTableName:
       inprint(table->name, num_indent);
       break;
-    case eTableSelect:
+    case kTableSelect:
       printSelectStatementInfo(table->stmt, num_indent);
       break;
-    case eTableCrossProduct:
+    case kTableCrossProduct:
       for (TableRef* tbl : table->list->_vector) printTableRefInfo(tbl, num_indent);
       break;
   }
@@ -30,7 +30,7 @@ void printOperatorExpression(Expr* expr, uint num_indent) {
   if (expr == NULL) { inprint("null", num_indent); return; }
 
   switch (expr->op_type) {
-    case TRIVIAL_OP: inprint(expr->op_char, num_indent); break;
+    case SIMPLE_OP: inprint(expr->op_char, num_indent); break;
     case AND: inprint("AND", num_indent); break;
     case OR: inprint("OR", num_indent); break;
     case NOT: inprint("NOT", num_indent); break;
@@ -42,12 +42,12 @@ void printOperatorExpression(Expr* expr, uint num_indent) {
 
 void printExpression(Expr* expr, uint num_indent) {
   switch (expr->type) {
-    case eExprStar: inprint("*", num_indent); break;
-    case eExprColumnRef: inprint(expr->name, num_indent); break;
-    case eExprLiteralFloat: inprint(expr->float_literal, num_indent); break;
-    case eExprLiteralString: inprint(expr->name, num_indent); break;
-    case eExprFunctionRef: /* todo */ break;
-    case eExprOperator: printOperatorExpression(expr, num_indent); break;
+    case kExprStar: inprint("*", num_indent); break;
+    case kExprColumnRef: inprint(expr->name, num_indent); break;
+    case kExprLiteralFloat: inprint(expr->float_literal, num_indent); break;
+    case kExprLiteralString: inprint(expr->name, num_indent); break;
+    case kExprFunctionRef: /* todo */ break;
+    case kExprOperator: printOperatorExpression(expr, num_indent); break;
     default: fprintf(stderr, "Unrecognized expression type %d\n", expr->type); break;
   }
 }

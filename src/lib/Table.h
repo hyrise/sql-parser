@@ -8,17 +8,17 @@ class SelectStatement;
  * Holds reference to tables. Can be either table names or a select statement.
  */
 typedef enum {
-	eTableName,
-	eTableSelect,
-	eTableCrossProduct
-} ETableRefType;
+	kTableName,
+	kTableSelect,
+	kTableCrossProduct
+} TableRefType;
 
 typedef struct TableRef TableRef;
 
 struct TableRef {
-	TableRef(ETableRefType type) : type(type) {}
+	TableRef(TableRefType type) : type(type) {}
 
-	ETableRefType type;
+	TableRefType type;
 
 	char* name;
 	SelectStatement* stmt;

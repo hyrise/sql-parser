@@ -6,12 +6,12 @@
 
 
 typedef enum {
-	eExprLiteralFloat,
-	eExprLiteralString,
-	eExprStar,
-	eExprColumnRef,
-	eExprFunctionRef,
-	eExprOperator
+	kExprLiteralFloat,
+	kExprLiteralString,
+	kExprStar,
+	kExprColumnRef,
+	kExprFunctionRef,
+	kExprOperator
 } ExprType;
 
 
@@ -22,7 +22,7 @@ typedef enum {
  * <> <= >= LIKE ISNULL NOT
  */
 typedef enum {
-	TRIVIAL_OP,
+	SIMPLE_OP,
 	// Binary
 	NOT_EQUALS,
 	LESS_EQ,
