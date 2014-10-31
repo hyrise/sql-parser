@@ -35,6 +35,10 @@ int yyerror(Statement **expression, yyscan_t scanner, const char *msg) {
 // Tell bison to create a reentrant parser
 %define api.pure full
 
+// Prefix the parser
+%define api.prefix {hsql_}
+%define api.token.prefix {SQL_}
+
 
 // Specify code that is included in the generated .h and .c files
 %code requires {
@@ -43,6 +47,8 @@ int yyerror(Statement **expression, yyscan_t scanner, const char *msg) {
 #define YYtypeDEF_YY_SCANNER_T
 typedef void* yyscan_t;
 #endif
+
+#define YYSTYPE HSQL_STYPE
 
 }
 
@@ -53,7 +59,6 @@ typedef void* yyscan_t;
 %parse-param { Statement **statement }
 %parse-param { yyscan_t scanner }
 
-%define api.token.prefix {SQL_}
 
 /*********************************
  ** Define all data-types (http://www.gnu.org/software/bison/manual/html_node/Union-Decl.html)

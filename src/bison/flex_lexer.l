@@ -37,6 +37,7 @@
 %option noyywrap
 %option warn
 %option case-insensitive
+%option prefix="hsql_"
 /* %option nodefault */
 
 

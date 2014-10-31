@@ -16,22 +16,22 @@ Statement* SQLParser::parseSQLString(const char *text) {
     yyscan_t scanner;
     YY_BUFFER_STATE state;
 
-    if (yylex_init(&scanner)) {
+    if (hsql_lex_init(&scanner)) {
         // couldn't initialize
         fprintf(stderr, "Error when initializing!\n");
         return NULL;
     }
 
-    state = yy_scan_string(text, scanner);
+    state = hsql__scan_string(text, scanner);
 
-    if (yyparse(&stmt, scanner)) {
+    if (hsql_parse(&stmt, scanner)) {
         // error parsing
         fprintf(stderr, "Error when parsing!\n");
         return NULL;
     }
 
-    yy_delete_buffer(state, scanner);
+    hsql__delete_buffer(state, scanner);
 
-    yylex_destroy(scanner);
+    hsql_lex_destroy(scanner);
     return stmt;
 }
