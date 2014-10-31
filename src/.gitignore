@@ -1,3 +1,4 @@
+build/
 flex_lexer.c*
 flex_lexer.h
 bison_parser.c*

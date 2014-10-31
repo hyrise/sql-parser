@@ -16,16 +16,26 @@ CC = g++
 CFLAGS = -g -O3 -Ilib/ -I./ -I$(PARSER)/ -std=c++11 -pthread
 
 
-tests: $(LIB_FILES) $(TESTS_MAIN)
-	$(CC) $(CFLAGS) $(LIB_FILES) $(TESTS_MAIN) -o $(TESTS_BIN)
+# release build is always using bison
+build: clean
+	make -C bison
+	mkdir build/
+	cp lib/* build/
+	cp bison/*.h build/
+	cp bison/*.cpp build/
 
 
 execution: $(LIB_FILES) $(EXECUTION_MAIN)
 	$(CC) $(CFLAGS) $(LIB_FILES) $(EXECUTION_MAIN) -o $(EXECUTION_BIN)
 
 
+tests: $(LIB_FILES) $(TESTS_MAIN)
+	$(CC) $(CFLAGS) $(LIB_FILES) $(TESTS_MAIN) -o $(TESTS_BIN)
+
+
 bison/bison_parser.cpp:
 	make -C bison/
+
 
 lemon/lemon_parser.cpp:
 	make -C lemon/
