@@ -11,18 +11,6 @@ char* substr(const char* source, int from, int to) {
 	return copy;
 }
 
-Expr* makeColumnRef(char* name) {
-	ALLOC_EXPR(e, kExprColumnRef);
-	e->name = name;
-	return e;
-}
-
-Expr* makeFunctionRef(char* func_name, Expr* expr) {
-	ALLOC_EXPR(e, kExprFunctionRef);
-	e->name = func_name;
-	e->expr = expr;
-	return e;
-}
 
 
 
@@ -64,7 +52,7 @@ Expr* Expr::makeLiteral(int64_t val) {
 
 Expr* Expr::makeLiteral(double value) {
 	ALLOC_EXPR(e, kExprLiteralFloat);
-	e->float_literal = value;
+	e->fval = value;
 	return e;
 }
 
@@ -75,3 +63,16 @@ Expr* Expr::makeLiteral(char* string) {
 	return e;
 }
 
+
+Expr* Expr::makeColumnRef(char* name) {
+	ALLOC_EXPR(e, kExprColumnRef);
+	e->name = name;
+	return e;
+}
+
+Expr* Expr::makeFunctionRef(char* func_name, Expr* expr) {
+	ALLOC_EXPR(e, kExprFunctionRef);
+	e->name = func_name;
+	e->expr = expr;
+	return e;
+}

@@ -3,8 +3,6 @@
 
 #include <stdlib.h>
 
-
-
 typedef enum {
 	kExprLiteralFloat,
 	kExprLiteralString,
@@ -15,32 +13,33 @@ typedef enum {
 	kExprOperator
 } ExprType;
 
-
-/**
- * Trivial types are those that can be descriped by a sigle character e.g:
- * + - * / < > = %
- * Non-trivial are:
- * <> <= >= LIKE ISNULL NOT
- */
-typedef enum {
-	SIMPLE_OP,
-	// Binary
-	NOT_EQUALS,
-	LESS_EQ,
-	GREATER_EQ,
-	LIKE,
-	AND,
-	OR,
-	// Unary
-	NOT,
-	UMINUS,
-	ISNULL
-} OperatorType;
-
-
-
 typedef struct Expr Expr;
+
 struct Expr {
+	/**
+	 * Operator types. These are important for expressions of type kExprOperator
+	 * Trivial types are those that can be descriped by a sigle character e.g:
+	 * + - * / < > = %
+	 * Non-trivial are:
+	 * <> <= >= LIKE ISNULL NOT
+	 */
+	typedef enum {
+		SIMPLE_OP,
+		// Binary
+		NOT_EQUALS,
+		LESS_EQ,
+		GREATER_EQ,
+		LIKE,
+		AND,
+		OR,
+		// Unary
+		NOT,
+		UMINUS,
+		ISNULL
+	} OperatorType;
+
+
+
 	Expr(ExprType type) : type(type) {};
 	
 	ExprType type;
@@ -48,7 +47,7 @@ struct Expr {
 	Expr* expr;
 	Expr* expr2;
 	char* name;
-	float float_literal;
+	float fval;
 	int64_t ival;
 
 	OperatorType op_type;
@@ -61,6 +60,9 @@ struct Expr {
 	static Expr* makeLiteral(int64_t val);
 	static Expr* makeLiteral(double val);
 	static Expr* makeLiteral(char* val);
+
+	static Expr* makeColumnRef(char* name);
+	static Expr* makeFunctionRef(char* func_name, Expr* expr);
 };
 
 // Zero initializes an Expr object and assigns it to a space in the heap
@@ -72,9 +74,5 @@ struct Expr {
 		var = (Expr*)malloc(sizeof *var);	\
 		*var = zero;				\
 	} while(0)
-
-
-Expr* makeColumnRef(char* name);
-Expr* makeFunctionRef(char* func_name, Expr* expr);
 
 #endif

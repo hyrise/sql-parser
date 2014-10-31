@@ -231,8 +231,8 @@ scalar_expr:
 	;
 
 unary_expr:
-		'-' expr { $$ = Expr::makeOpUnary(UMINUS, $2); }
-	|	NOT expr { $$ = Expr::makeOpUnary(NOT, $2); }
+		'-' expr { $$ = Expr::makeOpUnary(Expr::UMINUS, $2); }
+	|	NOT expr { $$ = Expr::makeOpUnary(Expr::NOT, $2); }
 	;
 
 binary_expr:
@@ -241,26 +241,26 @@ binary_expr:
 	|	expr '+' expr { $$ = Expr::makeOpBinary($1, '+', $3); }
 	|	expr '/' expr { $$ = Expr::makeOpBinary($1, '/', $3); }
 	|	expr '*' expr { $$ = Expr::makeOpBinary($1, '*', $3); }
-	|	expr AND expr { $$ = Expr::makeOpBinary($1, AND, $3); }
-	|	expr OR expr { $$ = Expr::makeOpBinary($1, OR, $3); }
+	|	expr AND expr { $$ = Expr::makeOpBinary($1, Expr::AND, $3); }
+	|	expr OR expr { $$ = Expr::makeOpBinary($1, Expr::OR, $3); }
 	;
 
 
 comp_expr:
 		expr EQUALS expr { $$ = Expr::makeOpBinary($1, '=', $3); }
-	|	expr NOTEQUALS expr { $$ = Expr::makeOpBinary($1, NOT_EQUALS, $3); }
+	|	expr NOTEQUALS expr { $$ = Expr::makeOpBinary($1, Expr::NOT_EQUALS, $3); }
 	|	expr LESS expr { $$ = Expr::makeOpBinary($1, '<', $3); }
 	|	expr GREATER expr { $$ = Expr::makeOpBinary($1, '>', $3); }
-	|	expr LESSEQ expr { $$ = Expr::makeOpBinary($1, LESS_EQ, $3); }
-	|	expr GREATEREQ expr { $$ = Expr::makeOpBinary($1, GREATER_EQ, $3); }
+	|	expr LESSEQ expr { $$ = Expr::makeOpBinary($1, Expr::LESS_EQ, $3); }
+	|	expr GREATEREQ expr { $$ = Expr::makeOpBinary($1, Expr::GREATER_EQ, $3); }
 	;
 
 function_expr:
-		NAME '(' expr ')' { $$ = makeFunctionRef($1, $3); }
+		NAME '(' expr ')' { $$ = Expr::makeFunctionRef($1, $3); }
 	;
 
 column_name:
-		NAME { $$ = makeColumnRef($1); }
+		NAME { $$ = Expr::makeColumnRef($1); }
 	;
 
 literal:

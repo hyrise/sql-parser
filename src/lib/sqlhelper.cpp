@@ -31,10 +31,10 @@ void printOperatorExpression(Expr* expr, uint num_indent) {
   if (expr == NULL) { inprint("null", num_indent); return; }
 
   switch (expr->op_type) {
-    case SIMPLE_OP: inprintC(expr->op_char, num_indent); break;
-    case AND: inprint("AND", num_indent); break;
-    case OR: inprint("OR", num_indent); break;
-    case NOT: inprint("NOT", num_indent); break;
+    case Expr::SIMPLE_OP: inprintC(expr->op_char, num_indent); break;
+    case Expr::AND: inprint("AND", num_indent); break;
+    case Expr::OR: inprint("OR", num_indent); break;
+    case Expr::NOT: inprint("NOT", num_indent); break;
     default: inprintU(expr->op_type, num_indent); break;
   }
   printExpression(expr->expr, num_indent+1);
@@ -45,7 +45,7 @@ void printExpression(Expr* expr, uint num_indent) {
   switch (expr->type) {
     case kExprStar: inprint("*", num_indent); break;
     case kExprColumnRef: inprint(expr->name, num_indent); break;
-    case kExprLiteralFloat: inprint(expr->float_literal, num_indent); break;
+    case kExprLiteralFloat: inprint(expr->fval, num_indent); break;
     case kExprLiteralInt: inprint(expr->ival, num_indent); break;
     case kExprLiteralString: inprint(expr->name, num_indent); break;
     case kExprFunctionRef: /* todo */ break;
