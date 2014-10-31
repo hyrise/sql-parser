@@ -4,6 +4,8 @@
 #include <vector>
 #include <stdlib.h>
 
+namespace hsql {
+
 // TODO: try to replace the List wrapper by directly using std::vector
 
 template <typename _T>
@@ -24,5 +26,7 @@ public:
 	inline void push_back(_T value) { _vector.push_back(value); }
 };
 
+
+} // namespace hsql
 
 #endif

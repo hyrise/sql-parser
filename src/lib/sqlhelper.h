@@ -5,7 +5,10 @@
 
 #include "Statement.h"
 
+namespace hsql {
+
 void printSelectStatementInfo(SelectStatement* stmt, uint num_indent);
 
+} // namespace hsql
 
 #endif

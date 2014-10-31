@@ -1,6 +1,9 @@
 #ifndef __TABLEREF_H__
 #define __TABLEREF_H__
 
+
+namespace hsql {
+
 class SelectStatement;
 class JoinStatement;
 
@@ -29,5 +32,6 @@ struct TableRef {
 };
 
 
+} // namespace hsql
 
 #endif

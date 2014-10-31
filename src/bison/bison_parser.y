@@ -17,6 +17,8 @@
 
 #include <stdio.h>
 
+using namespace hsql;
+
 int yyerror(Statement **expression, yyscan_t scanner, const char *msg) {
 	fprintf(stderr, "[Error] SQL Parser: %s\n", msg);
 	return 0;
@@ -56,7 +58,7 @@ typedef void* yyscan_t;
 %lex-param   { yyscan_t scanner }
 
 // Define additional parameters for yyparse
-%parse-param { Statement **statement }
+%parse-param { hsql::Statement **statement }
 %parse-param { yyscan_t scanner }
 
 
@@ -69,17 +71,17 @@ typedef void* yyscan_t;
 	char* sval;
 	uint uval;
 
-	Statement* statement;
-	SelectStatement* select_statement;
-	TableRef* table;
-	Expr* expr;
-	OrderDescription* order;
-	OrderType order_type;
-	LimitDescription* limit;
+	hsql::Statement* statement;
+	hsql::SelectStatement* select_statement;
+	hsql::TableRef* table;
+	hsql::Expr* expr;
+	hsql::OrderDescription* order;
+	hsql::OrderType order_type;
+	hsql::LimitDescription* limit;
 
-	List<char*>* slist;
-	List<Expr*>* explist;
-	List<TableRef*>* tbllist;
+	hsql::List<char*>* slist;
+	hsql::List<hsql::Expr*>* explist;
+	hsql::List<hsql::TableRef*>* tbllist;
 }
 
 

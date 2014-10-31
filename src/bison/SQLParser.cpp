@@ -3,8 +3,10 @@
 #include "flex_lexer.h"
 #include <stdio.h>
 
-int yyparse(Statement **expression, yyscan_t scanner);
+// int yyparse(Statement **expression, yyscan_t scanner);
 
+
+namespace hsql {
 
 SQLParser::SQLParser() {
 	fprintf(stderr, "SQLParser only has static methods atm! Do not initialize!\n");
@@ -35,3 +37,5 @@ Statement* SQLParser::parseSQLString(const char *text) {
     hsql_lex_destroy(scanner);
     return stmt;
 }
+    
+} // namespace hsql

@@ -4,6 +4,8 @@
 #include "lib/sqlhelper.h"
 #include "SQLParser.h"
 
+using namespace hsql;
+
 int main(int argc, char *argv[]) {
     if (argc <= 1) {
         fprintf(stderr, "No SQL-Statement given!\n");

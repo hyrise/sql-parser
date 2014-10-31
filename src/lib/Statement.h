@@ -9,6 +9,7 @@
 #include "List.h"
 #include "Table.h"
 
+namespace hsql {
 
 typedef enum {
 	kStmtSelect,
@@ -93,5 +94,6 @@ struct CreateStatement : Statement {
 	// TODO
 };
 
+} // namespace hsql
 
 #endif // __STATEMENT_H__

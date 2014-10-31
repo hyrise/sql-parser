@@ -3,6 +3,8 @@
 #include <stdio.h>
 #include <string>
 
+namespace hsql {
+
 void printExpression(Expr* expr, uint num_indent);
 void printOperatorExpression(Expr* expr, uint num_indent);
 
@@ -68,3 +70,6 @@ void printSelectStatementInfo(SelectStatement* stmt, uint num_indent) {
   } else inprint("null", num_indent+2);
 
 }
+
+
+} // namespace hsql

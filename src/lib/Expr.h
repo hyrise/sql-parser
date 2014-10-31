@@ -3,6 +3,8 @@
 
 #include <stdlib.h>
 
+namespace hsql {
+
 typedef enum {
 	kExprLiteralFloat,
 	kExprLiteralString,
@@ -74,5 +76,7 @@ struct Expr {
 		var = (Expr*)malloc(sizeof *var);	\
 		*var = zero;				\
 	} while(0)
+
+} // namespace hsql
 
 #endif

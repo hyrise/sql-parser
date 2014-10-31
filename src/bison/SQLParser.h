@@ -4,6 +4,8 @@
 #include "Statement.h"
 #include "bison_parser.h"
 
+namespace hsql {
+
 class SQLParser {
 public:
 	static Statement* parseSQLString(const char* sql);
@@ -12,6 +14,8 @@ private:
 	SQLParser();
 };
 
+	
+} // namespace hsql
 
 
 #endif

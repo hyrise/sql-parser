@@ -3,6 +3,8 @@
 #include <stdio.h>
 #include <string.h>
 
+namespace hsql {
+
 char* substr(const char* source, int from, int to) {
 	int len = to-from;
 	char* copy = new char[len+1];
@@ -76,3 +78,5 @@ Expr* Expr::makeFunctionRef(char* func_name, Expr* expr) {
 	e->expr = expr;
 	return e;
 }
+
+} // namespace hsql
