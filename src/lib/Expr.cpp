@@ -72,6 +72,13 @@ Expr* Expr::makeColumnRef(char* name) {
 	return e;
 }
 
+Expr* Expr::makeColumnRef(char* table, char* name) {
+	ALLOC_EXPR(e, kExprTableColumnRef);
+	e->name = name;
+	e->table = table;
+	return e;
+}
+
 Expr* Expr::makeFunctionRef(char* func_name, Expr* expr) {
 	ALLOC_EXPR(e, kExprFunctionRef);
 	e->name = func_name;

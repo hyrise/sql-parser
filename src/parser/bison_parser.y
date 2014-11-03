@@ -291,6 +291,7 @@ function_expr:
 
 column_name:
 		NAME { $$ = Expr::makeColumnRef($1); }
+	|	NAME '.' NAME { $$ = Expr::makeColumnRef($1, $3); }
 	;
 
 literal:

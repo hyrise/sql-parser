@@ -11,6 +11,7 @@ typedef enum {
 	kExprLiteralInt,
 	kExprStar,
 	kExprColumnRef,
+	kExprTableColumnRef,
 	kExprFunctionRef,
 	kExprOperator
 } ExprType;
@@ -49,6 +50,7 @@ struct Expr {
 	Expr* expr;
 	Expr* expr2;
 	char* name;
+	char* table;
 	float fval;
 	int64_t ival;
 
@@ -64,6 +66,7 @@ struct Expr {
 	static Expr* makeLiteral(char* val);
 
 	static Expr* makeColumnRef(char* name);
+	static Expr* makeColumnRef(char* table, char* name);
 	static Expr* makeFunctionRef(char* func_name, Expr* expr);
 };
 

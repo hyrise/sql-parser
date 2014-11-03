@@ -28,7 +28,11 @@ int main(int argc, char *argv[]) {
         } else if (stmt->type == kStmtJoin) {
             printJoinStatementInfo((JoinStatement*) stmt, 0);
         } else {
-			fprintf(stderr, "Unsupported Statement Type %u!\n", stmt->type);
+            if (stmt->type == kStmtError) {
+                fprintf(stderr, "%s!\n", stmt->parser_msg);
+            } else {
+                fprintf(stderr, "Unsupported Statement Type %u!\n", stmt->type);
+            }
 		}
     }
 

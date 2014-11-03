@@ -12,6 +12,7 @@ const char* indent(uint num_indent) { return std::string(num_indent, '\t').c_str
 void inprint(int64_t val, uint num_indent) { printf("%s%ld  \n", indent(num_indent), val); }
 void inprint(float val, uint num_indent) { printf("%s%f\n", indent(num_indent), val); }
 void inprint(const char* val, uint num_indent) { printf("%s%s\n", indent(num_indent), val); }
+void inprint(const char* val, const char* val2, uint num_indent) { printf("%s%s->%s\n", indent(num_indent), val, val2); }
 void inprintC(char val, uint num_indent) { printf("%s%c\n", indent(num_indent), val); }
 void inprintU(uint64_t val, uint num_indent) { printf("%s%lu\n", indent(num_indent), val); }
 
@@ -47,6 +48,7 @@ void printExpression(Expr* expr, uint num_indent) {
   switch (expr->type) {
     case kExprStar: inprint("*", num_indent); break;
     case kExprColumnRef: inprint(expr->name, num_indent); break;
+    case kExprTableColumnRef: inprint(expr->table, expr->name, num_indent); break;
     case kExprLiteralFloat: inprint(expr->fval, num_indent); break;
     case kExprLiteralInt: inprint(expr->ival, num_indent); break;
     case kExprLiteralString: inprint(expr->name, num_indent); break;
