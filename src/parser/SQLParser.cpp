@@ -27,9 +27,8 @@ Statement* SQLParser::parseSQLString(const char *text) {
     state = hsql__scan_string(text, scanner);
 
     if (hsql_parse(&stmt, scanner)) {
-        // error parsing
-        // fprintf(stderr, "Error when parsing!\n");
-        return NULL;
+        // Returns an error stmt object
+        return stmt;
     }
 
     hsql__delete_buffer(state, scanner);

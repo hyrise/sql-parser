@@ -12,6 +12,7 @@
 namespace hsql {
 
 typedef enum {
+	kStmtError,
 	kStmtSelect,
 	kStmtJoin,
 	kStmtDelete,
@@ -54,7 +55,9 @@ typedef enum {
 
 struct Statement {
 	Statement(StatementType type) : type(type) {};
+
 	StatementType type;
+	const char* parser_msg;
 };
 
 

@@ -19,8 +19,9 @@
 
 using namespace hsql;
 
-int yyerror(Statement **expression, yyscan_t scanner, const char *msg) {
-	// fprintf(stderr, "[Error] SQL Parser: %s\n", msg);
+int yyerror(Statement **stmt, yyscan_t scanner, const char *msg) {
+	*stmt = new Statement(kStmtError);
+	(*stmt)->parser_msg = msg;
 	return 0;
 }
 
