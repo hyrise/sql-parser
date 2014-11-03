@@ -6,9 +6,6 @@ LIB_FILES = parser/bison_parser.cpp parser/flex_lexer.cpp parser/SQLParser.cpp l
 TESTS_MAIN = sql_tests.cpp
 TESTS_BIN = bin/tests
 
-EXECUTION_MAIN = sql_execution.cpp
-EXECUTION_BIN = bin/sql_execution
-
 CC = g++
 CFLAGS = -g -O3 -Ilib/ -I./ -Iparser/ -std=c++11 -pthread
 
@@ -22,8 +19,8 @@ build: clean
 	cp parser/*.cpp build/
 
 
-execution: $(LIB_FILES) $(EXECUTION_MAIN)
-	$(CC) $(CFLAGS) $(LIB_FILES) $(EXECUTION_MAIN) -o $(EXECUTION_BIN)
+analysis: $(LIB_FILES) sql_analysis.cpp
+	$(CC) $(CFLAGS) $(LIB_FILES) sql_analysis.cpp -o bin/analysis
 
 
 grammar_test: $(LIB_FILES) sql_grammar_test.cpp
@@ -39,5 +36,5 @@ parser/bison_parser.cpp:
 
 
 clean:
-	rm -f *.o *~ $(EXECUTION_BIN) $(TESTS_BIN) bin/grammar_test
+	rm -f *.o *~ bin/analysis $(TESTS_BIN) bin/grammar_test
 	make clean -C parser/
