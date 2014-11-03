@@ -72,7 +72,9 @@ typedef void* yyscan_t;
 	uint uval;
 
 	hsql::Statement* statement;
-	hsql::SelectStatement* select_statement;
+	hsql::SelectStatement* select_stmt;
+	hsql::JoinStatement* join_stmt;
+
 	hsql::TableRef* table;
 	hsql::Expr* expr;
 	hsql::OrderDescription* order;
@@ -102,7 +104,8 @@ typedef void* yyscan_t;
  ** Non-Terminal types (http://www.gnu.org/software/bison/manual/html_node/Type-Decl.html)
  *********************************/
 %type <statement> 	statement
-%type <select_statement> select_statement
+%type <select_stmt> select_statement
+%type <join_stmt>	join_statement
 %type <sval> 		table_name
 %type <table> 		from_clause table_ref table_ref_atomic
 %type <expr> 		expr scalar_expr unary_expr binary_expr function_expr star_expr
@@ -153,17 +156,32 @@ input:
 // Atm: only select statements (future: insert, delete, etc...)
 statement:
 		select_statement { $$ = $1; }
-	|	/* empty */ { $$ = NULL; }
+	|	join_statement { $$ = $1; }
 	;
+
+
+
+
+/******************************
+ ** Join Statements
+ ******************************/
+
+join_statement:
+		select_statement JOIN table_ref ON join_condition
+		{ 
+			$$ = new JoinStatement();
+		}
+		;
+
+join_condition:
+		expr
+		;
 
 
 /******************************
  ** Select Statements
  ******************************/
 
-// TODO: join
-// TODO: limit
-// TODO: order by
 select_statement:
 		SELECT select_list from_clause where_clause group_clause order_by_clause limit_clause
 		{
@@ -176,6 +194,7 @@ select_statement:
 			s->limit = $7;
 			$$ = s;
 		}
+	|	'(' select_statement ')' { $$ = $2; }
 		;
 
 
