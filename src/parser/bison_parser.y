@@ -20,7 +20,7 @@
 using namespace hsql;
 
 int yyerror(Statement **expression, yyscan_t scanner, const char *msg) {
-	fprintf(stderr, "[Error] SQL Parser: %s\n", msg);
+	// fprintf(stderr, "[Error] SQL Parser: %s\n", msg);
 	return 0;
 }
 
@@ -107,7 +107,7 @@ typedef void* yyscan_t;
 %type <select_stmt> select_statement
 %type <join_stmt>	join_statement
 %type <sval> 		table_name
-%type <table> 		from_clause table_ref table_ref_atomic
+%type <table> 		from_clause table_ref table_ref_atomic table_ref_atomic_opt_paren
 %type <expr> 		expr scalar_expr unary_expr binary_expr function_expr star_expr
 %type <expr> 		column_name literal int_literal num_literal
 %type <expr> 		comp_expr where_clause
@@ -167,7 +167,7 @@ statement:
  ******************************/
 
 join_statement:
-		select_statement JOIN table_ref ON join_condition
+		table_ref_atomic_opt_paren JOIN table_ref_atomic_opt_paren ON join_condition
 		{ 
 			$$ = new JoinStatement();
 		}
@@ -194,7 +194,6 @@ select_statement:
 			s->limit = $7;
 			$$ = s;
 		}
-	|	'(' select_statement ')' { $$ = $2; }
 		;
 
 
@@ -334,10 +333,23 @@ table_ref_atomic:
 		}
 	;
 
+
 table_ref_commalist:
 		table_ref_atomic { $$ = new List<TableRef*>($1); }
 	|	table_ref_commalist ',' table_ref_atomic { $1->push_back($3); $$ = $1; }
 	;
+
+
+/* For join statements, where a select statement is allowed to be used without parenthesis */
+table_ref_atomic_opt_paren:
+		table_ref_atomic
+	|	select_statement {
+			auto tbl = new TableRef(kTableSelect);
+			tbl->select = $1;
+			$$ = tbl;
+		}
+	;
+
 
 table_name:
 		NAME

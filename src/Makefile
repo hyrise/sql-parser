@@ -39,5 +39,5 @@ parser/bison_parser.cpp:
 
 
 clean:
-	rm -f *.o *~ $(EXECUTION_BIN) $(TESTS_BIN)
+	rm -f *.o *~ $(EXECUTION_BIN) $(TESTS_BIN) bin/grammar_test
 	make clean -C parser/

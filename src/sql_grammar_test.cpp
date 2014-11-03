@@ -12,7 +12,10 @@ int main(int argc, char *argv[]) {
         return -1;
     }
 
-    for (int n = 1; n < argc; ++n) {
+    bool expectFalse = (std::string("-f").compare(std::string(argv[1])) == 0);
+
+    int n = (expectFalse) ? 2 : 1;
+    for (; n < argc; ++n) {
         char* sql = argv[n];
 
         // Measuring the parsing time
@@ -25,11 +28,11 @@ int main(int argc, char *argv[]) {
         end = std::chrono::system_clock::now();
         std::chrono::duration<double> elapsed_seconds = end-start;
 
-        if (stmt == NULL) {
+        if (expectFalse != (stmt == NULL)) {
         	fprintf(stderr, "-> Failed (%.3fms)! \"%s\"\n", elapsed_seconds.count()*1000, sql);
         	continue;
         } else {
-            fprintf(stderr, "Success (%.3fms)! \"%s\"\n", elapsed_seconds.count()*1000, sql);
+            printf("Success (%.3fms%s)! \"%s\"\n", elapsed_seconds.count()*1000, (expectFalse) ? ", expected error" : "", sql);
         }
     }
 

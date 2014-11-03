@@ -20,7 +20,7 @@ Statement* SQLParser::parseSQLString(const char *text) {
 
     if (hsql_lex_init(&scanner)) {
         // couldn't initialize
-        fprintf(stderr, "Error when initializing!\n");
+        fprintf(stderr, "[Error] SQLParser: Error when initializing lexer!\n");
         return NULL;
     }
 
@@ -28,7 +28,7 @@ Statement* SQLParser::parseSQLString(const char *text) {
 
     if (hsql_parse(&stmt, scanner)) {
         // error parsing
-        fprintf(stderr, "Error when parsing!\n");
+        // fprintf(stderr, "Error when parsing!\n");
         return NULL;
     }
 
