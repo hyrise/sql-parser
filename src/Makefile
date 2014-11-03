@@ -26,6 +26,10 @@ execution: $(LIB_FILES) $(EXECUTION_MAIN)
 	$(CC) $(CFLAGS) $(LIB_FILES) $(EXECUTION_MAIN) -o $(EXECUTION_BIN)
 
 
+grammar_test: $(LIB_FILES) sql_grammar_test.cpp
+	$(CC) $(CFLAGS) $(LIB_FILES) sql_grammar_test.cpp -o bin/grammar_test
+
+
 tests: $(LIB_FILES) $(TESTS_MAIN)
 	$(CC) $(CFLAGS) $(LIB_FILES) $(TESTS_MAIN) -o $(TESTS_BIN)
 
