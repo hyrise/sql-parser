@@ -111,7 +111,7 @@ typedef void* yyscan_t;
 %type <table> 		from_clause table_ref table_ref_atomic table_ref_atomic_opt_paren
 %type <expr> 		expr scalar_expr unary_expr binary_expr function_expr star_expr
 %type <expr> 		column_name literal int_literal num_literal
-%type <expr> 		comp_expr where_clause
+%type <expr> 		comp_expr where_clause join_condition
 %type <explist> 	expr_list group_clause select_list
 %type <tbllist> 	table_ref_commalist
 %type <order>		order_by_clause
@@ -171,6 +171,10 @@ join_statement:
 		table_ref_atomic_opt_paren JOIN table_ref_atomic_opt_paren ON join_condition
 		{ 
 			$$ = new JoinStatement();
+			$$->left = $1;
+			$$->right = $3;
+			$$->join_condition = $5;
+			$$->join_type = kJoinInner;
 		}
 		;
 

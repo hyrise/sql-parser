@@ -80,8 +80,16 @@ void printSelectStatementInfo(SelectStatement* stmt, uint num_indent) {
     inprint("Limit:", num_indent+1);
     inprint(stmt->limit->limit, num_indent+2);
   }
-
 }
 
+void printJoinStatementInfo(JoinStatement* stmt, uint num_indent) {
+  inprint("JoinStatement", num_indent);
+  inprint("Left Table", num_indent+1);
+  printTableRefInfo(stmt->left, num_indent+2);
+  inprint("Right Table", num_indent+1);
+  printTableRefInfo(stmt->right, num_indent+2);
+  inprint("Join Condition", num_indent+1);
+  printExpression(stmt->join_condition, num_indent+2);
+}
 
 } // namespace hsql

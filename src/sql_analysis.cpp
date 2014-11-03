@@ -25,8 +25,10 @@ int main(int argc, char *argv[]) {
 
         if (stmt->type == kStmtSelect) {
         	printSelectStatementInfo((SelectStatement*) stmt, 0);
+        } else if (stmt->type == kStmtJoin) {
+            printJoinStatementInfo((JoinStatement*) stmt, 0);
         } else {
-			fprintf(stderr, "Only Supporting Select Statements!\n");
+			fprintf(stderr, "Unsupported Statement Type %u!\n", stmt->type);
 		}
     }
 

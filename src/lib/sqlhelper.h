@@ -8,6 +8,7 @@
 namespace hsql {
 
 void printSelectStatementInfo(SelectStatement* stmt, uint num_indent);
+void printJoinStatementInfo(JoinStatement* stmt, uint num_indent);
 
 } // namespace hsql
 

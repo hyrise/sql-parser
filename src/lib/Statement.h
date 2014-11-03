@@ -77,8 +77,8 @@ struct SelectStatement : Statement {
 struct JoinStatement : Statement {
 	JoinStatement() : Statement(kStmtJoin) {};
 
-	TableRef* table1;
-	TableRef* table2;
+	TableRef* left;
+	TableRef* right;
 	JoinType join_type;
 	Expr* join_condition;
 };
