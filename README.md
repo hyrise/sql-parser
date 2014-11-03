@@ -15,17 +15,27 @@ To create the full parser code run `make build`. The parser library code is crea
 
 To use the SQL Parser in your own code, you only need to include `SQLParser.h` and build+link all the source files from the parser with your project.
 
-## Language Progress
+**so far missing features, that are being worked on:**
+* Join Statements
+* Table Reference Alias (AS)
+* Limit Offset
+* Having
+* Order By multiple columns
 
-* Select Statements: Mostly
-  * Selection List: Full (column names, literals, expressions, functions...)
-  * From: Full (table names, select statements, cross product of each)
-  * Where: Mostly (some special operators might not be supported yet)
-  * Group By: Partial (Having is missing)
-  * Order By: Partial (can only specify one column to sort by)
-  * Limit: Partial (no offset can be specified)
-* Join Statements: In Progress
-* Insert Statements: Planned
-* Delete Statements: Planned
-* Create Statements: Planned
+## Language Progress Overview
+
+* Select Statements: **Mostly**
+  * Selection List: **Full** (column names, literals, expressions, functions...)
+  * From: **Full** (table names, select statements, cross product of each)
+  * Where: **Mostly** (some special operators might not be supported yet)
+  * Group By: **Partial** (Having is missing)
+  * Order By: **Partial** (can only specify one column to sort by)
+  * Limit: **Partial** (no offset can be specified)
+* Join Statements: **In Progress**
+  * Join Tables: **In Progress**
+  * Join Types: **In Progress**
+  * Join Condition: **In Progress**
+* Insert Statements: _Planned_
+* Delete Statements: _Planned_
+* Create Statements: _Planned_
   
