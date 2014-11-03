@@ -22,7 +22,6 @@ typedef enum {
 
 
 typedef enum {
-	kOrderNone,
 	kOrderAsc,
 	kOrderDesc
 } OrderType;

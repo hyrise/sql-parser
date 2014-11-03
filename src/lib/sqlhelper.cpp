@@ -64,10 +64,22 @@ void printSelectStatementInfo(SelectStatement* stmt, uint num_indent) {
   inprint("Sources:", num_indent+1);
   printTableRefInfo(stmt->from_table, num_indent+2);
 
-  inprint("Search Conditions:", num_indent+1);
   if (stmt->where_clause != NULL) {
+    inprint("Search Conditions:", num_indent+1);
     printExpression(stmt->where_clause, num_indent+2);
-  } else inprint("null", num_indent+2);
+  }
+
+  if (stmt->order != NULL) {
+    inprint("OrderBy:", num_indent+1);
+    printExpression(stmt->order->expr, num_indent+2);
+    if (stmt->order->type == kOrderAsc) inprint("ascending", num_indent+2);
+    else inprint("descending", num_indent+2);
+  }
+
+  if (stmt->limit != NULL) {
+    inprint("Limit:", num_indent+1);
+    inprint(stmt->limit->limit, num_indent+2);
+  }
 
 }
 
