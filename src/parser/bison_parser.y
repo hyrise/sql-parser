@@ -74,7 +74,6 @@ typedef void* yyscan_t;
 
 	hsql::Statement* statement;
 	hsql::SelectStatement* select_stmt;
-	hsql::JoinStatement* join_stmt;
 
 	hsql::TableRef* table;
 	hsql::Expr* expr;
@@ -106,10 +105,9 @@ typedef void* yyscan_t;
  *********************************/
 %type <statement> 	statement
 %type <select_stmt> select_statement
-%type <join_stmt>	join_statement
 %type <sval> 		table_name opt_alias alias
 %type <table> 		from_clause table_ref table_ref_atomic table_ref_name
-%type <table>		join_table
+%type <table>		join_stmt join_table
 %type <expr> 		expr scalar_expr unary_expr binary_expr function_expr star_expr
 %type <expr> 		column_name literal int_literal num_literal
 %type <expr> 		comp_expr where_clause join_condition
@@ -159,41 +157,10 @@ input:
 // Atm: only select statements (future: insert, delete, etc...)
 statement:
 		select_statement { $$ = $1; }
-	|	join_statement { $$ = $1; }
 	;
 
 
 
-
-/******************************
- ** Join Statements
- ******************************/
-
-join_statement:
-		join_table JOIN join_table ON join_condition
-		{ 
-			$$ = new JoinStatement();
-			$$->left = $1;
-			$$->right = $3;
-			$$->join_condition = $5;
-			$$->join_type = kJoinInner;
-		}
-		;
-
-
-join_table:
-		select_statement alias {
-			auto tbl = new TableRef(kTableSelect);
-			tbl->select = $1;
-			tbl->alias = $2;
-			$$ = tbl;
-		}
-	|	table_ref_name;
-
-
-join_condition:
-		expr
-		;
 
 
 /******************************
@@ -333,11 +300,11 @@ star_expr:
 table_ref:
 		table_ref_atomic
 	|	table_ref_atomic ',' table_ref_commalist {
-		$3->push_back($1);
-		auto tbl = new TableRef(kTableCrossProduct);
-		tbl->list = $3;
-		$$ = tbl;
-	}
+			$3->push_back($1);
+			auto tbl = new TableRef(kTableCrossProduct);
+			tbl->list = $3;
+			$$ = tbl;
+		}
 	;
 
 
@@ -349,6 +316,7 @@ table_ref_atomic:
 			tbl->alias = $4;
 			$$ = tbl;
 		}
+	|	join_stmt
 	;
 
 
@@ -381,6 +349,42 @@ alias:
 opt_alias:
 		alias
 	|	/* empty */ { $$ = NULL; }
+
+
+/******************************
+ ** Join Statements
+ ******************************/
+
+join_stmt:
+		join_table JOIN join_table ON join_condition
+		{ 
+			$$ = new TableRef(kTableJoin);
+			$$->left = $1;
+			$$->right = $3;
+			$$->join_condition = $5;
+			$$->join_type = kJoinInner;
+		}
+		;
+
+
+join_table:
+		'(' select_statement ')' alias {
+			auto tbl = new TableRef(kTableSelect);
+			tbl->select = $2;
+			tbl->alias = $4;
+			$$ = tbl;
+		}
+	|	table_ref_name;
+
+
+join_condition:
+		expr
+		;
+
+
+/******************************
+ ** Misc
+ ******************************/
 
 opt_semicolon:
 		';'

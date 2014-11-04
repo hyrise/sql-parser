@@ -24,6 +24,15 @@ void printTableRefInfo(TableRef* table, uint num_indent) {
     case kTableSelect:
       printSelectStatementInfo(table->select, num_indent);
       break;
+    case kTableJoin:
+      inprint("Join Table", num_indent);
+      inprint("Left", num_indent+1);
+      printTableRefInfo(table->left, num_indent+2);
+      inprint("Right", num_indent+1);
+      printTableRefInfo(table->right, num_indent+2);
+      inprint("Join Condition", num_indent+1);
+      printExpression(table->join_condition, num_indent+2);
+      break;
     case kTableCrossProduct:
       for (TableRef* tbl : table->list->_vector) printTableRefInfo(tbl, num_indent);
       break;
@@ -88,16 +97,5 @@ void printSelectStatementInfo(SelectStatement* stmt, uint num_indent) {
   }
 }
 
-void printJoinStatementInfo(JoinStatement* stmt, uint num_indent) {
-  inprint("JoinStatement", num_indent);
-  inprint("JoinType:", num_indent+1);
-  inprintU(stmt->join_type, num_indent+2);
-  inprint("Left Table:", num_indent+1);
-  printTableRefInfo(stmt->left, num_indent+2);
-  inprint("Right Table:", num_indent+1);
-  printTableRefInfo(stmt->right, num_indent+2);
-  inprint("Join Condition:", num_indent+1);
-  printExpression(stmt->join_condition, num_indent+2);
-}
 
 } // namespace hsql

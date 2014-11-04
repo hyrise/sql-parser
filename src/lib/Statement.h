@@ -14,7 +14,6 @@ namespace hsql {
 typedef enum {
 	kStmtError,
 	kStmtSelect,
-	kStmtJoin,
 	kStmtDelete,
 	kStmtInsert,
 	kStmtCreate
@@ -42,15 +41,6 @@ struct LimitDescription {
 };
 
 
-typedef enum {
-	kJoinInner,
-	kJoinOuter,
-	kJoinLeft,
-	kJoinRight
-} JoinType;
-
-
-
 
 struct Statement {
 	Statement(StatementType type) : type(type) {};
@@ -71,16 +61,6 @@ struct SelectStatement : Statement {
 
 	OrderDescription* order;
 	LimitDescription* limit;
-};
-
-
-struct JoinStatement : Statement {
-	JoinStatement() : Statement(kStmtJoin) {};
-
-	TableRef* left;
-	TableRef* right;
-	JoinType join_type;
-	Expr* join_condition;
 };
 
 

@@ -5,7 +5,6 @@
 namespace hsql {
 
 class SelectStatement;
-class JoinStatement;
 
 /**
  * TableRef
@@ -18,6 +17,15 @@ typedef enum {
 	kTableCrossProduct
 } TableRefType;
 
+
+typedef enum {
+	kJoinInner,
+	kJoinOuter,
+	kJoinLeft,
+	kJoinRight
+} JoinType;
+
+
 typedef struct TableRef TableRef;
 
 struct TableRef {
@@ -27,9 +35,15 @@ struct TableRef {
 
 	char* name;
 	char* alias;
+
 	SelectStatement* select;
-	JoinStatement* join;
 	List<TableRef*>* list;
+
+	// Join memberbs
+	TableRef* left;
+	TableRef* right;
+	JoinType join_type;
+	Expr* join_condition;
 };
 
 
