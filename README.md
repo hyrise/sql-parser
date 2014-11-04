@@ -17,15 +17,15 @@ To use the SQL Parser in your own code, you only need to include `SQLParser.h` a
 
 **so far missing features, that are being worked on:**
 * Join Statements
-* Table Reference Alias (AS)
 * Limit Offset
 * Having
 * Order By multiple columns
+* Distinct
 
 ## Language Progress Overview
 
 * Select Statements: **Mostly**
-  * Selection List: **Full** (column names, literals, expressions, functions...)
+  * Selection List: **Mostly** (column names, literals, expressions, functions... DISTINCT is missing)
   * From: **Full** (table names, select statements, cross product of each)
   * Where: **Mostly** (some special operators might not be supported yet)
   * Group By: **Partial** (Having is missing)
