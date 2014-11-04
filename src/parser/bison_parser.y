@@ -21,7 +21,7 @@ using namespace hsql;
 
 int yyerror(Statement **stmt, yyscan_t scanner, const char *msg) {
 	*stmt = new Statement(kStmtError);
-	(*stmt)->parser_msg = msg;
+	(*stmt)->parser_msg = strdup(msg);
 	return 0;
 }
 
@@ -42,6 +42,7 @@ int yyerror(Statement **stmt, yyscan_t scanner, const char *msg) {
 %define api.prefix {hsql_}
 %define api.token.prefix {SQL_}
 
+%define parse.error verbose
 
 // Specify code that is included in the generated .h and .c files
 %code requires {
