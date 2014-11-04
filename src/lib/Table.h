@@ -26,6 +26,7 @@ struct TableRef {
 	TableRefType type;
 
 	char* name;
+	char* alias;
 	SelectStatement* select;
 	JoinStatement* join;
 	List<TableRef*>* list;

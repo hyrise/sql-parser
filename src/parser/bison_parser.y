@@ -107,8 +107,9 @@ typedef void* yyscan_t;
 %type <statement> 	statement
 %type <select_stmt> select_statement
 %type <join_stmt>	join_statement
-%type <sval> 		table_name
-%type <table> 		from_clause table_ref table_ref_atomic table_ref_atomic_opt_paren
+%type <sval> 		table_name opt_alias alias
+%type <table> 		from_clause table_ref table_ref_atomic table_ref_name
+%type <table>		join_table
 %type <expr> 		expr scalar_expr unary_expr binary_expr function_expr star_expr
 %type <expr> 		column_name literal int_literal num_literal
 %type <expr> 		comp_expr where_clause join_condition
@@ -137,6 +138,7 @@ typedef void* yyscan_t;
 %left		'^'
 
 /* Unary Operators */
+%right 		UMINUS
 %left		'[' ']'
 %left		'(' ')'
 %left		'.'
@@ -168,7 +170,7 @@ statement:
  ******************************/
 
 join_statement:
-		table_ref_atomic_opt_paren JOIN table_ref_atomic_opt_paren ON join_condition
+		join_table JOIN join_table ON join_condition
 		{ 
 			$$ = new JoinStatement();
 			$$->left = $1;
@@ -177,6 +179,17 @@ join_statement:
 			$$->join_type = kJoinInner;
 		}
 		;
+
+
+join_table:
+		select_statement alias {
+			auto tbl = new TableRef(kTableSelect);
+			tbl->select = $1;
+			tbl->alias = $2;
+			$$ = tbl;
+		}
+	|	table_ref_name;
+
 
 join_condition:
 		expr
@@ -199,6 +212,7 @@ select_statement:
 			s->limit = $7;
 			$$ = s;
 		}
+	|	'(' select_statement ')' { $$ = $2; }
 		;
 
 
@@ -326,15 +340,13 @@ table_ref:
 	}
 	;
 
+
 table_ref_atomic:
-		table_name {
-			auto tbl = new TableRef(kTableName);
-			tbl->name = $1;
-			$$ = tbl;
-		}
-	|	'(' select_statement ')' {
+		table_ref_name
+	|	'(' select_statement ')' alias {
 			auto tbl = new TableRef(kTableSelect);
 			tbl->select = $2;
+			tbl->alias = $4;
 			$$ = tbl;
 		}
 	;
@@ -346,16 +358,14 @@ table_ref_commalist:
 	;
 
 
-/* For join statements, where a select statement is allowed to be used without parenthesis */
-table_ref_atomic_opt_paren:
-		table_ref_atomic
-	|	select_statement {
-			auto tbl = new TableRef(kTableSelect);
-			tbl->select = $1;
+table_ref_name:
+		table_name opt_alias {
+			auto tbl = new TableRef(kTableName);
+			tbl->name = $1;
+			tbl->alias = $2;
 			$$ = tbl;
 		}
-	;
-
+		;
 
 table_name:
 		NAME
@@ -363,6 +373,14 @@ table_name:
 	;
 
 
+alias:	
+		AS NAME { $$ = $2; }
+	|	NAME
+	;
+
+opt_alias:
+		alias
+	|	/* empty */ { $$ = NULL; }
 
 opt_semicolon:
 		';'

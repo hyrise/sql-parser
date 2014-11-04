@@ -28,6 +28,10 @@ void printTableRefInfo(TableRef* table, uint num_indent) {
       for (TableRef* tbl : table->list->_vector) printTableRefInfo(tbl, num_indent);
       break;
   }
+  if (table->alias != NULL) {
+    inprint("Alias", num_indent+1);
+    inprint(table->alias, num_indent+2);
+  }
 }
 
 void printOperatorExpression(Expr* expr, uint num_indent) {
@@ -86,11 +90,13 @@ void printSelectStatementInfo(SelectStatement* stmt, uint num_indent) {
 
 void printJoinStatementInfo(JoinStatement* stmt, uint num_indent) {
   inprint("JoinStatement", num_indent);
-  inprint("Left Table", num_indent+1);
+  inprint("JoinType:", num_indent+1);
+  inprintU(stmt->join_type, num_indent+2);
+  inprint("Left Table:", num_indent+1);
   printTableRefInfo(stmt->left, num_indent+2);
-  inprint("Right Table", num_indent+1);
+  inprint("Right Table:", num_indent+1);
   printTableRefInfo(stmt->right, num_indent+2);
-  inprint("Join Condition", num_indent+1);
+  inprint("Join Condition:", num_indent+1);
   printExpression(stmt->join_condition, num_indent+2);
 }
 
