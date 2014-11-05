@@ -1,0 +1,20 @@
+
+body {
+	text-align: center;
+}
+
+div {
+	margin: auto;
+}
+
+.content {
+	width: 90%;
+	margin: auto;
+	margin-top: 10px;
+}
+
+/*
+#resultTable td {
+	border: 1px solid #333;
+	padding: 10px;
+}*/

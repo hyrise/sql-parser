@@ -1,0 +1,78 @@
+<html>
+  <head>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <link href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet">
+
+    <script type="text/javascript" src="hyrise-sql-connector.js"></script>
+    <link href="style.css" rel="stylesheet">
+  </head>
+  <body>
+
+    <div class="content">
+      <div class="row">
+        <div class="col-lg-6">
+          <!-- Config -->
+          <div class="row">
+            <div class="form-group col-sm-8">
+              <input type="text" class="form-control" id="hostInput" placeholder="Hyrise Host" value="localhost">
+            </div>
+            <div class="form-group col-sm-4">
+              <input type="text" class="form-control" id="portInput" placeholder="Hyrise Port" value="5000">
+            </div>
+          </div>
+
+          <!-- Input -->
+          <div class="row">
+            <div class="col-sm-12">
+              <textarea id="queryInput" class="form-control" style="height: 300px; resize: none;">SELECT * FROM students;</textarea>
+            </div>
+          </div>
+
+          <!-- Submit -->
+          <div class="row">
+            <div class="col-sm-12">
+              <button type="button" class="btn btn-primary" id="submitBtn">Submit Query</button>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-6">
+          <!-- Result -->
+          <div class="result-view">
+            <table id="resultTable" class="table table-bordered table-striped table-hover"></table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script type="text/javascript">
+$(function() {
+  $('#submitBtn').click(function() {
+    var host = $('#hostInput').val();
+    var port = $('#portInput').val();
+    var query = $('#queryInput').val();
+    var hyrise = new HyriseSqlConnector(host, port);
+    hyrise.executeQuery(query, function(result) {
+      console.log("Query result: ", result);
+      // Present result json in result-view
+      var table = $('#resultTable');
+      table.html('');
+
+      var th = $('<tr>');
+      $.each(result.header, function(i, val) {
+        th.append($('<th>' + val + '</th>'));
+      });
+      table.append(th);
+
+      $.each(result.rows, function(i, row) {
+        var tr = $('<tr>');
+        $.each(row, function(j, val) {
+          tr.append($('<td>' + val + '</td>'));
+        });
+        table.append(tr);
+      });
+    });
+  })
+});
+    </script>
+  </body>
+</html>
