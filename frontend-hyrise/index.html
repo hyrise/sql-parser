@@ -29,23 +29,81 @@
           </div>
 
           <!-- Submit -->
-          <div class="row">
+          <div class="row" style="margin: 10px 0px;">
             <div class="col-sm-12">
               <button type="button" class="btn btn-primary" id="submitBtn">Submit Query</button>
             </div>
           </div>
+
+          <div class="row">
+            <div class="col-sm-12">
+              <!-- View: Performance Data -->
+              <table id="performanceDataTable" class="table table-bordered table-striped table-hover">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Duration</th>
+                    <th>Start Time</th>
+                    <th>End Time</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+
         </div>
         <div class="col-lg-6">
-          <!-- Result -->
-          <div class="result-view">
-            <table id="resultTable" class="table table-bordered table-striped table-hover"></table>
-          </div>
+          <!-- View: Result Table -->
+          <table id="resultTable" class="table table-bordered table-striped table-hover"></table>
         </div>
       </div>
     </div>
 
     <script type="text/javascript">
 $(function() {
+  function createElement(tag, value) {
+    return $('<' + tag + '>' + value + '</' + tag + '>');
+  };
+
+  function updateResultTable(result) {
+    // Present result json in result-view
+    var table = $('#resultTable');
+    table.html('');
+
+    var th = $('<tr>');
+    $.each(result.header, function(i, val) {
+      th.append($('<th>' + val + '</th>'));
+    });
+    table.append(th);
+
+    // Limit the rows to be displayed to 100
+    for (var i = 0; i < 100 && i < result.real_size; ++i) {
+      var row = result.rows[i];
+      var tr = $('<tr>');
+      $.each(row, function(j, val) {
+        tr.append($('<td>' + val + '</td>'));
+      });
+      table.append(tr);
+    }
+  };
+
+  function updatePerformanceData(result) {
+    var tbody = $('#performanceDataTable tbody');
+    tbody.html('');
+
+    $.each(result.performanceData, function(i, data) {
+      var tr = $('<tr>');
+      tr.append(createElement('td', data.id))
+      tr.append(createElement('td', data.name))
+      tr.append(createElement('td', data.duration))
+      tr.append(createElement('td', data.startTime))
+      tr.append(createElement('td', data.endTime))
+      tbody.append(tr);
+    });
+  };
+
   $('#submitBtn').click(function() {
     var host = $('#hostInput').val();
     var port = $('#portInput').val();
@@ -53,23 +111,8 @@ $(function() {
     var hyrise = new HyriseSqlConnector(host, port);
     hyrise.executeQuery(query, function(result) {
       console.log("Query result: ", result);
-      // Present result json in result-view
-      var table = $('#resultTable');
-      table.html('');
-
-      var th = $('<tr>');
-      $.each(result.header, function(i, val) {
-        th.append($('<th>' + val + '</th>'));
-      });
-      table.append(th);
-
-      $.each(result.rows, function(i, row) {
-        var tr = $('<tr>');
-        $.each(row, function(j, val) {
-          tr.append($('<td>' + val + '</td>'));
-        });
-        table.append(tr);
-      });
+      updateResultTable(result);
+      updatePerformanceData(result);
     });
   })
 });
