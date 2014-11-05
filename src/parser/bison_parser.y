@@ -92,9 +92,10 @@ typedef void* yyscan_t;
 /*********************************
  ** Token Definition
  *********************************/
-%token SELECT FROM WHERE GROUP BY HAVING ORDER ASC DESC LIMIT
+%token SELECT FROM WHERE GROUP BY HAVING ORDER ASC DESC LIMIT DISTINCT OFFSET
 %token JOIN ON INNER OUTER LEFT RIGHT CROSS USING NATURAL
 %token CREATE TABLE DATABASE INDEX
+%token DELETE INSERT
 %token AS NOT AND OR NULL LIKE
 %token <sval> NAME STRING COMPARISON
 %token <fval> FLOAT
@@ -126,7 +127,7 @@ typedef void* yyscan_t;
 %left		OR
 %left		AND
 %right		NOT
-%right		'=' EQUALS NOTEQUALS
+%right		'=' EQUALS NOTEQUALS LIKE
 %nonassoc	'<' '>' LESS GREATER LESSEQ GREATEREQ
 
 %nonassoc	NOTNULL
@@ -249,22 +250,24 @@ unary_expr:
 
 binary_expr:
 		comp_expr
-	|	expr '-' expr { $$ = Expr::makeOpBinary($1, '-', $3); }
-	|	expr '+' expr { $$ = Expr::makeOpBinary($1, '+', $3); }
-	|	expr '/' expr { $$ = Expr::makeOpBinary($1, '/', $3); }
-	|	expr '*' expr { $$ = Expr::makeOpBinary($1, '*', $3); }
-	|	expr AND expr { $$ = Expr::makeOpBinary($1, Expr::AND, $3); }
-	|	expr OR expr { $$ = Expr::makeOpBinary($1, Expr::OR, $3); }
+	|	expr '-' expr	{ $$ = Expr::makeOpBinary($1, '-', $3); }
+	|	expr '+' expr	{ $$ = Expr::makeOpBinary($1, '+', $3); }
+	|	expr '/' expr	{ $$ = Expr::makeOpBinary($1, '/', $3); }
+	|	expr '*' expr	{ $$ = Expr::makeOpBinary($1, '*', $3); }
+	|	expr AND expr	{ $$ = Expr::makeOpBinary($1, Expr::AND, $3); }
+	|	expr OR expr	{ $$ = Expr::makeOpBinary($1, Expr::OR, $3); }
+	|	expr LIKE expr	{ $$ = Expr::makeOpBinary($1, Expr::LIKE, $3); }
+	|	expr NOT LIKE expr	{ $$ = Expr::makeOpBinary($1, Expr::NOT_LIKE, $4); }
 	;
 
 
 comp_expr:
-		expr EQUALS expr { $$ = Expr::makeOpBinary($1, '=', $3); }
-	|	expr NOTEQUALS expr { $$ = Expr::makeOpBinary($1, Expr::NOT_EQUALS, $3); }
-	|	expr LESS expr { $$ = Expr::makeOpBinary($1, '<', $3); }
-	|	expr GREATER expr { $$ = Expr::makeOpBinary($1, '>', $3); }
-	|	expr LESSEQ expr { $$ = Expr::makeOpBinary($1, Expr::LESS_EQ, $3); }
-	|	expr GREATEREQ expr { $$ = Expr::makeOpBinary($1, Expr::GREATER_EQ, $3); }
+		expr EQUALS expr	{ $$ = Expr::makeOpBinary($1, '=', $3); }
+	|	expr NOTEQUALS expr	{ $$ = Expr::makeOpBinary($1, Expr::NOT_EQUALS, $3); }
+	|	expr LESS expr		{ $$ = Expr::makeOpBinary($1, '<', $3); }
+	|	expr GREATER expr	{ $$ = Expr::makeOpBinary($1, '>', $3); }
+	|	expr LESSEQ expr	{ $$ = Expr::makeOpBinary($1, Expr::LESS_EQ, $3); }
+	|	expr GREATEREQ expr	{ $$ = Expr::makeOpBinary($1, Expr::GREATER_EQ, $3); }
 	;
 
 function_expr:

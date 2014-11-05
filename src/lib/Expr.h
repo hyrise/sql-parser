@@ -33,6 +33,7 @@ struct Expr {
 		LESS_EQ,
 		GREATER_EQ,
 		LIKE,
+		NOT_LIKE,
 		AND,
 		OR,
 		// Unary
