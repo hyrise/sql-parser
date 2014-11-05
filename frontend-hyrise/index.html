@@ -21,6 +21,11 @@
             </div>
           </div>
 
+          <!-- Sample Queries -->
+          <div class="row" style="margin-bottom: 10px;">
+            <div class="col-sm-12" id="sampleQueries"></div>
+          </div>
+
           <!-- Input -->
           <div class="row">
             <div class="col-sm-12">
@@ -63,6 +68,12 @@
 
     <script type="text/javascript">
 $(function() {
+  function addSampleQuery(name, query) {
+    var btn = $('<button type="button" class="btn btn-default">' + name + '</button>');
+    btn.click(function() { $('#queryInput').val(query); });
+    $('#sampleQueries').append(btn);
+  }
+
   function createElement(tag, value) {
     return $('<' + tag + '>' + value + '</' + tag + '>');
   };
@@ -113,8 +124,19 @@ $(function() {
       console.log("Query result: ", result);
       updateResultTable(result);
       updatePerformanceData(result);
+    }, function(xhr, status, error) {
+      console.log(arguments);
+      // On Error
+      $('#resultTable').html('<td>Error when executing query (' + status + ', ' + xhr.status + ' ' + error + ')</td>');
+      $('#performanceDataTable tbody').html('');
+
     });
-  })
+  });
+
+  addSampleQuery('SELECT 1', 'SELECT name, city, grade FROM students WHERE grade <= 2.0;')
+  addSampleQuery('SELECT 2', 'SELECT name, city, grade FROM (SELECT * FROM students WHERE city = \'Potsdam\') t1 WHERE grade <= 1.5 OR grade >= 3.5;');
+  addSampleQuery('COMMENT & LIKE', '-- test\nSELECT * FROM students WHERE city LIKE \'B.*\'\n-- comment');
+  addSampleQuery('JOIN', 'SELECT * FROM students t1 JOIN students t2 ON t1.student_number = t2.student_number');
 });
     </script>
   </body>
