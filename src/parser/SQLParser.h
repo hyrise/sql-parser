@@ -8,7 +8,7 @@ namespace hsql {
 
 class SQLParser {
 public:
-	static Statement* parseSQLString(const char* sql);
+	static StatementList* parseSQLString(const char* sql);
 
 private:
 	SQLParser();

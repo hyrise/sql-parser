@@ -19,7 +19,7 @@ typedef enum {
  * @struct ImportStatement
  */
 struct ImportStatement : Statement {
-	ImportStatement() : Statement(kStmtSelect) {};
+	ImportStatement() : Statement(kStmtImport) {};
 
 	ImportFileType file_type;
 	const char* file_path;

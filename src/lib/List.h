@@ -11,8 +11,6 @@ namespace hsql {
 template <typename _T>
 class List {
 public:
-	std::vector<_T> _vector;
-
 	List() {}
 
 	List(_T first_value)  {
@@ -23,7 +21,15 @@ public:
 
 	inline _T at(int i) { return _vector[i]; }
 	inline _T &operator[](int i) { return _vector[i]; }
+
 	inline void push_back(_T value) { _vector.push_back(value); }
+
+	inline std::vector<_T> vector() { return _vector; };
+
+
+private:
+	std::vector<_T> _vector;
+
 };
 
 

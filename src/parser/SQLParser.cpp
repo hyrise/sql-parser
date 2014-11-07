@@ -3,8 +3,6 @@
 #include "flex_lexer.h"
 #include <stdio.h>
 
-// int yyparse(Statement **expression, yyscan_t scanner);
-
 
 namespace hsql {
 
@@ -13,8 +11,8 @@ SQLParser::SQLParser() {
 }
 
 
-Statement* SQLParser::parseSQLString(const char *text) {
-    Statement* stmt;
+StatementList* SQLParser::parseSQLString(const char *text) {
+    StatementList* result;
     yyscan_t scanner;
     YY_BUFFER_STATE state;
 
@@ -26,15 +24,15 @@ Statement* SQLParser::parseSQLString(const char *text) {
 
     state = hsql__scan_string(text, scanner);
 
-    if (hsql_parse(&stmt, scanner)) {
+    if (hsql_parse(&result, scanner)) {
         // Returns an error stmt object
-        return stmt;
+        return result;
     }
 
     hsql__delete_buffer(state, scanner);
 
     hsql_lex_destroy(scanner);
-    return stmt;
+    return result;
 }
     
 } // namespace hsql

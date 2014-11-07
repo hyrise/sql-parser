@@ -34,7 +34,7 @@ void printTableRefInfo(TableRef* table, uint num_indent) {
       printExpression(table->join_condition, num_indent+2);
       break;
     case kTableCrossProduct:
-      for (TableRef* tbl : table->list->_vector) printTableRefInfo(tbl, num_indent);
+      for (TableRef* tbl : table->list->vector()) printTableRefInfo(tbl, num_indent);
       break;
   }
   if (table->alias != NULL) {
@@ -74,7 +74,7 @@ void printExpression(Expr* expr, uint num_indent) {
 void printSelectStatementInfo(SelectStatement* stmt, uint num_indent) {
   inprint("SelectStatement", num_indent);
   inprint("Fields:", num_indent+1);
-  for (Expr* expr : stmt->select_list->_vector) printExpression(expr, num_indent+2);
+  for (Expr* expr : stmt->select_list->vector()) printExpression(expr, num_indent+2);
 
   inprint("Sources:", num_indent+1);
   printTableRefInfo(stmt->from_table, num_indent+2);
@@ -95,6 +95,14 @@ void printSelectStatementInfo(SelectStatement* stmt, uint num_indent) {
     inprint("Limit:", num_indent+1);
     inprint(stmt->limit->limit, num_indent+2);
   }
+}
+
+
+
+void printImportStatementInfo(ImportStatement* stmt, uint num_indent) {
+  inprint("ImportStatment", num_indent);
+  inprint(stmt->file_path, num_indent+1);
+  inprint(stmt->table_name, num_indent+1);
 }
 
 

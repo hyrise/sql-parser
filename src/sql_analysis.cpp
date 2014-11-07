@@ -15,23 +15,30 @@ int main(int argc, char *argv[]) {
     for (int n = 1; n < argc; ++n) {
         char* sql = argv[n];
 
-        printf("\nEvaluating Statement \"%s\"\n", sql);
-        Statement* stmt = SQLParser::parseSQLString(sql);
+        printf("\nEvaluating Query \"%s\"\n", sql);
+        StatementList* stmt_list = SQLParser::parseSQLString(sql);
 
-        if (stmt == NULL) {
-        	fprintf(stderr, "Parsing of \"%s\" failed!\n", sql);
+        if (!stmt_list->isValid) {
+        	fprintf(stderr, "Parsing of \"%s\" failed! Reason: %s\n", sql, stmt_list->parser_msg);
         	continue;
         }
 
-        if (stmt->type == kStmtSelect) {
-        	printSelectStatementInfo((SelectStatement*) stmt, 0);
-        } else {
-            if (stmt->type == kStmtError) {
-                fprintf(stderr, "%s!\n", stmt->parser_msg);
-            } else {
-                fprintf(stderr, "Unsupported Statement Type %u!\n", stmt->type);
+        int i = 0;
+        for (Statement* stmt : stmt_list->vector()) {
+            printf("Statement %d:\n", i++);
+            switch (stmt->type) {
+                case kStmtSelect:
+                    printSelectStatementInfo((SelectStatement*) stmt, 1);
+                    break;
+                case kStmtImport:
+                    printImportStatementInfo((ImportStatement*) stmt, 1);
+                    break;
+                default:
+                    fprintf(stderr, "\tStatement Type %u. No detailed print method available.\n", stmt->type);
+                    break;
+
             }
-		}
+        }
     }
 
 	return 0;

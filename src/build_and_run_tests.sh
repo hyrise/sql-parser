@@ -32,6 +32,8 @@ echo "\n\n"
 # ./bin/analysis "-- test
 # SELECT * FROM table WHERE a NOT LIKE '%s' -- inline comment
 # --my comment"
-# ./bin/analysis "SELECT * from table WHERE (b OR NOT a) AND a = 12.5 JOIN table2 ON a = b"
+./bin/analysis "
+IMPORT FROM TBL FILE 'students.tbl' INTO table;
+SELECT * FROM table;"
 
 echo "\n\n"

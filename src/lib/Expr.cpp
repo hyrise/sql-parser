@@ -86,4 +86,8 @@ Expr* Expr::makeFunctionRef(char* func_name, Expr* expr) {
 	return e;
 }
 
+// Expr::~Expr() {
+	
+// }
+
 } // namespace hsql

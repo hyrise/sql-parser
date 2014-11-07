@@ -45,6 +45,7 @@ struct Expr {
 
 
 	Expr(ExprType type) : type(type) {};
+	// virtual ~Expr();
 	
 	ExprType type;
 

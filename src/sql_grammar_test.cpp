@@ -23,17 +23,17 @@ int main(int argc, char *argv[]) {
         start = std::chrono::system_clock::now();
 
         // Parsing
-        Statement* stmt = SQLParser::parseSQLString(sql);
+        StatementList* stmt_list = SQLParser::parseSQLString(sql);
 
         end = std::chrono::system_clock::now();
         std::chrono::duration<double> elapsed_seconds = end-start;
 
-        if (expectFalse != (stmt->type == kStmtError)) {
-        	fprintf(stderr, "-> Failed (%.3fms)! %s: \"%s\"\n", elapsed_seconds.count()*1000, stmt->parser_msg, sql);
+        if (expectFalse == stmt_list->isValid) {
+        	fprintf(stderr, "-> Failed (%.3fms)! %s: \"%s\"\n", elapsed_seconds.count()*1000, stmt_list->parser_msg, sql);
         	continue;
         } else {
             if (expectFalse) {
-                printf("Success (%.3fms)! %s: \"%s\"\n", elapsed_seconds.count()*1000, stmt->parser_msg, sql);
+                printf("Success (%.3fms)! %s: \"%s\"\n", elapsed_seconds.count()*1000, stmt_list->parser_msg, sql);
 
             } else {
                 printf("Success (%.3fms)! \"%s\"\n", elapsed_seconds.count()*1000, sql);

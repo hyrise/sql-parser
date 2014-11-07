@@ -19,9 +19,13 @@
 
 using namespace hsql;
 
-int yyerror(Statement **stmt, yyscan_t scanner, const char *msg) {
-	*stmt = new Statement(kStmtError);
-	(*stmt)->parser_msg = strdup(msg);
+int yyerror(StatementList** result, yyscan_t scanner, const char *msg) {
+
+	StatementList* list = new StatementList();
+	list->isValid = false;
+	list->parser_msg = strdup(msg);
+	*result = list;
+
 	return 0;
 }
 
@@ -60,7 +64,7 @@ typedef void* yyscan_t;
 %lex-param   { yyscan_t scanner }
 
 // Define additional parameters for yyparse
-%parse-param { hsql::Statement **statement }
+%parse-param { hsql::StatementList** result }
 %parse-param { yyscan_t scanner }
 
 
@@ -83,9 +87,10 @@ typedef void* yyscan_t;
 	hsql::OrderType order_type;
 	hsql::LimitDescription* limit;
 
+	hsql::StatementList* stmt_list;
 	hsql::List<char*>* slist;
-	hsql::List<hsql::Expr*>* explist;
-	hsql::List<hsql::TableRef*>* tbllist;
+	hsql::List<hsql::Expr*>* expr_list;
+	hsql::List<hsql::TableRef*>* table_list;
 }
 
 
@@ -107,6 +112,7 @@ typedef void* yyscan_t;
 /*********************************
  ** Non-Terminal types (http://www.gnu.org/software/bison/manual/html_node/Type-Decl.html)
  *********************************/
+%type <stmt_list>	statement_list
 %type <statement> 	statement
 %type <select_stmt> select_statement
 %type <import_stmt> import_statement
@@ -114,10 +120,10 @@ typedef void* yyscan_t;
 %type <table> 		from_clause table_ref table_ref_atomic table_ref_name
 %type <table>		join_clause join_table
 %type <expr> 		expr scalar_expr unary_expr binary_expr function_expr star_expr
-%type <expr> 		column_name literal int_literal num_literal
+%type <expr> 		column_name literal int_literal num_literal string_literal
 %type <expr> 		comp_expr where_clause join_condition
-%type <explist> 	expr_list group_clause select_list
-%type <tbllist> 	table_ref_commalist
+%type <expr_list> 	expr_list group_clause select_list
+%type <table_list> 	table_ref_commalist
 %type <order>		order_by_clause
 %type <limit>		limit_clause
 %type <order_type>	order_type
@@ -156,8 +162,15 @@ typedef void* yyscan_t;
 // Defines our general input.
 // TODO: Support list of statements
 input:
-		statement opt_semicolon { *statement = $1; }
+		statement_list opt_semicolon { *result = $1; }
 	;
+
+
+statement_list:
+		statement { $$ = new StatementList($1); }
+	|	statement_list ';' statement { $1->push_back($3); $$ = $1; }
+	;
+
 
 // All types of statements
 // TODO: insert, delete, etc...
@@ -186,7 +199,7 @@ import_file_type:
 	;
 
 file_path:
-		STRING
+		string_literal { $$ = $1->name; }
 	;
 
 
@@ -308,9 +321,14 @@ column_name:
 	;
 
 literal:
-		STRING { $$ = Expr::makeLiteral($1); }
+		string_literal
 	|	num_literal
 	;
+
+string_literal:
+		STRING { $$ = Expr::makeLiteral($1); }
+	;
+
 
 num_literal:
 		FLOAT { $$ = Expr::makeLiteral($1); }
