@@ -36,9 +36,10 @@ int main(int argc, char *argv[]) {
                 default:
                     fprintf(stderr, "\tStatement Type %u. No detailed print method available.\n", stmt->type);
                     break;
-
             }
+            // delete stmt;
         }
+        delete stmt_list;
     }
 
 	return 0;

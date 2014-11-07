@@ -27,6 +27,7 @@ typedef enum {
 
 struct Statement {
 	Statement(StatementType type) : type(type) {};
+	virtual ~Statement(); // defined in destructors.cpp
 
 	StatementType type;
 };
@@ -36,6 +37,7 @@ class StatementList : public List<Statement*> {
 public:
 	StatementList() : List<Statement*>(), isValid(true) {};
 	StatementList(Statement* stmt) : List<Statement*>(stmt), isValid(true) {};
+	virtual ~StatementList(); // defined in destructors.cpp
 
 	bool isValid;
 	const char* parser_msg;

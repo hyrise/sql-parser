@@ -17,6 +17,10 @@ public:
 		_vector.push_back(first_value);
 	}
 
+	virtual ~List() {
+		for (_T e : _vector) delete e;
+	}
+
 	inline size_t size() { return _vector.size(); };
 
 	inline _T at(int i) { return _vector[i]; }

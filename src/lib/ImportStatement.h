@@ -20,6 +20,7 @@ typedef enum {
  */
 struct ImportStatement : Statement {
 	ImportStatement() : Statement(kStmtImport) {};
+	virtual ~ImportStatement(); // defined in destructors.cpp
 
 	ImportFileType file_type;
 	const char* file_path;

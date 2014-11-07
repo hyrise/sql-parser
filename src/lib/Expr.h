@@ -2,6 +2,7 @@
 #define __EXPRESSION_H__
 
 #include <stdlib.h>
+#include <memory>
 
 namespace hsql {
 
@@ -45,7 +46,10 @@ struct Expr {
 
 
 	Expr(ExprType type) : type(type) {};
-	// virtual ~Expr();
+
+	// Interesting side-effect:
+	// Making the destructor virtual causes segmentation faults
+	~Expr();
 	
 	ExprType type;
 

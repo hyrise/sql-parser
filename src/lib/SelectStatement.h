@@ -21,6 +21,8 @@ typedef enum {
 
 struct OrderDescription {
 	OrderDescription(OrderType type, Expr* expr) : type(type), expr(expr) {}
+	virtual ~OrderDescription(); // defined in destructors.cpp
+
 	OrderType type;
 	Expr* expr;	
 };
@@ -43,6 +45,7 @@ struct LimitDescription {
  */
 struct SelectStatement : Statement {
 	SelectStatement() : Statement(kStmtSelect) {};
+	virtual ~SelectStatement(); // defined in destructors.cpp
 
 	TableRef* from_table;
 	List<Expr*>* select_list;

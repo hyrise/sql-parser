@@ -1,7 +1,7 @@
 #ifndef __TABLEREF_H__
 #define __TABLEREF_H__
 
-
+#include <stdio.h>
 namespace hsql {
 
 class SelectStatement;
@@ -30,6 +30,7 @@ typedef struct TableRef TableRef;
 
 struct TableRef {
 	TableRef(TableRefType type) : type(type) {}
+	virtual ~TableRef(); // defined in destructors.cpp
 
 	TableRefType type;
 

@@ -1,7 +1,7 @@
 
 # Makefile
 
-LIB_FILES = parser/bison_parser.cpp parser/flex_lexer.cpp parser/SQLParser.cpp lib/Expr.cpp lib/sqlhelper.cpp
+LIB_FILES = parser/bison_parser.cpp parser/flex_lexer.cpp parser/SQLParser.cpp lib/Expr.cpp lib/sqlhelper.cpp lib/destructors.cpp
 
 TESTS_MAIN = sql_tests.cpp
 TESTS_BIN = bin/tests
