@@ -6,6 +6,11 @@
 
 namespace hsql {
 
+// Helper function
+char* substr(const char* source, int from, int to);
+
+
+
 typedef enum {
 	kExprLiteralFloat,
 	kExprLiteralString,

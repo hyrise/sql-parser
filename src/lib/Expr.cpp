@@ -60,8 +60,7 @@ Expr* Expr::makeLiteral(double value) {
 
 Expr* Expr::makeLiteral(char* string) {
 	ALLOC_EXPR(e, kExprLiteralString);
-	e->name = substr(string, 1, strlen(string)-1);
-	delete string;
+	e->name = string;
 	return e;
 }
 

@@ -1,0 +1,66 @@
+// Possible source for more tokens https://www.sqlite.org/lang_keywords.html
+
+// Select statement
+SELECT
+TOP
+FROM
+WHERE
+GROUP
+BY
+HAVING
+ORDER
+ASC
+DESC
+LIMIT
+DISTINCT
+OFFSET
+
+// Join clause
+JOIN
+ON
+INNER
+OUTER
+LEFT
+RIGHT
+CROSS
+USING
+NATURAL
+
+// Create statement
+CREATE
+TABLE
+DATABASE
+INDEX
+
+// Import statement
+IMPORT
+CSV
+FILE
+TBL
+CONTROL
+
+// other statements
+ALTER
+RENAME
+DROP
+DELETE
+INSERT
+LOAD
+UPDATE
+UNLOAD
+
+// misc.
+COLUMN
+INTO
+AS
+
+// Expressions
+NOT
+AND
+OR
+NULL
+LIKE
+IN
+IS
+ISNULL
+BETWEEN

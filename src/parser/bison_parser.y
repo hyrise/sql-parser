@@ -98,16 +98,19 @@ typedef void* yyscan_t;
 /*********************************
  ** Token Definition
  *********************************/
-%token SELECT FROM WHERE GROUP BY HAVING ORDER ASC DESC LIMIT DISTINCT OFFSET
-%token JOIN ON INNER OUTER LEFT RIGHT CROSS USING NATURAL
-%token CREATE TABLE DATABASE INDEX
-%token IMPORT CSV FILE TBL CONTROL INTO
-%token DELETE INSERT
-%token AS NOT AND OR NULL LIKE
 %token <sval> NAME STRING COMPARISON
 %token <fval> FLOAT
 %token <ival> INT
-%token <uval> EQUALS NOTEQUALS LESS GREATER LESSEQ GREATEREQ
+%token <uval> NOTEQUALS LESSEQ GREATEREQ
+
+/* SQL Keywords */
+%token DISTINCT DATABASE NATURAL CONTROL BETWEEN SELECT
+%token HAVING OFFSET CREATE IMPORT RENAME DELETE INSERT
+%token UPDATE UNLOAD COLUMN ISNULL WHERE GROUP ORDER LIMIT
+%token INNER OUTER RIGHT CROSS USING TABLE INDEX ALTER FROM
+%token DESC JOIN LEFT FILE DROP LOAD INTO NULL LIKE TOP ASC
+%token CSV TBL NOT AND BY ON AS OR IN IS
+
 
 /*********************************
  ** Non-Terminal types (http://www.gnu.org/software/bison/manual/html_node/Type-Decl.html)
@@ -295,6 +298,8 @@ binary_expr:
 	|	expr '+' expr	{ $$ = Expr::makeOpBinary($1, '+', $3); }
 	|	expr '/' expr	{ $$ = Expr::makeOpBinary($1, '/', $3); }
 	|	expr '*' expr	{ $$ = Expr::makeOpBinary($1, '*', $3); }
+	|	expr '%' expr	{ $$ = Expr::makeOpBinary($1, '%', $3); }
+	|	expr '^' expr	{ $$ = Expr::makeOpBinary($1, '^', $3); }
 	|	expr AND expr	{ $$ = Expr::makeOpBinary($1, Expr::AND, $3); }
 	|	expr OR expr	{ $$ = Expr::makeOpBinary($1, Expr::OR, $3); }
 	|	expr LIKE expr	{ $$ = Expr::makeOpBinary($1, Expr::LIKE, $3); }
@@ -303,10 +308,10 @@ binary_expr:
 
 
 comp_expr:
-		expr EQUALS expr	{ $$ = Expr::makeOpBinary($1, '=', $3); }
+		expr '=' expr		{ $$ = Expr::makeOpBinary($1, '=', $3); }
 	|	expr NOTEQUALS expr	{ $$ = Expr::makeOpBinary($1, Expr::NOT_EQUALS, $3); }
-	|	expr LESS expr		{ $$ = Expr::makeOpBinary($1, '<', $3); }
-	|	expr GREATER expr	{ $$ = Expr::makeOpBinary($1, '>', $3); }
+	|	expr '<' expr		{ $$ = Expr::makeOpBinary($1, '<', $3); }
+	|	expr '>' expr		{ $$ = Expr::makeOpBinary($1, '>', $3); }
 	|	expr LESSEQ expr	{ $$ = Expr::makeOpBinary($1, Expr::LESS_EQ, $3); }
 	|	expr GREATEREQ expr	{ $$ = Expr::makeOpBinary($1, Expr::GREATER_EQ, $3); }
 	;
