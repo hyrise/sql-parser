@@ -11,7 +11,7 @@
  ** Section 1: C Declarations
  *********************************/
 
-#include "Statement.h"
+#include "sqllib.h"
 #include "bison_parser.h"
 #include "flex_lexer.h"
 
@@ -75,6 +75,7 @@ typedef void* yyscan_t;
 
 	hsql::Statement* statement;
 	hsql::SelectStatement* select_stmt;
+	hsql::ImportStatement* import_stmt;
 
 	hsql::TableRef* table;
 	hsql::Expr* expr;
@@ -95,6 +96,7 @@ typedef void* yyscan_t;
 %token SELECT FROM WHERE GROUP BY HAVING ORDER ASC DESC LIMIT DISTINCT OFFSET
 %token JOIN ON INNER OUTER LEFT RIGHT CROSS USING NATURAL
 %token CREATE TABLE DATABASE INDEX
+%token IMPORT CSV FILE TBL CONTROL INTO
 %token DELETE INSERT
 %token AS NOT AND OR NULL LIKE
 %token <sval> NAME STRING COMPARISON
@@ -107,9 +109,10 @@ typedef void* yyscan_t;
  *********************************/
 %type <statement> 	statement
 %type <select_stmt> select_statement
-%type <sval> 		table_name opt_alias alias
+%type <import_stmt> import_statement
+%type <sval> 		table_name opt_alias alias file_path
 %type <table> 		from_clause table_ref table_ref_atomic table_ref_name
-%type <table>		join_stmt join_table
+%type <table>		join_clause join_table
 %type <expr> 		expr scalar_expr unary_expr binary_expr function_expr star_expr
 %type <expr> 		column_name literal int_literal num_literal
 %type <expr> 		comp_expr where_clause join_condition
@@ -118,6 +121,7 @@ typedef void* yyscan_t;
 %type <order>		order_by_clause
 %type <limit>		limit_clause
 %type <order_type>	order_type
+%type <uval>		import_file_type
 
 
 /******************************
@@ -156,17 +160,38 @@ input:
 	;
 
 // All types of statements
-// Atm: only select statements (future: insert, delete, etc...)
+// TODO: insert, delete, etc...
 statement:
 		select_statement { $$ = $1; }
+	|	import_statement { $$ = $1; }
 	;
 
 
 
+/******************************
+ ** Import Statement
+ ******************************/
+import_statement:
+		IMPORT FROM import_file_type FILE file_path INTO table_name {
+			$$ = new ImportStatement();
+			$$->file_type = (ImportFileType) $3;
+			$$->file_path = $5;
+			$$->table_name = $7;
+		}
+	;
+
+import_file_type:
+		CSV { $$ = kImportCSV; }
+	|	TBL { $$ = kImportTbl; }
+	;
+
+file_path:
+		STRING
+	;
 
 
 /******************************
- ** Select Statements
+ ** Select Statement
  ******************************/
 
 select_statement:
@@ -182,7 +207,7 @@ select_statement:
 			$$ = s;
 		}
 	|	'(' select_statement ')' { $$ = $2; }
-		;
+	;
 
 
 select_list:
@@ -210,15 +235,18 @@ group_clause:
 order_by_clause:
 		ORDER BY expr order_type { $$ = new OrderDescription($4, $3); }
 	|	/* empty */ { $$ = NULL; }
+	;
 
 order_type:
 		ASC { $$ = kOrderAsc; }
 	|	DESC { $$ = kOrderDesc; }
 	|	/* empty */ { $$ = kOrderAsc; }
+	;
 
 limit_clause:
 		LIMIT int_literal { $$ = new LimitDescription($2->ival, kNoOffset); delete $2; }
 	|	/* empty */ { $$ = NULL; }
+	;
 
 /******************************
  ** Expressions 
@@ -320,7 +348,7 @@ table_ref_atomic:
 			tbl->alias = $4;
 			$$ = tbl;
 		}
-	|	join_stmt
+	|	join_clause
 	;
 
 
@@ -359,7 +387,7 @@ opt_alias:
  ** Join Statements
  ******************************/
 
-join_stmt:
+join_clause:
 		join_table JOIN join_table ON join_condition
 		{ 
 			$$ = new TableRef(kTableJoin);

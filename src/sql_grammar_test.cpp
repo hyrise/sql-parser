@@ -29,7 +29,7 @@ int main(int argc, char *argv[]) {
         std::chrono::duration<double> elapsed_seconds = end-start;
 
         if (expectFalse != (stmt->type == kStmtError)) {
-        	fprintf(stderr, "-> Failed (%.3fms)! \"%s\"\n", elapsed_seconds.count()*1000, sql);
+        	fprintf(stderr, "-> Failed (%.3fms)! %s: \"%s\"\n", elapsed_seconds.count()*1000, stmt->parser_msg, sql);
         	continue;
         } else {
             if (expectFalse) {
