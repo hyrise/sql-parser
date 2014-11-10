@@ -1,7 +1,7 @@
 
 # Makefile
 
-LIB_FILES = parser/bison_parser.cpp parser/flex_lexer.cpp parser/SQLParser.cpp lib/Expr.cpp lib/sqlhelper.cpp lib/destructors.cpp
+SOURCES = $(shell find lib/ -name '*.cpp') parser/bison_parser.cpp parser/flex_lexer.cpp parser/SQLParser.cpp
 
 TESTS_MAIN = sql_tests.cpp
 TESTS_BIN = bin/tests
@@ -19,16 +19,16 @@ build: clean
 	cp parser/*.cpp build/
 
 
-analysis: $(LIB_FILES) sql_analysis.cpp
-	$(CC) $(CFLAGS) $(LIB_FILES) sql_analysis.cpp -o bin/analysis
+analysis: $(SOURCES) sql_analysis.cpp
+	$(CC) $(CFLAGS) $(SOURCES) sql_analysis.cpp -o bin/analysis
 
 
-grammar_test: $(LIB_FILES) sql_grammar_test.cpp
-	$(CC) $(CFLAGS) $(LIB_FILES) sql_grammar_test.cpp -o bin/grammar_test
+grammar_test: $(SOURCES) sql_grammar_test.cpp
+	$(CC) $(CFLAGS) $(SOURCES) sql_grammar_test.cpp -o bin/grammar_test
 
 
-tests: $(LIB_FILES) $(TESTS_MAIN)
-	$(CC) $(CFLAGS) $(LIB_FILES) $(TESTS_MAIN) -o $(TESTS_BIN)
+tests: $(SOURCES) $(TESTS_MAIN)
+	$(CC) $(CFLAGS) $(SOURCES) $(TESTS_MAIN) -o $(TESTS_BIN)
 
 
 parser/bison_parser.cpp:
