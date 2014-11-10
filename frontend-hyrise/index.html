@@ -43,6 +43,7 @@
           <div class="row">
             <div class="col-sm-12">
               <!-- View: Performance Data -->
+              <h3>Performance Data</h3>
               <table id="performanceDataTable" class="table table-bordered table-striped table-hover">
                 <thead>
                   <tr>
@@ -61,6 +62,7 @@
         </div>
         <div class="col-lg-6">
           <!-- View: Result Table -->
+          <h3>Results (first 100 rows)</h3>
           <table id="resultTable" class="table table-bordered table-striped table-hover"></table>
         </div>
       </div>
@@ -126,14 +128,22 @@ $(function() {
       updatePerformanceData(result);
     }, function(xhr, status, error) {
       console.log(arguments);
+      var msg = xhr.responseJSON.error[0];
       // On Error
-      $('#resultTable').html('<td>Error when executing query (' + status + ', ' + xhr.status + ' ' + error + ')</td>');
+      $('#resultTable').html('<td>Error when executing query (' + status + ', ' + msg + ')</td>');
       $('#performanceDataTable tbody').html('');
-
     });
   });
 
-  addSampleQuery('SELECT 1', 'SELECT name, city, grade FROM students WHERE grade <= 2.0;')
+  $('#queryInput').keypress(function(evt) {
+    if (evt.keyCode == 13 && evt.shiftKey) {
+      $('#submitBtn').click();
+      return false;
+    }
+    return true;
+  });
+
+  addSampleQuery('IMPORT & SELECT', 'IMPORT FROM TBL FILE \'test/students.tbl\' INTO students;\nSELECT name, city, grade FROM students WHERE grade <= 2.0;')
   addSampleQuery('SELECT 2', 'SELECT name, city, grade FROM (SELECT * FROM students WHERE city = \'Potsdam\') t1 WHERE grade <= 1.5 OR grade >= 3.5;');
   addSampleQuery('COMMENT & LIKE', '-- test\nSELECT * FROM students WHERE city LIKE \'B.*\'\n-- comment');
   addSampleQuery('JOIN', 'SELECT * FROM students t1 JOIN students t2 ON t1.student_number = t2.student_number');

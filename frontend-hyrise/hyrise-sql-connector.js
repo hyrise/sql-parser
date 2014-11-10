@@ -14,6 +14,7 @@ HyriseSqlConnector.prototype.setConnectionDetails = function(host, port) {
 	return this;
 };
 
+
 HyriseSqlConnector.prototype.executeQuery = function(query, callback, error_callback) {
 	var endpoint = 'http://' + this._host + ':' + this._port + '/query';
 	var url = encodeURI(endpoint);
