@@ -40,4 +40,9 @@ ImportStatement::~ImportStatement() {
 	delete table_name;
 }
 
+CreateStatement::~CreateStatement() {
+	delete file_path;
+	delete table_name;
+}
+
 } // namespace hsql

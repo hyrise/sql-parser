@@ -65,7 +65,7 @@ void printExpression(Expr* expr, uint num_indent) {
     case kExprLiteralFloat: inprint(expr->fval, num_indent); break;
     case kExprLiteralInt: inprint(expr->ival, num_indent); break;
     case kExprLiteralString: inprint(expr->name, num_indent); break;
-    case kExprFunctionRef: /* todo */ break;
+    case kExprFunctionRef: inprint(expr->name, num_indent); inprint(expr->expr->name, num_indent+1); break;
     case kExprOperator: printOperatorExpression(expr, num_indent); break;
     default: fprintf(stderr, "Unrecognized expression type %d\n", expr->type); break;
   }
@@ -103,6 +103,12 @@ void printImportStatementInfo(ImportStatement* stmt, uint num_indent) {
   inprint("ImportStatment", num_indent);
   inprint(stmt->file_path, num_indent+1);
   inprint(stmt->table_name, num_indent+1);
+}
+
+void printCreateStatementInfo(CreateStatement* stmt, uint num_indent) {
+  inprint("CreateStatment", num_indent);
+  inprint(stmt->table_name, num_indent+1);
+  inprint(stmt->file_path, num_indent+1);
 }
 
 

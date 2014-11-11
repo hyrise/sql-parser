@@ -80,6 +80,7 @@ typedef void* yyscan_t;
 	hsql::Statement* statement;
 	hsql::SelectStatement* select_stmt;
 	hsql::ImportStatement* import_stmt;
+	hsql::CreateStatement* create_stmt;
 
 	hsql::TableRef* table;
 	hsql::Expr* expr;
@@ -119,6 +120,7 @@ typedef void* yyscan_t;
 %type <statement> 	statement
 %type <select_stmt> select_statement
 %type <import_stmt> import_statement
+%type <create_stmt> create_statement
 %type <sval> 		table_name opt_alias alias file_path
 %type <table> 		from_clause table_ref table_ref_atomic table_ref_name
 %type <table>		join_clause join_table
@@ -180,6 +182,7 @@ statement_list:
 statement:
 		select_statement { $$ = $1; }
 	|	import_statement { $$ = $1; }
+	|	create_statement { $$ = $1; }
 	;
 
 
@@ -198,11 +201,23 @@ import_statement:
 
 import_file_type:
 		CSV { $$ = kImportCSV; }
-	|	TBL { $$ = kImportTbl; }
 	;
 
 file_path:
 		string_literal { $$ = $1->name; }
+	;
+
+
+/******************************
+ ** Create Statement
+ ******************************/
+create_statement:
+		CREATE TABLE table_name FROM TBL FILE file_path {
+			$$ = new CreateStatement();
+			$$->create_type = kTableFromTbl;
+			$$->file_path = $7;
+			$$->table_name = $3;
+		}
 	;
 
 

@@ -15,15 +15,16 @@ echo "\n\n"
 ./bin/grammar_test "(SELECT a FROM foo WHERE a > 12 OR b > 3 AND c NOT LIKE 's%' LIMIT 10);"
 ./bin/grammar_test "SELECT t1.a, t1.b, t2.c FROM \"table\" AS t1 JOIN (SELECT * FROM foo JOIN bar ON foo.id = bar.id) t2 ON t1.a = t2.b WHERE (t1.b OR NOT t1.a) AND t2.c = 12.5"
 
-./bin/grammar_test "IMPORT FROM TBL FILE 'students.tbl' INTO \"table\""
+./bin/grammar_test "CREATE TABLE \"table\" FROM TBL FILE 'students.tbl'"
 
 # Error: Where clause in between join statement
-./bin/grammar_test -f "SELECT * from \"table\" WHERE (b OR NOT a) AND a = 12.5 AS t1 JOIN table2 ON a = b"
-./bin/grammar_test -f "SELECT * \"table\" WHERE (b OR NOT a) AND a = 12.5 AS t1 JOIN table2 ON a = b"
+# ./bin/grammar_test -f "SELECT * from \"table\" WHERE (b OR NOT a) AND a = 12.5 AS t1 JOIN table2 ON a = b"
+# ./bin/grammar_test -f "SELECT * \"table\" WHERE (b OR NOT a) AND a = 12.5 AS t1 JOIN table2 ON a = b"
 
 echo "\n\n"
 
-./bin/analysis "SELECT a FROM foo WHERE a > 12 OR b > 3 AND c = 3"
+# ./bin/analysis "SELECT a FROM foo WHERE a > 12 OR b > 3 AND c = 3"
+# ./bin/analysis "SELECT \"AVG(grade)\" FROM (SELECT AVG(grade) FROM students GROUP BY city) t1"
 # ./bin/analysis "SELECT col1, col2, 'test' FROM tbl t1, foo WHERE age > 12 AND zipcode = 12345 GROUP BY col1 ORDER BY col2 DESC LIMIT 100;"
 # ./bin/analysis "SELECT * from tbl AS t1 JOIN table2 AS t2 ON t1.a = t2.b WHERE (b OR NOT a) AND a = 12.5"
 # ./bin/analysis "SELECT t1.a, t1.b, t2.c FROM tbl AS t1 JOIN (SELECT * FROM foo JOIN bar ON foo.id = bar.id) t2 ON t1.a = t2.b WHERE (t1.b OR NOT t1.a) AND t2.c = 12.5"
@@ -33,5 +34,6 @@ echo "\n\n"
 # ./bin/analysis "
 # IMPORT FROM TBL FILE 'students.tbl' INTO tbl;
 # SELECT * FROM tbl;"
+./bin/analysis "CREATE TABLE \"table\" FROM TBL FILE 'students.tbl'"
 
 echo "\n\n"

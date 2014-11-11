@@ -27,12 +27,9 @@ int main(int argc, char *argv[]) {
         for (Statement* stmt : stmt_list->vector()) {
             printf("Statement %d:\n", i++);
             switch (stmt->type) {
-                case kStmtSelect:
-                    printSelectStatementInfo((SelectStatement*) stmt, 1);
-                    break;
-                case kStmtImport:
-                    printImportStatementInfo((ImportStatement*) stmt, 1);
-                    break;
+                case kStmtSelect: printSelectStatementInfo((SelectStatement*) stmt, 1); break;
+                case kStmtImport: printImportStatementInfo((ImportStatement*) stmt, 1); break;
+                case kStmtCreate: printCreateStatementInfo((CreateStatement*) stmt, 1); break;
                 default:
                     fprintf(stderr, "\tStatement Type %u. No detailed print method available.\n", stmt->type);
                     break;

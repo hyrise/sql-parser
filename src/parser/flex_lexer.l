@@ -128,7 +128,7 @@ IS			TOKEN(IS)
 	return SQL_INT;
 }
 
-\"[A-Za-z][A-Za-z0-9_]*\" {
+\"[^\"\n]+\" {
 	// Crop the leading and trailing quote char
 	yylval->sval = hsql::substr(yytext, 1, strlen(yytext)-1);
 	return SQL_NAME;
