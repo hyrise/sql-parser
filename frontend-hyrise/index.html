@@ -62,7 +62,10 @@
         </div>
         <div class="col-lg-6">
           <!-- View: Result Table -->
-          <h3>Results (first 100 rows)</h3>
+            <h3>Results (first 100 rows)</h3>
+          <div id="msgContainer" class="alert alert-success" role="alert">
+            <div id="resultInfo">Ready</div>
+          </div>
           <table id="resultTable" class="table table-bordered table-striped table-hover"></table>
         </div>
       </div>
@@ -118,19 +121,31 @@ $(function() {
   };
 
   $('#submitBtn').click(function() {
+    $('#resultTable').html('');
+    $('#resultInfo').html('waiting for result...');
+    $('#msgContainer').attr('class', 'alert alert-warning');
+
+
     var host = $('#hostInput').val();
     var port = $('#portInput').val();
     var query = $('#queryInput').val();
     var hyrise = new HyriseSqlConnector(host, port);
+
     hyrise.executeQuery(query, function(result) {
+      // On Success
+      $('#msgContainer').attr('class', 'alert alert-success');
+      $('#resultInfo').html('Result contains ' + result.real_size + ' rows');
       console.log("Query result: ", result);
       updateResultTable(result);
       updatePerformanceData(result);
+
     }, function(xhr, status, error) {
-      console.log(arguments);
-      var msg = xhr.responseJSON.error[0];
       // On Error
-      $('#resultTable').html('<td>Error when executing query (' + status + ', ' + msg + ')</td>');
+      console.log(arguments);
+      var msg = 'Error when fetching result. Possibly no connection to Hyrise.';
+      if (xhr.responseJSON) msg = xhr.responseJSON.error[0];
+      $('#resultInfo').html(msg);
+      $('#msgContainer').attr('class', 'alert alert-danger');
       $('#performanceDataTable tbody').html('');
     });
   });
@@ -143,10 +158,12 @@ $(function() {
     return true;
   });
 
-  addSampleQuery('IMPORT & SELECT', 'IMPORT FROM TBL FILE \'test/students.tbl\' INTO students;\nSELECT name, city, grade FROM students WHERE grade <= 2.0;')
-  addSampleQuery('SELECT 2', 'SELECT name, city, grade FROM (SELECT * FROM students WHERE city = \'Potsdam\') t1 WHERE grade <= 1.5 OR grade >= 3.5;');
-  addSampleQuery('COMMENT & LIKE', '-- test\nSELECT * FROM students WHERE city LIKE \'B.*\'\n-- comment');
+  addSampleQuery('CREATE & SELECT', 'CREATE TABLE students FROM TBL FILE \'test/students.tbl\';\nSELECT name, city, grade FROM students WHERE grade <= 2.0;')
+  addSampleQuery('SELECT', 'SELECT name, city, grade FROM (SELECT * FROM students WHERE city = \'Potsdam\') t1 WHERE grade <= 1.5 OR grade >= 3.5;');
+  addSampleQuery('GROUP', 'SELECT AVG(grade) FROM students GROUP BY city');
   addSampleQuery('JOIN', 'SELECT * FROM students t1 JOIN students t2 ON t1.student_number = t2.student_number');
+  addSampleQuery('GROUP ERROR', 'SELECT AVG(grade) FROM (SELECT city, AVG(grade) FROM students GROUP BY city) t1');
+
 });
     </script>
   </body>
