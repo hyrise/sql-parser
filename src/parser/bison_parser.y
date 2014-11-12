@@ -99,7 +99,7 @@ typedef void* yyscan_t;
 /*********************************
  ** Token Definition
  *********************************/
-%token <sval> NAME STRING COMPARISON
+%token <sval> IDENTIFIER STRING
 %token <fval> FLOAT
 %token <ival> INT
 %token <uval> NOTEQUALS LESSEQ GREATEREQ
@@ -124,7 +124,7 @@ typedef void* yyscan_t;
 %type <sval> 		table_name opt_alias alias file_path
 %type <table> 		from_clause table_ref table_ref_atomic table_ref_name
 %type <table>		join_clause join_table
-%type <expr> 		expr scalar_expr unary_expr binary_expr function_expr star_expr
+%type <expr> 		expr scalar_expr unary_expr binary_expr function_expr star_expr expr_alias
 %type <expr> 		column_name literal int_literal num_literal string_literal
 %type <expr> 		comp_expr where_clause join_condition
 %type <expr_list> 	expr_list group_clause select_list
@@ -283,10 +283,16 @@ limit_clause:
  ** Expressions 
  ******************************/
 expr_list:
-		expr { $$ = new List<Expr*>($1); }
-	|	expr_list ',' expr { $1->push_back($3); $$ = $1; }
+		expr_alias { $$ = new List<Expr*>($1); }
+	|	expr_list ',' expr_alias { $1->push_back($3); $$ = $1; }
 	;
 
+expr_alias:
+		expr opt_alias {
+			$$ = $1;
+			$$->alias = $2;
+		}
+	;
 
 expr:
 		'(' expr ')' { $$ = $2; }
@@ -332,12 +338,12 @@ comp_expr:
 	;
 
 function_expr:
-		NAME '(' expr ')' { $$ = Expr::makeFunctionRef($1, $3); }
+		IDENTIFIER '(' expr ')' { $$ = Expr::makeFunctionRef($1, $3); }
 	;
 
 column_name:
-		NAME { $$ = Expr::makeColumnRef($1); }
-	|	NAME '.' NAME { $$ = Expr::makeColumnRef($1, $3); }
+		IDENTIFIER { $$ = Expr::makeColumnRef($1); }
+	|	IDENTIFIER '.' IDENTIFIER { $$ = Expr::makeColumnRef($1, $3); }
 	;
 
 literal:
@@ -406,14 +412,14 @@ table_ref_name:
 		;
 
 table_name:
-		NAME
-	|	NAME '.' NAME
+		IDENTIFIER
+	|	IDENTIFIER '.' IDENTIFIER
 	;
 
 
 alias:	
-		AS NAME { $$ = $2; }
-	|	NAME
+		AS IDENTIFIER { $$ = $2; }
+	|	IDENTIFIER
 	;
 
 opt_alias:

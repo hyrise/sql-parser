@@ -62,6 +62,7 @@ struct Expr {
 	Expr* expr2;
 	char* name;
 	char* table;
+	char* alias;
 	float fval;
 	int64_t ival;
 
@@ -89,7 +90,7 @@ struct Expr {
 		Expr zero = {type};			\
 		var = (Expr*)malloc(sizeof *var);	\
 		*var = zero;				\
-	} while(0)
+	} while(0);						
 
 } // namespace hsql
 

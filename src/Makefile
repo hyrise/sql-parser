@@ -1,34 +1,31 @@
 
-# Makefile
-
-SOURCES = $(shell find lib/ -name '*.cpp') parser/bison_parser.cpp parser/flex_lexer.cpp parser/SQLParser.cpp
-
-TESTS_MAIN = sql_tests.cpp
-TESTS_BIN = bin/tests
 
 CC = g++
-CFLAGS = -g -O3 -Ilib/ -I./ -Iparser/ -std=c++11 -pthread
+CFLAGS = -O3 -Ilib/ -I./ -Iparser/ -std=c++11 -pthread
+SOURCES = $(shell find lib/ -name '*.cpp') parser/bison_parser.cpp parser/flex_lexer.cpp parser/SQLParser.cpp
+BUILD_DIR = ../build/
+BIN_DIR = ../bin
 
 
 # release build is always using bison
 build: clean
 	make -C parser/
-	mkdir build/
-	cp lib/* build/
-	cp parser/*.h build/
-	cp parser/*.cpp build/
+	mkdir $(BUILD_DIR)
+	cp lib/* $(BUILD_DIR)
+	cp parser/*.h $(BUILD_DIR)
+	cp parser/*.cpp $(BUILD_DIR)
 
 
 analysis: $(SOURCES) sql_analysis.cpp
-	$(CC) $(CFLAGS) $(SOURCES) sql_analysis.cpp -o bin/analysis
+	$(CC) $(CFLAGS) $(SOURCES) sql_analysis.cpp -o $(BIN_DIR)/analysis
 
 
 grammar_test: $(SOURCES) sql_grammar_test.cpp
-	$(CC) $(CFLAGS) $(SOURCES) sql_grammar_test.cpp -o bin/grammar_test
+	$(CC) $(CFLAGS) $(SOURCES) sql_grammar_test.cpp -o $(BIN_DIR)/grammar_test
 
 
 tests: $(SOURCES) $(TESTS_MAIN)
-	$(CC) $(CFLAGS) $(SOURCES) $(TESTS_MAIN) -o $(TESTS_BIN)
+	$(CC) $(CFLAGS) $(SOURCES) sql_tests.cpp -o $(BIN_DIR)/tests
 
 
 parser/bison_parser.cpp:
@@ -36,6 +33,6 @@ parser/bison_parser.cpp:
 
 
 clean:
-	rm -f *.o *~ bin/analysis $(TESTS_BIN) bin/grammar_test
-	rm -rf build/
+	rm -f *.o *~ $(BIN_DIR)/analysis $(TESTS_BIN) $(BIN_DIR)/grammar_test
+	rm -rf $(BUILD_DIR)
 	make clean -C parser/

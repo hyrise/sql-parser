@@ -67,7 +67,10 @@ void printExpression(Expr* expr, uint num_indent) {
     case kExprLiteralString: inprint(expr->name, num_indent); break;
     case kExprFunctionRef: inprint(expr->name, num_indent); inprint(expr->expr->name, num_indent+1); break;
     case kExprOperator: printOperatorExpression(expr, num_indent); break;
-    default: fprintf(stderr, "Unrecognized expression type %d\n", expr->type); break;
+    default: fprintf(stderr, "Unrecognized expression type %d\n", expr->type); return;
+  }
+  if (expr->alias != NULL) {
+    inprint("Alias", num_indent); inprint(expr->alias, num_indent+1);
   }
 }
 

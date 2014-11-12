@@ -131,12 +131,12 @@ IS			TOKEN(IS)
 \"[^\"\n]+\" {
 	// Crop the leading and trailing quote char
 	yylval->sval = hsql::substr(yytext, 1, strlen(yytext)-1);
-	return SQL_NAME;
+	return SQL_IDENTIFIER;
 }
 
 [A-Za-z][A-Za-z0-9_]* {
 	yylval->sval = strdup(yytext);
-	return SQL_NAME;
+	return SQL_IDENTIFIER;
 }
 
 

@@ -2,7 +2,8 @@
 
 # Usage: deploy_to_hyrise.sh path/to/hyrise.git
 
-BUILD_PATH=$(readlink -f $(dirname $0))/build
+
+BUILD_PATH=$(readlink -f $(dirname $0))/src/build
 
 HYRISE_PATH=$1
 
@@ -14,7 +15,7 @@ if [ ! -d $SQL_PATH ]; then
 fi
 
 
-make build
+make -C src/ build
 
 rm ${SQL_PATH}/parser/*
 cp ${BUILD_PATH}/* ${SQL_PATH}/parser/
