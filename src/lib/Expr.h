@@ -50,7 +50,7 @@ struct Expr {
 
 
 
-	Expr(ExprType type) : type(type) {};
+	Expr(ExprType type) : type(type), expr(NULL), expr2(NULL), name(NULL), table(NULL), alias(NULL) {};
 
 	// Interesting side-effect:
 	// Making the destructor virtual causes segmentation faults
@@ -83,6 +83,7 @@ struct Expr {
 };
 
 // Zero initializes an Expr object and assigns it to a space in the heap
+// For Hyrise we still had to put in the explicit NULL constructor
 // http://www.ex-parrot.com/~chris/random/initialise.html
 #define ALLOC_EXPR(var, type) 		\
 	Expr* var;						\
@@ -90,7 +91,8 @@ struct Expr {
 		Expr zero = {type};			\
 		var = (Expr*)malloc(sizeof *var);	\
 		*var = zero;				\
-	} while(0);						
+	} while(0);
+
 
 } // namespace hsql
 

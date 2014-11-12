@@ -3,7 +3,7 @@
 # Usage: deploy_to_hyrise.sh path/to/hyrise.git
 
 
-BUILD_PATH=$(readlink -f $(dirname $0))/src/build
+BUILD_PATH=$(readlink -f $(dirname $0))/build
 
 HYRISE_PATH=$1
 
