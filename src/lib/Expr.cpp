@@ -86,10 +86,10 @@ Expr* Expr::makeFunctionRef(char* func_name, Expr* expr) {
 }
 
 Expr::~Expr() {
-	// delete expr;
-	// delete expr2;
-	// delete name;
-	// delete table;
+	delete expr;
+	delete expr2;
+	delete name;
+	delete table;
 }
 
 } // namespace hsql
