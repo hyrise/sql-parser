@@ -28,6 +28,11 @@ HyriseSqlConnector.prototype.executeQuery = function(query, callback, error_call
 			sql: query
 		},
 		success: function(result) {
+			if (typeof result.real_size === "undefined") {
+				result.real_size = 0;
+				result.rows = [];
+				result.header = [];
+			}
 			callback(result);
 		},
 		error: error_callback

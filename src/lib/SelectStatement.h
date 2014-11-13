@@ -56,9 +56,9 @@ struct SelectStatement : Statement {
 		select_list(NULL),
 		where_clause(NULL),
 		group_by(NULL),
+		union_select(NULL),
 		order(NULL),
-		limit(NULL),
-		union_select(NULL) {};
+		limit(NULL) {};
 
 	virtual ~SelectStatement(); // defined in destructors.cpp
 

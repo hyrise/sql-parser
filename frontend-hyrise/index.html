@@ -23,7 +23,8 @@
 
           <!-- Sample Queries -->
           <div class="row" style="margin-bottom: 10px;">
-            <div class="col-sm-12" id="sampleQueries"></div>
+            <div class="col-sm-8" id="sampleQueries"></div>
+            <div class="col-sm-4" id="buggyQueries"></div>
           </div>
 
           <!-- Input -->
@@ -36,7 +37,7 @@
           <!-- Submit -->
           <div class="row" style="margin: 10px 0px;">
             <div class="col-sm-12">
-              <button type="button" class="btn btn-primary" id="submitBtn">Submit Query</button>
+              <button type="button" class="btn btn-primary" id="submitBtn">Submit Query (Shift + Enter)</button>
             </div>
           </div>
 
@@ -74,9 +75,14 @@
     <script type="text/javascript">
 $(function() {
   function addSampleQuery(name, query) {
-    var btn = $('<button type="button" class="btn btn-default">' + name + '</button>');
+    var btn = $('<button type="button" class="btn btn-success">' + name + '</button>');
     btn.click(function() { $('#queryInput').val(query); });
     $('#sampleQueries').append(btn);
+  }
+  function addBuggyQuery(name, query) {
+    var btn = $('<button type="button" class="btn btn-danger">' + name + '</button>');
+    btn.click(function() { $('#queryInput').val(query); });
+    $('#buggyQueries').append(btn);
   }
 
   function createElement(tag, value) {
@@ -158,11 +164,17 @@ $(function() {
     return true;
   });
 
-  addSampleQuery('CREATE & SELECT', 'CREATE TABLE students FROM TBL FILE \'test/students.tbl\';\nSELECT name, city, grade FROM students WHERE grade <= 2.0;')
-  addSampleQuery('SELECT', 'SELECT name, city, grade FROM (SELECT * FROM students WHERE city = \'Potsdam\') t1 WHERE grade <= 1.5 OR grade >= 3.5;');
-  addSampleQuery('GROUP', 'SELECT AVG(grade) FROM students GROUP BY city');
+  addSampleQuery('Load Tables', '\
+CREATE TABLE students FROM TBL FILE \'test/students.tbl\';\n\
+CREATE TABLE test FROM TBL FILE \'test/lin_xxs.tbl\';');
+
+  addSampleQuery('SELECT 1', 'SELECT * FROM students;')
+  addSampleQuery('SELECT 2', 'SELECT name, city, grade FROM (SELECT * FROM students WHERE city = \'Potsdam\') t1 WHERE grade <= 1.5 OR grade >= 3.5;'); 
+  addSampleQuery('GROUP', 'SELECT city, AVG(grade) AS average|, MIN(grade) AS best, MAX(grade) AS worst FROM students GROUP BY city;');
+  addSampleQuery('UNION', 'SELECT * FROM students WHERE grade = 1.3 UNION SELECT * FROM students WHERE grade = 3.7;');
   addSampleQuery('JOIN', 'SELECT * FROM students t1 JOIN students t2 ON t1.student_number = t2.student_number');
-  addSampleQuery('GROUP ERROR', 'SELECT AVG(grade) FROM (SELECT city, AVG(grade) FROM students GROUP BY city) t1');
+  addBuggyQuery('GROUP', 'SELECT AVG(grade) FROM (SELECT city, AVG(grade) FROM students GROUP BY city) t1');
+  addBuggyQuery('UNION', 'SELECT name FROM students WHERE grade > 2.0 UNION SELECT name FROM students');
 
 });
     </script>

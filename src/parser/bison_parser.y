@@ -244,6 +244,7 @@ select_no_paren:
 	|	select_ref UNION select_ref opt_order opt_limit {
 			$$ = $1;
 			$$->union_select = $3;
+			// TODO: might overwrite order and limit of first select here
 			$$->order = $4;
 			$$->limit = $5;
 		}

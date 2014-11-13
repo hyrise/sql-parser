@@ -13,6 +13,11 @@ div {
 	margin-top: 10px;
 }
 
+button {
+	margin-left: 1px;
+	margin-right: 1px;
+}
+
 /*
 #resultTable td {
 	border: 1px solid #333;
