@@ -9,9 +9,6 @@ namespace hsql {
 typedef enum {
 	kTable,
 	kTableFromTbl, // Hyrise file format
-	// HANA supports a second file type CONTROL FILE
-	// we don't need that so far, but we leave the option
-	// to expand it here
 } CreateType;
 
 
