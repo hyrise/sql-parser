@@ -70,7 +70,7 @@ void printExpression(Expr* expr, uint num_indent) {
     default: fprintf(stderr, "Unrecognized expression type %d\n", expr->type); return;
   }
   if (expr->alias != NULL) {
-    inprint("Alias", num_indent); inprint(expr->alias, num_indent+1);
+    inprint("Alias", num_indent+1); inprint(expr->alias, num_indent+2);
   }
 }
 
@@ -85,6 +85,12 @@ void printSelectStatementInfo(SelectStatement* stmt, uint num_indent) {
   if (stmt->where_clause != NULL) {
     inprint("Search Conditions:", num_indent+1);
     printExpression(stmt->where_clause, num_indent+2);
+  }
+
+
+  if (stmt->union_select != NULL) {
+    inprint("Union:", num_indent+1);
+    printSelectStatementInfo(stmt->union_select, num_indent+2);
   }
 
   if (stmt->order != NULL) {

@@ -50,7 +50,13 @@ struct Expr {
 
 
 
-	Expr(ExprType type) : type(type), expr(NULL), expr2(NULL), name(NULL), table(NULL), alias(NULL) {};
+	Expr(ExprType type) :
+		type(type),
+		expr(NULL),
+		expr2(NULL),
+		name(NULL),
+		table(NULL),
+		alias(NULL) {};
 
 	// Interesting side-effect:
 	// Making the destructor virtual causes segmentation faults

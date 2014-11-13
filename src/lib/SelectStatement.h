@@ -20,7 +20,10 @@ typedef enum {
 } OrderType;
 
 struct OrderDescription {
-	OrderDescription(OrderType type, Expr* expr) : type(type), expr(expr) {}
+	OrderDescription(OrderType type, Expr* expr) :
+		type(type),
+		expr(expr) {}
+		
 	virtual ~OrderDescription(); // defined in destructors.cpp
 
 	OrderType type;
@@ -34,7 +37,10 @@ struct OrderDescription {
 const int64_t kNoLimit = -1;
 const int64_t kNoOffset = -1;
 struct LimitDescription {
-	LimitDescription(int64_t limit, int64_t offset) : limit(limit), offset(offset) {}
+	LimitDescription(int64_t limit, int64_t offset) :
+		limit(limit),
+		offset(offset) {}
+
 	int64_t limit;
 	int64_t offset;	
 };
@@ -44,15 +50,24 @@ struct LimitDescription {
  * Representation of a full select statement.
  */
 struct SelectStatement : Statement {
-	SelectStatement() : Statement(kStmtSelect) {};
+	SelectStatement() : 
+		Statement(kStmtSelect),
+		from_table(NULL),
+		select_list(NULL),
+		where_clause(NULL),
+		group_by(NULL),
+		order(NULL),
+		limit(NULL),
+		union_select(NULL) {};
+
 	virtual ~SelectStatement(); // defined in destructors.cpp
 
 	TableRef* from_table;
 	List<Expr*>* select_list;
-	Expr* where_clause;
-	
+	Expr* where_clause;	
 	List<Expr*>* group_by;
 
+	SelectStatement* union_select;
 	OrderDescription* order;
 	LimitDescription* limit;
 };

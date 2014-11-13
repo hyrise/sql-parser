@@ -29,7 +29,16 @@ typedef enum {
 typedef struct TableRef TableRef;
 
 struct TableRef {
-	TableRef(TableRefType type) : type(type) {}
+	TableRef(TableRefType type) :
+		type(type),
+		name(NULL),
+		alias(NULL),
+		select(NULL),
+		list(NULL),
+		left(NULL),
+		right(NULL),
+		join_condition(NULL) {}
+		
 	virtual ~TableRef(); // defined in destructors.cpp
 
 	TableRefType type;

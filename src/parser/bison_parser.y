@@ -105,12 +105,12 @@ typedef void* yyscan_t;
 %token <uval> NOTEQUALS LESSEQ GREATEREQ
 
 /* SQL Keywords */
-%token DISTINCT DATABASE NATURAL CONTROL BETWEEN SELECT
-%token HAVING OFFSET CREATE IMPORT RENAME DELETE INSERT
-%token UPDATE UNLOAD COLUMN ISNULL WHERE GROUP ORDER LIMIT
-%token INNER OUTER RIGHT CROSS USING TABLE INDEX ALTER FROM
-%token DESC JOIN LEFT FILE DROP LOAD INTO NULL LIKE TOP ASC
-%token CSV TBL NOT AND BY ON AS OR IN IS
+%token DATABASE DISTINCT BETWEEN CONTROL NATURAL COLUMN
+%token CREATE DELETE HAVING IMPORT INSERT ISNULL OFFSET
+%token RENAME SELECT UNLOAD UPDATE ALTER CROSS GROUP INDEX
+%token INNER LIMIT ORDER OUTER RIGHT TABLE UNION USING WHERE
+%token DESC DROP FILE FROM INTO JOIN LEFT LIKE LOAD NULL ALL
+%token AND ASC CSV NOT TBL TOP AS BY IN IS ON OR
 
 
 /*********************************
@@ -118,7 +118,7 @@ typedef void* yyscan_t;
  *********************************/
 %type <stmt_list>	statement_list
 %type <statement> 	statement
-%type <select_stmt> select_statement
+%type <select_stmt> select_statement select_ref select_with_paren select_no_paren select_clause
 %type <import_stmt> import_statement
 %type <create_stmt> create_statement
 %type <sval> 		table_name opt_alias alias file_path
@@ -126,12 +126,12 @@ typedef void* yyscan_t;
 %type <table>		join_clause join_table
 %type <expr> 		expr scalar_expr unary_expr binary_expr function_expr star_expr expr_alias
 %type <expr> 		column_name literal int_literal num_literal string_literal
-%type <expr> 		comp_expr where_clause join_condition
-%type <expr_list> 	expr_list group_clause select_list
+%type <expr> 		comp_expr opt_where join_condition
+%type <expr_list> 	expr_list opt_group select_list
 %type <table_list> 	table_ref_commalist
-%type <order>		order_by_clause
-%type <limit>		limit_clause
-%type <order_type>	order_type
+%type <order>		opt_order
+%type <limit>		opt_limit
+%type <order_type>	opt_order_type
 %type <uval>		import_file_type
 
 
@@ -226,18 +226,42 @@ create_statement:
  ******************************/
 
 select_statement:
-		SELECT select_list from_clause where_clause group_clause order_by_clause limit_clause
-		{
-			SelectStatement* s = new SelectStatement();
-			s->select_list = $2;
-			s->from_table = $3;
-			s->where_clause = $4;
-			s->group_by = $5;
-			s->order = $6;
-			s->limit = $7;
-			$$ = s;
+		select_with_paren
+	|	select_no_paren
+	;
+
+select_with_paren:
+		'(' select_no_paren ')' { $$ = $2; }
+	|	'(' select_with_paren ')' { $$ = $2; }
+	;
+
+select_no_paren:
+		select_clause opt_order opt_limit {
+			$$ = $1;
+			$$->order = $2;
+			$$->limit = $3;
 		}
-	|	'(' select_statement ')' { $$ = $2; }
+	|	select_ref UNION select_ref opt_order opt_limit {
+			$$ = $1;
+			$$->union_select = $3;
+			$$->order = $4;
+			$$->limit = $5;
+		}
+	;
+
+select_ref:
+		select_clause
+	|	select_with_paren
+	;
+
+select_clause:
+		SELECT select_list from_clause opt_where opt_group {
+			$$ = new SelectStatement();
+			$$->select_list = $2;
+			$$->from_table = $3;
+			$$->where_clause = $4;
+			$$->group_by = $5;
+		}
 	;
 
 
@@ -251,31 +275,33 @@ from_clause:
 	;
 
 
-where_clause:
+opt_where:
 		WHERE expr { $$ = $2; }
 	|	/* empty */ { $$ = NULL; }
 	;
 
 // TODO: having
-group_clause:
+opt_group:
 		GROUP BY expr_list { $$ = $3; }
 	|	/* empty */ { $$ = NULL; }
 	;
 
 
-order_by_clause:
-		ORDER BY expr order_type { $$ = new OrderDescription($4, $3); }
+opt_order:
+		ORDER BY expr opt_order_type { $$ = new OrderDescription($4, $3); }
 	|	/* empty */ { $$ = NULL; }
 	;
 
-order_type:
+opt_order_type:
 		ASC { $$ = kOrderAsc; }
 	|	DESC { $$ = kOrderDesc; }
 	|	/* empty */ { $$ = kOrderAsc; }
 	;
 
-limit_clause:
+
+opt_limit:
 		LIMIT int_literal { $$ = new LimitDescription($2->ival, kNoOffset); delete $2; }
+	|	LIMIT int_literal OFFSET int_literal { $$ = new LimitDescription($2->ival, $4->ival); delete $2; delete $4; }
 	|	/* empty */ { $$ = NULL; }
 	;
 

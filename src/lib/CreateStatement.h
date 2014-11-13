@@ -19,7 +19,11 @@ typedef enum {
  * @struct CreateStatement
  */
 struct CreateStatement : Statement {
-	CreateStatement() : Statement(kStmtCreate) {};
+	CreateStatement() :
+		Statement(kStmtCreate),
+		file_path(NULL),
+		table_name(NULL) {};
+		
 	virtual ~CreateStatement(); // defined in destructors.cpp
 
 	CreateType create_type;

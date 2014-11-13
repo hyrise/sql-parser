@@ -11,7 +11,7 @@ namespace hsql {
 
 
 typedef enum {
-	kStmtError,
+	kStmtError, // Unused
 	kStmtSelect,
 	kStmtImport,
 	// Following types are planned but not supported yet
@@ -26,7 +26,9 @@ typedef enum {
 
 
 struct Statement {
-	Statement(StatementType type) : type(type) {};
+	Statement(StatementType type) :
+		type(type) {};
+
 	virtual ~Statement(); // defined in destructors.cpp
 
 	StatementType type;
@@ -35,8 +37,16 @@ struct Statement {
 
 class StatementList : public List<Statement*> {
 public:
-	StatementList() : List<Statement*>(), isValid(true) {};
-	StatementList(Statement* stmt) : List<Statement*>(stmt), isValid(true) {};
+	StatementList() :
+		List<Statement*>(),
+		isValid(true),
+		parser_msg(NULL) {};
+
+	StatementList(Statement* stmt) :
+		List<Statement*>(stmt),
+		isValid(true),
+		parser_msg(NULL) {};
+		
 	virtual ~StatementList(); // defined in destructors.cpp
 
 	bool isValid;
