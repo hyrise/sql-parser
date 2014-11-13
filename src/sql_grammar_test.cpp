@@ -36,7 +36,7 @@ int main(int argc, char *argv[]) {
 
     bool expect_false = false;
     bool use_file = false;
-    char* file_path;
+    std::string file_path = "";
     
     // Parse command line arguments
     int i = 1;

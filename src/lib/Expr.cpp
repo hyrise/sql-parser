@@ -17,7 +17,7 @@ char* substr(const char* source, int from, int to) {
 
 
 Expr* Expr::makeOpUnary(OperatorType op, Expr* expr) {
-	ALLOC_EXPR(e, kExprOperator);
+	Expr* e = new Expr(kExprOperator);
 	e->op_type = op;
 	e->expr = expr;
 	e->expr2 = NULL;
@@ -27,7 +27,7 @@ Expr* Expr::makeOpUnary(OperatorType op, Expr* expr) {
 
 
 Expr* Expr::makeOpBinary(Expr* expr1, OperatorType op, Expr* expr2) {
-	ALLOC_EXPR(e, kExprOperator);
+	Expr* e = new Expr(kExprOperator);
 	e->op_type = op;
 	e->op_char = 0;
 	e->expr = expr1;
@@ -36,7 +36,7 @@ Expr* Expr::makeOpBinary(Expr* expr1, OperatorType op, Expr* expr2) {
 }
 
 Expr* Expr::makeOpBinary(Expr* expr1, char op, Expr* expr2) {
-	ALLOC_EXPR(e, kExprOperator);
+	Expr* e = new Expr(kExprOperator);
 	e->op_type = SIMPLE_OP;
 	e->op_char = op;
 	e->expr = expr1;
@@ -47,39 +47,39 @@ Expr* Expr::makeOpBinary(Expr* expr1, char op, Expr* expr2) {
 
 
 Expr* Expr::makeLiteral(int64_t val) {
-	ALLOC_EXPR(e, kExprLiteralInt);
+	Expr* e = new Expr(kExprLiteralInt);
 	e->ival = val;
 	return e;
 }
 
 Expr* Expr::makeLiteral(double value) {
-	ALLOC_EXPR(e, kExprLiteralFloat);
+	Expr* e = new Expr(kExprLiteralFloat);
 	e->fval = value;
 	return e;
 }
 
 Expr* Expr::makeLiteral(char* string) {
-	ALLOC_EXPR(e, kExprLiteralString);
+	Expr* e = new Expr(kExprLiteralString);
 	e->name = string;
 	return e;
 }
 
 
 Expr* Expr::makeColumnRef(char* name) {
-	ALLOC_EXPR(e, kExprColumnRef);
+	Expr* e = new Expr(kExprColumnRef);
 	e->name = name;
 	return e;
 }
 
 Expr* Expr::makeColumnRef(char* table, char* name) {
-	ALLOC_EXPR(e, kExprTableColumnRef);
+	Expr* e = new Expr(kExprTableColumnRef);
 	e->name = name;
 	e->table = table;
 	return e;
 }
 
 Expr* Expr::makeFunctionRef(char* func_name, Expr* expr) {
-	ALLOC_EXPR(e, kExprFunctionRef);
+	Expr* e = new Expr(kExprFunctionRef);
 	e->name = func_name;
 	e->expr = expr;
 	return e;

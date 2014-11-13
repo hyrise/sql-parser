@@ -91,6 +91,7 @@ struct Expr {
 // Zero initializes an Expr object and assigns it to a space in the heap
 // For Hyrise we still had to put in the explicit NULL constructor
 // http://www.ex-parrot.com/~chris/random/initialise.html
+// Unused
 #define ALLOC_EXPR(var, type) 		\
 	Expr* var;						\
 	do {							\
@@ -98,6 +99,7 @@ struct Expr {
 		var = (Expr*)malloc(sizeof *var);	\
 		*var = zero;				\
 	} while(0);
+#undef ALLOC_EXPR
 
 
 } // namespace hsql

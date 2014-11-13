@@ -35,6 +35,7 @@
 
 /* other flags */
 %option noyywrap
+%option nounput
 %option warn
 %option case-insensitive
 %option prefix="hsql_"

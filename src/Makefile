@@ -1,7 +1,7 @@
 
 
 CC = g++
-CFLAGS = -O3 -Ilib/ -I./ -Iparser/ -std=c++11 -pthread
+CFLAGS = -O3 -Ilib/ -I./ -Iparser/ -std=c++11 -pthread -Wall -g
 SOURCES = $(shell find lib/ -name '*.cpp') parser/bison_parser.cpp parser/flex_lexer.cpp parser/SQLParser.cpp
 BUILD_DIR = ../build/
 BIN_DIR = ../bin

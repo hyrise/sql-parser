@@ -48,6 +48,7 @@ struct LimitDescription {
 /**
  * @struct SelectStatement
  * Representation of a full select statement.
+ * TODO: add union_order and union_limit
  */
 struct SelectStatement : Statement {
 	SelectStatement() : 
