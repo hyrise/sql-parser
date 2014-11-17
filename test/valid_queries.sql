@@ -11,5 +11,6 @@ SELECT * FROM t1 UNION (SELECT * FROM t2) ORDER BY col1;
 SELECT * FROM t1 UNION (SELECT * FROM t2 UNION SELECT * FROM t3) ORDER BY col1; 
 # CREATE statement
 CREATE TABLE "table" FROM TBL FILE 'students.tbl'
+CREATE TABLE IF NOT EXISTS "table" FROM TBL FILE 'students.tbl'
 # Multiple statements
 CREATE TABLE "table" FROM TBL FILE 'students.tbl'; SELECT * FROM "table";

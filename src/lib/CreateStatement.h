@@ -18,12 +18,14 @@ typedef enum {
 struct CreateStatement : Statement {
 	CreateStatement() :
 		Statement(kStmtCreate),
+		if_not_exists(false),
 		file_path(NULL),
 		table_name(NULL) {};
 		
 	virtual ~CreateStatement(); // defined in destructors.cpp
 
 	CreateType create_type;
+	bool if_not_exists;
 	const char* file_path;
 	const char* table_name;
 };

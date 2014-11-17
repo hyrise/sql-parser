@@ -33,6 +33,8 @@ CREATE
 TABLE
 DATABASE
 INDEX
+IF
+EXISTS
 
 // Import statement
 IMPORT

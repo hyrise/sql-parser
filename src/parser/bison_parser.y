@@ -76,6 +76,7 @@ typedef void* yyscan_t;
 	int64_t ival;
 	char* sval;
 	uint uval;
+	bool bval;
 
 	hsql::Statement* statement;
 	hsql::SelectStatement* select_stmt;
@@ -106,11 +107,11 @@ typedef void* yyscan_t;
 
 /* SQL Keywords */
 %token DATABASE DISTINCT BETWEEN CONTROL NATURAL COLUMN
-%token CREATE DELETE HAVING IMPORT INSERT ISNULL OFFSET
-%token RENAME SELECT UNLOAD UPDATE ALTER CROSS GROUP INDEX
-%token INNER LIMIT ORDER OUTER RIGHT TABLE UNION USING WHERE
-%token DESC DROP FILE FROM INTO JOIN LEFT LIKE LOAD NULL ALL
-%token AND ASC CSV NOT TBL TOP AS BY IN IS ON OR
+%token CREATE DELETE EXISTS HAVING IMPORT INSERT ISNULL
+%token OFFSET RENAME SELECT UNLOAD UPDATE ALTER CROSS GROUP
+%token INDEX INNER LIMIT ORDER OUTER RIGHT TABLE UNION USING
+%token WHERE DESC DROP FILE FROM INTO JOIN LEFT LIKE LOAD
+%token NULL ALL AND ASC CSV NOT TBL TOP AS BY IF IN IS ON OR
 
 
 /*********************************
@@ -122,6 +123,7 @@ typedef void* yyscan_t;
 %type <import_stmt> import_statement
 %type <create_stmt> create_statement
 %type <sval> 		table_name opt_alias alias file_path
+%type <bval> 		opt_not_exists
 %type <table> 		from_clause table_ref table_ref_atomic table_ref_name
 %type <table>		join_clause join_table
 %type <expr> 		expr scalar_expr unary_expr binary_expr function_expr star_expr expr_alias
@@ -212,14 +214,19 @@ file_path:
  ** Create Statement
  ******************************/
 create_statement:
-		CREATE TABLE table_name FROM TBL FILE file_path {
+		CREATE TABLE opt_not_exists table_name FROM TBL FILE file_path {
 			$$ = new CreateStatement();
 			$$->create_type = kTableFromTbl;
-			$$->file_path = $7;
-			$$->table_name = $3;
+			$$->if_not_exists = $3;
+			$$->table_name = $4;
+			$$->file_path = $8;
 		}
 	;
 
+opt_not_exists:
+		IF NOT EXISTS { $$ = true; }
+	|	/* empty */ { $$ = false; }
+	;
 
 /******************************
  ** Select Statement
