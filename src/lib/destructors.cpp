@@ -12,16 +12,6 @@ StatementList::~StatementList() {
 	delete parser_msg;
 }
 
-TableRef::~TableRef() {
-	delete name;
-	delete alias;
-	delete select;
-	delete list;
-	delete left;
-	delete right;
-	delete join_condition;
-}
-
 SelectStatement::~SelectStatement() {
 	delete from_table;
 	delete select_list;
@@ -29,10 +19,6 @@ SelectStatement::~SelectStatement() {
 	delete group_by;
 	delete order;
 	delete limit;
-}
-
-OrderDescription::~OrderDescription() {
-	delete expr;
 }
 
 ImportStatement::~ImportStatement() {
@@ -43,6 +29,23 @@ ImportStatement::~ImportStatement() {
 CreateStatement::~CreateStatement() {
 	delete file_path;
 	delete table_name;
+}
+
+OrderDescription::~OrderDescription() {
+	delete expr;
+}
+
+TableRef::~TableRef() {
+	delete name;
+	delete alias;
+	delete select;
+	delete list;
+}
+
+JoinDefinition::~JoinDefinition() {
+	delete left;
+	delete right;
+	delete condition;
 }
 
 } // namespace hsql

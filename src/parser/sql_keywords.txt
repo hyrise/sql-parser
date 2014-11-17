@@ -27,6 +27,9 @@ RIGHT
 CROSS
 USING
 NATURAL
+HASH
+RADIX
+SCAN
 
 // Create statement
 CREATE

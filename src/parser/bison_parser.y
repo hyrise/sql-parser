@@ -109,9 +109,10 @@ typedef void* yyscan_t;
 %token DATABASE DISTINCT BETWEEN CONTROL NATURAL COLUMN
 %token CREATE DELETE EXISTS HAVING IMPORT INSERT ISNULL
 %token OFFSET RENAME SELECT UNLOAD UPDATE ALTER CROSS GROUP
-%token INDEX INNER LIMIT ORDER OUTER RIGHT TABLE UNION USING
-%token WHERE DESC DROP FILE FROM INTO JOIN LEFT LIKE LOAD
-%token NULL ALL AND ASC CSV NOT TBL TOP AS BY IF IN IS ON OR
+%token INDEX INNER LIMIT ORDER OUTER RADIX RIGHT TABLE UNION
+%token USING WHERE DESC DROP FILE FROM HASH INTO JOIN LEFT
+%token LIKE LOAD NULL SCAN ALL AND ASC CSV NOT TBL TOP AS BY
+%token IF IN IS ON OR
 
 
 /*********************************
@@ -134,8 +135,7 @@ typedef void* yyscan_t;
 %type <order>		opt_order
 %type <limit>		opt_limit
 %type <order_type>	opt_order_type
-%type <uval>		import_file_type
-
+%type <uval>		import_file_type opt_join_type opt_join_algorithm
 
 /******************************
  ** Token Precedence and Associativity
@@ -466,15 +466,32 @@ opt_alias:
  ******************************/
 
 join_clause:
-		join_table JOIN join_table ON join_condition
+		join_table opt_join_algorithm opt_join_type JOIN join_table ON join_condition
 		{ 
 			$$ = new TableRef(kTableJoin);
-			$$->left = $1;
-			$$->right = $3;
-			$$->join_condition = $5;
-			$$->join_type = kJoinInner;
+			$$->join = new JoinDefinition();
+			$$->join->type = (JoinType) $2;
+			$$->join->algorithm = (JoinAlgorithm) $3;
+			$$->join->left = $1;
+			$$->join->right = $5;
+			$$->join->condition = $7;
 		}
 		;
+
+opt_join_type:
+		INNER 	{ $$ = kJoinInner; }
+	|	OUTER 	{ $$ = kJoinOuter; }
+	|	LEFT 	{ $$ = kJoinLeft; }
+	|	RIGHT 	{ $$ = kJoinRight; }
+	|	/* empty, default */ 	{ $$ = kJoinInner; }
+	;
+
+opt_join_algorithm:
+		SCAN 	{ $$ = kJoinAlgoScan; }
+	|	HASH 	{ $$ = kJoinAlgoHash; }
+	| 	RADIX 	{ $$ = kJoinAlgoRadix; }
+	|	/* empty, default */ 	{ $$ = kJoinAlgoScan; }
+
 
 
 join_table:

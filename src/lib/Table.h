@@ -2,9 +2,12 @@
 #define __TABLEREF_H__
 
 #include <stdio.h>
+
 namespace hsql {
 
-class SelectStatement;
+struct SelectStatement;
+struct JoinDefinition;
+struct TableRef;
 
 /**
  * TableRef
@@ -18,15 +21,7 @@ typedef enum {
 } TableRefType;
 
 
-typedef enum {
-	kJoinInner,
-	kJoinOuter,
-	kJoinLeft,
-	kJoinRight
-} JoinType;
 
-
-typedef struct TableRef TableRef;
 
 struct TableRef {
 	TableRef(TableRefType type) :
@@ -36,9 +31,7 @@ struct TableRef {
 		alias(NULL),
 		select(NULL),
 		list(NULL),
-		left(NULL),
-		right(NULL),
-		join_condition(NULL) {}
+		join(NULL) {}
 		
 	virtual ~TableRef(); // defined in destructors.cpp
 
@@ -50,12 +43,7 @@ struct TableRef {
 
 	SelectStatement* select;
 	List<TableRef*>* list;
-
-	// Join members
-	TableRef* left;
-	TableRef* right;
-	JoinType join_type;
-	Expr* join_condition;
+	JoinDefinition* join;
 
 
 	/**
@@ -70,6 +58,49 @@ struct TableRef {
 };
 
 
-} // namespace hsql
+/**
+ * Following are definitions needed to specify join tables
+ */ 
 
+typedef enum {
+	kJoinInner,
+	kJoinOuter,
+	kJoinLeft,
+	kJoinRight,
+} JoinType;
+
+/**
+ * Specifying a join algorithm is not standard.
+ * This is specific to Hyrise.
+ */
+typedef enum {
+	kJoinAlgoScan,
+	kJoinAlgoHash,
+	kJoinAlgoRadix
+} JoinAlgorithm;
+
+/**
+ * Definition of a join table
+ */
+struct JoinDefinition {
+	JoinDefinition() :
+		left(NULL),
+		right(NULL),
+		condition(NULL),
+		type(kJoinInner),
+		algorithm(kJoinAlgoScan) {}
+
+	virtual ~JoinDefinition(); // defined in destructors.cpp
+
+	TableRef* left;
+	TableRef* right;
+	Expr* condition;
+
+	JoinType type;
+	JoinAlgorithm algorithm;
+};
+
+
+
+} // namespace hsql
 #endif
