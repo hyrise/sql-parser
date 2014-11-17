@@ -31,6 +31,7 @@ typedef struct TableRef TableRef;
 struct TableRef {
 	TableRef(TableRefType type) :
 		type(type),
+		schema(NULL),
 		name(NULL),
 		alias(NULL),
 		select(NULL),
@@ -43,17 +44,29 @@ struct TableRef {
 
 	TableRefType type;
 
+	char* schema;
 	char* name;
 	char* alias;
 
 	SelectStatement* select;
 	List<TableRef*>* list;
 
-	// Join memberbs
+	// Join members
 	TableRef* left;
 	TableRef* right;
 	JoinType join_type;
 	Expr* join_condition;
+
+
+	/**
+	 * Convenience accessor methods
+	 */
+	inline bool hasSchema() { return schema != NULL; }
+
+	inline char* getName() {
+		if (alias != NULL) return alias;
+		else return name;
+	}
 };
 
 

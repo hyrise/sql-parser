@@ -75,6 +75,22 @@ struct Expr {
 	OperatorType op_type;
 	char op_char;
 
+
+	/**
+	 * Convenience accessor methods
+	 */
+	inline bool hasAlias() { return alias != NULL; }
+	inline char* getName() {
+		if (alias != NULL) return alias;
+		else return name;
+	}
+	inline bool isSimpleOp() { return op_type == SIMPLE_OP; }
+	inline bool isSimpleOp(char op) { return isSimpleOp() && op_char == op; }
+
+
+	/**
+	 * Static expression constructors
+	 */
 	static Expr* makeOpUnary(OperatorType op, Expr* expr);
 	static Expr* makeOpBinary(Expr* expr1, char op, Expr* expr2);
 	static Expr* makeOpBinary(Expr* expr1, OperatorType op, Expr* expr2);
