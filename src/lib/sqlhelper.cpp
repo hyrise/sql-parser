@@ -61,7 +61,7 @@ void printExpression(Expr* expr, uint num_indent) {
   switch (expr->type) {
     case kExprStar: inprint("*", num_indent); break;
     case kExprColumnRef: inprint(expr->name, num_indent); break;
-    case kExprTableColumnRef: inprint(expr->table, expr->name, num_indent); break;
+    // case kExprTableColumnRef: inprint(expr->table, expr->name, num_indent); break;
     case kExprLiteralFloat: inprint(expr->fval, num_indent); break;
     case kExprLiteralInt: inprint(expr->ival, num_indent); break;
     case kExprLiteralString: inprint(expr->name, num_indent); break;

@@ -17,7 +17,6 @@ typedef enum {
 	kExprLiteralInt,
 	kExprStar,
 	kExprColumnRef,
-	kExprTableColumnRef,
 	kExprFunctionRef,
 	kExprOperator
 } ExprType;
@@ -79,7 +78,9 @@ struct Expr {
 	/**
 	 * Convenience accessor methods
 	 */
+	inline bool isType(ExprType e_type) { return e_type == type; }
 	inline bool hasAlias() { return alias != NULL; }
+	inline bool hasTable() { return table != NULL; }
 	inline char* getName() {
 		if (alias != NULL) return alias;
 		else return name;

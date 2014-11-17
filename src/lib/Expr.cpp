@@ -72,7 +72,7 @@ Expr* Expr::makeColumnRef(char* name) {
 }
 
 Expr* Expr::makeColumnRef(char* table, char* name) {
-	Expr* e = new Expr(kExprTableColumnRef);
+	Expr* e = new Expr(kExprColumnRef);
 	e->name = name;
 	e->table = table;
 	return e;
