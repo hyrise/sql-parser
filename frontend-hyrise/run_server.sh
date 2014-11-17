@@ -1,2 +1,10 @@
 #!/bin/sh
-python -m SimpleHTTPServer 10101
+
+# Default Port
+PORT="10101"
+
+if [ $# -gt 0 ]; then
+	PORT=$1
+fi
+
+python -m SimpleHTTPServer ${PORT}

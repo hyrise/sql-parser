@@ -7,19 +7,17 @@ div {
 	margin: auto;
 }
 
-.content {
-	width: 90%;
-	margin: auto;
-	margin-top: 10px;
-}
-
 button {
 	margin-left: 1px;
 	margin-right: 1px;
 }
 
-/*
-#resultTable td {
-	border: 1px solid #333;
-	padding: 10px;
-}*/
+table {
+	font-size: 14px;
+}
+
+.content {
+	width: 90%;
+	margin: auto;
+	margin-top: 10px;
+}
