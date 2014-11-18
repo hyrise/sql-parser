@@ -70,16 +70,6 @@ typedef enum {
 } JoinType;
 
 /**
- * Specifying a join algorithm is not standard.
- * This is specific to Hyrise.
- */
-typedef enum {
-	kJoinAlgoScan,
-	kJoinAlgoHash,
-	kJoinAlgoRadix
-} JoinAlgorithm;
-
-/**
  * Definition of a join table
  */
 struct JoinDefinition {
@@ -87,8 +77,7 @@ struct JoinDefinition {
 		left(NULL),
 		right(NULL),
 		condition(NULL),
-		type(kJoinInner),
-		algorithm(kJoinAlgoScan) {}
+		type(kJoinInner) {}
 
 	virtual ~JoinDefinition(); // defined in destructors.cpp
 
@@ -97,7 +86,6 @@ struct JoinDefinition {
 	Expr* condition;
 
 	JoinType type;
-	JoinAlgorithm algorithm;
 };
 
 

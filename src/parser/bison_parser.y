@@ -135,7 +135,7 @@ typedef void* yyscan_t;
 %type <order>		opt_order
 %type <limit>		opt_limit
 %type <order_type>	opt_order_type
-%type <uval>		import_file_type opt_join_type opt_join_algorithm
+%type <uval>		import_file_type opt_join_type
 
 /******************************
  ** Token Precedence and Associativity
@@ -466,15 +466,14 @@ opt_alias:
  ******************************/
 
 join_clause:
-		join_table opt_join_algorithm opt_join_type JOIN join_table ON join_condition
+		join_table opt_join_type JOIN join_table ON join_condition
 		{ 
 			$$ = new TableRef(kTableJoin);
 			$$->join = new JoinDefinition();
 			$$->join->type = (JoinType) $2;
-			$$->join->algorithm = (JoinAlgorithm) $3;
 			$$->join->left = $1;
-			$$->join->right = $5;
-			$$->join->condition = $7;
+			$$->join->right = $4;
+			$$->join->condition = $6;
 		}
 		;
 
@@ -485,12 +484,6 @@ opt_join_type:
 	|	RIGHT 	{ $$ = kJoinRight; }
 	|	/* empty, default */ 	{ $$ = kJoinInner; }
 	;
-
-opt_join_algorithm:
-		SCAN 	{ $$ = kJoinAlgoScan; }
-	|	HASH 	{ $$ = kJoinAlgoHash; }
-	| 	RADIX 	{ $$ = kJoinAlgoRadix; }
-	|	/* empty, default */ 	{ $$ = kJoinAlgoScan; }
 
 
 
