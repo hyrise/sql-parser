@@ -5,7 +5,7 @@ import math
 with open("sql_keywords.txt", 'r') as fh:
 	keywords = [line.strip() for line in fh.readlines() if not line.strip().startswith("//") and len(line.strip()) > 0]
 
-	keywords = sorted(keywords) # Sort by name
+	keywords = sorted(set(keywords)) # Sort by name
 	keywords = sorted(keywords, key=lambda x: len(x), reverse=True) # Sort by length
 
 	#################

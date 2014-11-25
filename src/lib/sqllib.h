@@ -5,5 +5,6 @@
 #include "SelectStatement.h"
 #include "ImportStatement.h"
 #include "CreateStatement.h"
+#include "InsertStatement.h"
 
 #endif

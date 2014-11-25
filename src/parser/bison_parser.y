@@ -82,6 +82,7 @@ typedef void* yyscan_t;
 	hsql::SelectStatement* select_stmt;
 	hsql::ImportStatement* import_stmt;
 	hsql::CreateStatement* create_stmt;
+	hsql::InsertStatement* insert_stmt;
 
 	hsql::TableRef* table;
 	hsql::Expr* expr;
@@ -106,13 +107,17 @@ typedef void* yyscan_t;
 %token <uval> NOTEQUALS LESSEQ GREATEREQ
 
 /* SQL Keywords */
-%token DATABASE DISTINCT BETWEEN CONTROL NATURAL COLUMN
-%token CREATE DELETE EXISTS HAVING IMPORT INSERT ISNULL
-%token OFFSET RENAME SELECT UNLOAD UPDATE ALTER CROSS GROUP
-%token INDEX INNER LIMIT ORDER OUTER RADIX RIGHT TABLE UNION
-%token USING WHERE DESC DROP FILE FROM HASH INTO JOIN LEFT
-%token LIKE LOAD NULL SCAN ALL AND ASC CSV NOT TBL TOP AS BY
-%token IF IN IS ON OR
+%token INTERSECT TEMPORARY DISTINCT RESTRICT TRUNCATE
+%token ANALYZE BETWEEN CASCADE COLUMNS CONTROL DEFAULT
+%token EXPLAIN HISTORY NATURAL PRIMARY SCHEMAS SPATIAL
+%token BEFORE COLUMN CREATE DELETE DIRECT ESCAPE EXCEPT
+%token EXISTS GLOBAL HAVING IMPORT INSERT ISNULL OFFSET
+%token RENAME SCHEMA SELECT SORTED TABLES UNIQUE UNLOAD
+%token UPDATE VALUES AFTER ALTER CROSS GROUP INDEX INNER
+%token LIMIT LOCAL MINUS ORDER OUTER RIGHT TABLE UNION USING
+%token WHERE CALL DESC DROP FILE FROM FULL HASH INTO JOIN
+%token LEFT LIKE LOAD NULL PLAN SHOW WITH ADD ALL AND ASC
+%token CSV FOR KEY NOT SET TBL TOP AS BY IF IN IS ON OR TO
 
 
 /*********************************
@@ -120,9 +125,10 @@ typedef void* yyscan_t;
  *********************************/
 %type <stmt_list>	statement_list
 %type <statement> 	statement
-%type <select_stmt> select_statement select_ref select_with_paren select_no_paren select_clause
+%type <select_stmt> select_statement select_with_paren select_no_paren select_clause
 %type <import_stmt> import_statement
 %type <create_stmt> create_statement
+%type <insert_stmt> insert_statement
 %type <sval> 		table_name opt_alias alias file_path
 %type <bval> 		opt_not_exists
 %type <table> 		from_clause table_ref table_ref_atomic table_ref_name
@@ -130,12 +136,13 @@ typedef void* yyscan_t;
 %type <expr> 		expr scalar_expr unary_expr binary_expr function_expr star_expr expr_alias
 %type <expr> 		column_name literal int_literal num_literal string_literal
 %type <expr> 		comp_expr opt_where join_condition
-%type <expr_list> 	expr_list opt_group select_list
+%type <expr_list> 	expr_list opt_group select_list literal_list
 %type <table_list> 	table_ref_commalist
 %type <order>		opt_order
 %type <limit>		opt_limit
 %type <order_type>	opt_order_type
 %type <uval>		import_file_type opt_join_type
+%type <slist>		ident_commalist opt_column_list
 
 /******************************
  ** Token Precedence and Associativity
@@ -165,9 +172,7 @@ typedef void* yyscan_t;
  ** Section 3: Grammar Definition
  *********************************/
 
-
 // Defines our general input.
-// TODO: Support list of statements
 input:
 		statement_list opt_semicolon { *result = $1; }
 	;
@@ -178,13 +183,11 @@ statement_list:
 	|	statement_list ';' statement { $1->push_back($3); $$ = $1; }
 	;
 
-
-// All types of statements
-// TODO: insert, delete, etc...
 statement:
 		select_statement { $$ = $1; }
 	|	import_statement { $$ = $1; }
 	|	create_statement { $$ = $1; }
+	|	insert_statement { $$ = $1; }
 	;
 
 
@@ -228,6 +231,33 @@ opt_not_exists:
 	|	/* empty */ { $$ = false; }
 	;
 
+
+/******************************
+ ** Insert Statement
+ ******************************/
+insert_statement:
+		INSERT INTO table_name opt_column_list VALUES '(' literal_list ')' {
+			$$ = new InsertStatement();
+			$$->insert_type = InsertStatement::kInsertValues;
+			$$->table_name = $3;
+			$$->columns = $4;
+			$$->values = $7;
+		}
+	|	INSERT INTO table_name opt_column_list select_no_paren {
+			$$ = new InsertStatement();
+			$$->insert_type = InsertStatement::kInsertSelect;
+			$$->table_name = $3;
+			$$->columns = $4;
+			$$->select = $5;
+		}
+	;
+
+
+opt_column_list:
+		'(' ident_commalist ')' { $$ = $2; }
+	|	/* empty */ { $$ = NULL; }
+	;
+
 /******************************
  ** Select Statement
  ******************************/
@@ -248,18 +278,21 @@ select_no_paren:
 			$$->order = $2;
 			$$->limit = $3;
 		}
-	|	select_ref UNION select_ref opt_order opt_limit {
+	|	select_clause set_operator select_clause opt_order opt_limit {
+			// TODO: allow multiple unions (through linked list)
+			// TODO: capture type of set_operator
+			// TODO: might overwrite order and limit of first select here
 			$$ = $1;
 			$$->union_select = $3;
-			// TODO: might overwrite order and limit of first select here
 			$$->order = $4;
 			$$->limit = $5;
 		}
 	;
 
-select_ref:
-		select_clause
-	|	select_with_paren
+set_operator:
+		UNION
+	|	INTERSECT
+	|	EXCEPT
 	;
 
 select_clause:
@@ -319,6 +352,11 @@ opt_limit:
 expr_list:
 		expr_alias { $$ = new List<Expr*>($1); }
 	|	expr_list ',' expr_alias { $1->push_back($3); $$ = $1; }
+	;
+
+literal_list:
+		literal { $$ = new List<Expr*>($1); }
+	|	literal_list ',' literal { $1->push_back($3); $$ = $1; }
 	;
 
 expr_alias:
@@ -511,6 +549,11 @@ opt_semicolon:
 	|	/* empty */
 	;
 
+
+ident_commalist:
+		IDENTIFIER { $$ = new List<char*>($1); }
+	|	ident_commalist ',' IDENTIFIER { $1->push_back($3); $$ = $1; }
+	;
 
 %%
 /*********************************

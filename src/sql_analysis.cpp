@@ -30,6 +30,7 @@ int main(int argc, char *argv[]) {
                 case kStmtSelect: printSelectStatementInfo((SelectStatement*) stmt, 1); break;
                 case kStmtImport: printImportStatementInfo((ImportStatement*) stmt, 1); break;
                 case kStmtCreate: printCreateStatementInfo((CreateStatement*) stmt, 1); break;
+                case kStmtInsert: printInsertStatementInfo((InsertStatement*) stmt, 1); break;
                 default:
                     fprintf(stderr, "\tStatement Type %u. No detailed print method available.\n", stmt->type);
                     break;

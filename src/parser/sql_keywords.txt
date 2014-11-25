@@ -1,6 +1,7 @@
 // Possible source for more tokens https://www.sqlite.org/lang_keywords.html
 
-// Select statement
+//////////////////////////
+// Select Statement
 SELECT
 TOP
 FROM
@@ -16,6 +17,9 @@ DISTINCT
 OFFSET
 UNION
 ALL
+EXCEPT
+MINUS
+INTERSECT
 
 // Join clause
 JOIN
@@ -24,42 +28,92 @@ INNER
 OUTER
 LEFT
 RIGHT
+FULL
 CROSS
 USING
 NATURAL
-HASH
-RADIX
-SCAN
-
-// Create statement
+// Select Statement
+//////////////////////
+// Data Definition
 CREATE
 TABLE
-DATABASE
+SCHEMA
 INDEX
 IF
+NOT
 EXISTS
+GLOBAL
+LOCAL
+TEMPORARY
+WITH
+UNIQUE
 
-// Import statement
+INDEX
+UNIQUE
+HASH
+SPATIAL
+PRIMARY
+KEY
+ON
+
+DROP
+TABLE
+SCHEMA
+RESTRICT
+CASCADE
+
+ALTER
+ADD
+COLUMN
+BEFORE
+AFTER
+// Data Definition
+////////////////////////
+// Data Manipulation
+INSERT
+VALUES
+SET
+DIRECT
+SORTED
+
 IMPORT
 CSV
 FILE
 TBL
 CONTROL
 
-// other statements
-ALTER
-RENAME
-DROP
-DELETE
-INSERT
-LOAD
 UPDATE
+
+DELETE
+HISTORY
+
+TRUNCATE
+
+
+// other statements
+RENAME
+TO
+DELETE
+EXPLAIN
+PLAN
+ANALYZE
+LOAD
 UNLOAD
+
+SHOW
+SCHEMAS
+TABLES
+COLUMNS
 
 // misc.
 COLUMN
 INTO
 AS
+SET
+DEFAULT
+CALL
+FOR
+
 
 // Expressions
 NOT
@@ -71,3 +125,4 @@ IN
 IS
 ISNULL
 BETWEEN
+ESCAPE

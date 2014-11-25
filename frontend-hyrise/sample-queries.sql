@@ -11,7 +11,5 @@ SELECT name, city, grade FROM (SELECT * FROM students WHERE city = 'Potsdam') t1
 SELECT city, AVG(grade) AS average|, MIN(grade) AS best, MAX(grade) AS worst FROM students GROUP BY city;
 # UNION
 SELECT * FROM students WHERE grade = 1.3 UNION SELECT * FROM students WHERE grade = 3.7;
-# SIMPLE JOIN
+# JOIN
 SELECT * FROM companies JOIN employees ON company_id = employee_company_id;
-# HASH JOIN
-SELECT * FROM companies HASH JOIN employees ON company_id = employee_company_id;

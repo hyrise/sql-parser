@@ -14,9 +14,9 @@ typedef enum {
 	kStmtError, // Unused
 	kStmtSelect,
 	kStmtImport,
+	kStmtInsert,
 	// Following types are planned but not supported yet
 	kStmtDelete,
-	kStmtInsert,
 	kStmtCreate,
 	kStmtDrop,
 	kStmtExport,

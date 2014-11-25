@@ -120,5 +120,28 @@ void printCreateStatementInfo(CreateStatement* stmt, uint num_indent) {
   inprint(stmt->file_path, num_indent+1);
 }
 
+void printInsertStatementInfo(InsertStatement* stmt, uint num_indent) {
+  inprint("InsertStatment", num_indent);
+  inprint(stmt->table_name, num_indent+1);
+  if (stmt->columns != NULL) {
+    inprint("Columns", num_indent+1);
+    for (char* col_name : stmt->columns->vector()) {
+      inprint(col_name, num_indent+2);
+    }
+  }
+  switch (stmt->insert_type) {
+    case InsertStatement::kInsertValues:
+      inprint("Values", num_indent+1);
+      for (Expr* expr : stmt->values->vector()) {
+        printExpression(expr, num_indent+2);
+      }
+      break;
+    case InsertStatement::kInsertSelect:
+      printSelectStatementInfo(stmt->select, num_indent+1);
+      break;
+  }
+
+}
+
 
 } // namespace hsql

@@ -31,6 +31,13 @@ CreateStatement::~CreateStatement() {
 	delete table_name;
 }
 
+InsertStatement::~InsertStatement() {
+	delete table_name;
+	delete select;
+}
+
+
+
 OrderDescription::~OrderDescription() {
 	delete expr;
 }
