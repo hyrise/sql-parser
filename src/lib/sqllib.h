@@ -7,6 +7,6 @@
 #include "CreateStatement.h"
 #include "InsertStatement.h"
 #include "UpdateStatement.h"
-
+#include "DeleteStatement.h"
 
 #endif

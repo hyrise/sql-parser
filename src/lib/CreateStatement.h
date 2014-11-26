@@ -6,16 +6,31 @@
 namespace hsql {
 
 
-typedef enum {
-	kTable,
-	kTableFromTbl, // Hyrise file format
-} CreateType;
+/**
+ * @struct ColumnDefinition
+ */
+struct ColumnDefinition {
+	enum DataType {
+		TEXT,
+		INT,
+		DOUBLE
+	};
 
+	char* name;
+	DataType type;
+};
 
 /**
  * @struct CreateStatement
+ * CREATE TABLE students (name TEXT, student_number INTEGER, city TEXT, grade DOUBLE)
+ * CREATE TABLE students FROM TBL FILE 'test/students.tbl'
  */
 struct CreateStatement : Statement {
+	enum CreateType {
+		kTable,
+		kTableFromTbl, // Hyrise file format
+	};
+
 	CreateStatement() :
 		Statement(kStmtCreate),
 		if_not_exists(false),
@@ -33,6 +48,4 @@ struct CreateStatement : Statement {
 
 
 } // namespace hsql
-
-
 #endif

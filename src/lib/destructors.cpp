@@ -36,6 +36,10 @@ InsertStatement::~InsertStatement() {
 	delete select;
 }
 
+DeleteStatement::~DeleteStatement() {
+	delete expr;
+}
+
 
 
 OrderDescription::~OrderDescription() {

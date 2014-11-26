@@ -13,9 +13,14 @@ SELECT * FROM t1 JOIN t2 ON c1 = c2;
 # CREATE statement
 CREATE TABLE "table" FROM TBL FILE 'students.tbl'
 CREATE TABLE IF NOT EXISTS "table" FROM TBL FILE 'students.tbl'
+CREATE TABLE students (name TEXT, student_number INTEGER, city TEXT, grade DOUBLE)
 # Multiple statements
 CREATE TABLE "table" FROM TBL FILE 'students.tbl'; SELECT * FROM "table";
 # INSERT
 INSERT INTO test_table VALUES (1, 2, 'test');
 INSERT INTO test_table (id, value, name) VALUES (1, 2, 'test');
 INSERT INTO test_table SELECT * FROM students;
+# DELETE
+DELETE FROM students WHERE grade > 3.0
+DELETE FROM students
+TRUNCATE students

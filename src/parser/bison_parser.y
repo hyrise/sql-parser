@@ -83,6 +83,7 @@ typedef void* yyscan_t;
 	hsql::ImportStatement* import_stmt;
 	hsql::CreateStatement* create_stmt;
 	hsql::InsertStatement* insert_stmt;
+	hsql::DeleteStatement* delete_stmt;
 
 	hsql::TableRef* table;
 	hsql::Expr* expr;
@@ -131,6 +132,7 @@ typedef void* yyscan_t;
 %type <import_stmt> import_statement
 %type <create_stmt> create_statement
 %type <insert_stmt> insert_statement
+%type <delete_stmt> delete_statement truncate_statement
 %type <sval> 		table_name opt_alias alias file_path
 %type <bval> 		opt_not_exists
 %type <table> 		from_clause table_ref table_ref_atomic table_ref_name
@@ -190,12 +192,14 @@ statement:
 	|	import_statement { $$ = $1; }
 	|	create_statement { $$ = $1; }
 	|	insert_statement { $$ = $1; }
+	|	delete_statement { $$ = $1; }
+	|	truncate_statement { $$ = $1; }
 	;
 
 
 
 /******************************
- ** Import Statement
+ * Import Statement
  ******************************/
 import_statement:
 		IMPORT FROM import_file_type FILE file_path INTO table_name {
@@ -216,15 +220,24 @@ file_path:
 
 
 /******************************
- ** Create Statement
+ * Create Statement
+ * CREATE TABLE students (name TEXT, student_number INTEGER, city TEXT, grade DOUBLE)
+ * CREATE TABLE students FROM TBL FILE 'test/students.tbl'
  ******************************/
 create_statement:
 		CREATE TABLE opt_not_exists table_name FROM TBL FILE file_path {
 			$$ = new CreateStatement();
-			$$->create_type = kTableFromTbl;
+			$$->create_type = CreateStatement::kTableFromTbl;
 			$$->if_not_exists = $3;
 			$$->table_name = $4;
 			$$->file_path = $8;
+		}
+	|	CREATE TABLE opt_not_exists table_name '(' column_def_commalist ')' {
+			$$ = new CreateStatement();
+			$$->create_type = CreateStatement::kTable;
+			$$->if_not_exists = $3;
+			$$->table_name = $4;
+			// TODO: build into object
 		}
 	;
 
@@ -233,9 +246,46 @@ opt_not_exists:
 	|	/* empty */ { $$ = false; }
 	;
 
+column_def_commalist:
+		column_def
+	|	column_def_commalist ',' column_def
+	;
+
+column_def:
+		IDENTIFIER column_type
+	;
+
+column_type:
+		INTEGER
+	|	DOUBLE
+	|	TEXT
+	;
+
 
 /******************************
- ** Insert Statement
+ * Delete Statement / Truncate statement
+ * DELETE FROM students WHERE grade > 3.0
+ * DELETE FROM students <=> TRUNCATE students
+ ******************************/
+delete_statement:
+		DELETE FROM table_name opt_where {
+			$$ = new DeleteStatement();
+			$$->table_name = $3;
+			$$->expr = $4;
+		}
+	;
+
+truncate_statement:
+		TRUNCATE table_name {
+			$$ = new DeleteStatement();
+			$$->table_name = $2;
+		}
+	;
+
+/******************************
+ * Insert Statement
+ * INSERT INTO students VALUES ('Max', 1112233, 'Musterhausen', 2.3)
+ * INSERT INTO employees SELECT * FROM stundents
  ******************************/
 insert_statement:
 		INSERT INTO table_name opt_column_list VALUES '(' literal_list ')' {
@@ -261,7 +311,7 @@ opt_column_list:
 	;
 
 /******************************
- ** Select Statement
+ * Select Statement
  ******************************/
 
 select_statement:
@@ -349,7 +399,7 @@ opt_limit:
 	;
 
 /******************************
- ** Expressions 
+ * Expressions 
  ******************************/
 expr_list:
 		expr_alias { $$ = new List<Expr*>($1); }
@@ -445,7 +495,7 @@ star_expr:
 
 
 /******************************
- ** Table 
+ * Table 
  ******************************/
 table_ref:
 		table_ref_atomic
@@ -502,7 +552,7 @@ opt_alias:
 
 
 /******************************
- ** Join Statements
+ * Join Statements
  ******************************/
 
 join_clause:
@@ -543,7 +593,7 @@ join_condition:
 
 
 /******************************
- ** Misc
+ * Misc
  ******************************/
 
 opt_semicolon:

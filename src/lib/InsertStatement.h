@@ -7,6 +7,11 @@
 namespace hsql {
 
 
+/**
+ * @struct InsertStatement
+ * INSERT INTO students VALUES ('Max', 1112233, 'Musterhausen', 2.3)
+ * INSERT INTO employees SELECT * FROM stundents
+ */
 struct InsertStatement : Statement {
 	typedef enum {
 		kInsertValues,
