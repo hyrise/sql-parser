@@ -15,6 +15,7 @@ typedef enum {
 	kStmtSelect,
 	kStmtImport,
 	kStmtInsert,
+	kStmtUpdate,
 	// Following types are planned but not supported yet
 	kStmtDelete,
 	kStmtCreate,

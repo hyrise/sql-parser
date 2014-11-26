@@ -13,3 +13,5 @@ SELECT city, AVG(grade) AS average|, MIN(grade) AS best, MAX(grade) AS worst FRO
 SELECT * FROM students WHERE grade = 1.3 UNION SELECT * FROM students WHERE grade = 3.7;
 # JOIN
 SELECT * FROM companies JOIN employees ON company_id = employee_company_id;
+# INSERT
+INSERT INTO students VALUES ('Max', 10101, 'Musterhausen', 3.3);

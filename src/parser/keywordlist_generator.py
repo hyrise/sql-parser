@@ -29,8 +29,6 @@ with open("sql_keywords.txt", 'r') as fh:
 
 	#################
 	# Bison
-
-
 	line = "%token"
 	max_len = 60
 
