@@ -72,16 +72,16 @@ int main(int argc, char *argv[]) {
 
         end = std::chrono::system_clock::now();
         std::chrono::duration<double> elapsed_seconds = end-start;
+        double us = elapsed_seconds.count() * 1000 * 1000;
 
         if (expect_false == stmt_list->isValid) {
-        	fprintf(stderr, "Parsing failed (%.3fms)! %s: \"%s\"\n", elapsed_seconds.count()*1000, stmt_list->parser_msg, sql.c_str());
+            printf("\033[0;31m{  failed}\033[0m\n");
+            printf("\t\033[0;31m%s\n\033[0m", stmt_list->parser_msg);
+            printf("\t%s\n", sql.c_str());
             num_failed++;
         } else {
-            if (expect_false) {
-                // printf("Success (%.3fms)! %s: \"%s\"\n", elapsed_seconds.count()*1000, stmt_list->parser_msg, sql.c_str());
-            } else {
-                // printf("Success (%.3fms)! \"%s\"\n", elapsed_seconds.count()*1000, sql.c_str());
-            }
+            // TODO: indicate whether expect_false was set
+            printf("\033[0;32m{      ok} (%.1fus)\033[0m %s\n", us, sql.c_str());
         }
     }
 

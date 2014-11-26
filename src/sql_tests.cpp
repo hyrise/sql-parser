@@ -35,4 +35,3 @@ TEST(DeleteTest) {
 	ASSERT_EQ(stmt->expr->expr2->fval, 2.0);
 }
 
-
