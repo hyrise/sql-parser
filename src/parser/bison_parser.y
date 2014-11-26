@@ -90,11 +90,13 @@ typedef void* yyscan_t;
 	hsql::OrderDescription* order;
 	hsql::OrderType order_type;
 	hsql::LimitDescription* limit;
+	hsql::ColumnDefinition* column_t;
 
 	hsql::StatementList* stmt_list;
 	hsql::List<char*>* slist;
 	hsql::List<hsql::Expr*>* expr_list;
 	hsql::List<hsql::TableRef*>* table_list;
+	hsql::List<hsql::ColumnDefinition*>* column_list_t;
 }
 
 
@@ -135,6 +137,7 @@ typedef void* yyscan_t;
 %type <delete_stmt> delete_statement truncate_statement
 %type <sval> 		table_name opt_alias alias file_path
 %type <bval> 		opt_not_exists
+%type <uval>		import_file_type opt_join_type column_type
 %type <table> 		from_clause table_ref table_ref_atomic table_ref_name
 %type <table>		join_clause join_table
 %type <expr> 		expr scalar_expr unary_expr binary_expr function_expr star_expr expr_alias
@@ -145,8 +148,9 @@ typedef void* yyscan_t;
 %type <order>		opt_order
 %type <limit>		opt_limit
 %type <order_type>	opt_order_type
-%type <uval>		import_file_type opt_join_type
 %type <slist>		ident_commalist opt_column_list
+%type <column_t>		column_def
+%type <column_list_t>	column_def_commalist
 
 /******************************
  ** Token Precedence and Associativity
@@ -237,7 +241,7 @@ create_statement:
 			$$->create_type = CreateStatement::kTable;
 			$$->if_not_exists = $3;
 			$$->table_name = $4;
-			// TODO: build into object
+			$$->columns = $6;
 		}
 	;
 
@@ -247,18 +251,20 @@ opt_not_exists:
 	;
 
 column_def_commalist:
-		column_def
-	|	column_def_commalist ',' column_def
+		column_def { $$ = new List<ColumnDefinition*>($1); }
+	|	column_def_commalist ',' column_def { $1->push_back($3); $$ = $1; }
 	;
 
 column_def:
-		IDENTIFIER column_type
+		IDENTIFIER column_type {
+			$$ = new ColumnDefinition($1, (ColumnDefinition::DataType) $2);
+		}
 	;
 
 column_type:
-		INTEGER
-	|	DOUBLE
-	|	TEXT
+		INTEGER { $$ = ColumnDefinition::INT; }
+	|	DOUBLE { $$ = ColumnDefinition::DOUBLE; }
+	|	TEXT { $$ = ColumnDefinition::TEXT; }
 	;
 
 

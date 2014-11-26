@@ -16,6 +16,12 @@ struct ColumnDefinition {
 		DOUBLE
 	};
 
+	ColumnDefinition(char* name, DataType type) :
+		name(name),
+		type(type) {}
+
+	virtual ~ColumnDefinition(); // defined in destructors.cpp
+
 	char* name;
 	DataType type;
 };
@@ -34,13 +40,17 @@ struct CreateStatement : Statement {
 	CreateStatement() :
 		Statement(kStmtCreate),
 		if_not_exists(false),
+		columns(NULL),
 		file_path(NULL),
 		table_name(NULL) {};
-		
+
 	virtual ~CreateStatement(); // defined in destructors.cpp
 
 	CreateType create_type;
 	bool if_not_exists;
+
+	List<ColumnDefinition*>* columns;
+
 	const char* file_path;
 	const char* table_name;
 };

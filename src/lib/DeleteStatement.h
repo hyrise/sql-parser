@@ -16,6 +16,7 @@ namespace hsql {
 struct DeleteStatement : Statement {
 	DeleteStatement() :
 		Statement(kStmtDelete),
+		table_name(NULL),
 		expr(NULL) {};
 
 	virtual ~DeleteStatement(); // defined in destructors.cpp

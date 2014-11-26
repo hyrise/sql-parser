@@ -7,12 +7,18 @@
 	void name()
 
 #define ASSERT(cond) if (!(cond)) throw AssertionFailedException(#cond);
+	
 #define ASSERT_TRUE(cond) ASSERT(cond);
 #define ASSERT_FALSE(cond) if (cond) throw AssertionFailedException(#cond);
+
+#define ASSERT_NULL(value) ASSERT_TRUE(value == NULL);
+#define ASSERT_NOTNULL(value) ASSERT_TRUE(value != NULL);
+
 #define ASSERT_STREQ(a, b) \
 	if (std::string(a).compare(std::string(b)) != 0) throw AssertionFailedException(#a " == " #b)
 #define ASSERT_EQ(a, b) \
 	ASSERT(a == b);
+
 
 class AssertionFailedException: public std::exception {
 public:
