@@ -33,6 +33,6 @@ parser/bison_parser.cpp:
 
 
 clean:
-	rm -f *.o *~ $(BIN_DIR)/analysis $(TESTS_BIN) $(BIN_DIR)/grammar_test
+	rm -f *.o *~ $(BIN_DIR)/analysis $(TESTS_BIN) $(BIN_DIR)/grammar_test $(BIN_DIR)/tests
 	rm -rf $(BUILD_DIR)
 	make clean -C parser/
