@@ -12,15 +12,21 @@ It is developed for integration in hyrise (https://github.com/hyrise/hyrise), bu
 
 To create the full parser code run `make build`. The parser library code is created in `build/`.
 
-To use the SQL Parser in your own code, you only need to include `SQLParser.h` and build+link all the source files from the parser with your project.
+To use the SQL Parser in your own code, you only need to include `SQLParser.h` and build+link all the source files from the parser with your project. See `hyrise/src/lib/access/sql/SQLQueryParser.cpp` for how it's used in Hyrise.
 
-### Usage in Hyrise
+### Update in Hyrise
 
-To build a new version of the sql parser and include it in hyrise you have to run `make build` and copy all contents of `build/` to `hyrise/src/lib/access/sql/parser/` and run rebuild Hyrise with `make` within the hyrise directory.
+Run `./deploy_to_hyris.sh path/to/hyrise` to update the SQL parser within Hyrise.
 
-If you have changed some API keywords than you might have to adjust the Hyrise source files accordingly.
+### Capabilities (Can and Can't do)
 
-### Language Progress Overview
+**Can**
+ * Most of select statements
+ * Join expressions
+ * Create tables
+ * Insert statements
 
-See [Wiki](https://github.com/hyrise/sql-parser/wiki#currently-supported-and-planned-sql-features)
-  
+**Can't (yet)**
+ * Union clauses
+ * Update statements
+ * Create anything other than tables
