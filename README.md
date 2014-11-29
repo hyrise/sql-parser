@@ -21,12 +21,15 @@ Run `./deploy_to_hyris.sh path/to/hyrise` to update the SQL parser within Hyrise
 ### Capabilities (Can and Can't do)
 
 **Can**
- * Most of select statements
+ * Single select statements
  * Join expressions
  * Create tables
  * Insert statements
+ * Delete/Truncate statements
 
 **Can't (yet)**
- * Union clauses
+ * Having clause
  * Update statements
+ * Union clauses
  * Create anything other than tables
+ * Alter/Rename statements
