@@ -39,6 +39,15 @@ DeleteStatement::~DeleteStatement() {
 }
 
 /**
+ * UpdateStatement.h
+ */
+UpdateStatement::~UpdateStatement() {
+	delete table;
+	delete updates;
+	delete where;
+}
+
+/**
  * SelectStatement.h
  */
 SelectStatement::~SelectStatement() {

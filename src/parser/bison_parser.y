@@ -84,6 +84,7 @@ typedef void* yyscan_t;
 	hsql::CreateStatement* create_stmt;
 	hsql::InsertStatement* insert_stmt;
 	hsql::DeleteStatement* delete_stmt;
+	hsql::UpdateStatement* update_stmt;
 
 	hsql::TableRef* table;
 	hsql::Expr* expr;
@@ -91,12 +92,14 @@ typedef void* yyscan_t;
 	hsql::OrderType order_type;
 	hsql::LimitDescription* limit;
 	hsql::ColumnDefinition* column_t;
+	hsql::UpdateClause* update_t;
 
 	hsql::StatementList* stmt_list;
 	hsql::List<char*>* slist;
 	hsql::List<hsql::Expr*>* expr_list;
 	hsql::List<hsql::TableRef*>* table_list;
 	hsql::List<hsql::ColumnDefinition*>* column_list_t;
+	hsql::List<hsql::UpdateClause*>* update_list_t;
 }
 
 
@@ -135,11 +138,12 @@ typedef void* yyscan_t;
 %type <create_stmt> create_statement
 %type <insert_stmt> insert_statement
 %type <delete_stmt> delete_statement truncate_statement
+%type <update_stmt> update_statement
 %type <sval> 		table_name opt_alias alias file_path
 %type <bval> 		opt_not_exists
 %type <uval>		import_file_type opt_join_type column_type
 %type <table> 		from_clause table_ref table_ref_atomic table_ref_name
-%type <table>		join_clause join_table
+%type <table>		join_clause join_table table_ref_name_no_alias
 %type <expr> 		expr scalar_expr unary_expr binary_expr function_expr star_expr expr_alias
 %type <expr> 		column_name literal int_literal num_literal string_literal
 %type <expr> 		comp_expr opt_where join_condition
@@ -151,6 +155,8 @@ typedef void* yyscan_t;
 %type <slist>		ident_commalist opt_column_list
 %type <column_t>		column_def
 %type <column_list_t>	column_def_commalist
+%type <update_t>		update_clause
+%type <update_list_t>	update_clause_commalist
 
 /******************************
  ** Token Precedence and Associativity
@@ -198,6 +204,7 @@ statement:
 	|	insert_statement { $$ = $1; }
 	|	delete_statement { $$ = $1; }
 	|	truncate_statement { $$ = $1; }
+	|	update_statement { $$ = $1; }
 	;
 
 
@@ -314,6 +321,34 @@ insert_statement:
 opt_column_list:
 		'(' ident_commalist ')' { $$ = $2; }
 	|	/* empty */ { $$ = NULL; }
+	;
+
+
+/******************************
+ * Update Statement
+ * UPDATE students SET grade = 1.3, name='Felix Fürstenberg' WHERE name = 'Max Mustermann';
+ ******************************/
+
+update_statement:
+	UPDATE table_ref_name_no_alias SET update_clause_commalist opt_where {
+		$$ = new UpdateStatement();
+		$$->table = $2;
+		$$->updates = $4;
+		$$->where = $5;
+	}
+	;
+
+update_clause_commalist:
+		update_clause { $$ = new List<UpdateClause*>($1); }
+	|	update_clause_commalist ',' update_clause { $1->push_back($3); $$ = $1; }
+	;
+
+update_clause:
+		IDENTIFIER '=' literal {
+			$$ = new UpdateClause();
+			$$->column = $1;
+			$$->value = $3;
+		}
 	;
 
 /******************************
@@ -539,7 +574,16 @@ table_ref_name:
 			tbl->alias = $2;
 			$$ = tbl;
 		}
-		;
+	;
+
+
+table_ref_name_no_alias:
+		table_name {
+			$$ = new TableRef(kTableName);
+			$$->name = $1;
+		}
+	;
+
 
 table_name:
 		IDENTIFIER

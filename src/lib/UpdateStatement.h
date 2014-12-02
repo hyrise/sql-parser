@@ -20,7 +20,7 @@ struct UpdateStatement : Statement {
 	virtual ~UpdateStatement(); // defined in destructors.cpp
 
 	TableRef* table;
-	List<UpdateClause*> updates;
+	List<UpdateClause*>* updates;
 	Expr* where;
 };
 

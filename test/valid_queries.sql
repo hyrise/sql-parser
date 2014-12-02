@@ -24,3 +24,7 @@ INSERT INTO test_table SELECT * FROM students;
 DELETE FROM students WHERE grade > 3.0
 DELETE FROM students
 TRUNCATE students
+# UPDATE
+UPDATE students SET grade = 1.3 WHERE name = 'Max Mustermann';
+UPDATE students SET grade = 1.3, name='Felix Fürstenberg' WHERE name = 'Max Mustermann';
+UPDATE students SET grade = 1.0;

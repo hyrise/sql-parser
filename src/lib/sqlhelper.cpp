@@ -5,7 +5,6 @@
 
 namespace hsql {
 
-void printExpression(Expr* expr, uint num_indent);
 void printOperatorExpression(Expr* expr, uint num_indent);
 
 const char* indent(uint num_indent) { return std::string(num_indent, '\t').c_str(); }
