@@ -177,7 +177,7 @@ $(function() {
   });
 
   addBuggyQuery('GROUP', 'SELECT AVG(grade) FROM (SELECT city, AVG(grade) FROM students GROUP BY city) t1');
-  addBuggyQuery('UNION', 'SELECT name FROM students WHERE grade > 2.0 UNION SELECT name FROM students');
+  addBuggyQuery('UNION (kills hyrise)', 'SELECT name FROM students WHERE grade > 2.0 UNION SELECT name FROM students');
 
 
   //////////////////////////////////////////////////

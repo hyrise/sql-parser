@@ -2,26 +2,11 @@
  * sql_tests.cpp
  */
 
+#include "tests/test.h"
 #include "SQLParser.h"
 #include "sqlhelper.h"
-#include "tests/test.h"
-
-
 
 using namespace hsql;
-
-
-
-TEST(Select) {
-	StatementList* stmt_list = SQLParser::parseSQLString("SELECT * FROM students;");
-	ASSERT(stmt_list->isValid);
-	ASSERT_EQ(stmt_list->size(), 1);
-	ASSERT(stmt_list->at(0)->type == kStmtSelect);
-
-	SelectStatement* stmt = (SelectStatement*) stmt_list->at(0);
-	ASSERT_NULL(stmt->where_clause);
-}
-
 
 TEST(Delete) {
 	StatementList* stmt_list = SQLParser::parseSQLString("DELETE FROM students WHERE grade > 2.0;");
@@ -38,7 +23,7 @@ TEST(Delete) {
 }
 
 TEST(Create) {
-	StatementList* stmt_list = SQLParser::parseSQLString("CREATE TABLE students (name TEXT, student_number INTEGER, city TEXT, grade DOUBLE)");
+	StatementList* stmt_list = SQLParser::parseSQLString("CREATE TABLE students (name TEXT, student_number INT, city INTEGER, grade DOUBLE)");
 	ASSERT(stmt_list->isValid);
 	ASSERT_EQ(stmt_list->size(), 1);
 	ASSERT_EQ(stmt_list->at(0)->type, kStmtCreate);
@@ -49,8 +34,12 @@ TEST(Create) {
 	ASSERT_NOTNULL(stmt->columns);
 	ASSERT_EQ(stmt->columns->size(), 4);
 	ASSERT_STREQ(stmt->columns->at(0)->name, "name");
-	ASSERT_EQ(stmt->columns->at(0)->type, ColumnDefinition::TEXT);
+	ASSERT_STREQ(stmt->columns->at(1)->name, "student_number");
+	ASSERT_STREQ(stmt->columns->at(2)->name, "city");
 	ASSERT_STREQ(stmt->columns->at(3)->name, "grade");
+	ASSERT_EQ(stmt->columns->at(0)->type, ColumnDefinition::TEXT);
+	ASSERT_EQ(stmt->columns->at(1)->type, ColumnDefinition::INT);
+	ASSERT_EQ(stmt->columns->at(2)->type, ColumnDefinition::INT);
 	ASSERT_EQ(stmt->columns->at(3)->type, ColumnDefinition::DOUBLE);
 }
 

@@ -1,10 +1,14 @@
 
 
-CC = g++
-CFLAGS = -O3 -Ilib/ -I./ -Iparser/ -std=c++11 -pthread -Wall -g
-SOURCES = $(shell find lib/ -name '*.cpp') parser/bison_parser.cpp parser/flex_lexer.cpp parser/SQLParser.cpp
 BUILD_DIR = ../build/
 BIN_DIR = ../bin
+
+CC = g++
+CFLAGS = -O3 -Ilib/ -I./ -Iparser/ -std=c++11 -pthread -Wall -g
+
+LIB_SOURCES = $(shell find lib/ -name '*.cpp') parser/bison_parser.cpp parser/flex_lexer.cpp parser/SQLParser.cpp
+TEST_SOURCES = $(shell find tests/ -name '*.cpp')
+
 
 
 # release build is always using bison
@@ -16,16 +20,16 @@ build: clean
 	cp parser/*.cpp $(BUILD_DIR)
 
 
-analysis: $(SOURCES) sql_analysis.cpp
-	$(CC) $(CFLAGS) $(SOURCES) sql_analysis.cpp -o $(BIN_DIR)/analysis
+analysis: $(LIB_SOURCES) sql_analysis.cpp
+	$(CC) $(CFLAGS) $(LIB_SOURCES) sql_analysis.cpp -o $(BIN_DIR)/analysis
 
 
-grammar_test: $(SOURCES) sql_grammar_test.cpp
-	$(CC) $(CFLAGS) $(SOURCES) sql_grammar_test.cpp -o $(BIN_DIR)/grammar_test
+grammar_test: $(LIB_SOURCES) sql_grammar_test.cpp
+	$(CC) $(CFLAGS) $(LIB_SOURCES) sql_grammar_test.cpp -o $(BIN_DIR)/grammar_test
 
 
-tests: $(SOURCES) $(TESTS_MAIN)
-	$(CC) $(CFLAGS) $(SOURCES) sql_tests.cpp -o $(BIN_DIR)/tests
+tests: $(LIB_SOURCES) $(TEST_SOURCES) sql_tests.cpp
+	$(CC) $(CFLAGS) $(LIB_SOURCES) $(TEST_SOURCES) sql_tests.cpp -o $(BIN_DIR)/tests
 
 
 parser/bison_parser.cpp:

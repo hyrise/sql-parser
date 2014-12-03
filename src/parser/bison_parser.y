@@ -108,8 +108,8 @@ typedef void* yyscan_t;
  ** Token Definition
  *********************************/
 %token <sval> IDENTIFIER STRING
-%token <fval> FLOAT
-%token <ival> INT
+%token <fval> FLOATVAL
+%token <ival> INTVAL
 %token <uval> NOTEQUALS LESSEQ GREATEREQ
 
 /* SQL Keywords */
@@ -124,7 +124,7 @@ typedef void* yyscan_t;
 %token LIMIT LOCAL MERGE MINUS ORDER OUTER RIGHT TABLE UNION
 %token USING WHERE CALL DATE DESC DROP FILE FROM FULL HASH
 %token INTO JOIN LEFT LIKE LOAD NULL PART PLAN SHOW TEXT
-%token TIME VIEW WITH ADD ALL AND ASC CSV FOR KEY NOT OFF
+%token TIME VIEW WITH ADD ALL AND ASC CSV FOR INT KEY NOT OFF
 %token SET TBL TOP AS BY IF IN IS OF ON OR TO
 
 
@@ -268,8 +268,10 @@ column_def:
 		}
 	;
 
+
 column_type:
-		INTEGER { $$ = ColumnDefinition::INT; }
+		INT { $$ = ColumnDefinition::INT; }
+	|	INTEGER { $$ = ColumnDefinition::INT; }
 	|	DOUBLE { $$ = ColumnDefinition::DOUBLE; }
 	|	TEXT { $$ = ColumnDefinition::TEXT; }
 	;
@@ -522,12 +524,12 @@ string_literal:
 
 
 num_literal:
-		FLOAT { $$ = Expr::makeLiteral($1); }
+		FLOATVAL { $$ = Expr::makeLiteral($1); }
 	|	int_literal
 	;
 
 int_literal:
-		INT { $$ = Expr::makeLiteral($1); }
+		INTVAL { $$ = Expr::makeLiteral($1); }
 	;
 
 star_expr:

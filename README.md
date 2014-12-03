@@ -14,6 +14,10 @@ To create the full parser code run `make build`. The parser library code is crea
 
 To use the SQL Parser in your own code, you only need to include `SQLParser.h` and build+link all the source files from the parser with your project. See `hyrise/src/lib/access/sql/SQLQueryParser.cpp` for how it's used in Hyrise.
 
+### Run tests
+
+To execute all tests run: `./run_tests.sh`.
+
 ### Update in Hyrise
 
 Run `./deploy_to_hyris.sh path/to/hyrise` to update the SQL parser within Hyrise.

@@ -1,6 +1,6 @@
 # Load Tables
 CREATE TABLE IF NOT EXISTS students FROM TBL FILE 'test/students.tbl';
-CREATE TABLE IF NOT EXISTS test FROM TBL FILE 'test/lin_xxs.tbl';
+CREATE TABLE IF NOT EXISTS test_big FROM TBL FILE 'test/lin_xxs.tbl';
 CREATE TABLE IF NOT EXISTS companies FROM TBL FILE 'test/tables/companies.tbl';
 CREATE TABLE IF NOT EXISTS employees FROM TBL FILE 'test/tables/employees.tbl';
 # SELECT
@@ -14,4 +14,15 @@ SELECT * FROM students WHERE grade = 1.3 UNION SELECT * FROM students WHERE grad
 # JOIN
 SELECT * FROM companies JOIN employees ON company_id = employee_company_id;
 # INSERT
-INSERT INTO students VALUES ('Max', 10101, 'Musterhausen', 3.3);
+INSERT INTO students VALUES ('Max Mustermann', 10101, 'Musterhausen', 1.7);
+# CREATE
+CREATE TABLE IF NOT EXISTS test (v1 INTEGER, v2 INTEGER, v3 INTEGER);
+# INSERT/SELECT
+INSERT INTO test VALUES (1, 23, 45);|
+INSERT INTO test VALUES (1, 23, 45);
+INSERT INTO test VALUES (1, 23, 45);
+SELECT * FROM test;
+# CREATE/INSERT/SELECT
+CREATE TABLE IF NOT EXISTS test (v1 INTEGER, v2 INTEGER, v3 INTEGER);
+INSERT INTO test VALUES (1, 12, 43);
+SELECT * FROM test;

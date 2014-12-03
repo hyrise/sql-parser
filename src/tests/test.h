@@ -1,7 +1,8 @@
 #ifndef __TEST_H__
 #define __TEST_H__
 
-
+#include <vector>
+#include <string>
 #include <iostream>
 
 
@@ -44,40 +45,9 @@ protected:
 };
 
 
-std::vector<std::string> g_test_names;
-std::vector<void (*)(void)> g_tests;
-
-int AddTest(void (*foo)(void), std::string name) {
-	g_tests.push_back(foo);
-	g_test_names.push_back(name);
-	return 0;
-}
 
 
-void RunTests() {
-	size_t num_failed = 0;
-	for (size_t i = 0; i < g_tests.size(); ++i) {
-		printf("\033[0;32m{ running}\033[0m %s\n", g_test_names[i].c_str());
-
-		try { 
-			// Run test
-			(*g_tests[i])();
-			printf("\033[0;32m{      ok}\033[0m %s\n", g_test_names[i].c_str());
-
-		} catch (AssertionFailedException& e) {
-			printf("\033[1;31m{  failed} %s\n", g_test_names[i].c_str());
-			printf("\tAssertion failed: %s\n\033[0m", e.what());	
-			num_failed++;
-		}
-
-	}
-}
-
-
-int main() {
-	RunTests();
-	return 0;
-}
+int AddTest(void (*foo)(void), std::string name);
 
 
 

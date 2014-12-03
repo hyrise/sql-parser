@@ -149,6 +149,7 @@ AND			TOKEN(AND)
 ASC			TOKEN(ASC)
 CSV			TOKEN(CSV)
 FOR			TOKEN(FOR)
+INT			TOKEN(INT)
 KEY			TOKEN(KEY)
 NOT			TOKEN(NOT)
 OFF			TOKEN(OFF)
@@ -177,12 +178,12 @@ TO			TOKEN(TO)
 [0-9]+"."[0-9]* |
 "."[0-9]*	{
 	yylval->fval = atof(yytext);
-	return SQL_FLOAT;
+	return SQL_FLOATVAL;
 }
 
 [0-9]+	{
 	yylval->ival = atol(yytext);
-	return SQL_INT;
+	return SQL_INTVAL;
 }
 
 \"[^\"\n]+\" {
