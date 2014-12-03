@@ -85,6 +85,7 @@ typedef void* yyscan_t;
 	hsql::InsertStatement* insert_stmt;
 	hsql::DeleteStatement* delete_stmt;
 	hsql::UpdateStatement* update_stmt;
+	hsql::DropStatement*   drop_stmt;
 
 	hsql::TableRef* table;
 	hsql::Expr* expr;
@@ -139,6 +140,7 @@ typedef void* yyscan_t;
 %type <insert_stmt> insert_statement
 %type <delete_stmt> delete_statement truncate_statement
 %type <update_stmt> update_statement
+%type <drop_stmt>	drop_statement
 %type <sval> 		table_name opt_alias alias file_path
 %type <bval> 		opt_not_exists
 %type <uval>		import_file_type opt_join_type column_type
@@ -205,6 +207,7 @@ statement:
 	|	delete_statement { $$ = $1; }
 	|	truncate_statement { $$ = $1; }
 	|	update_statement { $$ = $1; }
+	|	drop_statement { $$ = $1; }
 	;
 
 
@@ -276,6 +279,16 @@ column_type:
 	|	TEXT { $$ = ColumnDefinition::TEXT; }
 	;
 
+/******************************
+ * Drop Statement
+ * DROP TABLE students
+ ******************************/
+
+drop_statement:
+		DROP TABLE table_name {
+			$$ = new DropStatement(DropStatement::kTable);
+			$$->name = $3;
+		}
 
 /******************************
  * Delete Statement / Truncate statement

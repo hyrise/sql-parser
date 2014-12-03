@@ -8,5 +8,6 @@
 #include "InsertStatement.h"
 #include "UpdateStatement.h"
 #include "DeleteStatement.h"
+#include "DropStatement.h"
 
 #endif

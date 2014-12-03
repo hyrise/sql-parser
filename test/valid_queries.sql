@@ -28,3 +28,5 @@ TRUNCATE students
 UPDATE students SET grade = 1.3 WHERE name = 'Max Mustermann';
 UPDATE students SET grade = 1.3, name='Felix Fürstenberg' WHERE name = 'Max Mustermann';
 UPDATE students SET grade = 1.0;
+# DROP
+DROP TABLE students;

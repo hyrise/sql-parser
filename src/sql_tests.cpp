@@ -80,3 +80,15 @@ TEST(Insert) {
 
 	// TODO
 }
+
+
+TEST(DropTable) {
+	StatementList* stmt_list = SQLParser::parseSQLString("DROP TABLE students");
+	ASSERT(stmt_list->isValid);
+	ASSERT_EQ(stmt_list->size(), 1);
+	ASSERT_EQ(stmt_list->at(0)->type, kStmtDrop);
+
+	DropStatement* stmt = (DropStatement*) stmt_list->at(0);
+	ASSERT_NOTNULL(stmt->name);
+	ASSERT_STREQ(stmt->name, "students");
+}
