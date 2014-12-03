@@ -1,33 +1,34 @@
 #ifndef __IMPORT_STATEMENT_H__
 #define __IMPORT_STATEMENT_H__
 
-#include "Statement.h"
+#include "SQLStatement.h"
 
 namespace hsql {
 
 
-typedef enum {
-	kImportCSV,
-	kImportTbl, // Hyrise file format
-} ImportFileType;
 
 
 /**
  * @struct ImportStatement
  */
-struct ImportStatement : Statement {
-	ImportStatement() :
-		Statement(kStmtImport),
+struct ImportStatement : SQLStatement {
+	enum ImportType {
+		kImportCSV,
+		kImportTbl, // Hyrise file format
+	};
+
+
+	ImportStatement(ImportType type) :
+		SQLStatement(kStmtImport),
+		type(type),
 		file_path(NULL),
 		table_name(NULL) {};
 		
 	virtual ~ImportStatement(); // defined in destructors.cpp
 
-	ImportFileType file_type;
+	ImportType type;
 	const char* file_path;
 	const char* table_name;
-
-
 };
 
 

@@ -1,12 +1,12 @@
 #ifndef __DROP_STATEMENT_H__
 #define __DROP_STATEMENT_H__
 
-#include "Statement.h"
+#include "SQLStatement.h"
 
 namespace hsql {
 
-struct DropStatement : Statement {
-	enum ObjectType {
+struct DropStatement : SQLStatement {
+	enum EntityType {
 		kTable,
 		kSchema,
 		kIndex,
@@ -14,15 +14,14 @@ struct DropStatement : Statement {
 	};
 
 
-	DropStatement(ObjectType type) :
-		Statement(kStmtDrop),
-		obj_type(type),
+	DropStatement(EntityType type) :
+		SQLStatement(kStmtDrop),
+		type(type),
 		name(NULL) {}
 
 
-	ObjectType obj_type;
+	EntityType type;
 	const char* name;
-
 
 
 	virtual ~DropStatement() {

@@ -1,5 +1,5 @@
 /*
- * Statement.h
+ * SQLStatement.h
  * Definition of the structure used to build the syntax tree.
  */
 #ifndef __STATEMENT_H__
@@ -16,44 +16,49 @@ typedef enum {
 	kStmtImport,
 	kStmtInsert,
 	kStmtUpdate,
-	// Following types are planned but not supported yet
 	kStmtDelete,
 	kStmtCreate,
 	kStmtDrop,
+	// Following types are not supported yet
 	kStmtExport,
 	kStmtRename,
 	kStmtAlter
 } StatementType;
 
 
-struct Statement {
-	Statement(StatementType type) :
-		type(type) {};
+struct SQLStatement {
+	SQLStatement(StatementType type) :
+		_type(type) {};
 
-	virtual ~Statement(); // defined in destructors.cpp
+	virtual ~SQLStatement(); // defined in destructors.cpp
 
-	StatementType type;
+
+	virtual StatementType type() { return _type; }
+	
+
+private:
+	StatementType _type;
 };
 
 
-class StatementList : public List<Statement*> {
+class SQLStatementList : public List<SQLStatement*> {
 public:
-	StatementList() :
-		List<Statement*>(),
+	SQLStatementList() :
+		List<SQLStatement*>(),
 		isValid(true),
 		parser_msg(NULL) {};
 
-	StatementList(Statement* stmt) :
-		List<Statement*>(stmt),
+	SQLStatementList(SQLStatement* stmt) :
+		List<SQLStatement*>(stmt),
 		isValid(true),
 		parser_msg(NULL) {};
 		
-	virtual ~StatementList(); // defined in destructors.cpp
+	virtual ~SQLStatementList(); // defined in destructors.cpp
 
 	bool isValid;
 	const char* parser_msg;
 };
-// typedef List<Statement*> StatementList;
+
 
 
 } // namespace hsql

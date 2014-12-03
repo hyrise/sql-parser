@@ -128,7 +128,7 @@ void printInsertStatementInfo(InsertStatement* stmt, uint num_indent) {
       inprint(col_name, num_indent+2);
     }
   }
-  switch (stmt->insert_type) {
+  switch (stmt->type) {
     case InsertStatement::kInsertValues:
       inprint("Values", num_indent+1);
       for (Expr* expr : stmt->values->vector()) {

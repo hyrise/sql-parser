@@ -4,20 +4,17 @@ BUILD_DIR = ../build/
 BIN_DIR = ../bin
 
 CC = g++
-CFLAGS = -O3 -Ilib/ -I./ -Iparser/ -std=c++11 -pthread -Wall -g
+CFLAGS = -O3 -I./ -Ilib/ -Ilib/statements/ -Iparser/ -std=c++11 -pthread -Wall -g
 
+LIB_FILES = $(shell find lib/ -name '*.cpp') $(shell find lib/ -name '*.h') parser/bison_parser.cpp parser/flex_lexer.cpp parser/SQLParser.cpp
 LIB_SOURCES = $(shell find lib/ -name '*.cpp') parser/bison_parser.cpp parser/flex_lexer.cpp parser/SQLParser.cpp
 TEST_SOURCES = $(shell find tests/ -name '*.cpp')
 
 
-
-# release build is always using bison
 build: clean
 	make -C parser/
 	mkdir $(BUILD_DIR)
-	cp lib/* $(BUILD_DIR)
-	cp parser/*.h $(BUILD_DIR)
-	cp parser/*.cpp $(BUILD_DIR)
+	cp $(LIB_FILES) $(BUILD_DIR)
 
 
 analysis: $(LIB_SOURCES) sql_analysis.cpp

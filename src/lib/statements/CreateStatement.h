@@ -1,7 +1,7 @@
 #ifndef __CREATE_STATEMENT_H__
 #define __CREATE_STATEMENT_H__
 
-#include "Statement.h"
+#include "SQLStatement.h"
 
 namespace hsql {
 
@@ -31,14 +31,15 @@ struct ColumnDefinition {
  * CREATE TABLE students (name TEXT, student_number INTEGER, city TEXT, grade DOUBLE)
  * CREATE TABLE students FROM TBL FILE 'test/students.tbl'
  */
-struct CreateStatement : Statement {
+struct CreateStatement : SQLStatement {
 	enum CreateType {
 		kTable,
 		kTableFromTbl, // Hyrise file format
 	};
 
-	CreateStatement() :
-		Statement(kStmtCreate),
+	CreateStatement(CreateType type) :
+		SQLStatement(kStmtCreate),
+		type(type),
 		if_not_exists(false),
 		columns(NULL),
 		file_path(NULL),
@@ -46,7 +47,7 @@ struct CreateStatement : Statement {
 
 	virtual ~CreateStatement(); // defined in destructors.cpp
 
-	CreateType create_type;
+	CreateType type;
 	bool if_not_exists;
 
 	List<ColumnDefinition*>* columns;

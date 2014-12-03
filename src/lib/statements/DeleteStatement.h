@@ -1,7 +1,7 @@
 #ifndef __DELETE_STATEMENT_H__
 #define __DELETE_STATEMENT_H__
 
-#include "Statement.h"
+#include "SQLStatement.h"
 
 namespace hsql {
 
@@ -13,9 +13,9 @@ namespace hsql {
  *
  * If expr == NULL => delete all rows (truncate)
  */
-struct DeleteStatement : Statement {
+struct DeleteStatement : SQLStatement {
 	DeleteStatement() :
-		Statement(kStmtDelete),
+		SQLStatement(kStmtDelete),
 		table_name(NULL),
 		expr(NULL) {};
 

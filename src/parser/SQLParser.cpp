@@ -11,8 +11,8 @@ SQLParser::SQLParser() {
 }
 
 
-StatementList* SQLParser::parseSQLString(const char *text) {
-    StatementList* result;
+SQLStatementList* SQLParser::parseSQLString(const char *text) {
+    SQLStatementList* result;
     yyscan_t scanner;
     YY_BUFFER_STATE state;
 

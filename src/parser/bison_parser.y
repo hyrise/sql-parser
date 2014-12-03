@@ -19,9 +19,9 @@
 
 using namespace hsql;
 
-int yyerror(StatementList** result, yyscan_t scanner, const char *msg) {
+int yyerror(SQLStatementList** result, yyscan_t scanner, const char *msg) {
 
-	StatementList* list = new StatementList();
+	SQLStatementList* list = new SQLStatementList();
 	list->isValid = false;
 	list->parser_msg = strdup(msg);
 	*result = list;
@@ -64,7 +64,7 @@ typedef void* yyscan_t;
 %lex-param   { yyscan_t scanner }
 
 // Define additional parameters for yyparse
-%parse-param { hsql::StatementList** result }
+%parse-param { hsql::SQLStatementList** result }
 %parse-param { yyscan_t scanner }
 
 
@@ -78,7 +78,7 @@ typedef void* yyscan_t;
 	uint uval;
 	bool bval;
 
-	hsql::Statement* statement;
+	hsql::SQLStatement* statement;
 	hsql::SelectStatement* select_stmt;
 	hsql::ImportStatement* import_stmt;
 	hsql::CreateStatement* create_stmt;
@@ -95,7 +95,7 @@ typedef void* yyscan_t;
 	hsql::ColumnDefinition* column_t;
 	hsql::UpdateClause* update_t;
 
-	hsql::StatementList* stmt_list;
+	hsql::SQLStatementList* stmt_list;
 	hsql::List<char*>* slist;
 	hsql::List<hsql::Expr*>* expr_list;
 	hsql::List<hsql::TableRef*>* table_list;
@@ -195,7 +195,7 @@ input:
 
 
 statement_list:
-		statement { $$ = new StatementList($1); }
+		statement { $$ = new SQLStatementList($1); }
 	|	statement_list ';' statement { $1->push_back($3); $$ = $1; }
 	;
 
@@ -217,15 +217,14 @@ statement:
  ******************************/
 import_statement:
 		IMPORT FROM import_file_type FILE file_path INTO table_name {
-			$$ = new ImportStatement();
-			$$->file_type = (ImportFileType) $3;
+			$$ = new ImportStatement((ImportStatement::ImportType) $3);
 			$$->file_path = $5;
 			$$->table_name = $7;
 		}
 	;
 
 import_file_type:
-		CSV { $$ = kImportCSV; }
+		CSV { $$ = ImportStatement::kImportCSV; }
 	;
 
 file_path:
@@ -240,15 +239,13 @@ file_path:
  ******************************/
 create_statement:
 		CREATE TABLE opt_not_exists table_name FROM TBL FILE file_path {
-			$$ = new CreateStatement();
-			$$->create_type = CreateStatement::kTableFromTbl;
+			$$ = new CreateStatement(CreateStatement::kTableFromTbl);
 			$$->if_not_exists = $3;
 			$$->table_name = $4;
 			$$->file_path = $8;
 		}
 	|	CREATE TABLE opt_not_exists table_name '(' column_def_commalist ')' {
-			$$ = new CreateStatement();
-			$$->create_type = CreateStatement::kTable;
+			$$ = new CreateStatement(CreateStatement::kTable);
 			$$->if_not_exists = $3;
 			$$->table_name = $4;
 			$$->columns = $6;
@@ -317,15 +314,13 @@ truncate_statement:
  ******************************/
 insert_statement:
 		INSERT INTO table_name opt_column_list VALUES '(' literal_list ')' {
-			$$ = new InsertStatement();
-			$$->insert_type = InsertStatement::kInsertValues;
+			$$ = new InsertStatement(InsertStatement::kInsertValues);
 			$$->table_name = $3;
 			$$->columns = $4;
 			$$->values = $7;
 		}
 	|	INSERT INTO table_name opt_column_list select_no_paren {
-			$$ = new InsertStatement();
-			$$->insert_type = InsertStatement::kInsertSelect;
+			$$ = new InsertStatement(InsertStatement::kInsertSelect);
 			$$->table_name = $3;
 			$$->columns = $4;
 			$$->select = $5;

@@ -16,7 +16,7 @@ int main(int argc, char *argv[]) {
         char* sql = argv[n];
 
         printf("\nEvaluating Query \"%s\"\n", sql);
-        StatementList* stmt_list = SQLParser::parseSQLString(sql);
+        SQLStatementList* stmt_list = SQLParser::parseSQLString(sql);
 
         if (!stmt_list->isValid) {
         	fprintf(stderr, "Parsing of \"%s\" failed! Reason: %s\n", sql, stmt_list->parser_msg);
@@ -24,7 +24,7 @@ int main(int argc, char *argv[]) {
         }
 
         int i = 0;
-        for (Statement* stmt : stmt_list->vector()) {
+        for (SQLStatement* stmt : stmt_list->vector()) {
             printf("Statement %d:\n", i++);
             switch (stmt->type) {
                 case kStmtSelect: printSelectStatementInfo((SelectStatement*) stmt, 1); break;

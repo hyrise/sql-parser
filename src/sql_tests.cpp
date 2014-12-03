@@ -9,10 +9,10 @@
 using namespace hsql;
 
 TEST(Delete) {
-	StatementList* stmt_list = SQLParser::parseSQLString("DELETE FROM students WHERE grade > 2.0;");
+	SQLStatementList* stmt_list = SQLParser::parseSQLString("DELETE FROM students WHERE grade > 2.0;");
 	ASSERT(stmt_list->isValid);
 	ASSERT_EQ(stmt_list->size(), 1);
-	ASSERT(stmt_list->at(0)->type == kStmtDelete);
+	ASSERT(stmt_list->at(0)->type() == kStmtDelete);
 
 	DeleteStatement* stmt = (DeleteStatement*) stmt_list->at(0);
 	ASSERT_STREQ(stmt->table_name, "students");
@@ -23,13 +23,13 @@ TEST(Delete) {
 }
 
 TEST(Create) {
-	StatementList* stmt_list = SQLParser::parseSQLString("CREATE TABLE students (name TEXT, student_number INT, city INTEGER, grade DOUBLE)");
+	SQLStatementList* stmt_list = SQLParser::parseSQLString("CREATE TABLE students (name TEXT, student_number INT, city INTEGER, grade DOUBLE)");
 	ASSERT(stmt_list->isValid);
 	ASSERT_EQ(stmt_list->size(), 1);
-	ASSERT_EQ(stmt_list->at(0)->type, kStmtCreate);
+	ASSERT_EQ(stmt_list->at(0)->type(), kStmtCreate);
 
 	CreateStatement* stmt = (CreateStatement*) stmt_list->at(0);
-	ASSERT_EQ(stmt->create_type, CreateStatement::kTable);
+	ASSERT_EQ(stmt->type, CreateStatement::kTable);
 	ASSERT_STREQ(stmt->table_name, "students");
 	ASSERT_NOTNULL(stmt->columns);
 	ASSERT_EQ(stmt->columns->size(), 4);
@@ -45,10 +45,10 @@ TEST(Create) {
 
 
 TEST(Update) {
-	StatementList* stmt_list = SQLParser::parseSQLString("UPDATE students SET grade = 5.0, name = 'test' WHERE name = 'Max Mustermann';");
+	SQLStatementList* stmt_list = SQLParser::parseSQLString("UPDATE students SET grade = 5.0, name = 'test' WHERE name = 'Max Mustermann';");
 	ASSERT(stmt_list->isValid);
 	ASSERT_EQ(stmt_list->size(), 1);
-	ASSERT_EQ(stmt_list->at(0)->type, kStmtUpdate);
+	ASSERT_EQ(stmt_list->at(0)->type(), kStmtUpdate);
 
 	UpdateStatement* stmt = (UpdateStatement*) stmt_list->at(0);
 	ASSERT_NOTNULL(stmt->table);
@@ -73,22 +73,23 @@ TEST(Update) {
 
 
 TEST(Insert) {
-	StatementList* stmt_list = SQLParser::parseSQLString("INSERT INTO students VALUES ('Max Mustermann', 12345, 'Musterhausen', 2.0)");
+	SQLStatementList* stmt_list = SQLParser::parseSQLString("INSERT INTO students VALUES ('Max Mustermann', 12345, 'Musterhausen', 2.0)");
 	ASSERT(stmt_list->isValid);
 	ASSERT_EQ(stmt_list->size(), 1);
-	ASSERT_EQ(stmt_list->at(0)->type, kStmtInsert);
+	ASSERT_EQ(stmt_list->at(0)->type(), kStmtInsert);
 
 	// TODO
 }
 
 
 TEST(DropTable) {
-	StatementList* stmt_list = SQLParser::parseSQLString("DROP TABLE students");
+	SQLStatementList* stmt_list = SQLParser::parseSQLString("DROP TABLE students");
 	ASSERT(stmt_list->isValid);
 	ASSERT_EQ(stmt_list->size(), 1);
-	ASSERT_EQ(stmt_list->at(0)->type, kStmtDrop);
+	ASSERT_EQ(stmt_list->at(0)->type(), kStmtDrop);
 
 	DropStatement* stmt = (DropStatement*) stmt_list->at(0);
+	ASSERT_EQ(stmt->type, DropStatement::kTable);
 	ASSERT_NOTNULL(stmt->name);
 	ASSERT_STREQ(stmt->name, "students");
 }

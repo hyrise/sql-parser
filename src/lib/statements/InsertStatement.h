@@ -1,7 +1,7 @@
 #ifndef __INSERT_STATEMENT_H__
 #define __INSERT_STATEMENT_H__
 
-#include "Statement.h"
+#include "SQLStatement.h"
 #include "SelectStatement.h"
 
 namespace hsql {
@@ -12,14 +12,15 @@ namespace hsql {
  * INSERT INTO students VALUES ('Max', 1112233, 'Musterhausen', 2.3)
  * INSERT INTO employees SELECT * FROM stundents
  */
-struct InsertStatement : Statement {
-	typedef enum {
+struct InsertStatement : SQLStatement {
+	enum InsertType {
 		kInsertValues,
 		kInsertSelect
-	} Type;
+	};
 
-	InsertStatement() :
-		Statement(kStmtInsert),
+	InsertStatement(InsertType type) :
+		SQLStatement(kStmtInsert),
+		type(type),
 		table_name(NULL),
 		columns(NULL),
 		values(NULL),
@@ -27,7 +28,7 @@ struct InsertStatement : Statement {
 	
 	virtual ~InsertStatement(); // defined in destructors.cpp
 
-	Type insert_type;
+	InsertType type;
 	const char* table_name;
 	List<char*>* columns;
 	List<Expr*>* values;

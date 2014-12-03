@@ -1,7 +1,7 @@
 #ifndef __SELECT_STATEMENT_H__
 #define __SELECT_STATEMENT_H__
 
-#include "Statement.h"
+#include "SQLStatement.h"
 #include "Expr.h"
 #include "List.h"
 #include "Table.h"
@@ -50,9 +50,9 @@ struct LimitDescription {
  * Representation of a full select statement.
  * TODO: add union_order and union_limit
  */
-struct SelectStatement : Statement {
+struct SelectStatement : SQLStatement {
 	SelectStatement() : 
-		Statement(kStmtSelect),
+		SQLStatement(kStmtSelect),
 		from_table(NULL),
 		select_list(NULL),
 		where_clause(NULL),

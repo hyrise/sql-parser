@@ -68,7 +68,7 @@ int main(int argc, char *argv[]) {
         start = std::chrono::system_clock::now();
 
         // Parsing
-        StatementList* stmt_list = SQLParser::parseSQLString(sql.c_str());
+        SQLStatementList* stmt_list = SQLParser::parseSQLString(sql.c_str());
 
         end = std::chrono::system_clock::now();
         std::chrono::duration<double> elapsed_seconds = end-start;

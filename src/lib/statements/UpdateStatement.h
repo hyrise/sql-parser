@@ -1,7 +1,7 @@
 #ifndef __UPDATE_STATEMENT_H__
 #define __UPDATE_STATEMENT_H__
 
-#include "Statement.h"
+#include "SQLStatement.h"
 
 namespace hsql {
 
@@ -10,9 +10,9 @@ struct UpdateClause {
 	Expr* value;
 };
 
-struct UpdateStatement : Statement {
+struct UpdateStatement : SQLStatement {
 	UpdateStatement() :
-		Statement(kStmtUpdate),
+		SQLStatement(kStmtUpdate),
 		table(NULL),
 		updates(NULL),
 		where(NULL) {}

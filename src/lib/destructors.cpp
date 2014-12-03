@@ -5,10 +5,10 @@
 namespace hsql {
 
 /**
- * Statement.h
+ * SQLStatement.h
  */
-Statement::~Statement() { /* empty */ }
-StatementList::~StatementList() {
+SQLStatement::~SQLStatement() { /* empty */ }
+SQLStatementList::~SQLStatementList() {
 	delete parser_msg;
 }
 
