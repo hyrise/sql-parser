@@ -19,6 +19,7 @@ struct UpdateStatement : SQLStatement {
 	
 	virtual ~UpdateStatement(); // defined in destructors.cpp
 
+	// TODO: switch to char* instead of TableRef
 	TableRef* table;
 	List<UpdateClause*>* updates;
 	Expr* where;

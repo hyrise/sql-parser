@@ -76,7 +76,7 @@
     <script type="text/javascript">
 $(function() {
   function addSampleQuery(name, query) {
-    var btn = $('<button type="button" class="btn btn-success">' + name + '</button>');
+    var btn = $('<button type="button" class="btn btn-sm btn-success">' + name + '</button>');
     btn.click(function(evt) {
       $('#queryInput').val(query);
       if (!evt.shiftKey) {
@@ -87,7 +87,7 @@ $(function() {
   }
 
   function addBuggyQuery(name, query) {
-    var btn = $('<button type="button" class="btn btn-danger">' + name + '</button>');
+    var btn = $('<button type="button" class="btn btn-sm btn-danger">' + name + '</button>');
     btn.click(function(evt) {
       $('#queryInput').val(query);
       if (!evt.shiftKey) {
@@ -176,26 +176,28 @@ $(function() {
     return true;
   });
 
-  addBuggyQuery('GROUP', 'SELECT AVG(grade) FROM (SELECT city, AVG(grade) FROM students GROUP BY city) t1');
-  addBuggyQuery('UNION (kills hyrise)', 'SELECT name FROM students WHERE grade > 2.0 UNION SELECT name FROM students');
-
-
   //////////////////////////////////////////////////
   // Load sample queries
   $.get('sample-queries.sql', function(data) {
     var lines = data.split('\n');
-    var name, query = "";
+    var name, query = "", isBuggy = false;
     $.each(lines, function(i, line) {
       if (line[0] == '#') {
+        // Append last query
+        if (name && !isBuggy) addSampleQuery(name, query);
+        if (name && isBuggy)  addBuggyQuery(name, query);
+
         // New query
-        if (name) addSampleQuery(name, query);
-        name = line.substring(1);
+        isBuggy = (line[1] == '!');
+        name = line.substring((isBuggy) ? 3 : 2);
         query = "";
       } else {
         query += line + '\n';
       }
     });
-    if (name) addSampleQuery(name, query);
+
+    if (name && !isBuggy) addSampleQuery(name, query);
+    if (name && isBuggy)  addBuggyQuery(name, query);
   });
   //////////////////////////////////////////////////
   

@@ -6,7 +6,7 @@ BIN_DIR = ../bin
 CC = g++
 CFLAGS = -O3 -I./ -Ilib/ -Ilib/statements/ -Iparser/ -std=c++11 -pthread -Wall -g
 
-LIB_FILES = $(shell find lib/ -name '*.cpp') $(shell find lib/ -name '*.h') parser/bison_parser.cpp parser/flex_lexer.cpp parser/SQLParser.cpp
+LIB_HEADERS = $(shell find lib/ -name '*.h') parser/bison_parser.h parser/flex_lexer.h parser/SQLParser.h
 LIB_SOURCES = $(shell find lib/ -name '*.cpp') parser/bison_parser.cpp parser/flex_lexer.cpp parser/SQLParser.cpp
 TEST_SOURCES = $(shell find tests/ -name '*.cpp')
 
@@ -14,7 +14,8 @@ TEST_SOURCES = $(shell find tests/ -name '*.cpp')
 build: clean
 	make -C parser/
 	mkdir $(BUILD_DIR)
-	cp $(LIB_FILES) $(BUILD_DIR)
+	cp $(LIB_SOURCES) $(BUILD_DIR)
+	cp $(LIB_HEADERS) $(BUILD_DIR)
 
 
 analysis: $(LIB_SOURCES) sql_analysis.cpp
