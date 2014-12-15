@@ -8,7 +8,16 @@
 
 using namespace hsql;
 
-TEST(Delete) {
+#define PARSE_SINGLE_SQL(query, stmt_type, stmt_class, output_var) \
+	SQLStatementList* stmt_list = SQLParser::parseSQLString(query); \
+	ASSERT(stmt_list->isValid); \
+	ASSERT_EQ(stmt_list->size(), 1); \
+	ASSERT_EQ(stmt_list->at(0)->type(), stmt_type); \
+	stmt_class* output_var = (stmt_class*) stmt_list->at(0);
+
+
+
+TEST(DeleteStatementTest) {
 	SQLStatementList* stmt_list = SQLParser::parseSQLString("DELETE FROM students WHERE grade > 2.0;");
 	ASSERT(stmt_list->isValid);
 	ASSERT_EQ(stmt_list->size(), 1);
@@ -22,7 +31,7 @@ TEST(Delete) {
 	ASSERT_EQ(stmt->expr->expr2->fval, 2.0);
 }
 
-TEST(Create) {
+TEST(CreateStatementTest) {
 	SQLStatementList* stmt_list = SQLParser::parseSQLString("CREATE TABLE students (name TEXT, student_number INT, city INTEGER, grade DOUBLE)");
 	ASSERT(stmt_list->isValid);
 	ASSERT_EQ(stmt_list->size(), 1);
@@ -44,7 +53,7 @@ TEST(Create) {
 }
 
 
-TEST(Update) {
+TEST(UpdateStatementTest) {
 	SQLStatementList* stmt_list = SQLParser::parseSQLString("UPDATE students SET grade = 5.0, name = 'test' WHERE name = 'Max Mustermann';");
 	ASSERT(stmt_list->isValid);
 	ASSERT_EQ(stmt_list->size(), 1);
@@ -72,7 +81,7 @@ TEST(Update) {
 }
 
 
-TEST(Insert) {
+TEST(InsertStatementTest) {
 	SQLStatementList* stmt_list = SQLParser::parseSQLString("INSERT INTO students VALUES ('Max Mustermann', 12345, 'Musterhausen', 2.0)");
 	ASSERT(stmt_list->isValid);
 	ASSERT_EQ(stmt_list->size(), 1);
@@ -82,7 +91,7 @@ TEST(Insert) {
 }
 
 
-TEST(DropTable) {
+TEST(DropTableStatementTest) {
 	SQLStatementList* stmt_list = SQLParser::parseSQLString("DROP TABLE students");
 	ASSERT(stmt_list->isValid);
 	ASSERT_EQ(stmt_list->size(), 1);
@@ -92,4 +101,27 @@ TEST(DropTable) {
 	ASSERT_EQ(stmt->type, DropStatement::kTable);
 	ASSERT_NOTNULL(stmt->name);
 	ASSERT_STREQ(stmt->name, "students");
+}
+
+
+TEST(PrepareStatementTest) {
+	PARSE_SINGLE_SQL("PREPARE test: SELECT ?, test FROM t2 WHERE c1 = ?;", kStmtPrepare, PrepareStatement, prep_stmt);
+
+	ASSERT_EQ(prep_stmt->stmt->type(), kStmtSelect);
+	ASSERT_STREQ(prep_stmt->name, "test");
+
+	SelectStatement* stmt = (SelectStatement*) prep_stmt->stmt;
+	ASSERT(stmt->select_list->at(0)->isType(kExprPlaceholder));
+	ASSERT(stmt->where_clause->expr2->isType(kExprPlaceholder));
+	// Check IDs of Placehoders
+	ASSERT_EQ(stmt->select_list->at(0)->ival, 0);
+	ASSERT_EQ(stmt->where_clause->expr2->ival, 1);
+}
+
+
+TEST(ExecuteStatementTest) {
+	PARSE_SINGLE_SQL("EXECUTE test(1, 2);", kStmtExecute, ExecuteStatement, stmt);
+
+	ASSERT_STREQ(stmt->name, "test");
+	ASSERT_EQ(stmt->parameters->size(), 2);
 }

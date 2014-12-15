@@ -9,5 +9,7 @@
 #include "UpdateStatement.h"
 #include "DeleteStatement.h"
 #include "DropStatement.h"
+#include "PrepareStatement.h"
+#include "ExecuteStatement.h"
 
 #endif

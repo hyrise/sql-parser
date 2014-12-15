@@ -74,6 +74,17 @@ ColumnDefinition::~ColumnDefinition() {
 	delete name;
 }
 
+
+PrepareStatement::~PrepareStatement() {
+	delete stmt;
+	delete name;
+}
+ExecuteStatement::~ExecuteStatement() {
+	delete name;
+	delete parameters;
+}
+
+
 /**
  * Table.h
  */

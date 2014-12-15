@@ -31,11 +31,33 @@ int yyerror(YYLTYPE* llocp, SQLStatementList** result, yyscan_t scanner, const c
 	return 0;
 }
 
+
+
 %}
 /*********************************
  ** Section 2: Bison Parser Declarations
  *********************************/
 
+
+// Specify code that is included in the generated .h and .c files
+%code requires {
+// %code requires block	
+#include "parser_typedef.h"
+
+// Auto update column and line number
+#define YY_USER_ACTION \
+    yylloc->first_line = yylloc->last_line; \
+    yylloc->first_column = yylloc->last_column; \
+    for(int i = 0; yytext[i] != '\0'; i++) { \
+        if(yytext[i] == '\n') { \
+            yylloc->last_line++; \
+            yylloc->last_column = 0; \
+        } \
+        else { \
+            yylloc->last_column++; \
+        } \
+    }
+}
 
 // Define the names of the created files
 %output  "bison_parser.cpp"
@@ -51,33 +73,15 @@ int yyerror(YYLTYPE* llocp, SQLStatementList** result, yyscan_t scanner, const c
 %define parse.error verbose
 %locations
 
+%initial-action {
+	// Initialize
+	@$.first_column = 0;
+	@$.last_column = 0;
+	@$.first_line = 0;
+	@$.last_line = 0;
+	@$.placeholder_id = 0;
+};
 
-// Specify code that is included in the generated .h and .c files
-%code requires {
-
-#ifndef YYtypeDEF_YY_SCANNER_T
-#define YYtypeDEF_YY_SCANNER_T
-typedef void* yyscan_t;
-#endif
-
-#define YYSTYPE HSQL_STYPE
-#define YYLTYPE HSQL_LTYPE
-
-
-#define YY_USER_ACTION \
-    yylloc->first_line = yylloc->last_line; \
-    yylloc->first_column = yylloc->last_column; \
-    for(int i = 0; yytext[i] != '\0'; i++) { \
-        if(yytext[i] == '\n') { \
-            yylloc->last_line++; \
-            yylloc->last_column = 0; \
-        } \
-        else { \
-            yylloc->last_column++; \
-        } \
-    }
-
-}
 
 // Define additional parameters for yylex (http://www.gnu.org/software/bison/manual/html_node/Pure-Calling.html)
 %lex-param   { yyscan_t scanner }
@@ -98,13 +102,15 @@ typedef void* yyscan_t;
 	bool bval;
 
 	hsql::SQLStatement* statement;
-	hsql::SelectStatement* select_stmt;
-	hsql::ImportStatement* import_stmt;
-	hsql::CreateStatement* create_stmt;
-	hsql::InsertStatement* insert_stmt;
-	hsql::DeleteStatement* delete_stmt;
-	hsql::UpdateStatement* update_stmt;
-	hsql::DropStatement*   drop_stmt;
+	hsql::SelectStatement* 	select_stmt;
+	hsql::ImportStatement* 	import_stmt;
+	hsql::CreateStatement* 	create_stmt;
+	hsql::InsertStatement* 	insert_stmt;
+	hsql::DeleteStatement* 	delete_stmt;
+	hsql::UpdateStatement* 	update_stmt;
+	hsql::DropStatement*   	drop_stmt;
+	hsql::PrepareStatement* prep_stmt;
+	hsql::ExecuteStatement* exec_stmt;
 
 	hsql::TableRef* table;
 	hsql::Expr* expr;
@@ -154,7 +160,8 @@ typedef void* yyscan_t;
  *********************************/
 %type <stmt_list>	statement_list
 %type <statement> 	statement preparable_statement
-%type <statement>	prepare_statement execute_statement
+%type <exec_stmt>	execute_statement
+%type <prep_stmt>	prepare_statement
 %type <select_stmt> select_statement select_with_paren select_no_paren select_clause
 %type <import_stmt> import_statement
 %type <create_stmt> create_statement
@@ -222,7 +229,7 @@ statement_list:
 
 statement:
 		preparable_statement
-	|	prepare_statement
+	|	prepare_statement { $$ = $1; }
 	;
 
 
@@ -243,11 +250,19 @@ preparable_statement:
  * Prepared Statement
  ******************************/
 prepare_statement:
-		PREPARE IDENTIFIER ':' preparable_statement { $$ = NULL; }
+		PREPARE IDENTIFIER ':' preparable_statement {
+			$$ = new PrepareStatement();
+			$$->name = $2;
+			$$->stmt = $4;
+		}
 	;
 
 execute_statement:
-		EXECUTE IDENTIFIER '(' literal_list ')' { $$ = NULL; }
+		EXECUTE IDENTIFIER '(' literal_list ')' {
+			$$ = new ExecuteStatement();
+			$$->name = $2;
+			$$->parameters = $4;
+		}
 	;
 
 
@@ -586,7 +601,7 @@ star_expr:
 
 /* TODO: keep list of placeholders */
 placeholder_expr:
-		'?' { $$ = new Expr(kExprPlaceholder); }
+		'?' { $$ = new Expr(kExprPlaceholder); $$->ival = yylloc.placeholder_id++; }
 	;
 
 

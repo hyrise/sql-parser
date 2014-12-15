@@ -19,6 +19,8 @@ typedef enum {
 	kStmtDelete,
 	kStmtCreate,
 	kStmtDrop,
+	kStmtPrepare,
+	kStmtExecute,
 	// Following types are not supported yet
 	kStmtExport,
 	kStmtRename,

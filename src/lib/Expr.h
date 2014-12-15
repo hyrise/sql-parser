@@ -71,6 +71,7 @@ struct Expr {
 	char* alias;
 	float fval;
 	int64_t ival;
+	int64_t ival2;
 
 	OperatorType op_type;
 	char op_char;
