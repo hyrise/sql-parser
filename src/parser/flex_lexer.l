@@ -39,6 +39,7 @@
 %option warn
 %option case-insensitive
 %option prefix="hsql_"
+%option bison-locations 
 /* %option nodefault */
 
 
@@ -58,6 +59,7 @@
 
 
 
+DEALLOCATE	TOKEN(DEALLOCATE)
 PARAMETERS	TOKEN(PARAMETERS)
 INTERSECT	TOKEN(INTERSECT)
 TEMPORARY	TOKEN(TEMPORARY)
@@ -72,10 +74,12 @@ CASCADE		TOKEN(CASCADE)
 COLUMNS		TOKEN(COLUMNS)
 CONTROL		TOKEN(CONTROL)
 DEFAULT		TOKEN(DEFAULT)
+EXECUTE		TOKEN(EXECUTE)
 EXPLAIN		TOKEN(EXPLAIN)
 HISTORY		TOKEN(HISTORY)
 INTEGER		TOKEN(INTEGER)
 NATURAL		TOKEN(NATURAL)
+PREPARE		TOKEN(PREPARE)
 PRIMARY		TOKEN(PRIMARY)
 SCHEMAS		TOKEN(SCHEMAS)
 SPATIAL		TOKEN(SPATIAL)
@@ -130,6 +134,7 @@ FILE		TOKEN(FILE)
 FROM		TOKEN(FROM)
 FULL		TOKEN(FULL)
 HASH		TOKEN(HASH)
+HINT		TOKEN(HINT)
 INTO		TOKEN(INTO)
 JOIN		TOKEN(JOIN)
 LEFT		TOKEN(LEFT)
@@ -172,7 +177,7 @@ TO			TOKEN(TO)
 ">="		TOKEN(GREATEREQ)
 
 
-[-+*/(),.;<>=^%]	{ return yytext[0]; }
+[-+*/(),.;<>=^%:?]	{ return yytext[0]; }
 
 
 [0-9]+"."[0-9]* |
@@ -204,7 +209,7 @@ TO			TOKEN(TO)
 	return SQL_STRING;
 }
 
-
+. { fprintf(stderr, "[SQL-Lexer-Error] Unknown Character: %c\n", yytext[0]); return 0; }
 
 
 %%
@@ -213,5 +218,5 @@ TO			TOKEN(TO)
  ***************************/
 
 int yyerror(const char *msg) {
-    fprintf(stderr, "[Error] SQL Lexer: %s\n",msg); return 0;
+    fprintf(stderr, "[SQL-Lexer-Error] %s\n",msg); return 0;
 }

@@ -101,6 +101,11 @@ UNLOAD
 
 DELETE
 
+// Prepared Statements
+DEALLOCATE
+PREPARE
+EXECUTE
+
 ///////////////////////////////
 // other statements
 RENAME
@@ -138,6 +143,7 @@ ESCAPE
 
 // With
 WITH
+HINT
 PARAMETERS
 ON
 OFF

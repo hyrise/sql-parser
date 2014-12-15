@@ -30,3 +30,6 @@ UPDATE students SET grade = 1.3, name='Felix Fürstenberg' WHERE name = 'Max Mus
 UPDATE students SET grade = 1.0;
 # DROP
 DROP TABLE students;
+# PREPARE
+PREPARE prep_inst: INSERT INTO test VALUES (?, ?, ?); SELECT * FROM test;
+EXECUTE prep_inst(1, 2, 3);

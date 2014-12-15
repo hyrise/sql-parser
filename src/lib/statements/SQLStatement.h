@@ -57,6 +57,8 @@ public:
 
 	bool isValid;
 	const char* parser_msg;
+	int error_line;
+	int error_col;
 };
 
 

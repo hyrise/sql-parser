@@ -76,7 +76,7 @@ int main(int argc, char *argv[]) {
 
         if (expect_false == stmt_list->isValid) {
             printf("\033[0;31m{  failed}\033[0m\n");
-            printf("\t\033[0;31m%s\n\033[0m", stmt_list->parser_msg);
+            printf("\t\033[0;31m%s (L%d:%d)\n\033[0m", stmt_list->parser_msg, stmt_list->error_line, stmt_list->error_col);
             printf("\t%s\n", sql.c_str());
             num_failed++;
         } else {

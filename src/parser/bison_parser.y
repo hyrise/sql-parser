@@ -19,13 +19,15 @@
 
 using namespace hsql;
 
-int yyerror(SQLStatementList** result, yyscan_t scanner, const char *msg) {
+int yyerror(YYLTYPE* llocp, SQLStatementList** result, yyscan_t scanner, const char *msg) {
 
 	SQLStatementList* list = new SQLStatementList();
 	list->isValid = false;
 	list->parser_msg = strdup(msg);
+	list->error_line = llocp->first_line;
+	list->error_col = llocp->first_column;
+	
 	*result = list;
-
 	return 0;
 }
 
@@ -47,6 +49,8 @@ int yyerror(SQLStatementList** result, yyscan_t scanner, const char *msg) {
 %define api.token.prefix {SQL_}
 
 %define parse.error verbose
+%locations
+
 
 // Specify code that is included in the generated .h and .c files
 %code requires {
@@ -57,6 +61,21 @@ typedef void* yyscan_t;
 #endif
 
 #define YYSTYPE HSQL_STYPE
+#define YYLTYPE HSQL_LTYPE
+
+
+#define YY_USER_ACTION \
+    yylloc->first_line = yylloc->last_line; \
+    yylloc->first_column = yylloc->last_column; \
+    for(int i = 0; yytext[i] != '\0'; i++) { \
+        if(yytext[i] == '\n') { \
+            yylloc->last_line++; \
+            yylloc->last_column = 0; \
+        } \
+        else { \
+            yylloc->last_column++; \
+        } \
+    }
 
 }
 
@@ -114,26 +133,27 @@ typedef void* yyscan_t;
 %token <uval> NOTEQUALS LESSEQ GREATEREQ
 
 /* SQL Keywords */
-%token PARAMETERS INTERSECT TEMPORARY TIMESTAMP DISTINCT
-%token NVARCHAR RESTRICT TRUNCATE ANALYZE BETWEEN CASCADE
-%token COLUMNS CONTROL DEFAULT EXPLAIN HISTORY INTEGER
-%token NATURAL PRIMARY SCHEMAS SPATIAL VIRTUAL BEFORE COLUMN
-%token CREATE DELETE DIRECT DOUBLE ESCAPE EXCEPT EXISTS
-%token GLOBAL HAVING IMPORT INSERT ISNULL OFFSET RENAME
-%token SCHEMA SELECT SORTED TABLES UNIQUE UNLOAD UPDATE
-%token VALUES AFTER ALTER CROSS DELTA GROUP INDEX INNER
-%token LIMIT LOCAL MERGE MINUS ORDER OUTER RIGHT TABLE UNION
-%token USING WHERE CALL DATE DESC DROP FILE FROM FULL HASH
-%token INTO JOIN LEFT LIKE LOAD NULL PART PLAN SHOW TEXT
-%token TIME VIEW WITH ADD ALL AND ASC CSV FOR INT KEY NOT OFF
-%token SET TBL TOP AS BY IF IN IS OF ON OR TO
+%token DEALLOCATE PARAMETERS INTERSECT TEMPORARY TIMESTAMP
+%token DISTINCT NVARCHAR RESTRICT TRUNCATE ANALYZE BETWEEN
+%token CASCADE COLUMNS CONTROL DEFAULT EXECUTE EXPLAIN
+%token HISTORY INTEGER NATURAL PREPARE PRIMARY SCHEMAS
+%token SPATIAL VIRTUAL BEFORE COLUMN CREATE DELETE DIRECT
+%token DOUBLE ESCAPE EXCEPT EXISTS GLOBAL HAVING IMPORT
+%token INSERT ISNULL OFFSET RENAME SCHEMA SELECT SORTED
+%token TABLES UNIQUE UNLOAD UPDATE VALUES AFTER ALTER CROSS
+%token DELTA GROUP INDEX INNER LIMIT LOCAL MERGE MINUS ORDER
+%token OUTER RIGHT TABLE UNION USING WHERE CALL DATE DESC
+%token DROP FILE FROM FULL HASH HINT INTO JOIN LEFT LIKE
+%token LOAD NULL PART PLAN SHOW TEXT TIME VIEW WITH ADD ALL
+%token AND ASC CSV FOR INT KEY NOT OFF SET TBL TOP AS BY IF
+%token IN IS OF ON OR TO
 
 
 /*********************************
  ** Non-Terminal types (http://www.gnu.org/software/bison/manual/html_node/Type-Decl.html)
  *********************************/
 %type <stmt_list>	statement_list
-%type <statement> 	statement
+%type <statement> 	statement preparable_statement prepare_statement
 %type <select_stmt> select_statement select_with_paren select_no_paren select_clause
 %type <import_stmt> import_statement
 %type <create_stmt> create_statement
@@ -200,6 +220,12 @@ statement_list:
 	;
 
 statement:
+		preparable_statement
+	|	prepare_statement
+	;
+
+
+preparable_statement:
 		select_statement { $$ = $1; }
 	|	import_statement { $$ = $1; }
 	|	create_statement { $$ = $1; }
@@ -208,6 +234,14 @@ statement:
 	|	truncate_statement { $$ = $1; }
 	|	update_statement { $$ = $1; }
 	|	drop_statement { $$ = $1; }
+	;
+
+
+/******************************
+ * Prepared Statement
+ ******************************/
+prepare_statement:
+		PREPARE IDENTIFIER ':' preparable_statement { $$ = NULL; }
 	;
 
 
