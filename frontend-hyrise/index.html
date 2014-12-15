@@ -4,21 +4,18 @@
     <link href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet">
 
     <script type="text/javascript" src="hyrise-sql-connector.js"></script>
+    <script type="text/javascript" src="ui.js"></script>
     <link href="style.css" rel="stylesheet" />
     <title>Hyrise SQL Frontend</title>
   </head>
   <body>
-
     <div class="content">
       <div class="row">
         <div class="col-lg-6">
           <!-- Config -->
           <div class="row">
-            <div class="form-group col-sm-8">
-              <input type="text" class="form-control" id="hostInput" placeholder="Hyrise Host" value="localhost">
-            </div>
-            <div class="form-group col-sm-4">
-              <input type="text" class="form-control" id="portInput" placeholder="Hyrise Port" value="5000">
+            <div class="form-group col-sm-12">
+              <input type="text" class="form-control" id="endpointInput" placeholder="Hyrise Host" value="http://localhost:5000/query" />
             </div>
           </div>
 
@@ -66,143 +63,11 @@
           <!-- View: Result Table -->
             <h3>Results (first 100 rows)</h3>
           <div id="msgContainer" class="alert alert-success" role="alert">
-            <div id="resultInfo">Ready</div>
+            <div id="resultInfo">Frontend Ready</div>
           </div>
           <table id="resultTable" class="table table-bordered table-striped table-hover"></table>
         </div>
       </div>
     </div>
-
-    <script type="text/javascript">
-$(function() {
-  function addSampleQuery(name, query) {
-    var btn = $('<button type="button" class="btn btn-sm btn-success">' + name + '</button>');
-    btn.click(function(evt) {
-      $('#queryInput').val(query);
-      if (!evt.shiftKey) {
-        $('#submitBtn').click();
-      }
-    });
-    $('#sampleQueries').append(btn);
-  }
-
-  function addBuggyQuery(name, query) {
-    var btn = $('<button type="button" class="btn btn-sm btn-danger">' + name + '</button>');
-    btn.click(function(evt) {
-      $('#queryInput').val(query);
-      if (!evt.shiftKey) {
-        $('#submitBtn').click();
-      }
-    });
-    $('#buggyQueries').append(btn);
-  }
-
-  function createElement(tag, value) {
-    return $('<' + tag + '>' + value + '</' + tag + '>');
-  };
-
-  function updateResultTable(result) {
-    // Present result json in result-view
-    var table = $('#resultTable');
-    table.html('');
-
-    var th = $('<tr>');
-    $.each(result.header, function(i, val) {
-      th.append($('<th>' + val + '</th>'));
-    });
-    table.append(th);
-
-    // Limit the rows to be displayed to 100
-    for (var i = 0; i < 100 && i < result.real_size; ++i) {
-      var row = result.rows[i];
-      var tr = $('<tr>');
-      $.each(row, function(j, val) {
-        tr.append($('<td>' + val + '</td>'));
-      });
-      table.append(tr);
-    }
-  };
-
-  function updatePerformanceData(result) {
-    var tbody = $('#performanceDataTable tbody');
-    tbody.html('');
-
-    $.each(result.performanceData, function(i, data) {
-      var tr = $('<tr>');
-      tr.append(createElement('td', data.id))
-      tr.append(createElement('td', data.name))
-      tr.append(createElement('td', data.duration))
-      tr.append(createElement('td', data.startTime))
-      tr.append(createElement('td', data.endTime))
-      tbody.append(tr);
-    });
-  };
-
-  $('#submitBtn').click(function() {
-    $('#resultTable').html('');
-    $('#resultInfo').html('waiting for result...');
-    $('#msgContainer').attr('class', 'alert alert-warning');
-
-
-    var host = $('#hostInput').val();
-    var port = $('#portInput').val();
-    var query = $('#queryInput').val();
-    var hyrise = new HyriseSqlConnector(host, port);
-
-    hyrise.executeQuery(query, function(result) {
-      // On Success
-      $('#msgContainer').attr('class', 'alert alert-success');
-      $('#resultInfo').html('Result contains ' + result.real_size + ' rows');
-      console.log("Query result: ", result);
-      updateResultTable(result);
-      updatePerformanceData(result);
-
-    }, function(xhr, status, error) {
-      // On Error
-      console.log(arguments);
-      var msg = 'Error when fetching result. Possibly no connection to Hyrise.';
-      if (xhr.responseJSON) msg = xhr.responseJSON.error[0];
-      $('#resultInfo').html(msg);
-      $('#msgContainer').attr('class', 'alert alert-danger');
-      $('#performanceDataTable tbody').html('');
-    });
-  });
-
-  $('#queryInput').keypress(function(evt) {
-    if (evt.keyCode == 13 && evt.shiftKey) {
-      $('#submitBtn').click();
-      return false;
-    }
-    return true;
-  });
-
-  //////////////////////////////////////////////////
-  // Load sample queries
-  $.get('sample-queries.sql', function(data) {
-    var lines = data.split('\n');
-    var name, query = "", isBuggy = false;
-    $.each(lines, function(i, line) {
-      if (line[0] == '#') {
-        // Append last query
-        if (name && !isBuggy) addSampleQuery(name, query);
-        if (name && isBuggy)  addBuggyQuery(name, query);
-
-        // New query
-        isBuggy = (line[1] == '!');
-        name = line.substring((isBuggy) ? 3 : 2);
-        query = "";
-      } else {
-        query += line + '\n';
-      }
-    });
-
-    if (name && !isBuggy) addSampleQuery(name, query);
-    if (name && isBuggy)  addBuggyQuery(name, query);
-  });
-  //////////////////////////////////////////////////
-  
-
-});
-    </script>
   </body>
 </html>

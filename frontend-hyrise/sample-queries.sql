@@ -18,7 +18,7 @@ INSERT INTO students VALUES ('Max Mustermann', 10101, 'Musterhausen', 1.7);
 # CREATE
 CREATE TABLE IF NOT EXISTS test (v1 INTEGER, v2 INTEGER, v3 INTEGER);
 # INSERT/SELECT
-INSERT INTO test VALUES (1, 23, 45);|
+INSERT INTO test VALUES (1, 23, 45);
 INSERT INTO test VALUES (1, 23, 45);
 INSERT INTO test VALUES (1, 23, 45);
 SELECT * FROM test;
@@ -30,9 +30,3 @@ SELECT * FROM test;
 SELECT AVG(grade) FROM (SELECT city, AVG(grade) FROM students GROUP BY city) t1
 #! UNION (kills hyrise)
 SELECT name FROM students WHERE grade > 2.0 UNION SELECT name FROM students
-#! UPDATE
-UPDATE companies SET company_id = 44 WHERE company_name = 'Microsoft';
-#! SELECT
-SELECT * FROM companies;
-#! SELECT Microsoft
-SELECT * FROM companies WHERE company_name = 'Microsoft';

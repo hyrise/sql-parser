@@ -1,23 +1,11 @@
 
 
-
-var HyriseSqlConnector = function(host, port) {
-
-	this.setConnectionDetails(host, port);
-
+var HyriseSQLConnector = function(endpointUrl) {
+	this._endpointUrl = endpointUrl;
 }
 
-
-HyriseSqlConnector.prototype.setConnectionDetails = function(host, port) {
-	this._host = host;
-	this._port = port;
-	return this;
-};
-
-
-HyriseSqlConnector.prototype.executeQuery = function(query, callback, error_callback) {
-	var endpoint = 'http://' + this._host + ':' + this._port + '/query';
-	var url = encodeURI(endpoint);
+HyriseSQLConnector.prototype.executeSQLQuery = function(query, callback, error_callback) {
+	var url = encodeURI(this._endpointUrl);
 
 	jQuery.ajax({
 		type: "POST",
