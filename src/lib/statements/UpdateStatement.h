@@ -5,11 +5,21 @@
 
 namespace hsql {
 
+
+/**
+ * @struct UpdateClause
+ * @brief Represents "column = value" expressions
+ */
 struct UpdateClause {
 	char* column;
 	Expr* value;
 };
 
+
+/**
+ * @struct UpdateStatement
+ * @brief Represents "UPDATE"
+ */
 struct UpdateStatement : SQLStatement {
 	UpdateStatement() :
 		SQLStatement(kStmtUpdate),
@@ -17,7 +27,11 @@ struct UpdateStatement : SQLStatement {
 		updates(NULL),
 		where(NULL) {}
 	
-	virtual ~UpdateStatement(); // defined in destructors.cpp
+	virtual ~UpdateStatement() {
+		delete table;
+		delete updates;
+		delete where;
+	}
 
 	// TODO: switch to char* instead of TableRef
 	TableRef* table;

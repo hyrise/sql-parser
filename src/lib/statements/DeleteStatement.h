@@ -8,8 +8,7 @@ namespace hsql {
 
 /**
  * @struct DeleteStatement
- * DELETE FROM students WHERE grade > 3.0
- * DELETE FROM students <=> TRUNCATE students
+ * @brief Represents "DELETE FROM students WHERE grade > 3.0"
  *
  * If expr == NULL => delete all rows (truncate)
  */
@@ -19,7 +18,11 @@ struct DeleteStatement : SQLStatement {
 		table_name(NULL),
 		expr(NULL) {};
 
-	virtual ~DeleteStatement(); // defined in destructors.cpp
+	virtual ~DeleteStatement() {
+		delete table_name;
+		delete expr;
+	}
+
 
 	char* table_name;
 	Expr* expr;

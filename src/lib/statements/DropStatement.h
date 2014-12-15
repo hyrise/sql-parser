@@ -5,6 +5,11 @@
 
 namespace hsql {
 
+
+/**
+ * @struct DropStatement
+ * @brief Represents "DROP TABLE"
+ */
 struct DropStatement : SQLStatement {
 	enum EntityType {
 		kTable,
@@ -19,14 +24,13 @@ struct DropStatement : SQLStatement {
 		type(type),
 		name(NULL) {}
 
-
-	EntityType type;
-	const char* name;
-
-
 	virtual ~DropStatement() {
 		delete name;
 	}
+
+
+	EntityType type;
+	const char* name;
 };
 
 

@@ -9,7 +9,7 @@ namespace hsql {
 
 /**
  * @struct PrepareStatement
- *
+ * @brief Represents "PREPARE ins_prep: SELECT * FROM t1 WHERE c1 = ? AND c2 = ?"
  */
 struct PrepareStatement : SQLStatement {
 	PrepareStatement() :
@@ -17,7 +17,10 @@ struct PrepareStatement : SQLStatement {
 		name(NULL),
 		stmt(NULL) {}
 	
-	virtual ~PrepareStatement(); // defined in destructors.cpp
+	virtual ~PrepareStatement() {
+		delete stmt;
+		delete name;
+	}
 
 	const char* name;
 	SQLStatement* stmt;

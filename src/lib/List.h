@@ -8,6 +8,10 @@ namespace hsql {
 
 // TODO: try to replace the List wrapper by directly using std::vector
 
+/**
+ * @class List
+ * @brief Classed interface to std::vector (may be replaced with std::vector)
+ */
 template <typename _T>
 class List {
 public:

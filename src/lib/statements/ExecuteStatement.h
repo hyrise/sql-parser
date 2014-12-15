@@ -8,7 +8,7 @@ namespace hsql {
 
 /**
  * @struct ExecuteStatement
- *
+ * @brief Represents "EXECUTE ins_prep(100, "test", 2.3);"
  */
 struct ExecuteStatement : SQLStatement {
 	ExecuteStatement() :
@@ -16,7 +16,10 @@ struct ExecuteStatement : SQLStatement {
 		name(NULL),
 		parameters(NULL) {}
 	
-	virtual ~ExecuteStatement(); // defined in destructors.cpp
+	virtual ~ExecuteStatement() {
+		delete name;
+		delete parameters;
+	}
 
 	const char* name;
 	List<Expr*>* parameters;

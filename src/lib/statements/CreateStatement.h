@@ -5,9 +5,9 @@
 
 namespace hsql {
 
-
 /**
  * @struct ColumnDefinition
+ * @brief Represents definition of a table column
  */
 struct ColumnDefinition {
 	enum DataType {
@@ -20,16 +20,18 @@ struct ColumnDefinition {
 		name(name),
 		type(type) {}
 
-	virtual ~ColumnDefinition(); // defined in destructors.cpp
+	virtual ~ColumnDefinition() {
+		delete name;
+	}
 
 	char* name;
 	DataType type;
 };
 
+
 /**
  * @struct CreateStatement
- * CREATE TABLE students (name TEXT, student_number INTEGER, city TEXT, grade DOUBLE)
- * CREATE TABLE students FROM TBL FILE 'test/students.tbl'
+ * @brief Represents "CREATE TABLE students (name TEXT, student_number INTEGER, city TEXT, grade DOUBLE)"
  */
 struct CreateStatement : SQLStatement {
 	enum CreateType {
@@ -45,7 +47,11 @@ struct CreateStatement : SQLStatement {
 		file_path(NULL),
 		table_name(NULL) {};
 
-	virtual ~CreateStatement(); // defined in destructors.cpp
+	virtual ~CreateStatement() {
+		delete columns;
+		delete file_path;
+		delete table_name;
+	}
 
 	CreateType type;
 	bool if_not_exists;

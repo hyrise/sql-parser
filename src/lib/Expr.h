@@ -24,6 +24,10 @@ typedef enum {
 
 typedef struct Expr Expr;
 
+/** 
+ * @class Expr
+ * @brief Represents SQL expressions (i.e. literals, operators, column_refs)
+ */
 struct Expr {
 	/**
 	 * Operator types. These are important for expressions of type kExprOperator

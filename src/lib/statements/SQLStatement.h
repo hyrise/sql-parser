@@ -21,28 +21,33 @@ typedef enum {
 	kStmtDrop,
 	kStmtPrepare,
 	kStmtExecute,
-	// Following types are not supported yet
 	kStmtExport,
 	kStmtRename,
 	kStmtAlter
 } StatementType;
 
 
+/**
+ * @struct SQLStatement
+ * @brief Base class for every SQLStatement
+ */
 struct SQLStatement {
 	SQLStatement(StatementType type) :
 		_type(type) {};
 
-	virtual ~SQLStatement(); // defined in destructors.cpp
-
+	virtual ~SQLStatement() {}
 
 	virtual StatementType type() { return _type; }
-	
 
 private:
 	StatementType _type;
 };
 
 
+/**
+ * @struct SQLStatementList
+ * @brief Represents the result of the SQLParser. If parsing was successful it is a list of SQLStatement.
+ */
 class SQLStatementList : public List<SQLStatement*> {
 public:
 	SQLStatementList() :
@@ -55,7 +60,9 @@ public:
 		isValid(true),
 		parser_msg(NULL) {};
 		
-	virtual ~SQLStatementList(); // defined in destructors.cpp
+	virtual ~SQLStatementList() {
+		delete parser_msg;
+	}
 
 	bool isValid;
 	const char* parser_msg;

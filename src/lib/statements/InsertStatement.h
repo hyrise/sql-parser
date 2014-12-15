@@ -9,8 +9,7 @@ namespace hsql {
 
 /**
  * @struct InsertStatement
- * INSERT INTO students VALUES ('Max', 1112233, 'Musterhausen', 2.3)
- * INSERT INTO employees SELECT * FROM stundents
+ * @brief Represents "INSERT INTO students VALUES ('Max', 1112233, 'Musterhausen', 2.3)"
  */
 struct InsertStatement : SQLStatement {
 	enum InsertType {
@@ -26,7 +25,12 @@ struct InsertStatement : SQLStatement {
 		values(NULL),
 		select(NULL) {}
 	
-	virtual ~InsertStatement(); // defined in destructors.cpp
+	virtual ~InsertStatement() {
+		delete table_name;
+		delete columns;
+		delete values;
+		delete select;
+	}
 
 	InsertType type;
 	const char* table_name;

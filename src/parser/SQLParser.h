@@ -6,6 +6,13 @@
 
 namespace hsql {
 
+/*!
+ * \mainpage SQLParser (C++)
+ */
+
+/*!
+ * @brief Main class for parsing SQL strings
+ */
 class SQLParser {
 public:
 	static SQLStatementList* parseSQLString(const char* sql);

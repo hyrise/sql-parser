@@ -10,6 +10,7 @@ namespace hsql {
 
 /**
  * @struct ImportStatement
+ * @brief Represents "IMPORT"
  */
 struct ImportStatement : SQLStatement {
 	enum ImportType {
@@ -24,7 +25,11 @@ struct ImportStatement : SQLStatement {
 		file_path(NULL),
 		table_name(NULL) {};
 		
-	virtual ~ImportStatement(); // defined in destructors.cpp
+	virtual ~ImportStatement() {
+		delete file_path;
+		delete table_name;
+	}
+
 
 	ImportType type;
 	const char* file_path;
