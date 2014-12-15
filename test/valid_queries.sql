@@ -4,7 +4,7 @@ SELECT a FROM foo WHERE a > 12 OR b > 3 AND NOT c LIMIT 10
 SELECT col1 AS myname, col2, 'test' FROM "table", foo AS t WHERE age > 12 AND zipcode = 12345 GROUP BY col1;
 SELECT * from "table" JOIN table2 ON a = b WHERE (b OR NOT a) AND a = 12.5
 (SELECT a FROM foo WHERE a > 12 OR b > 3 AND c NOT LIKE 's%' LIMIT 10);
-SELECT * FROM "table" LIMIT 10 OFFSET 10;
+SELECT * FROM "table" LIMIT 10 OFFSET 10; SELECT * FROM second;
 SELECT * FROM t1 UNION SELECT * FROM t2 ORDER BY col1;
 # SELECT * FROM t1 UNION (SELECT * FROM t2 UNION SELECT * FROM t3) ORDER BY col1; 
 # JOIN

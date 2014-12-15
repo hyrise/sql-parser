@@ -26,7 +26,7 @@ int yyerror(YYLTYPE* llocp, SQLStatementList** result, yyscan_t scanner, const c
 	list->parser_msg = strdup(msg);
 	list->error_line = llocp->first_line;
 	list->error_col = llocp->first_column;
-	
+
 	*result = list;
 	return 0;
 }
@@ -153,7 +153,8 @@ typedef void* yyscan_t;
  ** Non-Terminal types (http://www.gnu.org/software/bison/manual/html_node/Type-Decl.html)
  *********************************/
 %type <stmt_list>	statement_list
-%type <statement> 	statement preparable_statement prepare_statement
+%type <statement> 	statement preparable_statement
+%type <statement>	prepare_statement execute_statement
 %type <select_stmt> select_statement select_with_paren select_no_paren select_clause
 %type <import_stmt> import_statement
 %type <create_stmt> create_statement
@@ -166,7 +167,7 @@ typedef void* yyscan_t;
 %type <uval>		import_file_type opt_join_type column_type
 %type <table> 		from_clause table_ref table_ref_atomic table_ref_name
 %type <table>		join_clause join_table table_ref_name_no_alias
-%type <expr> 		expr scalar_expr unary_expr binary_expr function_expr star_expr expr_alias
+%type <expr> 		expr scalar_expr unary_expr binary_expr function_expr star_expr expr_alias placeholder_expr
 %type <expr> 		column_name literal int_literal num_literal string_literal
 %type <expr> 		comp_expr opt_where join_condition
 %type <expr_list> 	expr_list opt_group select_list literal_list
@@ -234,6 +235,7 @@ preparable_statement:
 	|	truncate_statement { $$ = $1; }
 	|	update_statement { $$ = $1; }
 	|	drop_statement { $$ = $1; }
+	|	execute_statement { $$ = $1; }
 	;
 
 
@@ -244,6 +246,9 @@ prepare_statement:
 		PREPARE IDENTIFIER ':' preparable_statement { $$ = NULL; }
 	;
 
+execute_statement:
+		EXECUTE IDENTIFIER '(' literal_list ')' { $$ = NULL; }
+	;
 
 
 /******************************
@@ -558,6 +563,7 @@ column_name:
 literal:
 		string_literal
 	|	num_literal
+	|	placeholder_expr
 	;
 
 string_literal:
@@ -576,6 +582,11 @@ int_literal:
 
 star_expr:
 		'*' { $$ = new Expr(kExprStar); }
+	;
+
+/* TODO: keep list of placeholders */
+placeholder_expr:
+		'?' { $$ = new Expr(kExprPlaceholder); }
 	;
 
 

@@ -16,6 +16,7 @@ typedef enum {
 	kExprLiteralString,
 	kExprLiteralInt,
 	kExprStar,
+	kExprPlaceholder,
 	kExprColumnRef,
 	kExprFunctionRef,
 	kExprOperator
