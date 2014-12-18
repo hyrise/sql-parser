@@ -171,7 +171,7 @@ int yyerror(YYLTYPE* llocp, SQLStatementList** result, yyscan_t scanner, const c
 %type <update_stmt> update_statement
 %type <drop_stmt>	drop_statement
 %type <sval> 		table_name opt_alias alias file_path
-%type <bval> 		opt_not_exists
+%type <bval> 		opt_not_exists opt_distinct
 %type <uval>		import_file_type opt_join_type column_type
 %type <table> 		from_clause table_ref table_ref_atomic table_ref_name
 %type <table>		join_clause join_table table_ref_name_no_alias
@@ -455,15 +455,20 @@ set_operator:
 	;
 
 select_clause:
-		SELECT select_list from_clause opt_where opt_group {
+		SELECT opt_distinct select_list from_clause opt_where opt_group {
 			$$ = new SelectStatement();
-			$$->select_list = $2;
-			$$->from_table = $3;
-			$$->where_clause = $4;
-			$$->group_by = $5;
+			$$->select_distinct = $2;
+			$$->select_list = $3;
+			$$->from_table = $4;
+			$$->where_clause = $5;
+			$$->group_by = $6;
 		}
 	;
 
+opt_distinct:
+		DISTINCT { $$ = true; }
+	|	/* empty */ { $$ = false; }
+	;
 
 select_list:
 		expr_list
@@ -576,7 +581,7 @@ comp_expr:
 	;
 
 function_expr:
-		IDENTIFIER '(' expr ')' { $$ = Expr::makeFunctionRef($1, $3); }
+		IDENTIFIER '(' opt_distinct expr ')' { $$ = Expr::makeFunctionRef($1, $4, $3); }
 	;
 
 column_name:

@@ -22,6 +22,7 @@ typedef enum {
 	kExprOperator
 } ExprType;
 
+
 typedef struct Expr Expr;
 
 /** 
@@ -79,6 +80,7 @@ struct Expr {
 
 	OperatorType op_type;
 	char op_char;
+	bool distinct;
 
 
 	/**
@@ -109,7 +111,7 @@ struct Expr {
 
 	static Expr* makeColumnRef(char* name);
 	static Expr* makeColumnRef(char* table, char* name);
-	static Expr* makeFunctionRef(char* func_name, Expr* expr);
+	static Expr* makeFunctionRef(char* func_name, Expr* expr, bool distinct);
 };
 
 // Zero initializes an Expr object and assigns it to a space in the heap

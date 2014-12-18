@@ -78,10 +78,11 @@ Expr* Expr::makeColumnRef(char* table, char* name) {
 	return e;
 }
 
-Expr* Expr::makeFunctionRef(char* func_name, Expr* expr) {
+Expr* Expr::makeFunctionRef(char* func_name, Expr* expr, bool distinct) {
 	Expr* e = new Expr(kExprFunctionRef);
 	e->name = func_name;
 	e->expr = expr;
+	e->distinct = distinct;
 	return e;
 }
 

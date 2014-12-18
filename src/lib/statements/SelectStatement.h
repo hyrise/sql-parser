@@ -93,6 +93,7 @@ struct SelectStatement : SQLStatement {
 	}
 
 	TableRef* from_table;
+	bool select_distinct;
 	List<Expr*>* select_list;
 	Expr* where_clause;	
 	GroupByDescription* group_by;
