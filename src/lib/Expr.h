@@ -85,6 +85,7 @@ struct Expr {
 	 * Convenience accessor methods
 	 */
 	inline bool isType(ExprType e_type) { return e_type == type; }
+	inline bool isLiteral() { return isType(kExprLiteralInt) || isType(kExprLiteralFloat) || isType(kExprLiteralString) || isType(kExprPlaceholder); }
 	inline bool hasAlias() { return alias != NULL; }
 	inline bool hasTable() { return table != NULL; }
 	inline char* getName() {

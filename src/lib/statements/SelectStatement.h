@@ -50,6 +50,23 @@ struct LimitDescription {
 };
 
 /**
+ * @struct GroupByDescription
+ */
+struct GroupByDescription {
+	GroupByDescription() : 
+		columns(NULL),
+		having(NULL) {}
+
+	~GroupByDescription() {
+		delete columns;
+		delete having;
+	}
+
+	List<Expr*>* columns;
+	Expr* having;
+};
+
+/**
  * @struct SelectStatement
  * @brief Representation of a full select statement.
  * 
@@ -78,7 +95,7 @@ struct SelectStatement : SQLStatement {
 	TableRef* from_table;
 	List<Expr*>* select_list;
 	Expr* where_clause;	
-	List<Expr*>* group_by;
+	GroupByDescription* group_by;
 
 	SelectStatement* union_select;
 	OrderDescription* order;

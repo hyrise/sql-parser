@@ -1,6 +1,8 @@
 #ifndef __TABLEREF_H__
 #define __TABLEREF_H__
 
+#include "List.h"
+#include "Expr.h"
 #include <stdio.h>
 
 namespace hsql {
@@ -36,12 +38,7 @@ struct TableRef {
 		list(NULL),
 		join(NULL) {}
 		
-	virtual ~TableRef() {
-		delete name;
-		delete alias;
-		delete select;
-		delete list;
-	}
+	virtual ~TableRef();
 
 	TableRefType type;
 

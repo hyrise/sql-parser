@@ -118,6 +118,7 @@ int yyerror(YYLTYPE* llocp, SQLStatementList** result, yyscan_t scanner, const c
 	hsql::OrderType order_type;
 	hsql::LimitDescription* limit;
 	hsql::ColumnDefinition* column_t;
+	hsql::GroupByDescription* group_t;
 	hsql::UpdateClause* update_t;
 
 	hsql::SQLStatementList* stmt_list;
@@ -176,8 +177,8 @@ int yyerror(YYLTYPE* llocp, SQLStatementList** result, yyscan_t scanner, const c
 %type <table>		join_clause join_table table_ref_name_no_alias
 %type <expr> 		expr scalar_expr unary_expr binary_expr function_expr star_expr expr_alias placeholder_expr
 %type <expr> 		column_name literal int_literal num_literal string_literal
-%type <expr> 		comp_expr opt_where join_condition
-%type <expr_list> 	expr_list opt_group select_list literal_list
+%type <expr> 		comp_expr opt_where join_condition opt_having
+%type <expr_list> 	expr_list select_list literal_list
 %type <table_list> 	table_ref_commalist
 %type <order>		opt_order
 %type <limit>		opt_limit
@@ -187,6 +188,7 @@ int yyerror(YYLTYPE* llocp, SQLStatementList** result, yyscan_t scanner, const c
 %type <column_list_t>	column_def_commalist
 %type <update_t>		update_clause
 %type <update_list_t>	update_clause_commalist
+%type <group_t>			opt_group
 
 /******************************
  ** Token Precedence and Associativity
@@ -480,10 +482,17 @@ opt_where:
 
 // TODO: having
 opt_group:
-		GROUP BY expr_list { $$ = $3; }
+		GROUP BY expr_list opt_having {
+			$$ = new GroupByDescription();
+			$$->columns = $3;
+			$$->having = $4;
+		}
 	|	/* empty */ { $$ = NULL; }
 	;
 
+opt_having:
+		HAVING expr { $$ = $2; }
+	|	/* empty */ { $$ = NULL; }
 
 opt_order:
 		ORDER BY expr opt_order_type { $$ = new OrderDescription($4, $3); }

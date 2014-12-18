@@ -2,20 +2,14 @@
 #define __HELPER_H__
 
 
-std::vector<std::string> readlines(std::string path) {
-    std::ifstream infile(path);
-    std::vector<std::string> lines;
-    std::string line;
-    while (std::getline(infile, line)) {
-        std::istringstream iss(line);
 
-        // Skip comments
-        if (line[0] != '#') {
-            lines.push_back(line);
-        }
-    }
-    return lines;
-}
+#define TEST_PARSE_SINGLE_SQL(query, stmt_type, stmt_class, output_var) \
+    SQLStatementList* stmt_list = SQLParser::parseSQLString(query); \
+    ASSERT(stmt_list->isValid); \
+    ASSERT_EQ(stmt_list->size(), 1); \
+    ASSERT_EQ(stmt_list->at(0)->type(), stmt_type); \
+    stmt_class* output_var = (stmt_class*) stmt_list->at(0);
+
 
 
 #endif

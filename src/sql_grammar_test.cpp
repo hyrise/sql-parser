@@ -25,7 +25,6 @@ std::vector<std::string> readlines(std::string path) {
     return lines;
 }
 
-
 #define STREQ(a, b) (std::string(a).compare(std::string(b)) == 0)
 
 int main(int argc, char *argv[]) {

@@ -1,6 +1,6 @@
 
 
-test:
+test: FORCE
 	@echo "Compiling..."
 	@make clean -C src/ >/dev/null || exit 1
 	@make tests -C src/ >/dev/null || exit 1

@@ -3,18 +3,11 @@
  */
 
 #include "tests/test.h"
+#include "tests/helper.h"
 #include "SQLParser.h"
 #include "sqlhelper.h"
 
 using namespace hsql;
-
-#define PARSE_SINGLE_SQL(query, stmt_type, stmt_class, output_var) \
-	SQLStatementList* stmt_list = SQLParser::parseSQLString(query); \
-	ASSERT(stmt_list->isValid); \
-	ASSERT_EQ(stmt_list->size(), 1); \
-	ASSERT_EQ(stmt_list->at(0)->type(), stmt_type); \
-	stmt_class* output_var = (stmt_class*) stmt_list->at(0);
-
 
 
 TEST(DeleteStatementTest) {
@@ -105,7 +98,7 @@ TEST(DropTableStatementTest) {
 
 
 TEST(PrepareStatementTest) {
-	PARSE_SINGLE_SQL("PREPARE test: SELECT ?, test FROM t2 WHERE c1 = ?;", kStmtPrepare, PrepareStatement, prep_stmt);
+	TEST_PARSE_SINGLE_SQL("PREPARE test: SELECT ?, test FROM t2 WHERE c1 = ?;", kStmtPrepare, PrepareStatement, prep_stmt);
 
 	ASSERT_EQ(prep_stmt->stmt->type(), kStmtSelect);
 	ASSERT_STREQ(prep_stmt->name, "test");
@@ -120,7 +113,7 @@ TEST(PrepareStatementTest) {
 
 
 TEST(ExecuteStatementTest) {
-	PARSE_SINGLE_SQL("EXECUTE test(1, 2);", kStmtExecute, ExecuteStatement, stmt);
+	TEST_PARSE_SINGLE_SQL("EXECUTE test(1, 2);", kStmtExecute, ExecuteStatement, stmt);
 
 	ASSERT_STREQ(stmt->name, "test");
 	ASSERT_EQ(stmt->parameters->size(), 2);
