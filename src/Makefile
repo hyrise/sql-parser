@@ -6,7 +6,7 @@ BIN_DIR = ../bin
 CC = g++
 CFLAGS = -O3 -I./ -Ilib/ -Ilib/statements/ -Iparser/ -std=c++11 -pthread -Wall -g
 
-LIB_HEADERS = $(shell find lib/ -name '*.h') parser/bison_parser.h parser/flex_lexer.h parser/SQLParser.h
+LIB_HEADERS = $(shell find lib/ -name '*.h') parser/bison_parser.h parser/flex_lexer.h parser/SQLParser.h parser/parser_typedef.h
 LIB_SOURCES = $(shell find lib/ -name '*.cpp') parser/bison_parser.cpp parser/flex_lexer.cpp parser/SQLParser.cpp
 TEST_SOURCES = $(shell find tests/ -name '*.cpp')
 

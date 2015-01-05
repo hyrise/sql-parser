@@ -8,7 +8,7 @@ SELECT * FROM students WHERE grade <= 2.0;
 # SUB-SELECT
 SELECT name, city, grade FROM (SELECT * FROM students WHERE city = 'Potsdam') t1 WHERE grade <= 1.5 OR grade >= 3.5;
 # GROUP
-SELECT city, AVG(grade) AS average|, MIN(grade) AS best, MAX(grade) AS worst FROM students GROUP BY city;
+SELECT city, AVG(grade) AS average, MIN(grade) AS best, MAX(grade) AS worst FROM students GROUP BY city;
 # UNION
 SELECT * FROM students WHERE grade = 1.3 UNION SELECT * FROM students WHERE grade = 3.7;
 # JOIN
