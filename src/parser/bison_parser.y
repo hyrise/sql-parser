@@ -267,7 +267,12 @@ prepare_statement:
 	;
 
 execute_statement:
-		EXECUTE IDENTIFIER '(' literal_list ')' {
+		EXECUTE IDENTIFIER {
+			$$ = new ExecuteStatement();
+			$$->name = $2;
+			$$->parameters = NULL;
+		}
+	|	EXECUTE IDENTIFIER '(' literal_list ')' {
 			$$ = new ExecuteStatement();
 			$$->name = $2;
 			$$->parameters = $4;

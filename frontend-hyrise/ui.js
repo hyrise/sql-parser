@@ -121,6 +121,9 @@ function updatePerformanceData(result) {
 	var tbody = $('#performanceDataTable tbody');
 	tbody.html('');
 
+	result.performanceData.sort(function(a, b) {
+		return a.startTime - b.startTime;
+	});
 	$.each(result.performanceData, function(i, data) {
 		var tr = $('<tr>');
 		tr.append(createElement('td', data.id))

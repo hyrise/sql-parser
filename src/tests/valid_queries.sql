@@ -34,3 +34,4 @@ DROP TABLE students;
 # PREPARE
 PREPARE prep_inst: INSERT INTO test VALUES (?, ?, ?);
 EXECUTE prep_inst(1, 2, 3);
+EXECUTE prep;
