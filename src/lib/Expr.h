@@ -112,6 +112,8 @@ struct Expr {
 	static Expr* makeColumnRef(char* name);
 	static Expr* makeColumnRef(char* table, char* name);
 	static Expr* makeFunctionRef(char* func_name, Expr* expr, bool distinct);
+
+	static Expr* makePlaceholder(int id);
 };
 
 // Zero initializes an Expr object and assigns it to a space in the heap

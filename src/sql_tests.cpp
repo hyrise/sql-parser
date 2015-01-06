@@ -98,17 +98,36 @@ TEST(DropTableStatementTest) {
 
 
 TEST(PrepareStatementTest) {
-	TEST_PARSE_SINGLE_SQL("PREPARE test: SELECT ?, test FROM t2 WHERE c1 = ?;", kStmtPrepare, PrepareStatement, prep_stmt);
+	TEST_PARSE_SINGLE_SQL("PREPARE test:"
+		"INSERT INTO test VALUES(?);"
+		"SELECT ?, test FROM test WHERE c1 = ?;"
+		"", kStmtPrepare, PrepareStatement, prep_stmt);
 
-	ASSERT_EQ(prep_stmt->stmt->type(), kStmtSelect);
 	ASSERT_STREQ(prep_stmt->name, "test");
+	ASSERT_EQ(prep_stmt->placeholders.size(), 3);
 
-	SelectStatement* stmt = (SelectStatement*) prep_stmt->stmt;
-	ASSERT(stmt->select_list->at(0)->isType(kExprPlaceholder));
-	ASSERT(stmt->where_clause->expr2->isType(kExprPlaceholder));
-	// Check IDs of Placehoders
-	ASSERT_EQ(stmt->select_list->at(0)->ival, 0);
-	ASSERT_EQ(stmt->where_clause->expr2->ival, 1);
+
+	ASSERT_EQ(prep_stmt->query->size(), 2);
+	ASSERT_EQ(prep_stmt->query->at(0)->type(), kStmtInsert);
+	ASSERT_EQ(prep_stmt->query->at(1)->type(), kStmtSelect);
+
+
+	InsertStatement* insert = (InsertStatement*) prep_stmt->query->at(0);
+	SelectStatement* select = (SelectStatement*) prep_stmt->query->at(1);
+
+	ASSERT(insert->values->at(0)->isType(kExprPlaceholder));
+	ASSERT(select->select_list->at(0)->isType(kExprPlaceholder));
+	ASSERT(select->where_clause->expr2->isType(kExprPlaceholder));
+
+	// Check IDs of placeholders
+	ASSERT_EQ(insert->values->at(0)->ival, 0);
+	ASSERT_EQ(insert->values->at(0), prep_stmt->placeholders[0]);
+
+	ASSERT_EQ(select->select_list->at(0)->ival, 1);
+	ASSERT_EQ(select->select_list->at(0), prep_stmt->placeholders[1]);
+
+	ASSERT_EQ(select->where_clause->expr2->ival, 2);
+	ASSERT_EQ(select->where_clause->expr2, prep_stmt->placeholders[2]);
 }
 
 

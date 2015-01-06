@@ -86,6 +86,12 @@ Expr* Expr::makeFunctionRef(char* func_name, Expr* expr, bool distinct) {
 	return e;
 }
 
+Expr* Expr::makePlaceholder(int id) {
+	Expr* e = new Expr(kExprPlaceholder);
+	e->ival = id;
+	return e;
+}
+
 Expr::~Expr() {
 	delete expr;
 	delete expr2;

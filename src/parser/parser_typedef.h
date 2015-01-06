@@ -1,6 +1,8 @@
 #ifndef __PARSER_TYPEDEF_H__
 #define __PARSER_TYPEDEF_H__
 
+#include <vector>
+
 
 #ifndef YYtypeDEF_YY_SCANNER_T
 #define YYtypeDEF_YY_SCANNER_T
@@ -17,7 +19,12 @@ struct HSQL_CUST_LTYPE {
 	int first_column;
 	int last_line;
 	int last_column;
+
+	int total_column;
+
+	// Placeholder
 	int placeholder_id;
+	std::vector<void*> placeholder_list;
 };
 
 #define HSQL_LTYPE HSQL_CUST_LTYPE

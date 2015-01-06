@@ -49,6 +49,7 @@ int yyerror(YYLTYPE* llocp, SQLStatementList** result, yyscan_t scanner, const c
     yylloc->first_line = yylloc->last_line; \
     yylloc->first_column = yylloc->last_column; \
     for(int i = 0; yytext[i] != '\0'; i++) { \
+    	yylloc->total_column++; \
         if(yytext[i] == '\n') { \
             yylloc->last_line++; \
             yylloc->last_column = 0; \
@@ -79,6 +80,7 @@ int yyerror(YYLTYPE* llocp, SQLStatementList** result, yyscan_t scanner, const c
 	@$.last_column = 0;
 	@$.first_line = 0;
 	@$.last_line = 0;
+	@$.total_column = 0;
 	@$.placeholder_id = 0;
 };
 
@@ -220,7 +222,13 @@ int yyerror(YYLTYPE* llocp, SQLStatementList** result, yyscan_t scanner, const c
 
 // Defines our general input.
 input:
-		statement_list opt_semicolon { *result = $1; }
+		prepare_statement {
+			$1->setPlaceholders(yyloc.placeholder_list);
+			*result = new SQLStatementList($1);
+		}
+	|	statement_list opt_semicolon {
+			*result = $1;
+		}
 	;
 
 
@@ -231,7 +239,6 @@ statement_list:
 
 statement:
 		preparable_statement
-	|	prepare_statement { $$ = $1; }
 	;
 
 
@@ -252,10 +259,10 @@ preparable_statement:
  * Prepared Statement
  ******************************/
 prepare_statement:
-		PREPARE IDENTIFIER ':' preparable_statement {
+		PREPARE IDENTIFIER ':' statement_list opt_semicolon {
 			$$ = new PrepareStatement();
 			$$->name = $2;
-			$$->stmt = $4;
+			$$->query = $4;
 		}
 	;
 
@@ -615,7 +622,10 @@ star_expr:
 
 /* TODO: keep list of placeholders */
 placeholder_expr:
-		'?' { $$ = new Expr(kExprPlaceholder); $$->ival = yylloc.placeholder_id++; }
+		'?' {
+			$$ = Expr::makePlaceholder(yylloc.total_column);
+			yyloc.placeholder_list.push_back($$);
+		}
 	;
 
 

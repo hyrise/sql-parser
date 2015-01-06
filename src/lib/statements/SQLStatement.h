@@ -6,6 +6,8 @@
 #define __STATEMENT_H__
 
 #include "List.h"
+#include "Expr.h"
+#include <vector>
 
 namespace hsql {
 
@@ -63,7 +65,7 @@ public:
 	virtual ~SQLStatementList() {
 		delete parser_msg;
 	}
-
+	
 	bool isValid;
 	const char* parser_msg;
 	int error_line;
