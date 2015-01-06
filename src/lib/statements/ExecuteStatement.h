@@ -13,7 +13,8 @@ namespace hsql {
 struct ExecuteStatement : SQLStatement {
 	ExecuteStatement() :
 		SQLStatement(kStmtExecute),
-		name(NULL) {}
+		name(NULL),
+		parameters(NULL) {}
 	
 	virtual ~ExecuteStatement() {
 		delete name;
