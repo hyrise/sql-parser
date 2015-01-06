@@ -498,7 +498,6 @@ opt_where:
 	|	/* empty */ { $$ = NULL; }
 	;
 
-// TODO: having
 opt_group:
 		GROUP BY expr_list opt_having {
 			$$ = new GroupByDescription();
@@ -626,7 +625,7 @@ star_expr:
 		'*' { $$ = new Expr(kExprStar); }
 	;
 
-/* TODO: keep list of placeholders */
+
 placeholder_expr:
 		'?' {
 			$$ = Expr::makePlaceholder(yylloc.total_column);

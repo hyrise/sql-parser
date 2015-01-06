@@ -28,11 +28,13 @@ typedef struct Expr Expr;
 /** 
  * @class Expr
  * @brief Represents SQL expressions (i.e. literals, operators, column_refs)
+ *
+ * TODO: When destructing a placeholder expression, we might need to alter the placeholder_list
  */
 struct Expr {
 	/**
 	 * Operator types. These are important for expressions of type kExprOperator
-	 * Trivial types are those that can be descriped by a sigle character e.g:
+	 * Trivial types are those that can be described by a single character e.g:
 	 * + - * / < > = %
 	 * Non-trivial are:
 	 * <> <= >= LIKE ISNULL NOT
@@ -64,8 +66,8 @@ struct Expr {
 		alias(NULL) {};
 
 	// Interesting side-effect:
-	// Making the destructor virtual causes segmentation faults
-	~Expr();
+	// Making the destructor virtual used to cause segmentation faults
+	Expr();
 	
 	ExprType type;
 
