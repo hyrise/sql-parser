@@ -67,7 +67,7 @@ struct Expr {
 
 	// Interesting side-effect:
 	// Making the destructor virtual used to cause segmentation faults
-	Expr();
+	~Expr();
 	
 	ExprType type;
 
