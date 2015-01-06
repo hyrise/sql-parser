@@ -56,7 +56,7 @@ struct CreateStatement : SQLStatement {
 	CreateType type;
 	bool if_not_exists;
 
-	List<ColumnDefinition*>* columns;
+	std::vector<ColumnDefinition*>* columns;
 
 	const char* file_path;
 	const char* table_name;

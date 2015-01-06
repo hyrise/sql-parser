@@ -35,7 +35,7 @@ struct UpdateStatement : SQLStatement {
 
 	// TODO: switch to char* instead of TableRef
 	TableRef* table;
-	List<UpdateClause*>* updates;
+	std::vector<UpdateClause*>* updates;
 	Expr* where;
 };
 

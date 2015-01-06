@@ -5,7 +5,6 @@
 #ifndef __STATEMENT_H__
 #define __STATEMENT_H__
 
-#include "List.h"
 #include "Expr.h"
 #include <vector>
 
@@ -50,22 +49,27 @@ private:
  * @struct SQLStatementList
  * @brief Represents the result of the SQLParser. If parsing was successful it is a list of SQLStatement.
  */
-class SQLStatementList : public List<SQLStatement*> {
+struct SQLStatementList {
 public:
 	SQLStatementList() :
-		List<SQLStatement*>(),
 		isValid(true),
 		parser_msg(NULL) {};
 
 	SQLStatementList(SQLStatement* stmt) :
-		List<SQLStatement*>(stmt),
 		isValid(true),
-		parser_msg(NULL) {};
+		parser_msg(NULL) {
+		addStatement(stmt);	
+	};
 		
 	virtual ~SQLStatementList() {
 		delete parser_msg;
 	}
+
+	void addStatement(SQLStatement* stmt) { statements.push_back(stmt); }
+	SQLStatement* getStatement(int id) { return statements[id]; }
+	size_t numStatements() { return statements.size(); }
 	
+	std::vector<SQLStatement*> statements;
 	bool isValid;
 	const char* parser_msg;
 	int error_line;

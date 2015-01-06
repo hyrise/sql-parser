@@ -124,11 +124,12 @@ int yyerror(YYLTYPE* llocp, SQLStatementList** result, yyscan_t scanner, const c
 	hsql::UpdateClause* update_t;
 
 	hsql::SQLStatementList* stmt_list;
-	hsql::List<char*>* slist;
-	hsql::List<hsql::Expr*>* expr_list;
-	hsql::List<hsql::TableRef*>* table_list;
-	hsql::List<hsql::ColumnDefinition*>* column_list_t;
-	hsql::List<hsql::UpdateClause*>* update_list_t;
+
+	std::vector<char*>* str_vec;
+	std::vector<hsql::TableRef*>* table_vec;
+	std::vector<hsql::ColumnDefinition*>* column_vec;
+	std::vector<hsql::UpdateClause*>* update_vec;
+	std::vector<hsql::Expr*>* expr_vec;
 }
 
 
@@ -180,17 +181,18 @@ int yyerror(YYLTYPE* llocp, SQLStatementList** result, yyscan_t scanner, const c
 %type <expr> 		expr scalar_expr unary_expr binary_expr function_expr star_expr expr_alias placeholder_expr
 %type <expr> 		column_name literal int_literal num_literal string_literal
 %type <expr> 		comp_expr opt_where join_condition opt_having
-%type <expr_list> 	expr_list select_list literal_list
-%type <table_list> 	table_ref_commalist
 %type <order>		opt_order
 %type <limit>		opt_limit
 %type <order_type>	opt_order_type
-%type <slist>		ident_commalist opt_column_list
-%type <column_t>		column_def
-%type <column_list_t>	column_def_commalist
-%type <update_t>		update_clause
-%type <update_list_t>	update_clause_commalist
-%type <group_t>			opt_group
+%type <column_t>	column_def
+%type <update_t>	update_clause
+%type <group_t>		opt_group
+
+%type <str_vec>		ident_commalist opt_column_list
+%type <expr_vec> 	expr_list select_list literal_list
+%type <table_vec> 	table_ref_commalist
+%type <update_vec>	update_clause_commalist
+%type <column_vec>	column_def_commalist
 
 /******************************
  ** Token Precedence and Associativity
@@ -234,7 +236,7 @@ input:
 
 statement_list:
 		statement { $$ = new SQLStatementList($1); }
-	|	statement_list ';' statement { $1->push_back($3); $$ = $1; }
+	|	statement_list ';' statement { $1->addStatement($3); $$ = $1; }
 	;
 
 statement:
@@ -270,7 +272,6 @@ execute_statement:
 		EXECUTE IDENTIFIER {
 			$$ = new ExecuteStatement();
 			$$->name = $2;
-			$$->parameters = NULL;
 		}
 	|	EXECUTE IDENTIFIER '(' literal_list ')' {
 			$$ = new ExecuteStatement();
@@ -326,7 +327,7 @@ opt_not_exists:
 	;
 
 column_def_commalist:
-		column_def { $$ = new List<ColumnDefinition*>($1); }
+		column_def { $$ = new std::vector<ColumnDefinition*>(); $$->push_back($1); }
 	|	column_def_commalist ',' column_def { $1->push_back($3); $$ = $1; }
 	;
 
@@ -417,7 +418,7 @@ update_statement:
 	;
 
 update_clause_commalist:
-		update_clause { $$ = new List<UpdateClause*>($1); }
+		update_clause { $$ = new std::vector<UpdateClause*>(); $$->push_back($1); }
 	|	update_clause_commalist ',' update_clause { $1->push_back($3); $$ = $1; }
 	;
 
@@ -533,12 +534,12 @@ opt_limit:
  * Expressions 
  ******************************/
 expr_list:
-		expr_alias { $$ = new List<Expr*>($1); }
+		expr_alias { $$ = new std::vector<Expr*>(); $$->push_back($1); }
 	|	expr_list ',' expr_alias { $1->push_back($3); $$ = $1; }
 	;
 
 literal_list:
-		literal { $$ = new List<Expr*>($1); }
+		literal { $$ = new std::vector<Expr*>(); $$->push_back($1); }
 	|	literal_list ',' literal { $1->push_back($3); $$ = $1; }
 	;
 
@@ -661,7 +662,7 @@ table_ref_atomic:
 
 
 table_ref_commalist:
-		table_ref_atomic { $$ = new List<TableRef*>($1); }
+		table_ref_atomic { $$ = new std::vector<TableRef*>(); $$->push_back($1); }
 	|	table_ref_commalist ',' table_ref_atomic { $1->push_back($3); $$ = $1; }
 	;
 
@@ -752,7 +753,7 @@ opt_semicolon:
 
 
 ident_commalist:
-		IDENTIFIER { $$ = new List<char*>($1); }
+		IDENTIFIER { $$ = new std::vector<char*>(); $$->push_back($1); }
 	|	ident_commalist ',' IDENTIFIER { $1->push_back($3); $$ = $1; }
 	;
 

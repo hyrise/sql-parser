@@ -3,7 +3,6 @@
 
 #include "SQLStatement.h"
 #include "Expr.h"
-#include "List.h"
 #include "Table.h"
 
 namespace hsql {
@@ -62,7 +61,7 @@ struct GroupByDescription {
 		delete having;
 	}
 
-	List<Expr*>* columns;
+	std::vector<Expr*>* columns;
 	Expr* having;
 };
 
@@ -94,7 +93,7 @@ struct SelectStatement : SQLStatement {
 
 	TableRef* from_table;
 	bool select_distinct;
-	List<Expr*>* select_list;
+	std::vector<Expr*>* select_list;
 	Expr* where_clause;	
 	GroupByDescription* group_by;
 

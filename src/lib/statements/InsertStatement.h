@@ -34,8 +34,8 @@ struct InsertStatement : SQLStatement {
 
 	InsertType type;
 	const char* table_name;
-	List<char*>* columns;
-	List<Expr*>* values;
+	std::vector<char*>* columns;
+	std::vector<Expr*>* values;
 	SelectStatement* select;
 };
 

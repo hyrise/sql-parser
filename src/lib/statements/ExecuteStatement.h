@@ -13,8 +13,7 @@ namespace hsql {
 struct ExecuteStatement : SQLStatement {
 	ExecuteStatement() :
 		SQLStatement(kStmtExecute),
-		name(NULL),
-		parameters(NULL) {}
+		name(NULL) {}
 	
 	virtual ~ExecuteStatement() {
 		delete name;
@@ -22,7 +21,7 @@ struct ExecuteStatement : SQLStatement {
 	}
 
 	const char* name;
-	List<Expr*>* parameters;
+	std::vector<Expr*>* parameters;
 };
 
 

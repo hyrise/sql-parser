@@ -1,9 +1,9 @@
 #ifndef __TABLEREF_H__
 #define __TABLEREF_H__
 
-#include "List.h"
 #include "Expr.h"
 #include <stdio.h>
+#include <vector>
 
 namespace hsql {
 
@@ -47,7 +47,7 @@ struct TableRef {
 	char* alias;
 
 	SelectStatement* select;
-	List<TableRef*>* list;
+	std::vector<TableRef*>* list;
 	JoinDefinition* join;
 
 
