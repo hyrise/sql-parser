@@ -14,4 +14,9 @@
     stmt_class* output_var = (stmt_class*) stmt_list->getStatement(0);
 
 
+#define TEST_CAST_STMT(stmt_list, stmt_index, stmt_type, stmt_class, output_var) \
+    ASSERT_EQ(stmt_list->getStatement(stmt_index)->type(), stmt_type); \
+    stmt_class* output_var = (stmt_class*) stmt_list->getStatement(stmt_index);
+
+
 #endif

@@ -15,7 +15,8 @@ struct DropStatement : SQLStatement {
 		kTable,
 		kSchema,
 		kIndex,
-		kView
+		kView,
+		kPreparedStatement
 	};
 
 

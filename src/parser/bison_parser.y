@@ -353,7 +353,8 @@ column_type:
 
 /******************************
  * Drop Statement
- * DROP TABLE students
+ * DROP TABLE students;
+ * DEALLOCATE PREPARE stmt;
  ******************************/
 
 drop_statement:
@@ -361,6 +362,11 @@ drop_statement:
 			$$ = new DropStatement(DropStatement::kTable);
 			$$->name = $3;
 		}
+	|	DEALLOCATE PREPARE IDENTIFIER {
+			$$ = new DropStatement(DropStatement::kPreparedStatement);
+			$$->name = $3;
+		}
+	;
 
 /******************************
  * Delete Statement / Truncate statement
