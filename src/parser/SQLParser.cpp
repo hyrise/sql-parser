@@ -34,5 +34,10 @@ SQLStatementList* SQLParser::parseSQLString(const char *text) {
     hsql_lex_destroy(scanner);
     return result;
 }
+
+SQLStatementList* SQLParser::parseSQLString(const std::string& text) {
+    return parseSQLString(text.c_str());
+}
+
     
 } // namespace hsql

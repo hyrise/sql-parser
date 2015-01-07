@@ -177,7 +177,7 @@ TO			TOKEN(TO)
 ">="		TOKEN(GREATEREQ)
 
 
-[-+*/(),.;<>=^%:?]	{ return yytext[0]; }
+[-+*/(){},.;<>=^%:?]	{ return yytext[0]; }
 
 
 [0-9]+"."[0-9]* |

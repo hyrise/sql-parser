@@ -33,5 +33,6 @@ UPDATE students SET grade = 1.0;
 DROP TABLE students;
 # PREPARE
 PREPARE prep_inst: INSERT INTO test VALUES (?, ?, ?);
+PREPARE prep2 { INSERT INTO test VALUES (?, 0, 0); INSERT INTO test VALUES (0, ?, 0); INSERT INTO test VALUES (0, 0, ?); };
 EXECUTE prep_inst(1, 2, 3);
 EXECUTE prep;

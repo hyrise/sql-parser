@@ -224,11 +224,7 @@ int yyerror(YYLTYPE* llocp, SQLStatementList** result, yyscan_t scanner, const c
 
 // Defines our general input.
 input:
-		prepare_statement {
-			$1->setPlaceholders(yyloc.placeholder_list);
-			*result = new SQLStatementList($1);
-		}
-	|	statement_list opt_semicolon {
+		statement_list opt_semicolon {
 			*result = $1;
 		}
 	;
@@ -240,7 +236,12 @@ statement_list:
 	;
 
 statement:
-		preparable_statement
+		prepare_statement {
+			$1->setPlaceholders(yyloc.placeholder_list);
+			yyloc.placeholder_list.clear();
+			$$ = $1;
+		}
+	|	preparable_statement
 	;
 
 
@@ -261,7 +262,12 @@ preparable_statement:
  * Prepared Statement
  ******************************/
 prepare_statement:
-		PREPARE IDENTIFIER ':' statement_list opt_semicolon {
+		PREPARE IDENTIFIER ':' preparable_statement {
+			$$ = new PrepareStatement();
+			$$->name = $2;
+			$$->query = new SQLStatementList($4);
+		}
+	|	PREPARE IDENTIFIER '{' statement_list opt_semicolon '}' {
 			$$ = new PrepareStatement();
 			$$->name = $2;
 			$$->query = $4;

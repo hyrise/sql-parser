@@ -75,22 +75,16 @@ TEST(UpdateStatementTest) {
 
 
 TEST(InsertStatementTest) {
-	SQLStatementList* stmt_list = SQLParser::parseSQLString("INSERT INTO students VALUES ('Max Mustermann', 12345, 'Musterhausen', 2.0)");
-	ASSERT(stmt_list->isValid);
-	ASSERT_EQ(stmt_list->numStatements(), 1);
-	ASSERT_EQ(stmt_list->getStatement(0)->type(), kStmtInsert);
+	TEST_PARSE_SINGLE_SQL("INSERT INTO students VALUES ('Max Mustermann', 12345, 'Musterhausen', 2.0)", kStmtInsert, InsertStatement, stmt);
 
+	ASSERT_EQ(stmt->values->size(), 4);
 	// TODO
 }
 
 
 TEST(DropTableStatementTest) {
-	SQLStatementList* stmt_list = SQLParser::parseSQLString("DROP TABLE students");
-	ASSERT(stmt_list->isValid);
-	ASSERT_EQ(stmt_list->numStatements(), 1);
-	ASSERT_EQ(stmt_list->getStatement(0)->type(), kStmtDrop);
+	TEST_PARSE_SINGLE_SQL("DROP TABLE students", kStmtDrop, DropStatement, stmt);
 
-	DropStatement* stmt = (DropStatement*) stmt_list->getStatement(0);
 	ASSERT_EQ(stmt->type, DropStatement::kTable);
 	ASSERT_NOTNULL(stmt->name);
 	ASSERT_STREQ(stmt->name, "students");
@@ -98,22 +92,30 @@ TEST(DropTableStatementTest) {
 
 
 TEST(PrepareStatementTest) {
-	TEST_PARSE_SINGLE_SQL("PREPARE test:"
+	std::string query = "PREPARE test {"
 		"INSERT INTO test VALUES(?);"
 		"SELECT ?, test FROM test WHERE c1 = ?;"
-		"", kStmtPrepare, PrepareStatement, prep_stmt);
+		"};"
+		"PREPARE stmt: SELECT * FROM data WHERE c1 = ?;";
 
-	ASSERT_STREQ(prep_stmt->name, "test");
-	ASSERT_EQ(prep_stmt->placeholders.size(), 3);
+	TEST_PARSE_SQL_QUERY(query, stmt_list, 2);
 
+	ASSERT_EQ(stmt_list->getStatement(0)->type(), kStmtPrepare);
+	ASSERT_EQ(stmt_list->getStatement(1)->type(), kStmtPrepare);
 
-	ASSERT_EQ(prep_stmt->query->numStatements(), 2);
-	ASSERT_EQ(prep_stmt->query->getStatement(0)->type(), kStmtInsert);
-	ASSERT_EQ(prep_stmt->query->getStatement(1)->type(), kStmtSelect);
+	PrepareStatement* prep1 = (PrepareStatement*) stmt_list->getStatement(0);
+	PrepareStatement* prep2 = (PrepareStatement*) stmt_list->getStatement(1);
 
+	// Prepare Statement #1
+	ASSERT_STREQ(prep1->name, "test");
+	ASSERT_EQ(prep1->placeholders.size(), 3);
 
-	InsertStatement* insert = (InsertStatement*) prep_stmt->query->getStatement(0);
-	SelectStatement* select = (SelectStatement*) prep_stmt->query->getStatement(1);
+	ASSERT_EQ(prep1->query->numStatements(), 2);
+	ASSERT_EQ(prep1->query->getStatement(0)->type(), kStmtInsert);
+	ASSERT_EQ(prep1->query->getStatement(1)->type(), kStmtSelect);
+
+	InsertStatement* insert = (InsertStatement*) prep1->query->getStatement(0);
+	SelectStatement* select = (SelectStatement*) prep1->query->getStatement(1);
 
 	ASSERT(insert->values->at(0)->isType(kExprPlaceholder));
 	ASSERT(select->select_list->at(0)->isType(kExprPlaceholder));
@@ -121,13 +123,17 @@ TEST(PrepareStatementTest) {
 
 	// Check IDs of placeholders
 	ASSERT_EQ(insert->values->at(0)->ival, 0);
-	ASSERT_EQ(insert->values->at(0), prep_stmt->placeholders[0]);
+	ASSERT_EQ(insert->values->at(0), prep1->placeholders[0]);
 
 	ASSERT_EQ(select->select_list->at(0)->ival, 1);
-	ASSERT_EQ(select->select_list->at(0), prep_stmt->placeholders[1]);
+	ASSERT_EQ(select->select_list->at(0), prep1->placeholders[1]);
 
 	ASSERT_EQ(select->where_clause->expr2->ival, 2);
-	ASSERT_EQ(select->where_clause->expr2, prep_stmt->placeholders[2]);
+	ASSERT_EQ(select->where_clause->expr2, prep1->placeholders[2]);
+
+	// Prepare Statement #2
+	ASSERT_STREQ(prep2->name, "stmt");
+	ASSERT_EQ(prep2->placeholders.size(), 1);
 }
 
 

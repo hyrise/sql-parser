@@ -16,6 +16,7 @@ namespace hsql {
 class SQLParser {
 public:
 	static SQLStatementList* parseSQLString(const char* sql);
+	static SQLStatementList* parseSQLString(const std::string& sql);
 
 private:
 	SQLParser();
