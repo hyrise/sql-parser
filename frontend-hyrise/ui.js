@@ -12,6 +12,13 @@ $(function() {
 
 		var endpointUrl = $('#endpointInput').val();
 		var query = $('#queryInput').val();
+
+		// Check whether a part of the query has been selected
+		var selectedText = getSelectedText();
+		if (query.indexOf(selectedText) >= 0) {
+			query = selectedText;
+		}
+
 		var hyrise = new HyriseSQLConnector(endpointUrl);
 
 		hyrise.executeSQLQuery(query, function(result) {
@@ -42,6 +49,16 @@ $(function() {
 	});
 });
 
+
+function getSelectedText() {
+    var text = "";
+    if (window.getSelection) {
+        text = window.getSelection().toString();
+    } else if (document.selection && document.selection.type != "Control") {
+        text = document.selection.createRange().text;
+    }
+    return (text === "") ? null : text;
+}
 
 
 function loadSampleQueries(url) {

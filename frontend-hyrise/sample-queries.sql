@@ -32,12 +32,14 @@ PREPARE select_test: SELECT * FROM students WHERE grade = ?;
 # EXECUTE 1
 EXECUTE select_test(2.0);
 # PREPARE 2
-PREPARE insert_test:
-INSERT INTO test VALUES (?, 0, 0);
-INSERT INTO test VALUES (?, 0, 0);
-INSERT INTO test VALUES (?, 0, 0);
-INSERT INTO test VALUES (?, 0, 0);
-INSERT INTO test VALUES (?, 0, 0);
+PREPARE insert_test {
+	INSERT INTO test VALUES (?, 0, 0);
+	INSERT INTO test VALUES (?, 0, 0);
+	INSERT INTO test VALUES (?, 0, 0);
+	INSERT INTO test VALUES (?, 0, 0);
+	INSERT INTO test VALUES (?, 0, 0);
+};
+EXECUTE insert_test(1, 2, 3, 4 ,5);
 SELECT * FROM test;
 # EXECUTE 2
 EXECUTE insert_test(1, 2, 3, 4, 5);
