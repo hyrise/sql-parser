@@ -1,42 +1,63 @@
 
+function SetUiStateRunning() {
+	$('#resultTable').html('');
+	$('#resultInfo').html('waiting for result...');
+	$('#msgContainer').attr('class', 'alert alert-warning');
+	$('#performanceDataTable tbody').html('');
+}
+
+function SetUiStateError(msg) {
+	$('#resultInfo').html(msg);
+	$('#msgContainer').attr('class', 'alert alert-danger');
+	$('#performanceDataTable tbody').html('');
+}
+
+function SetUiStateSuccess(msg) {
+	$('#msgContainer').attr('class', 'alert alert-success');
+	$('#resultInfo').html(msg);
+}
+
+function GetHyriseUrl() {
+	var endpointUrl = $('#endpointInput').val();
+	return endpointUrl;
+}
+
+function GetQuery() {
+	var query = $('#queryInput').val();
+	// Check whether a part of the query has been selected
+	var selectedText = GetSelectedText();
+	if (query.indexOf(selectedText) >= 0) {
+		query = selectedText;
+	}
+	return query;
+}
+
+
 /**
  * Bootstrap
  */
 $(function() {
-	loadSampleQueries('sample-queries.sql');
+	LoadSampleQueries('sample-queries.sql');
 
+	// Simple query submit
 	$('#submitBtn').click(function() {
-		$('#resultTable').html('');
-		$('#resultInfo').html('waiting for result...');
-		$('#msgContainer').attr('class', 'alert alert-warning');
+		SetUiStateRunning();
+		var query = GetQuery();
+		var hyrise = new HyriseConnector(GetHyriseUrl());
 
-		var endpointUrl = $('#endpointInput').val();
-		var query = $('#queryInput').val();
-
-		// Check whether a part of the query has been selected
-		var selectedText = getSelectedText();
-		if (query.indexOf(selectedText) >= 0) {
-			query = selectedText;
-		}
-
-		var hyrise = new HyriseSQLConnector(endpointUrl);
-
-		hyrise.executeSQLQuery(query, function(result) {
-			// On Success
-			$('#msgContainer').attr('class', 'alert alert-success');
-			$('#resultInfo').html('Result contains ' + result.real_size + ' rows');
+		hyrise.executeSQL(query, function(result) {
 			console.log("Query result: ", result);
-			updateResultTable(result);
-			updatePerformanceData(result);
+			// On Success
+			SetUiStateSuccess('Result contains ' + result.real_size + ' rows');
+			UpdateResultTable(result);
+			UpdatePerformanceData(result.performanceData);
 
 		}, function(xhr, status, error) {
+			// console.log(arguments);
 			// On Error
-			console.log(arguments);
 			var msg = 'Error when fetching result. Possibly no connection to Hyrise.';
 			if (xhr.responseJSON) msg = xhr.responseJSON.error[0];
-			$('#resultInfo').html(msg);
-			$('#msgContainer').attr('class', 'alert alert-danger');
-			$('#performanceDataTable tbody').html('');
+			SetUiStateError(msg);
 		});
 	});
 
@@ -47,10 +68,42 @@ $(function() {
 		}
 		return true;
 	});
+
+
+	// Benchmark submit
+	$('#benchmarkBtn').click(function() {
+		SetUiStateRunning();
+		var query = GetQuery();
+		var hyrise = new HyriseConnector(GetHyriseUrl());
+
+		// TODO: hardcoded 5
+		var numRuns = parseInt($('#benchmarkInput').val());
+		hyrise.benchmarkSQL(query, numRuns, function(result) {
+			console.log("Benchmark result: ", result);
+			UpdatePerformanceData(result.performanceData);
+			SetUiStateSuccess('Success! See PerformanceData for results.');
+		});
+	});
+
+	// Setup Table triggers
+	var table = document.querySelector('#performanceDataTable');
+	$('#performanceDataTable thead th').click(function() {
+		var key = $(this).attr('data-key');
+
+		if (table._sortKey && table._sortKey == key) table._asc = !table._asc;
+		else table._asc = true;
+		var sign = (table._asc) ? 1 : -1;
+
+		if (table._data) {
+			table._sortKey = key;
+			SortTableData(table);
+			InsertPerformanceData(table._data);
+		}
+	});
 });
 
 
-function getSelectedText() {
+function GetSelectedText() {
     var text = "";
     if (window.getSelection) {
         text = window.getSelection().toString();
@@ -61,15 +114,15 @@ function getSelectedText() {
 }
 
 
-function loadSampleQueries(url) {
+function LoadSampleQueries(url) {
 	$.get(url, function(data) {
 		var lines = data.split('\n');
 		var name, query = "", isBuggy = false;
 		$.each(lines, function(i, line) {
 			if (line[0] == '#') {
 				// Append last query
-				if (name && !isBuggy) addSampleQuery(name, query);
-				if (name && isBuggy)  addBuggyQuery(name, query);
+				if (name && !isBuggy) AddSampleQuery(name, query);
+				if (name && isBuggy)  AddBuggyQuery(name, query);
 
 				// New query
 				isBuggy = (line[1] == '!');
@@ -80,13 +133,13 @@ function loadSampleQueries(url) {
 			}
 		});
 
-		if (name && !isBuggy) addSampleQuery(name, query);
-		if (name && isBuggy)  addBuggyQuery(name, query);
+		if (name && !isBuggy) AddSampleQuery(name, query);
+		if (name && isBuggy)  AddBuggyQuery(name, query);
 	});
 }
 
 
-function addSampleQuery(name, query) {
+function AddSampleQuery(name, query) {
 	var btn = $('<button type="button" class="btn btn-sm btn-success">' + name + '</button>');
 	btn.click(function(evt) {
 		$('#queryInput').val(query);
@@ -97,7 +150,7 @@ function addSampleQuery(name, query) {
 	$('#sampleQueries').append(btn);
 }
 
-function addBuggyQuery(name, query) {
+function AddBuggyQuery(name, query) {
 	var btn = $('<button type="button" class="btn btn-sm btn-danger">' + name + '</button>');
 	btn.click(function(evt) {
 		$('#queryInput').val(query);
@@ -108,11 +161,11 @@ function addBuggyQuery(name, query) {
 	$('#buggyQueries').append(btn);
 }
 
-function createElement(tag, value) {
+function CreateElement(tag, value) {
 	return $('<' + tag + '>' + value + '</' + tag + '>');
 };
 
-function updateResultTable(result) {
+function UpdateResultTable(result) {
 	// Present result json in result-view
 	var table = $('#resultTable');
 	table.html('');
@@ -134,20 +187,42 @@ function updateResultTable(result) {
 	}
 };
 
-function updatePerformanceData(result) {
+function UpdatePerformanceData(performanceData) {
+	var table = document.querySelector('#performanceDataTable');
+
+	$('#timeTotal').html(performanceData.totalTime.toFixed(2));
+
+	// Sort and insert into table
+	if (!table._sortKey) table._sortKey = 'startTime';
+	if (!('_asc') in table) table._asc = true;
+
+	var tableData = performanceData.operators;
+	table._data = tableData;
+	SortTableData(table);
+	InsertPerformanceData(tableData);
+};
+
+function InsertPerformanceData(performanceData) {
 	var tbody = $('#performanceDataTable tbody');
 	tbody.html('');
 
-	result.performanceData.sort(function(a, b) {
-		return a.startTime - b.startTime;
-	});
-	$.each(result.performanceData, function(i, data) {
+	$.each(performanceData, function(i, data) {
+		if (!data.time_ms) data.time_ms = data.endTime - data.startTime;
+
 		var tr = $('<tr>');
-		tr.append(createElement('td', data.id))
-		tr.append(createElement('td', data.name))
-		tr.append(createElement('td', data.duration))
-		tr.append(createElement('td', data.startTime))
-		tr.append(createElement('td', data.endTime))
+		tr.append(CreateElement('td', data.id));
+		tr.append(CreateElement('td', data.name));
+		tr.append(CreateElement('td', data.duration));
+		tr.append(CreateElement('td', data.time_ms.toFixed(6)));
 		tbody.append(tr);
 	});
-};
+}
+
+function SortTableData(table) {
+	var key = table._sortKey;
+	var sign = (table._asc) ? 1 : -1;
+	table._data.sort(function(a, b) {
+		if (a[key].localeCompare) return sign * a[key].localeCompare(b[key]);
+		return sign * (a[key] - b[key]);
+	});
+}

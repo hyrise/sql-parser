@@ -21,3 +21,9 @@ table {
 	margin: auto;
 	margin-top: 10px;
 }
+
+textarea#queryInput {
+	font-family: 'Monospace';
+	height: 500px;
+	resize: none;
+}
