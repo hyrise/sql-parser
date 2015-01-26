@@ -89,34 +89,4 @@ if __name__ == '__main__':
 
 	print hyrise.executeSQL("SELECT name, city FROM students WHERE grade <= 2.0", 50)
 
-	print hyrise.executeJSON("""{
-        "operators": {
-            "0": {
-                "type": "GetTable",
-                "name": "students"
-            },
-            "1": {
-            	"type": "SimpleTableScan",
-            	"predicates": [
-       				{"type" : "LTE_V", "in" : 0, "f" : "grade", "value" : 2, "vtype": 1}
-            	]
-            },
-            "2": {
-                "type": "ProjectionScan",
-                "fields": [
-                    "name",
-                    "city"
-                ]
-            }
-        },
-        "edges": [
-            [
-                "0",
-                "1"
-            ],
-            [
-                "1",
-                "2"
-            ]
-        ]
-    }""", 50)
+	print hyrise.executeJSON("""{"operators":{"0":{"type":"GetTable","name":"students"},"1":{"type":"SimpleTableScan","predicates":[{"type":"LTE_V","in":0,"f":"grade","value":2,"vtype":1}]},"2":{"type":"ProjectionScan","fields":["name","city"]}},"edges":[["0","1"],["1","2"]]}""", 50)

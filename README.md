@@ -21,3 +21,7 @@ To use the SQL Parser in your own code, you only need to include `SQLParser.h` a
 * [Developer Documentation](docs/documentation.md)
 * [Integration in Hyrise](docs/integration.md)
 * [Known Issues](docs/issues.md)
+
+**Doxygen:**
+
+Run `make docs` to create the doxygen documentation.
