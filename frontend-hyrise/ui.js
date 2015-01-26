@@ -190,12 +190,16 @@ function UpdateResultTable(result) {
 function UpdatePerformanceData(performanceData) {
 	var table = document.querySelector('#performanceDataTable');
 
-	$('#timeTotal').html(performanceData.totalTime.toFixed(2));
+	var timeStrings = [
+		(performanceData.queryTaskTime + performanceData.parseTime).toFixed(3),
+		performanceData.queryTaskTime.toFixed(3),
+		performanceData.parseTime.toFixed(3),
+		performanceData.totalTime.toFixed(3),
+	]
+	var timeInfo =  + ','
+	$('#timeInfo').html(timeStrings.join(','));
 
 	// Sort and insert into table
-	if (!table._sortKey) table._sortKey = 'startTime';
-	if (!('_asc') in table) table._asc = true;
-
 	var tableData = performanceData.operators;
 	table._data = tableData;
 	SortTableData(table);
@@ -214,13 +218,18 @@ function InsertPerformanceData(performanceData) {
 		tr.append(CreateElement('td', data.name));
 		tr.append(CreateElement('td', data.duration));
 		tr.append(CreateElement('td', data.time_ms.toFixed(6)));
+		tr.append(CreateElement('td', data.startTime));
+		tr.append(CreateElement('td', data.endTime));
 		tbody.append(tr);
 	});
 }
 
 function SortTableData(table) {
+	if (!table._sortKey) table._sortKey = 'startTime';
+	if (!('_asc') in table) table._asc = true;
+
 	var key = table._sortKey;
-	var sign = (table._asc) ? 1 : -1;
+	var sign = (table._asc) ? -1 : 1;
 	table._data.sort(function(a, b) {
 		if (a[key].localeCompare) return sign * a[key].localeCompare(b[key]);
 		return sign * (a[key] - b[key]);

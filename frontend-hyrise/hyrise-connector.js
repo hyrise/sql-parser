@@ -39,18 +39,21 @@ HyriseConnector.prototype._formatPerformanceData = function(object) {
 
 	var totalTime = 0;
 	var queryTaskTime = 0;
+	var parseTime = 0;
 
 	$.each(performanceData, function(i, data) {
 		data.time_ms = data.endTime - data.startTime;
 
 		totalTime += data.time_ms;
 		if (data.name === 'SQLQueryTask') queryTaskTime += data.time_ms;
+		if (data.name === 'RequestParseTask') parseTime += data.time_ms;
 	});
 
 	object.performanceData = {
 		totalTime: totalTime,
 		queryTaskTime: queryTaskTime,
-		operators: performanceData
+		parseTime: parseTime,
+		operators: performanceData,
 	}
 };
 
@@ -62,6 +65,7 @@ HyriseConnector.prototype.benchmarkSQL = function(query, numRuns, callback) {
 		var result = {
 			totalTime: 0,
 			queryTaskTime: 0,
+			parseTime: 0,
 			numRuns: allData.length,
 			operators: []
 		};
@@ -72,6 +76,7 @@ HyriseConnector.prototype.benchmarkSQL = function(query, numRuns, callback) {
 			var perfData = run.performanceData;
 			result.totalTime 	 += perfData.totalTime;
 			result.queryTaskTime += perfData.queryTaskTime;
+			result.parseTime	 += perfData.parseTime;
 
 			$.each(perfData.operators, function(i, data) {
 				if (!(data.id in operatorMap)) {
@@ -89,6 +94,7 @@ HyriseConnector.prototype.benchmarkSQL = function(query, numRuns, callback) {
 		// Calc average and Transform into array
 		result.totalTime 	 /= result.numRuns;
 		result.queryTaskTime /= result.numRuns;
+		result.parseTime	 /= result.numRuns;
 
 		$.each(operatorMap, function(id, data) {
 			data.duration	/= result.numRuns;
@@ -103,16 +109,20 @@ HyriseConnector.prototype.benchmarkSQL = function(query, numRuns, callback) {
 	}
 
 	var allData = [];
-	var n = 0;
+	var num_completed = 0;
+
 	function __run() {
-		++n;
 		self.executeSQL(query, function(result) {
 			allData.push(result);
 
 			// Run again or return aggregated Data
-			if (n < numRuns) __run();
-			else __aggregateData(allData);
+			num_completed++;
+			if (num_completed == numRuns) __aggregateData(allData);
 		});
+	}
+	
+	for (var i = 0; i < numRuns; ++i) {
+		__run();
 	}
 
 	__run();
