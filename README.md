@@ -18,7 +18,7 @@ To use the SQL Parser in your own code, you only need to include `SQLParser.h` a
 
 ### Documentation
 
-* [Working Syntax Examples](docs/sytax.md)
+* [Working Syntax Examples](docs/syntax.md)
 * [Developer Documentation](docs/documentation.md)
 * [Integration in Hyrise](docs/integration.md)
 * [Known Issues](docs/issues.md)
