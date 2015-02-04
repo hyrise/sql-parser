@@ -18,10 +18,6 @@ build: clean
 	cp $(LIB_HEADERS) $(BUILD_DIR)
 
 
-analysis: $(LIB_SOURCES) sql_analysis.cpp
-	$(CC) $(CFLAGS) $(LIB_SOURCES) sql_analysis.cpp -o $(BIN_DIR)/analysis
-
-
 grammar_test: $(LIB_SOURCES) sql_grammar_test.cpp
 	$(CC) $(CFLAGS) $(LIB_SOURCES) sql_grammar_test.cpp -o $(BIN_DIR)/grammar_test
 
