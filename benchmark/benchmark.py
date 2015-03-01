@@ -51,6 +51,7 @@ class HyriseConnection(object):
 			print "An error occurred"
 			return None
 		except Exception, e:
+			print e
 			return self.__parseResponse(e.read())
 
 	def __aggregatePerfArray(self, perfArray):
@@ -143,24 +144,25 @@ queries = {
 	},
 
 
-	# Paper benchmarks
+	### Paper benchmarks
+	# SQL vs JSON
 	'Q1': {
 		'sql': "SELECT name, city FROM students WHERE grade <= 2.0",
-		'json': """{"operators":{"0":{"type":"GetTable","name":"students"},"1":{"type":"SimpleTableScan","predicates":[{"type":"LTE_V","in":0,"f":"grade","value":2,"vtype":1}]},"2":{"type":"ProjectionScan","fields":["name","city"]}},"edges":[["0","1"],["1","2"]]}""",
+		'json': """{"operators":{"get":{"type":"GetTable","name":"students"},"validate":{"type":"ValidatePositions"},"sts":{"type":"SimpleTableScan","predicates":[{"type":"LTE_V","in":0,"f":"grade","value":2,"vtype":1}]},"projection":{"type":"ProjectionScan","fields":["name","city"]}},"edges":[["get","validate"],["validate","sts"],["sts","projection"]]}""",
 	},
 	'Q2': {
-		'sql': "SELECT employee_name, company_name FROM companies JOIN employees ON company_id = employee_company_id WHERE company_id = 2;"
+		'sql': "SELECT employee_name, company_name FROM companies JOIN employees ON company_id = employee_company_id WHERE company_id = 2 ORDER BY employee_name;",
+		'json': """{"operators":{"get1":{"type":"GetTable","name":"companies"},"get2":{"type":"GetTable","name":"employees"},"validate1":{"type":"ValidatePositions"},"validate2":{"type":"ValidatePositions"},"build":{"type":"HashBuild","key":"join","fields":["company_id"]},"probe":{"type":"HashJoinProbe","fields":["employee_company_id"]},"sts":{"type":"SimpleTableScan","predicates":[{"type":"EQ_V","in":0,"f":"company_id","value":2,"vtype":0}]},"projection":{"type":"ProjectionScan","fields":["employee_name","company_name"]},"order":{"type":"SortScan","fields":["employee_name"]}},"edges":[["get1","validate1"],["get2","validate2"],["validate1","build"],["build","probe"],["validate2","probe"],["probe","sts"],["sts","projection"],["projection","order"]]}"""
 	},
 	'Q3': {
-		'sql': "SELECT name, city, grade FROM (SELECT * FROM students WHERE city = 'Potsdam') t1 WHERE grade <= 1.5 OR grade >= 3.5;"
+		'sql': "SELECT name, city, grade FROM (SELECT * FROM students WHERE city = 'Potsdam') t1 WHERE grade <= 1.5 OR grade >= 3.5;",
+		'json': """{"operators":{"get1":{"type":"GetTable","name":"students"},"validate1":{"type":"ValidatePositions"},"sts1":{"type":"SimpleTableScan","predicates":[{"type":"EQ_V","in":0,"f":"city","value":"Potsdam","vtype":2}]},"sts2":{"type":"SimpleTableScan","predicates":[{"type":"OR"},{"type":"LTE_V","in":0,"f":"grade","value":1.5,"vtype":1},{"type":"GTE_V","in":0,"f":"grade","value":3.5,"vtype":1}]},"projection":{"type":"ProjectionScan","fields":["name","city","grade"]}},"edges":[["get1","validate1"],["validate1","sts1"],["sts1","sts2"],["sts2","projection"]]}"""
 	},
 	'Q4': {
-		'sql': "SELECT city, AVG(grade) AS average, MIN(grade) AS best, MAX(grade) AS worst FROM students GROUP BY city;"
-	},
-	'Q5': {
 		'sql': "INSERT INTO students VALUES ('Max', 42, 'Musterhausen', 2.3);",
 		'json': """{"operators":{"0":{"type":"GetTable","name":"students"},"1":{"type":"InsertScan","data":[["Max",42,"Musterhausen",2.3]]},"commit":{"type":"Commit"}},"edges":[["0","1"],["1","commit"]]}"""
 	}
+	# Prepared vs Unprepared
 }
 
 def benchmarkQuery(key, times):
@@ -176,15 +178,13 @@ if __name__ == '__main__':
 	hyrise.executeSQL("CREATE TABLE IF NOT EXISTS companies FROM TBL FILE 'test/tables/companies.tbl';")
 	hyrise.executeSQL("CREATE TABLE IF NOT EXISTS employees FROM TBL FILE 'test/tables/employees.tbl';")
 
-	times = 50
-	benchmarkQuery('Q1', times)
-	benchmarkQuery('Q2', times)
-	benchmarkQuery('Q3', times)
-	benchmarkQuery('Q4', times)
-	benchmarkQuery('Q5', times)
 
-	# query = queries['insert-2']
-	# if 'prepare' in query:	hyrise.executeSQL(query['prepare'])
-	# if 'sql' in query: 		print 'SQL: ', hyrise.executeSQL(query['sql'], times)
-	# if 'execute' in query: 	print 'Prepared: ', hyrise.executeSQL(query['execute'], times)
-	# if 'json' in query:		print 'JSON: ', hyrise.executeJSON(query['json'], times)
+	# SQL vs JSON benchmark
+	times = 1
+	qs = ['Q1', 'Q2', 'Q3', 'Q4']
+	for q in qs:
+		sql_res = hyrise.executeSQL(queries[q]['sql'], times)
+		json_res = hyrise.executeJSON(queries[q]['json'], times)
+		print "%s,%.3f,%.3f" % (q, sql_res['preparation_ms'], json_res['preparation_ms'])
+
+
