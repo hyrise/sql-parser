@@ -92,10 +92,6 @@ queries = {
 
 	},
 
-	'insert-1': {
-		'sql': "INSERT INTO students VALUES ('Max', 42, 'Musterhausen', 2.3);",
-		'json': """{"operators":{"0":{"type":"GetTable","name":"students"},"1":{"type":"InsertScan","data":[["Max",42,"Musterhausen",2.3]]},"commit":{"type":"Commit"}},"edges":[["0","1"],["1","commit"]]}"""
-	},
 
 	'insert-2': {
 		'sql': """
@@ -144,24 +140,51 @@ queries = {
 			INSERT INTO students VALUES ('Max', 42, 'Musterhausen', 2.3);
 	    }""",
 	    'execute': "EXECUTE batch_insert;"
+	},
+
+
+	# Paper benchmarks
+	'Q1': {
+		'sql': "SELECT name, city FROM students WHERE grade <= 2.0",
+		'json': """{"operators":{"0":{"type":"GetTable","name":"students"},"1":{"type":"SimpleTableScan","predicates":[{"type":"LTE_V","in":0,"f":"grade","value":2,"vtype":1}]},"2":{"type":"ProjectionScan","fields":["name","city"]}},"edges":[["0","1"],["1","2"]]}""",
+	},
+	'Q2': {
+		'sql': "SELECT employee_name, company_name FROM companies JOIN employees ON company_id = employee_company_id WHERE company_id = 2;"
+	},
+	'Q3': {
+		'sql': "SELECT name, city, grade FROM (SELECT * FROM students WHERE city = 'Potsdam') t1 WHERE grade <= 1.5 OR grade >= 3.5;"
+	},
+	'Q4': {
+		'sql': "SELECT city, AVG(grade) AS average, MIN(grade) AS best, MAX(grade) AS worst FROM students GROUP BY city;"
+	},
+	'Q5': {
+		'sql': "INSERT INTO students VALUES ('Max', 42, 'Musterhausen', 2.3);",
+		'json': """{"operators":{"0":{"type":"GetTable","name":"students"},"1":{"type":"InsertScan","data":[["Max",42,"Musterhausen",2.3]]},"commit":{"type":"Commit"}},"edges":[["0","1"],["1","commit"]]}"""
 	}
 }
+
+def benchmarkQuery(key, times):
+	if 'sql' in queries[key]: 		print key, 'SQL: ', hyrise.executeSQL(queries[key]['sql'], times)
+	if 'json' in queries[key]:		print key, 'JSON: ', hyrise.executeJSON(queries[key]['json'], times)
+
 
 if __name__ == '__main__':
 	hyrise = HyriseConnection('localhost', 5000)
 
 	# Load Table
 	hyrise.executeSQL("CREATE TABLE IF NOT EXISTS students FROM TBL FILE 'test/students.tbl';")
-
-	query = queries['insert-2']
+	hyrise.executeSQL("CREATE TABLE IF NOT EXISTS companies FROM TBL FILE 'test/tables/companies.tbl';")
+	hyrise.executeSQL("CREATE TABLE IF NOT EXISTS employees FROM TBL FILE 'test/tables/employees.tbl';")
 
 	times = 50
+	benchmarkQuery('Q1', times)
+	benchmarkQuery('Q2', times)
+	benchmarkQuery('Q3', times)
+	benchmarkQuery('Q4', times)
+	benchmarkQuery('Q5', times)
 
-
+	# query = queries['insert-2']
 	# if 'prepare' in query:	hyrise.executeSQL(query['prepare'])
-	
-	if 'sql' in query: 		print 'SQL: ', hyrise.executeSQL(query['sql'], times)
-
-	if 'execute' in query: 	print 'Prepared: ', hyrise.executeSQL(query['execute'], times)
-
+	# if 'sql' in query: 		print 'SQL: ', hyrise.executeSQL(query['sql'], times)
+	# if 'execute' in query: 	print 'Prepared: ', hyrise.executeSQL(query['execute'], times)
 	# if 'json' in query:		print 'JSON: ', hyrise.executeJSON(query['json'], times)
