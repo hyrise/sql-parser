@@ -175,24 +175,27 @@ if __name__ == '__main__':
 	hyrise.executeSQL("CREATE TABLE IF NOT EXISTS employees FROM TBL FILE 'test/tables/employees.tbl';")
 
 
-	print "SQL vs JSON"
+	print "\nSQL vs JSON\n"
 	# SQL vs JSON benchmark
 	times = 25
 	keys = ['Q1', 'Q2', 'Q3', 'Q4']
+	print "Query,SQL,JSON"
 	for q in keys:
 		query = queries[q]
 		sql_res = hyrise.executeSQL(query['sql'], times)
 		json_res = hyrise.executeJSON(query['json'], times)
 		print "%s,%.3f,%.3f" % (q, sql_res['preparation_ms'], json_res['preparation_ms'])
 
-	print "Prepared vs Unprepared"
+	print "\nPrepared vs Unprepared\n"
 	# Prepared vs Unprepared Benchmark
 	times = 25
 	keys = ['Q1', 'Q2', 'Q5', 'Q6']
+	print "Query,Time Normal,Time to Execute,Time to Prepare"
 	for q in keys:
 		query = queries[q]
 
 		prep = hyrise.executeSQL(query['prepare'])
+		if not 'total_ms' in prep: prep = {'total_ms': 0}
 		execute = hyrise.executeSQL(query['execute'], times)
 		normal = hyrise.executeSQL(query['sql'], times)
 
