@@ -57,6 +57,8 @@ class HyriseConnection(object):
 
 	def __aggregatePerfArray(self, perfArray):
 		perf = perfArray[0]
+		if perf is None: return {}
+
 		for data in perfArray[1:]:
 			for key in data:
 				perf[key] += data[key]
@@ -179,12 +181,12 @@ if __name__ == '__main__':
 	# SQL vs JSON benchmark
 	times = 25
 	keys = ['Q1', 'Q2', 'Q3', 'Q4']
-	print "Query,SQL,JSON"
+	print "Query,JSON,SQL"
 	for q in keys:
 		query = queries[q]
 		sql_res = hyrise.executeSQL(query['sql'], times)
 		json_res = hyrise.executeJSON(query['json'], times)
-		print "%s,%.3f,%.3f" % (q, sql_res['preparation_ms'], json_res['preparation_ms'])
+		print "%s,%.3f,%.3f" % (q, json_res['preparation_ms'], sql_res['preparation_ms'])
 
 	print "\nPrepared vs Unprepared\n"
 	# Prepared vs Unprepared Benchmark
