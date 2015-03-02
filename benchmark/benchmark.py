@@ -177,17 +177,17 @@ if __name__ == '__main__':
 
 	print "SQL vs JSON"
 	# SQL vs JSON benchmark
-	times = 100
+	times = 25
 	keys = ['Q1', 'Q2', 'Q3', 'Q4']
 	for q in keys:
 		query = queries[q]
 		sql_res = hyrise.executeSQL(query['sql'], times)
 		json_res = hyrise.executeJSON(query['json'], times)
-		print "%s,%.3f,%.3f" % (q, sql_res['preparation_ms'], json_res['preparation_ms'])times
+		print "%s,%.3f,%.3f" % (q, sql_res['preparation_ms'], json_res['preparation_ms'])
 
 	print "Prepared vs Unprepared"
 	# Prepared vs Unprepared Benchmark
-	times = 100
+	times = 25
 	keys = ['Q1', 'Q2', 'Q5', 'Q6']
 	for q in keys:
 		query = queries[q]
