@@ -1,0 +1,139 @@
+OpenSource Licence of the Hasso-Plattner Institute
+
+This computer program can be used by anyone in accordance with the OpenSource
+licence of the Hasso-Plattner Institute. Its terms of use can be downloaded
+under the URL https://github.com/hyrise/hyrise/blob/master/LICENSE
+
+Preamble
+
+The Hasso-Plattner-Institut für Softwaresystemtechnik GmbH, Prof.-Dr.-Helmert-
+Strasse 2-3, 14482 Potsdam, hereinafter referred to as Hasso-Plattner
+Institute, provides a research in-memory database storage engine system to
+store different kinds of relational and other data. This software shall
+hereinafter be referred to as HYRISE.
+
+
+1. Licence Grant
+
+With these terms of use, the Hasso-Plattner Institute grants everyone, free of
+charge, a non-exclusive right of use (§ 32(3)(3) Copyright Act) in HYRISE. It
+therefore makes an offer to everyone to conclude a corresponding licence
+agreement for the grant of exploitation rights in accordance with these terms
+of use. The express acceptance by the Hasso-Plattner Institute need not be
+received by the user (§ 151 German Civil Code).  The above rule means that the
+user cannot assign the right of use ac-quired by it in accordance with these
+terms of use to a third party, but that the third party acquires the rights
+directly from Hasso-Plattner Institute.
+
+
+2. Scope of Exploitation Rights
+
+With these terms of use, the Hasso-Plattner Institute grants the user, free of
+charge, a non-exclusive right of use, unrestricted with respect to time and
+geographical scope, to use HYRISE in accordance with the following terms:
+
+    a)  The user shall be entitled to reproduce, distribute and/or publish 
+        the source code of HYRISE.
+
+    b)  The user may also translate, adapt, arrange or otherwise alter the 
+        source code of HYRISE and exploit the results under Point 2.a)
+
+    c)  Finally, the user may also exploit the text of these licence terms in 
+        accordance with Point 2.a).
+
+    d)  The exploitation rights pursuant to Point 2.a) and b) also apply to
+        HYRISE in its object code or executable form and entitle the user to in
+        -corporate HYRISE into other computer programs for use as set down in 
+        Point 2, though these terms of use only apply to the part of the new 
+        computer program so created which is HYRISE where the combination does 
+        not result in a change pursuant to Point 2.b). In the latter case, 
+        these terms of use apply to the entire new computer program. 
+
+
+
+3. Duties of the User
+
+The user shall be obliged,          
+
+    a)  on reproduction of HYRISE pursuant to Point 2.a), to incorporate the
+        following copyright mark, at least in the corresponding source code: 
+        „Exclusive copyrighted exploitation rights / Copyright © 2012 
+        Hasso-Plattner-Institut für Softwaresystemtechnik GmbH“
+        as well as to include a copy of these terms of use; in the case of 
+        publication, the terms of use must also be included in the offer of 
+        publication; 
+
+    b)  not to remove references in the source code and in other places to the
+        owner of rights of use and these terms of use and/or to change such;
+
+    c)  for the case that the user make changes to HYRISE pursuant to Point 
+        2.b) and so acquires its own copyright, the work so created may only 
+        be offered to third parties for use/edit in accordance with these 
+        terms of use; the user must also make these changes clear in the 
+        source code;
+
+    d)  for the case that the user uses HYRISE in object code form or in  
+        executable form, it must also include the complete machine-readable
+        source code for HYRISE on the data carrier and/or make it accessible 
+        to the public via the Internet; for the case that the user combines 
+        HYRISE pursuant to Point 2 d) with another computer program, it must 
+        ensure in any offer of the same that HYRISE is also included in this 
+        entire program and that this is only used in accordance with these 
+        terms of use.
+
+
+
+4. Consequence of Breach of the Above Obligations
+
+Should the user commit a culpable breach of any of the obligations set down in
+Point 3, all exploitation rights under these terms of use shall terminate
+automatically, also with retrospective effect.
+
+
+
+5. Limited Liability
+
+    a)  The Hasso-Plattner Institute shall have unlimited liability for damage 
+        due to legal defects or absence of warranted qualities as well as for 
+        injury to life, body and health. Liability for initial inability, 
+        delay and impossibility shall be limited to such damage typically 
+        foreseeable of such a computer program.
+
+    b)  In all other regards, the Hasso Plattner Institute shall have 
+        unlimited liability only for deliberate damage or damage caused by 
+        gross negligence, also by its legal representative and managers. With 
+        respect to the fault of other vicarious agents, the Hasso-Plattner 
+        Institute shall only be liable to the extent of liability for initial 
+        inability in accordance with the previous section.
+
+    c)  For negligence simpliciter, the Hasso-Plattner Institute shall only be 
+        liable where the obligation breached is of particular importance for 
+        attaining the contract purpose, a duty which gives the contract its 
+        specific character and in which the user may trust (cardinal duty). In 
+        case of breach of a cardinal obligation, the liability limit for 
+        initial inability in accordance with a) shall apply mutatis mutandis.
+
+    d)  Liability for loss of data shall be limited to the typical expense for 
+        the restoration of data which would be incurred if regular backup
+        copies were made appropriate for the degree of risk.
+
+    e)  Liability in accordance with the Product Liability Act remains 
+        unaffected (§ 14 Product Liability Act).
+
+
+
+6. Concluding Provisions
+
+    a)  Oral ancillary agreements have not been concluded and shall not be
+        valid. Supplements and amendments to this agreement must be in writing 
+        for their validity. This shall also apply in case of any amendment to 
+        this written form clause.
+
+    b)  Should any provisions of this agreement be or become void or 
+        unenforceable, the remaining provisions shall be unaffected. 
+
+    c)  Where the user is a merchant, place of jurisdiction shall be Potsdam.
+
+    d)  This agreement shall be governed exclusively by the laws of the 
+        Federal Republic of Germany. The provisions of the UN Convention on 
+        Contracts for the International Sale of Goods shall be excluded.
