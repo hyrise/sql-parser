@@ -26,3 +26,14 @@ To use the SQL Parser in your own code, you only need to include `SQLParser.h` a
 **Doxygen:**
 
 Run `make docs` to create the doxygen documentation.
+
+### Contributers
+
+The following people contributed to HYRISE sql-parser in various forms.
+
+* Pedro Flemming
+* David Schwalb
+
+### License
+
+HYRISE sql-parser is licensed as open source after the OpenSource "Licence of the Hasso-Plattner Institute" declared in the LICENSE file of this project.
