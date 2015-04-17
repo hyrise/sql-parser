@@ -31,8 +31,8 @@ Run `make docs` to create the doxygen documentation.
 
 The following people contributed to HYRISE sql-parser in various forms.
 
-* Pedro Flemming
-* David Schwalb
+* Pedro Flemming ([@torpedro](https://github.com/torpedro))
+* David Schwalb ([@schwald](https://github.com/schwald))
 
 ### License
 
