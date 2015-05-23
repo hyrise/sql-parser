@@ -1,6 +1,7 @@
 #ifndef __SQLLIB_H__
 #define __SQLLIB_H__
 
+typedef unsigned int uint;
 
 #include "SelectStatement.h"
 #include "ImportStatement.h"

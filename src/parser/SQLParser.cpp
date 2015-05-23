@@ -2,6 +2,7 @@
 #include "bison_parser.h"
 #include "flex_lexer.h"
 #include <stdio.h>
+#include <string>
 
 
 namespace hsql {
