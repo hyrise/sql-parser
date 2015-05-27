@@ -14,6 +14,8 @@ It is developed for integration in hyrise (https://github.com/hyrise/hyrise), bu
 * [Developer Documentation](docs/documentation.md)
 * [Integration in Hyrise](docs/integration.md)
 
+In March 2015 we've also written a short paper outlining discussing some development details and the integration into our database Hyrise. You can find the paper [here](http://torpedro.com/paper/HyriseSQL-03-2015.pdf).
+
 ### General Usage
 
 **Prerequisites:**
