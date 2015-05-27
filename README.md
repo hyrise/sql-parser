@@ -17,14 +17,21 @@ It is developed for integration in hyrise (https://github.com/hyrise/hyrise), bu
 ### General Usage
 
 **Prerequisites:**
-* bison (https://www.gnu.org/software/bison/)
-* flex (http://flex.sourceforge.net/)
+* [bison](https://www.gnu.org/software/bison/) (tested with v3.0.2)
+* [flex](http://flex.sourceforge.net/) (tested with v2.5.5)
 
-To create the full parser code run `make build`. The parser library code is created in `build/`.
+The parser library code is created in `build/`. To create the full parser code run 
+```
+make build
+````
+   
 
 To use the SQL Parser in your own code, you only need to include `SQLParser.h` and build+link all the source files from the parser with your project. See [`hyrise/src/lib/access/sql/SQLQueryParser.cpp`](https://github.com/hyrise/hyrise/blob/master/src/lib/access/sql/SQLQueryParser.cpp) for how it's used in Hyrise.
 
-**Important:** Execute all tests by calling `make test`.
+**Important:** Run tests and add tests for new features.
+```
+make test
+```
 
 
 ### Contributers
