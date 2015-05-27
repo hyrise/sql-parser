@@ -4,6 +4,16 @@ C++ SQL Parser for Hyrise
 This is a SQL Parser for C++. It parses the given SQL query into C++ objects.
 It is developed for integration in hyrise (https://github.com/hyrise/hyrise), but can be used in other environments as well.
 
+### Links
+
+* [General Usage](#general-usage)
+* [License](#license)
+* [Contributers](#contributers)
+* [Working Syntax Examples](docs/syntax.md)
+* [Known Issues](docs/issues.md)
+* [Developer Documentation](docs/documentation.md)
+* [Integration in Hyrise](docs/integration.md)
+
 ### General Usage
 
 **Prerequisites:**
@@ -16,16 +26,6 @@ To use the SQL Parser in your own code, you only need to include `SQLParser.h` a
 
 **Important:** Execute all tests by calling `make test`.
 
-### Documentation
-
-* [Working Syntax Examples](docs/syntax.md)
-* [Developer Documentation](docs/documentation.md)
-* [Integration in Hyrise](docs/integration.md)
-* [Known Issues](docs/issues.md)
-
-**Doxygen:**
-
-Run `make docs` to create the doxygen documentation.
 
 ### Contributers
 
