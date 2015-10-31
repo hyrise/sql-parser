@@ -62,6 +62,9 @@ public:
 	};
 		
 	virtual ~SQLStatementList() {
+		for (std::vector<SQLStatement*>::iterator it = statements.begin(); it != statements.end(); ++it) {
+			delete *it;
+		}
 		delete parser_msg;
 	}
 
