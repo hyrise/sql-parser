@@ -11,10 +11,10 @@ In March 2015 we've also written a short paper outlining discussing some develop
 
 To use the SQL parser in your own projects you simply have to follow these few steps. The only requirement for is GCC 4.8+. Older versions of GCC probably also work, but are untested.
 
- 1. Download the latest release
+ 1. Download the [latest release here](https://github.com/hyrise/sql-parser/releases)
  2. Compile the library `make` to create `libsqlparser.so`
  3. Run the tests `make test` to make sure everything worked
- 4. Take a look at the example project [here](https://github.com/hyrise/sql-parser/tree/dynamic-library/example)
+ 4. Take a look at the [example project here](https://github.com/hyrise/sql-parser/tree/dynamic-library/example)
  5. Include the `SQLParser.h` from `src/` and link the library in your project
 
 
