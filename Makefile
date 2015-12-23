@@ -42,6 +42,7 @@ clean:
 cleanparser:
 	make -C $(SRCPARSER)/ clean
 
+cleanall: clean cleanparser
 
 ############
 ### Test ###
