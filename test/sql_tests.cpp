@@ -2,8 +2,8 @@
  * sql_tests.cpp
  */
 
-#include "tests/test.h"
-#include "tests/helper.h"
+#include "lib/test.h"
+#include "lib/helper.h"
 #include "SQLParser.h"
 #include "sqlhelper.h"
 
