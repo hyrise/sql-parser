@@ -1,23 +1,12 @@
-#
-# make source (build the source code into build/)
-#
-# make library
-#
-#
-#
-#
-
 # directories
 BIN        = bin
 SRC        = src
-SRCSQL     = src/lib/sql
 SRCPARSER  = src/parser
 
 # files
 PARSERFILES = $(SRCPARSER)/bison_parser.cpp $(SRCPARSER)/flex_lexer.cpp
 LIBCPP      = $(shell find $(SRC)/ -name '*.cpp' -not -path "$(SRCPARSER)/*") $(SRCPARSER)/bison_parser.cpp $(SRCPARSER)/flex_lexer.cpp
 LIBOBJ      = $(LIBCPP:%.cpp=%.o)
-LIBHEADERS  = $(shell find $(SRCSQL)/ -name '*.h') $(SRC)/SQLParser.h
 TESTCPP     = $(shell find test/lib/ -name '*.cpp')
 
 # compile & link flages
@@ -70,4 +59,4 @@ $(BIN)/sql_grammar_test: library
 	@mkdir -p $(BIN)/
 	$(CC) $(CTESTFLAGS) test/sql_grammar_test.cpp -o $(BIN)/sql_grammar_test -lsqlparser
 
-FORCE:
+
