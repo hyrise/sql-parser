@@ -1,8 +1,7 @@
 #ifndef __SQLPARSER_H_
 #define __SQLPARSER_H_
 
-#include "sqllib.h"
-#include "bison_parser.h"
+#include "sqltypes.h"
 
 namespace hsql {
 

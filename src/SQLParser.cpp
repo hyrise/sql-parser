@@ -1,6 +1,7 @@
+
 #include "SQLParser.h"
-#include "bison_parser.h"
-#include "flex_lexer.h"
+#include "parser/bison_parser.h"
+#include "parser/flex_lexer.h"
 #include <stdio.h>
 #include <string>
 

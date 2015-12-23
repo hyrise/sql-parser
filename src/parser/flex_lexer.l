@@ -10,7 +10,7 @@
  ***************************/
 %{
 
-#include "sqllib.h"
+#include "../sqltypes.h"
 #include "bison_parser.h"
 #include <stdio.h>
 

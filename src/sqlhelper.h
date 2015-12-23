@@ -3,7 +3,7 @@
 #define __SQLHELPER_H__
 
 
-#include "sqllib.h"
+#include "sqltypes.h"
 
 namespace hsql {
 

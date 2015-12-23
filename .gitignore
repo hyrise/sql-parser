@@ -1,5 +1,7 @@
 build/
 utils/
+bin/
+lib-test/
 
 # Compiled Object files
 *.slo

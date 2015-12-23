@@ -11,7 +11,7 @@
  ** Section 1: C Declarations
  *********************************/
 
-#include "sqllib.h"
+#include "../sqltypes.h"
 #include "bison_parser.h"
 #include "flex_lexer.h"
 
