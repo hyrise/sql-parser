@@ -1,6 +1,12 @@
 
+#include <stdlib.h>
+#include <string>
+
 // include the sql parser
 #include "SQLParser.h"
+
+// contains printing utilities
+#include "sqlhelper.h"
 
 int main(int argc, char *argv[]) {
     if (argc <= 1) {
@@ -10,13 +16,17 @@ int main(int argc, char *argv[]) {
     std::string query = argv[1];
 
     // parse a given query
-    hsql::SQLStatementList* stmt_list = hsql::SQLParser::parseSQLString(query);
+    hsql::SQLStatementList* result = hsql::SQLParser::parseSQLString(query);
 
     // check whether the parsing was successful
-    if (stmt_list->isValid) {
+    if (result->isValid) {
         printf("Parsed successfully!\n");
-        printf("Number of statements: %lu\n", stmt_list->numStatements());
-        // process the statements...
+        printf("Number of statements: %lu\n", result->numStatements());
+
+        for (hsql::SQLStatement* stmt : result->statements) {
+            // process the statements...
+            hsql::printStatementInfo(stmt);
+        }
     } else {
         printf("Invalid SQL!\n");
     }

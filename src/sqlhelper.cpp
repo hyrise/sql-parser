@@ -7,13 +7,13 @@ namespace hsql {
 
 void printOperatorExpression(Expr* expr, uint num_indent);
 
-const char* indent(uint num_indent) { return std::string(num_indent, '\t').c_str(); }
-void inprint(int64_t val, uint num_indent) { printf("%s%ld  \n", indent(num_indent), val); }
-void inprint(float val, uint num_indent) { printf("%s%f\n", indent(num_indent), val); }
-void inprint(const char* val, uint num_indent) { printf("%s%s\n", indent(num_indent), val); }
-void inprint(const char* val, const char* val2, uint num_indent) { printf("%s%s->%s\n", indent(num_indent), val, val2); }
-void inprintC(char val, uint num_indent) { printf("%s%c\n", indent(num_indent), val); }
-void inprintU(uint64_t val, uint num_indent) { printf("%s%lu\n", indent(num_indent), val); }
+std::string indent(uint num_indent) { return std::string(num_indent, '\t'); }
+void inprint(int64_t val, uint num_indent) { printf("%s%lld  \n", indent(num_indent).c_str(), val); }
+void inprint(float val, uint num_indent) { printf("%s%f\n", indent(num_indent).c_str(), val); }
+void inprint(const char* val, uint num_indent) { printf("%s%s\n", indent(num_indent).c_str(), val); }
+void inprint(const char* val, const char* val2, uint num_indent) { printf("%s%s->%s\n", indent(num_indent).c_str(), val, val2); }
+void inprintC(char val, uint num_indent) { printf("%s%c\n", indent(num_indent).c_str(), val); }
+void inprintU(uint64_t val, uint num_indent) { printf("%s%llu\n", indent(num_indent).c_str(), val); }
 
 void printTableRefInfo(TableRef* table, uint num_indent) {
   switch (table->type) {
@@ -139,8 +139,25 @@ void printInsertStatementInfo(InsertStatement* stmt, uint num_indent) {
       printSelectStatementInfo(stmt->select, num_indent+1);
       break;
   }
-
 }
 
+void printStatementInfo(SQLStatement* stmt) {
+  switch (stmt->type()) {
+    case kStmtSelect:
+      printSelectStatementInfo((SelectStatement*) stmt, 0);
+      break;
+    case kStmtInsert:
+      printInsertStatementInfo((InsertStatement*) stmt, 0);
+      break;
+    case kStmtCreate:
+      printCreateStatementInfo((CreateStatement*) stmt, 0);
+      break;
+    case kStmtImport:
+      printImportStatementInfo((ImportStatement*) stmt, 0);
+      break;
+    default:
+      break;
+  }
+}
 
 } // namespace hsql

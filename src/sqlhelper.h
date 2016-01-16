@@ -7,6 +7,7 @@
 
 namespace hsql {
 
+void printStatementInfo(SQLStatement* stmt);
 void printSelectStatementInfo(SelectStatement* stmt, uint num_indent);
 void printImportStatementInfo(ImportStatement* stmt, uint num_indent);
 void printInsertStatementInfo(InsertStatement* stmt, uint num_indent);
