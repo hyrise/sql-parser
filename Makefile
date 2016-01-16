@@ -5,7 +5,7 @@ SRCPARSER  = src/parser
 
 # files
 PARSERFILES = $(SRCPARSER)/bison_parser.cpp $(SRCPARSER)/flex_lexer.cpp
-LIBCPP      = $(shell find $(SRC)/ -name '*.cpp' -not -path "$(SRCPARSER)/*") $(SRCPARSER)/bison_parser.cpp $(SRCPARSER)/flex_lexer.cpp
+LIBCPP      = $(shell find $(SRC) -name '*.cpp' -not -path "$(SRCPARSER)/*") $(SRCPARSER)/bison_parser.cpp $(SRCPARSER)/flex_lexer.cpp
 LIBOBJ      = $(LIBCPP:%.cpp=%.o)
 TESTCPP     = $(shell find test/lib/ -name '*.cpp')
 
@@ -14,6 +14,7 @@ CC         = g++
 CFLAGS     = -std=c++11 -Wall -fPIC
 LIBFLAGS   = -shared
 TARGET     = libsqlparser.so
+INSTALL    = /usr/local
 
 CTESTFLAGS = -Wall -Isrc/ -Itest/ -L./ -std=c++11
 
@@ -43,6 +44,9 @@ cleanparser:
 	make -C $(SRCPARSER)/ clean
 
 cleanall: clean cleanparser
+
+install:
+	cp $(TARGET) $(INSTALL)/lib/$(TARGET)
 
 ############
 ### Test ###
