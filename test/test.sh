@@ -1,3 +1,4 @@
+#!/bin/bash
 
 # has to be executed from the root of the repository
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:./

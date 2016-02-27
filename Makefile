@@ -62,6 +62,11 @@ format:
 test: $(BIN)/sql_tests $(BIN)/sql_grammar_test
 	bash test/test.sh
 
+# test whete
+test_install:
+	make -C example/
+	./example/example "SELECT * FROM students WHERE name = 'Max Mustermann';"
+
 $(BIN)/sql_tests: library
 	@mkdir -p $(BIN)/
 	$(CC) $(CTESTFLAGS) $(TESTCPP) test/sql_tests.cpp -o $(BIN)/sql_tests -lsqlparser

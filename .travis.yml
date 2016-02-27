@@ -1,4 +1,6 @@
 
+language: cpp
+
 install:
   - sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
   - sudo apt-get -qq update
@@ -9,12 +11,9 @@ install:
   - which g++
   - g++ -v
 
-language: cpp
-
 compiler:
   - gcc
 
 script:
   - make
-  - sudo make install
   - make test
