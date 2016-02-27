@@ -11,7 +11,7 @@ using namespace hsql;
 
 
 TEST(DeleteStatementTest) {
-	SQLStatementList* stmt_list = SQLParser::parseSQLString("DELETE FROM students WHERE grade > 2.0;");
+	SQLParserResult* stmt_list = SQLParser::parseSQLString("DELETE FROM students WHERE grade > 2.0;");
 	ASSERT(stmt_list->isValid);
 	ASSERT_EQ(stmt_list->numStatements(), 1);
 	ASSERT(stmt_list->getStatement(0)->type() == kStmtDelete);
@@ -25,7 +25,7 @@ TEST(DeleteStatementTest) {
 }
 
 TEST(CreateStatementTest) {
-	SQLStatementList* stmt_list = SQLParser::parseSQLString("CREATE TABLE students (name TEXT, student_number INT, city INTEGER, grade DOUBLE)");
+	SQLParserResult* stmt_list = SQLParser::parseSQLString("CREATE TABLE students (name TEXT, student_number INT, city INTEGER, grade DOUBLE)");
 	ASSERT(stmt_list->isValid);
 	ASSERT_EQ(stmt_list->numStatements(), 1);
 	ASSERT_EQ(stmt_list->getStatement(0)->type(), kStmtCreate);
@@ -47,7 +47,7 @@ TEST(CreateStatementTest) {
 
 
 TEST(UpdateStatementTest) {
-	SQLStatementList* stmt_list = SQLParser::parseSQLString("UPDATE students SET grade = 5.0, name = 'test' WHERE name = 'Max Mustermann';");
+	SQLParserResult* stmt_list = SQLParser::parseSQLString("UPDATE students SET grade = 5.0, name = 'test' WHERE name = 'Max Mustermann';");
 	ASSERT(stmt_list->isValid);
 	ASSERT_EQ(stmt_list->numStatements(), 1);
 	ASSERT_EQ(stmt_list->getStatement(0)->type(), kStmtUpdate);

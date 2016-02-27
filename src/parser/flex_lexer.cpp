@@ -1545,7 +1545,7 @@ static yyconst flex_int16_t yy_chk[3639] =
  ***************************/
 #line 12 "flex_lexer.l"
 
-#include "../sqltypes.h"
+#include "../sql/Expr.h"
 #include "bison_parser.h"
 #include <stdio.h>
 

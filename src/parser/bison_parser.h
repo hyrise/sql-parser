@@ -48,9 +48,12 @@
 extern int hsql_debug;
 #endif
 /* "%code requires" blocks.  */
-#line 43 "bison_parser.y" /* yacc.c:1909  */
+#line 42 "bison_parser.y" /* yacc.c:1909  */
 
 // %code requires block	
+
+#include "../sql/statements.h"
+#include "../SQLParserResult.h"
 #include "parser_typedef.h"
 
 // Auto update column and line number
@@ -68,7 +71,7 @@ extern int hsql_debug;
         } \
     }
 
-#line 72 "bison_parser.h" /* yacc.c:1909  */
+#line 75 "bison_parser.h" /* yacc.c:1909  */
 
 /* Token type.  */
 #ifndef HSQL_TOKENTYPE
@@ -206,7 +209,7 @@ extern int hsql_debug;
 typedef union HSQL_STYPE HSQL_STYPE;
 union HSQL_STYPE
 {
-#line 99 "bison_parser.y" /* yacc.c:1909  */
+#line 101 "bison_parser.y" /* yacc.c:1909  */
 
 	double fval;
 	int64_t ival;
@@ -234,7 +237,7 @@ union HSQL_STYPE
 	hsql::GroupByDescription* group_t;
 	hsql::UpdateClause* update_t;
 
-	hsql::SQLStatementList* stmt_list;
+	hsql::SQLParserResult* stmt_list;
 
 	std::vector<char*>* str_vec;
 	std::vector<hsql::TableRef*>* table_vec;
@@ -242,7 +245,7 @@ union HSQL_STYPE
 	std::vector<hsql::UpdateClause*>* update_vec;
 	std::vector<hsql::Expr*>* expr_vec;
 
-#line 246 "bison_parser.h" /* yacc.c:1909  */
+#line 249 "bison_parser.h" /* yacc.c:1909  */
 };
 # define HSQL_STYPE_IS_TRIVIAL 1
 # define HSQL_STYPE_IS_DECLARED 1
@@ -264,6 +267,6 @@ struct HSQL_LTYPE
 
 
 
-int hsql_parse (hsql::SQLStatementList** result, yyscan_t scanner);
+int hsql_parse (hsql::SQLParserResult** result, yyscan_t scanner);
 
 #endif /* !YY_HSQL_BISON_PARSER_H_INCLUDED  */

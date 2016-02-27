@@ -4,6 +4,7 @@
 
 
 #include "sqltypes.h"
+#include "sql/statements.h"
 
 namespace hsql {
 

@@ -11,7 +11,6 @@
  ** Section 1: C Declarations
  *********************************/
 
-#include "../sqltypes.h"
 #include "bison_parser.h"
 #include "flex_lexer.h"
 
@@ -19,9 +18,9 @@
 
 using namespace hsql;
 
-int yyerror(YYLTYPE* llocp, SQLStatementList** result, yyscan_t scanner, const char *msg) {
+int yyerror(YYLTYPE* llocp, SQLParserResult** result, yyscan_t scanner, const char *msg) {
 
-	SQLStatementList* list = new SQLStatementList();
+	SQLParserResult* list = new SQLParserResult();
 	list->isValid = false;
 	list->parser_msg = strdup(msg);
 	list->error_line = llocp->first_line;
@@ -42,6 +41,9 @@ int yyerror(YYLTYPE* llocp, SQLStatementList** result, yyscan_t scanner, const c
 // Specify code that is included in the generated .h and .c files
 %code requires {
 // %code requires block	
+
+#include "../sql/statements.h"
+#include "../SQLParserResult.h"
 #include "parser_typedef.h"
 
 // Auto update column and line number
@@ -89,7 +91,7 @@ int yyerror(YYLTYPE* llocp, SQLStatementList** result, yyscan_t scanner, const c
 %lex-param   { yyscan_t scanner }
 
 // Define additional parameters for yyparse
-%parse-param { hsql::SQLStatementList** result }
+%parse-param { hsql::SQLParserResult** result }
 %parse-param { yyscan_t scanner }
 
 
@@ -123,7 +125,7 @@ int yyerror(YYLTYPE* llocp, SQLStatementList** result, yyscan_t scanner, const c
 	hsql::GroupByDescription* group_t;
 	hsql::UpdateClause* update_t;
 
-	hsql::SQLStatementList* stmt_list;
+	hsql::SQLParserResult* stmt_list;
 
 	std::vector<char*>* str_vec;
 	std::vector<hsql::TableRef*>* table_vec;
@@ -231,7 +233,7 @@ input:
 
 
 statement_list:
-		statement { $$ = new SQLStatementList($1); }
+		statement { $$ = new SQLParserResult($1); }
 	|	statement_list ';' statement { $1->addStatement($3); $$ = $1; }
 	;
 
@@ -265,7 +267,7 @@ prepare_statement:
 		PREPARE IDENTIFIER ':' preparable_statement {
 			$$ = new PrepareStatement();
 			$$->name = $2;
-			$$->query = new SQLStatementList($4);
+			$$->query = new SQLParserResult($4);
 		}
 	|	PREPARE IDENTIFIER '{' statement_list opt_semicolon '}' {
 			$$ = new PrepareStatement();

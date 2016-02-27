@@ -1,6 +1,7 @@
 #ifndef __PREPARE_STATEMENT_H__
 #define __PREPARE_STATEMENT_H__
 
+#include "../SQLParserResult.h"
 #include "SQLStatement.h"
 #include "SelectStatement.h"
 #include <algorithm>
@@ -42,7 +43,7 @@ struct PrepareStatement : SQLStatement {
 	}
 
 	const char* name;
-	SQLStatementList* query;
+	SQLParserResult* query;
 	std::vector<Expr*> placeholders;
 };
 

@@ -3,7 +3,7 @@
 
 
 #define TEST_PARSE_SQL_QUERY(query, output_var, num_statements) \
-	SQLStatementList* output_var = SQLParser::parseSQLString(query); \
+	SQLParserResult* output_var = SQLParser::parseSQLString(query); \
 	ASSERT(output_var->isValid); \
 	ASSERT_EQ(output_var->numStatements(), num_statements);
 
