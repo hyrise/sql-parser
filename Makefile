@@ -60,8 +60,7 @@ format:
 ############
 
 test: $(BIN)/sql_tests $(BIN)/sql_grammar_test
-	@LD_LIBRARY_PATH=./ $(BIN)/sql_grammar_test -f "test/lib/valid_queries.sql"
-	@LD_LIBRARY_PATH=./ $(BIN)/sql_tests
+	bash test/test.sh
 
 $(BIN)/sql_tests: library
 	@mkdir -p $(BIN)/

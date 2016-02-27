@@ -28,7 +28,7 @@ int AddTest(void (*foo)(void), std::string name) {
 
 
 
-void RunTests() {
+size_t RunTests() {
     size_t numFailed = 0;
     for (size_t i = 0; i < TestsManager::tests().size(); ++i) {
         printf("\033[0;32m{ running}\033[0m %s\n", TestsManager::testNames()[i].c_str());
@@ -43,13 +43,17 @@ void RunTests() {
             printf("\tAssertion failed: %s\n\033[0m", e.what());
             numFailed++;
         }
-
     }
+    return numFailed;
 }
 
 
 
 int main() {
-    RunTests();
-    return 0;
+    size_t numFailed = RunTests();
+    if (numFailed == 0) {
+        return 0;
+    } else {
+        return -1;
+    }
 }

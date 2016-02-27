@@ -86,10 +86,9 @@ int main(int argc, char *argv[]) {
 
     if (numFailed == 0) {
         printf("\033[0;32m{      ok} \033[0mAll %lu grammar tests completed successfully!\n", queries.size());
+        return 0;
     } else {
         fprintf(stderr, "\033[0;31m{  failed} \033[0mSome grammar tests failed! %d out of %lu tests failed!\n", numFailed, queries.size());
+        return -1;
     }
-
-
-	return 0;
 }
