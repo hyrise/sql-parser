@@ -4,21 +4,16 @@
 #include "SQLStatement.h"
 
 namespace hsql {
-
-
     /**
-     * @struct UpdateClause
-     * @brief Represents "column = value" expressions
+     * Represents "column = value" expressions
      */
     struct UpdateClause {
         char* column;
         Expr* value;
     };
 
-
     /**
-     * @struct UpdateStatement
-     * @brief Represents "UPDATE"
+     * Represents SQL Update statements.
      */
     struct UpdateStatement : SQLStatement {
         UpdateStatement() :
@@ -38,8 +33,6 @@ namespace hsql {
         std::vector<UpdateClause*>* updates;
         Expr* where;
     };
-
-
 
 } // namsepace hsql
 #endif

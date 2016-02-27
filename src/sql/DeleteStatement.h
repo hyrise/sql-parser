@@ -4,31 +4,26 @@
 #include "SQLStatement.h"
 
 namespace hsql {
-
-
     /**
-     * @struct DeleteStatement
-     * @brief Represents "DELETE FROM students WHERE grade > 3.0"
+     * Represents SQL Delete statements.
+     * Example: "DELETE FROM students WHERE grade > 3.0"
      *
-     * If expr == NULL => delete all rows (truncate)
+     * Note: if (expr == NULL) => delete all rows (truncate)
      */
     struct DeleteStatement : SQLStatement {
         DeleteStatement() :
             SQLStatement(kStmtDelete),
-            table_name(NULL),
+            tableName(NULL),
             expr(NULL) {};
 
         virtual ~DeleteStatement() {
-            delete table_name;
+            delete tableName;
             delete expr;
         }
 
-
-        char* table_name;
+        char* tableName;
         Expr* expr;
     };
-
-
 
 } // namespace hsql
 #endif

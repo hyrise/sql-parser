@@ -4,11 +4,9 @@
 #include "SQLStatement.h"
 
 namespace hsql {
-
-
     /**
-     * @struct DropStatement
-     * @brief Represents "DROP TABLE"
+     * Represents SQL Delete statements.
+     * Example "DROP TABLE students;"
      */
     struct DropStatement : SQLStatement {
         enum EntityType {
@@ -19,7 +17,6 @@ namespace hsql {
             kPreparedStatement
         };
 
-
         DropStatement(EntityType type) :
             SQLStatement(kStmtDrop),
             type(type),
@@ -29,14 +26,9 @@ namespace hsql {
             delete name;
         }
 
-
         EntityType type;
         const char* name;
     };
-
-
-
-
 
 } // namespace hsql
 #endif

@@ -295,8 +295,8 @@ execute_statement:
 import_statement:
 		IMPORT FROM import_file_type FILE file_path INTO table_name {
 			$$ = new ImportStatement((ImportStatement::ImportType) $3);
-			$$->file_path = $5;
-			$$->table_name = $7;
+			$$->filePath = $5;
+			$$->tableName = $7;
 		}
 	;
 
@@ -317,14 +317,14 @@ file_path:
 create_statement:
 		CREATE TABLE opt_not_exists table_name FROM TBL FILE file_path {
 			$$ = new CreateStatement(CreateStatement::kTableFromTbl);
-			$$->if_not_exists = $3;
-			$$->table_name = $4;
-			$$->file_path = $8;
+			$$->ifNotExists = $3;
+			$$->tableName = $4;
+			$$->filePath = $8;
 		}
 	|	CREATE TABLE opt_not_exists table_name '(' column_def_commalist ')' {
 			$$ = new CreateStatement(CreateStatement::kTable);
-			$$->if_not_exists = $3;
-			$$->table_name = $4;
+			$$->ifNotExists = $3;
+			$$->tableName = $4;
 			$$->columns = $6;
 		}
 	;
@@ -378,7 +378,7 @@ drop_statement:
 delete_statement:
 		DELETE FROM table_name opt_where {
 			$$ = new DeleteStatement();
-			$$->table_name = $3;
+			$$->tableName = $3;
 			$$->expr = $4;
 		}
 	;
@@ -386,7 +386,7 @@ delete_statement:
 truncate_statement:
 		TRUNCATE table_name {
 			$$ = new DeleteStatement();
-			$$->table_name = $2;
+			$$->tableName = $2;
 		}
 	;
 
@@ -398,13 +398,13 @@ truncate_statement:
 insert_statement:
 		INSERT INTO table_name opt_column_list VALUES '(' literal_list ')' {
 			$$ = new InsertStatement(InsertStatement::kInsertValues);
-			$$->table_name = $3;
+			$$->tableName = $3;
 			$$->columns = $4;
 			$$->values = $7;
 		}
 	|	INSERT INTO table_name opt_column_list select_no_paren {
 			$$ = new InsertStatement(InsertStatement::kInsertSelect);
-			$$->table_name = $3;
+			$$->tableName = $3;
 			$$->columns = $4;
 			$$->select = $5;
 		}
@@ -469,7 +469,7 @@ select_no_paren:
 			// TODO: capture type of set_operator
 			// TODO: might overwrite order and limit of first select here
 			$$ = $1;
-			$$->union_select = $3;
+			$$->unionSelect = $3;
 			$$->order = $4;
 			$$->limit = $5;
 		}
@@ -484,11 +484,11 @@ set_operator:
 select_clause:
 		SELECT opt_distinct select_list from_clause opt_where opt_group {
 			$$ = new SelectStatement();
-			$$->select_distinct = $2;
-			$$->select_list = $3;
-			$$->from_table = $4;
-			$$->where_clause = $5;
-			$$->group_by = $6;
+			$$->selectDistinct = $2;
+			$$->selectList = $3;
+			$$->fromTable = $4;
+			$$->whereClause = $5;
+			$$->groupBy = $6;
 		}
 	;
 

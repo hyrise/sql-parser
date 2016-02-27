@@ -17,7 +17,7 @@ TEST(DeleteStatementTest) {
 	ASSERT(result->getStatement(0)->type() == kStmtDelete);
 
 	DeleteStatement* stmt = (DeleteStatement*) result->getStatement(0);
-	ASSERT_STREQ(stmt->table_name, "students");
+	ASSERT_STREQ(stmt->tableName, "students");
 	ASSERT_NOTNULL(stmt->expr);
 	ASSERT(stmt->expr->isType(kExprOperator));
 	ASSERT_STREQ(stmt->expr->expr->name, "grade");
@@ -32,7 +32,7 @@ TEST(CreateStatementTest) {
 
 	CreateStatement* stmt = (CreateStatement*) result->getStatement(0);
 	ASSERT_EQ(stmt->type, CreateStatement::kTable);
-	ASSERT_STREQ(stmt->table_name, "students");
+	ASSERT_STREQ(stmt->tableName, "students");
 	ASSERT_NOTNULL(stmt->columns);
 	ASSERT_EQ(stmt->columns->size(), 4);
 	ASSERT_STREQ(stmt->columns->at(0)->name, "name");
@@ -114,18 +114,18 @@ TEST(PrepareStatementTest) {
 	TEST_CAST_STMT(prep1->query, 1, kStmtSelect, SelectStatement, select);
 
 	ASSERT(insert->values->at(0)->isType(kExprPlaceholder));
-	ASSERT(select->select_list->at(0)->isType(kExprPlaceholder));
-	ASSERT(select->where_clause->expr2->isType(kExprPlaceholder));
+	ASSERT(select->selectList->at(0)->isType(kExprPlaceholder));
+	ASSERT(select->whereClause->expr2->isType(kExprPlaceholder));
 
 	// Check IDs of placeholders
 	ASSERT_EQ(insert->values->at(0)->ival, 0);
 	ASSERT_EQ(insert->values->at(0), prep1->placeholders[0]);
 
-	ASSERT_EQ(select->select_list->at(0)->ival, 1);
-	ASSERT_EQ(select->select_list->at(0), prep1->placeholders[1]);
+	ASSERT_EQ(select->selectList->at(0)->ival, 1);
+	ASSERT_EQ(select->selectList->at(0), prep1->placeholders[1]);
 
-	ASSERT_EQ(select->where_clause->expr2->ival, 2);
-	ASSERT_EQ(select->where_clause->expr2, prep1->placeholders[2]);
+	ASSERT_EQ(select->whereClause->expr2->ival, 2);
+	ASSERT_EQ(select->whereClause->expr2, prep1->placeholders[2]);
 
 	// Prepare Statement #2
 	ASSERT_STREQ(prep2->name, "stmt");

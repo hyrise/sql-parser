@@ -5,7 +5,6 @@
 #include <vector>
 
 namespace hsql {
-
     typedef enum {
         kStmtError, // unused
         kStmtSelect,
@@ -21,7 +20,6 @@ namespace hsql {
         kStmtRename,
         kStmtAlter
     } StatementType;
-
 
     /**
      * Base struct for every SQL statement
@@ -41,5 +39,4 @@ namespace hsql {
     };
 
 } // namespace hsql
-
 #endif // __SQLSTATEMENT_H__

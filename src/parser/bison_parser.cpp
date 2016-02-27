@@ -1955,8 +1955,8 @@ yyreduce:
 #line 296 "bison_parser.y" /* yacc.c:1646  */
     {
 			(yyval.import_stmt) = new ImportStatement((ImportStatement::ImportType) (yyvsp[-4].uval));
-			(yyval.import_stmt)->file_path = (yyvsp[-2].sval);
-			(yyval.import_stmt)->table_name = (yyvsp[0].sval);
+			(yyval.import_stmt)->filePath = (yyvsp[-2].sval);
+			(yyval.import_stmt)->tableName = (yyvsp[0].sval);
 		}
 #line 1962 "bison_parser.cpp" /* yacc.c:1646  */
     break;
@@ -1977,9 +1977,9 @@ yyreduce:
 #line 318 "bison_parser.y" /* yacc.c:1646  */
     {
 			(yyval.create_stmt) = new CreateStatement(CreateStatement::kTableFromTbl);
-			(yyval.create_stmt)->if_not_exists = (yyvsp[-5].bval);
-			(yyval.create_stmt)->table_name = (yyvsp[-4].sval);
-			(yyval.create_stmt)->file_path = (yyvsp[0].sval);
+			(yyval.create_stmt)->ifNotExists = (yyvsp[-5].bval);
+			(yyval.create_stmt)->tableName = (yyvsp[-4].sval);
+			(yyval.create_stmt)->filePath = (yyvsp[0].sval);
 		}
 #line 1985 "bison_parser.cpp" /* yacc.c:1646  */
     break;
@@ -1988,8 +1988,8 @@ yyreduce:
 #line 324 "bison_parser.y" /* yacc.c:1646  */
     {
 			(yyval.create_stmt) = new CreateStatement(CreateStatement::kTable);
-			(yyval.create_stmt)->if_not_exists = (yyvsp[-4].bval);
-			(yyval.create_stmt)->table_name = (yyvsp[-3].sval);
+			(yyval.create_stmt)->ifNotExists = (yyvsp[-4].bval);
+			(yyval.create_stmt)->tableName = (yyvsp[-3].sval);
 			(yyval.create_stmt)->columns = (yyvsp[-1].column_vec);
 		}
 #line 1996 "bison_parser.cpp" /* yacc.c:1646  */
@@ -2073,7 +2073,7 @@ yyreduce:
 #line 379 "bison_parser.y" /* yacc.c:1646  */
     {
 			(yyval.delete_stmt) = new DeleteStatement();
-			(yyval.delete_stmt)->table_name = (yyvsp[-1].sval);
+			(yyval.delete_stmt)->tableName = (yyvsp[-1].sval);
 			(yyval.delete_stmt)->expr = (yyvsp[0].expr);
 		}
 #line 2080 "bison_parser.cpp" /* yacc.c:1646  */
@@ -2083,7 +2083,7 @@ yyreduce:
 #line 387 "bison_parser.y" /* yacc.c:1646  */
     {
 			(yyval.delete_stmt) = new DeleteStatement();
-			(yyval.delete_stmt)->table_name = (yyvsp[0].sval);
+			(yyval.delete_stmt)->tableName = (yyvsp[0].sval);
 		}
 #line 2089 "bison_parser.cpp" /* yacc.c:1646  */
     break;
@@ -2092,7 +2092,7 @@ yyreduce:
 #line 399 "bison_parser.y" /* yacc.c:1646  */
     {
 			(yyval.insert_stmt) = new InsertStatement(InsertStatement::kInsertValues);
-			(yyval.insert_stmt)->table_name = (yyvsp[-5].sval);
+			(yyval.insert_stmt)->tableName = (yyvsp[-5].sval);
 			(yyval.insert_stmt)->columns = (yyvsp[-4].str_vec);
 			(yyval.insert_stmt)->values = (yyvsp[-1].expr_vec);
 		}
@@ -2103,7 +2103,7 @@ yyreduce:
 #line 405 "bison_parser.y" /* yacc.c:1646  */
     {
 			(yyval.insert_stmt) = new InsertStatement(InsertStatement::kInsertSelect);
-			(yyval.insert_stmt)->table_name = (yyvsp[-2].sval);
+			(yyval.insert_stmt)->tableName = (yyvsp[-2].sval);
 			(yyval.insert_stmt)->columns = (yyvsp[-1].str_vec);
 			(yyval.insert_stmt)->select = (yyvsp[0].select_stmt);
 		}
@@ -2184,7 +2184,7 @@ yyreduce:
 			// TODO: capture type of set_operator
 			// TODO: might overwrite order and limit of first select here
 			(yyval.select_stmt) = (yyvsp[-4].select_stmt);
-			(yyval.select_stmt)->union_select = (yyvsp[-2].select_stmt);
+			(yyval.select_stmt)->unionSelect = (yyvsp[-2].select_stmt);
 			(yyval.select_stmt)->order = (yyvsp[-1].order);
 			(yyval.select_stmt)->limit = (yyvsp[0].limit);
 		}
@@ -2195,11 +2195,11 @@ yyreduce:
 #line 485 "bison_parser.y" /* yacc.c:1646  */
     {
 			(yyval.select_stmt) = new SelectStatement();
-			(yyval.select_stmt)->select_distinct = (yyvsp[-4].bval);
-			(yyval.select_stmt)->select_list = (yyvsp[-3].expr_vec);
-			(yyval.select_stmt)->from_table = (yyvsp[-2].table);
-			(yyval.select_stmt)->where_clause = (yyvsp[-1].expr);
-			(yyval.select_stmt)->group_by = (yyvsp[0].group_t);
+			(yyval.select_stmt)->selectDistinct = (yyvsp[-4].bval);
+			(yyval.select_stmt)->selectList = (yyvsp[-3].expr_vec);
+			(yyval.select_stmt)->fromTable = (yyvsp[-2].table);
+			(yyval.select_stmt)->whereClause = (yyvsp[-1].expr);
+			(yyval.select_stmt)->groupBy = (yyvsp[0].group_t);
 		}
 #line 2205 "bison_parser.cpp" /* yacc.c:1646  */
     break;

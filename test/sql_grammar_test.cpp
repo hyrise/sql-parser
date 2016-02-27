@@ -33,17 +33,17 @@ int main(int argc, char *argv[]) {
         return -1;
     }
 
-    bool expect_false = false;
-    bool use_file = false;
-    std::string file_path = "";
+    bool expectFalse = false;
+    bool useFile = false;
+    std::string filePath = "";
     
     // Parse command line arguments
     int i = 1;
     for (; i < argc; ++i) {
-        if (STREQ(argv[i], "--false")) expect_false = true;
+        if (STREQ(argv[i], "--false")) expectFalse = true;
         else if (STREQ(argv[i], "-f")) {
-            use_file = true;
-            file_path = argv[++i];
+            useFile = true;
+            filePath = argv[++i];
         } else {
             break;
         }
@@ -52,15 +52,15 @@ int main(int argc, char *argv[]) {
 
     // Read list of queries for this rest
     std::vector<std::string> queries;
-    if (use_file) {
-        queries = readlines(file_path);
+    if (useFile) {
+        queries = readlines(filePath);
     } else {
         for (; i < argc; ++i) queries.push_back(argv[i]);
     }
 
 
     // Execute queries
-    int num_failed = 0;
+    int numFailed = 0;
     for (std::string sql : queries) {
         // Measuring the parsing time
         std::chrono::time_point<std::chrono::system_clock> start, end;
@@ -73,21 +73,21 @@ int main(int argc, char *argv[]) {
         std::chrono::duration<double> elapsed_seconds = end-start;
         double us = elapsed_seconds.count() * 1000 * 1000;
 
-        if (expect_false == stmt_list->isValid) {
+        if (expectFalse == stmt_list->isValid) {
             printf("\033[0;31m{  failed}\033[0m\n");
             printf("\t\033[0;31m%s (L%d:%d)\n\033[0m", stmt_list->errorMsg, stmt_list->errorLine, stmt_list->errorColumn);
             printf("\t%s\n", sql.c_str());
-            num_failed++;
+            numFailed++;
         } else {
-            // TODO: indicate whether expect_false was set
+            // TODO: indicate whether expectFalse was set
             printf("\033[0;32m{      ok} (%.1fus)\033[0m %s\n", us, sql.c_str());
         }
     }
 
-    if (num_failed == 0) {
+    if (numFailed == 0) {
         printf("\033[0;32m{      ok} \033[0mAll %lu grammar tests completed successfully!\n", queries.size());
     } else {
-        fprintf(stderr, "\033[0;31m{  failed} \033[0mSome grammar tests failed! %d out of %lu tests failed!\n", num_failed, queries.size());
+        fprintf(stderr, "\033[0;31m{  failed} \033[0mSome grammar tests failed! %d out of %lu tests failed!\n", numFailed, queries.size());
     }
 
 

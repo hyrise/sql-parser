@@ -44,11 +44,6 @@ protected:
     std::string _msg;
 };
 
-
-
-
 int AddTest(void (*foo)(void), std::string name);
-
-
 
 #endif

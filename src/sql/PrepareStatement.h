@@ -7,11 +7,9 @@
 #include <algorithm>
 
 namespace hsql {
-
-
     /**
-     * @struct PrepareStatement
-     * @brief Represents "PREPARE ins_prep: SELECT * FROM t1 WHERE c1 = ? AND c2 = ?"
+     * Represents SQL Prepare statements.
+     * Example: "PREPARE ins_prep: SELECT * FROM t1 WHERE c1 = ? AND c2 = ?"
      */
     struct PrepareStatement : SQLStatement {
         PrepareStatement() :
@@ -25,10 +23,10 @@ namespace hsql {
         }
 
         /**
-         * @param vector of placeholders that the parser found
-         *
          * When setting the placeholders we need to make sure that they are in the correct order.
          * To ensure that, during parsing we store the character position use that to sort the list here.
+         *
+         * @param vector of placeholders that the parser found
          */
         void setPlaceholders(std::vector<void*> ph) {
             for (void* e : ph) {
@@ -46,9 +44,6 @@ namespace hsql {
         SQLParserResult* query;
         std::vector<Expr*> placeholders;
     };
-
-
-
 
 } // namsepace hsql
 #endif

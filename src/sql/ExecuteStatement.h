@@ -4,11 +4,9 @@
 #include "SQLStatement.h"
 
 namespace hsql {
-
-
     /**
-     * @struct ExecuteStatement
-     * @brief Represents "EXECUTE ins_prep(100, "test", 2.3);"
+     * Represents SQL Execute statements.
+     * Example: "EXECUTE ins_prep(100, "test", 2.3);"
      */
     struct ExecuteStatement : SQLStatement {
         ExecuteStatement() :
@@ -24,9 +22,6 @@ namespace hsql {
         const char* name;
         std::vector<Expr*>* parameters;
     };
-
-
-
 
 } // namsepace hsql
 #endif
