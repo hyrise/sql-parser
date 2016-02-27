@@ -13,6 +13,7 @@ install:
 
 compiler:
   - gcc
+  - clang
 
 script:
   - make
