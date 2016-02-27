@@ -1,7 +1,6 @@
 
-CC     = g++
-CFLAGS = -std=c++11 -Wall -I../src/ -L../
+CFLAGS = -std=c++11 -lstdc++ -Wall -I../src/ -L../
 
 all:
-	$(CC) $(CFLAGS) example.cpp -o example -lsqlparser
+	$(CXX) $(CFLAGS) example.cpp -o example -lsqlparser
 

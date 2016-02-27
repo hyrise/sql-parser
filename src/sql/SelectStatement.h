@@ -6,103 +6,95 @@
 #include "Table.h"
 
 namespace hsql {
+    typedef enum {
+        kOrderAsc,
+        kOrderDesc
+    } OrderType;
 
+    /**
+     * Description of the order by clause within a select statement
+     * TODO: hold multiple expressions to be sorted by
+     */
+    struct OrderDescription {
+        OrderDescription(OrderType type, Expr* expr) :
+            type(type),
+            expr(expr) {}
 
+        virtual ~OrderDescription() {
+            delete expr;
+        }
 
-/**
- * @struct OrderDescription
- * @brief Description of the order by clause within a select statement
- * 
- * TODO: hold multiple expressions to be sorted by
- */
-typedef enum {
-	kOrderAsc,
-	kOrderDesc
-} OrderType;
+        OrderType type;
+        Expr* expr;
+    };
 
-struct OrderDescription {
-	OrderDescription(OrderType type, Expr* expr) :
-		type(type),
-		expr(expr) {}
-		
-	virtual ~OrderDescription() {
-		delete expr;
-	}
+    const int64_t kNoLimit = -1;
+    const int64_t kNoOffset = -1;
 
-	OrderType type;
-	Expr* expr;	
-};
+    /**
+     * Description of the limit clause within a select statement
+     */
+    struct LimitDescription {
+        LimitDescription(int64_t limit, int64_t offset) :
+            limit(limit),
+            offset(offset) {}
 
-/**
- * @struct LimitDescription
- * @brief Description of the limit clause within a select statement
- */
-const int64_t kNoLimit = -1;
-const int64_t kNoOffset = -1;
-struct LimitDescription {
-	LimitDescription(int64_t limit, int64_t offset) :
-		limit(limit),
-		offset(offset) {}
+        int64_t limit;
+        int64_t offset;
+    };
 
-	int64_t limit;
-	int64_t offset;	
-};
+    /**
+     * Description of the group-by clause within a select statement
+     */
+    struct GroupByDescription {
+        GroupByDescription() :
+            columns(NULL),
+            having(NULL) {}
 
-/**
- * @struct GroupByDescription
- */
-struct GroupByDescription {
-	GroupByDescription() : 
-		columns(NULL),
-		having(NULL) {}
+        ~GroupByDescription() {
+            delete columns;
+            delete having;
+        }
 
-	~GroupByDescription() {
-		delete columns;
-		delete having;
-	}
+        std::vector<Expr*>* columns;
+        Expr* having;
+    };
 
-	std::vector<Expr*>* columns;
-	Expr* having;
-};
+    /**
+     * Representation of a full SQL select statement.
+     * TODO: add union_order and union_limit
+     */
+    struct SelectStatement : SQLStatement {
+        SelectStatement() :
+            SQLStatement(kStmtSelect),
+            fromTable(NULL),
+            selectDistinct(false),
+            selectList(NULL),
+            whereClause(NULL),
+            groupBy(NULL),
+            unionSelect(NULL),
+            order(NULL),
+            limit(NULL) {};
 
-/**
- * @struct SelectStatement
- * @brief Representation of a full select statement.
- * 
- * TODO: add union_order and union_limit
- */
-struct SelectStatement : SQLStatement {
-	SelectStatement() : 
-		SQLStatement(kStmtSelect),
-		from_table(NULL),
-		select_list(NULL),
-		where_clause(NULL),
-		group_by(NULL),
-		union_select(NULL),
-		order(NULL),
-		limit(NULL) {};
+        virtual ~SelectStatement() {
+            delete fromTable;
+            delete selectList;
+            delete whereClause;
+            delete groupBy;
+            delete order;
+            delete limit;
+        }
 
-	virtual ~SelectStatement() {
-		delete from_table;
-		delete select_list;
-		delete where_clause;
-		delete group_by;
-		delete order;
-		delete limit;
-	}
+        TableRef* fromTable;
+        bool selectDistinct;
+        std::vector<Expr*>* selectList;
+        Expr* whereClause;
+        GroupByDescription* groupBy;
 
-	TableRef* from_table;
-	bool select_distinct;
-	std::vector<Expr*>* select_list;
-	Expr* where_clause;	
-	GroupByDescription* group_by;
-
-	SelectStatement* union_select;
-	OrderDescription* order;
-	LimitDescription* limit;
-};
-
+        SelectStatement* unionSelect;
+        OrderDescription* order;
+        LimitDescription* limit;
+    };
 
 } // namespace hsql
-
 #endif

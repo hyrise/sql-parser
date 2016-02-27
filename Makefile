@@ -9,25 +9,27 @@ LIBCPP      = $(shell find $(SRC) -name '*.cpp' -not -path "$(SRCPARSER)/*") $(S
 LIBOBJ      = $(LIBCPP:%.cpp=%.o)
 TESTCPP     = $(shell find test/lib/ -name '*.cpp')
 
+ALLLIB      = $(shell find $(SRC) -name '*.cpp' -not -path "$(SRCPARSER)/*") $(shell find $(SRC) -name '*.h' -not -path "$(SRCPARSER)/*")
+ALLTEST     = $(shell find test/lib/ -name '*.cpp') $(shell find test/lib/ -name '*.h')
+
 # compile & link flages
-CC         = g++
 CFLAGS     = -std=c++11 -Wall -fPIC
 LIBFLAGS   = -shared
 TARGET     = libsqlparser.so
 INSTALL    = /usr/local
 
-CTESTFLAGS = -Wall -Isrc/ -Itest/ -L./ -std=c++11
+CTESTFLAGS = -Wall -Isrc/ -Itest/ -L./ -std=c++11 -lstdc++
 
 all: library
 
 library: $(TARGET)
 
 $(TARGET): $(LIBOBJ)
-	$(CC) $(LIBFLAGS) -o $(TARGET) $(LIBOBJ)
+	$(CXX) $(LIBFLAGS) -o $(TARGET) $(LIBOBJ)
 
 
 %.o: %.cpp $(PARSERFILES)
-	$(CC) $(CFLAGS) -c -o $@ $<
+	$(CXX) $(CFLAGS) -c -o $@ $<
 
 $(SRCPARSER)/bison_parser.cpp: parser
 $(SRCPARSER)/flex_lexer.cpp: parser
@@ -48,20 +50,26 @@ cleanall: clean cleanparser
 install:
 	cp $(TARGET) $(INSTALL)/lib/$(TARGET)
 
+format:
+	astyle --options=astyle.options $(ALLLIB)
+	astyle --options=astyle.options $(ALLTEST)
+
 ############
 ### Test ###
 ############
 
 test: $(BIN)/sql_tests $(BIN)/sql_grammar_test
-	LD_LIBRARY_PATH=./ $(BIN)/sql_grammar_test -f "test/lib/valid_queries.sql"
-	LD_LIBRARY_PATH=./ $(BIN)/sql_tests
+	bash test/test.sh
+
+# test whete
+test_install:
+	make -C example/
+	./example/example "SELECT * FROM students WHERE name = 'Max Mustermann';"
 
 $(BIN)/sql_tests: library
 	@mkdir -p $(BIN)/
-	$(CC) $(CTESTFLAGS) $(TESTCPP) test/sql_tests.cpp -o $(BIN)/sql_tests -lsqlparser
+	$(CXX) $(CTESTFLAGS) $(TESTCPP) test/sql_tests.cpp -o $(BIN)/sql_tests -lsqlparser
 
 $(BIN)/sql_grammar_test: library
 	@mkdir -p $(BIN)/
-	$(CC) $(CTESTFLAGS) test/sql_grammar_test.cpp -o $(BIN)/sql_grammar_test -lsqlparser
-
-
+	$(CXX) $(CTESTFLAGS) test/sql_grammar_test.cpp -o $(BIN)/sql_grammar_test -lsqlparser

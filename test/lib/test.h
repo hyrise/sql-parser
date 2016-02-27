@@ -13,7 +13,7 @@
 
 
 #define ASSERT(cond) if (!(cond)) throw AssertionFailedException(#cond);
-	
+
 #define ASSERT_TRUE(cond) ASSERT(cond);
 #define ASSERT_FALSE(cond) if (cond) throw AssertionFailedException(#cond);
 
@@ -27,28 +27,23 @@
 		std::cout << "Actual values: " << a << " != " << b << std::endl; \
 	} \
 	ASSERT(a == b);
-	
+
 
 
 class AssertionFailedException: public std::exception {
 public:
-	AssertionFailedException(std::string msg) :
-		std::exception(),
-		_msg(msg) {};
+    AssertionFailedException(std::string msg) :
+        std::exception(),
+        _msg(msg) {};
 
-	virtual const char* what() const throw() {
-		return _msg.c_str();
-	}
+    virtual const char* what() const throw() {
+        return _msg.c_str();
+    }
 
 protected:
-	std::string _msg;
+    std::string _msg;
 };
 
-
-
-
 int AddTest(void (*foo)(void), std::string name);
-
-
 
 #endif

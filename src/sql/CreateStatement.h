@@ -4,65 +4,59 @@
 #include "SQLStatement.h"
 
 namespace hsql {
+    /**
+     * Represents definition of a table column
+     */
+    struct ColumnDefinition {
+        enum DataType {
+            TEXT,
+            INT,
+            DOUBLE
+        };
 
-/**
- * @struct ColumnDefinition
- * @brief Represents definition of a table column
- */
-struct ColumnDefinition {
-	enum DataType {
-		TEXT,
-		INT,
-		DOUBLE
-	};
+        ColumnDefinition(char* name, DataType type) :
+            name(name),
+            type(type) {}
 
-	ColumnDefinition(char* name, DataType type) :
-		name(name),
-		type(type) {}
+        virtual ~ColumnDefinition() {
+            delete name;
+        }
 
-	virtual ~ColumnDefinition() {
-		delete name;
-	}
+        char* name;
+        DataType type;
+    };
 
-	char* name;
-	DataType type;
-};
+    /**
+     * Represents SQL Create statements.
+     * Example: "CREATE TABLE students (name TEXT, student_number INTEGER, city TEXT, grade DOUBLE)"
+     */
+    struct CreateStatement : SQLStatement {
+        enum CreateType {
+            kTable,
+            kTableFromTbl // Hyrise file format
+        };
 
+        CreateStatement(CreateType type) :
+            SQLStatement(kStmtCreate),
+            type(type),
+            ifNotExists(false),
+            filePath(NULL),
+            tableName(NULL),
+            columns(NULL) {};
 
-/**
- * @struct CreateStatement
- * @brief Represents "CREATE TABLE students (name TEXT, student_number INTEGER, city TEXT, grade DOUBLE)"
- */
-struct CreateStatement : SQLStatement {
-	enum CreateType {
-		kTable,
-		kTableFromTbl, // Hyrise file format
-	};
+        virtual ~CreateStatement() {
+            delete columns;
+            delete filePath;
+            delete tableName;
+        }
 
-	CreateStatement(CreateType type) :
-		SQLStatement(kStmtCreate),
-		type(type),
-		if_not_exists(false),
-		columns(NULL),
-		file_path(NULL),
-		table_name(NULL) {};
+        CreateType type;
 
-	virtual ~CreateStatement() {
-		delete columns;
-		delete file_path;
-		delete table_name;
-	}
-
-	CreateType type;
-	bool if_not_exists;
-
-	std::vector<ColumnDefinition*>* columns;
-
-	const char* file_path;
-	const char* table_name;
-};
-
-
+        bool ifNotExists;
+        const char* filePath;
+        const char* tableName;
+        std::vector<ColumnDefinition*>* columns;
+    };
 
 } // namespace hsql
 #endif

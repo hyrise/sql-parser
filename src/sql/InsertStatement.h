@@ -5,42 +5,37 @@
 #include "SelectStatement.h"
 
 namespace hsql {
+    /**
+     * Represents SQL Insert statements.
+     * Example: "INSERT INTO students VALUES ('Max', 1112233, 'Musterhausen', 2.3)"
+     */
+    struct InsertStatement : SQLStatement {
+        enum InsertType {
+            kInsertValues,
+            kInsertSelect
+        };
 
+        InsertStatement(InsertType type) :
+            SQLStatement(kStmtInsert),
+            type(type),
+            tableName(NULL),
+            columns(NULL),
+            values(NULL),
+            select(NULL) {}
 
-/**
- * @struct InsertStatement
- * @brief Represents "INSERT INTO students VALUES ('Max', 1112233, 'Musterhausen', 2.3)"
- */
-struct InsertStatement : SQLStatement {
-	enum InsertType {
-		kInsertValues,
-		kInsertSelect
-	};
+        virtual ~InsertStatement() {
+            delete tableName;
+            delete columns;
+            delete values;
+            delete select;
+        }
 
-	InsertStatement(InsertType type) :
-		SQLStatement(kStmtInsert),
-		type(type),
-		table_name(NULL),
-		columns(NULL),
-		values(NULL),
-		select(NULL) {}
-	
-	virtual ~InsertStatement() {
-		delete table_name;
-		delete columns;
-		delete values;
-		delete select;
-	}
-
-	InsertType type;
-	const char* table_name;
-	std::vector<char*>* columns;
-	std::vector<Expr*>* values;
-	SelectStatement* select;
-};
-
-
-
+        InsertType type;
+        const char* tableName;
+        std::vector<char*>* columns;
+        std::vector<Expr*>* values;
+        SelectStatement* select;
+    };
 
 } // namsepace hsql
 #endif

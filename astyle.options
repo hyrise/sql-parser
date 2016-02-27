@@ -1,0 +1,8 @@
+
+# indentation
+--indent=spaces=4
+--indent-namespaces
+
+--style=java
+--style=attach
+-A2
