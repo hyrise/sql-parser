@@ -22,9 +22,9 @@ int yyerror(YYLTYPE* llocp, SQLParserResult** result, yyscan_t scanner, const ch
 
 	SQLParserResult* list = new SQLParserResult();
 	list->isValid = false;
-	list->parser_msg = strdup(msg);
-	list->error_line = llocp->first_line;
-	list->error_col = llocp->first_column;
+	list->errorMsg = strdup(msg);
+	list->errorLine = llocp->first_line;
+	list->errorColumn = llocp->first_column;
 
 	*result = list;
 	return 0;

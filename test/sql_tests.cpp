@@ -11,12 +11,12 @@ using namespace hsql;
 
 
 TEST(DeleteStatementTest) {
-	SQLParserResult* stmt_list = SQLParser::parseSQLString("DELETE FROM students WHERE grade > 2.0;");
-	ASSERT(stmt_list->isValid);
-	ASSERT_EQ(stmt_list->numStatements(), 1);
-	ASSERT(stmt_list->getStatement(0)->type() == kStmtDelete);
+	SQLParserResult* result = SQLParser::parseSQLString("DELETE FROM students WHERE grade > 2.0;");
+	ASSERT(result->isValid);
+	ASSERT_EQ(result->size(), 1);
+	ASSERT(result->getStatement(0)->type() == kStmtDelete);
 
-	DeleteStatement* stmt = (DeleteStatement*) stmt_list->getStatement(0);
+	DeleteStatement* stmt = (DeleteStatement*) result->getStatement(0);
 	ASSERT_STREQ(stmt->table_name, "students");
 	ASSERT_NOTNULL(stmt->expr);
 	ASSERT(stmt->expr->isType(kExprOperator));
@@ -25,12 +25,12 @@ TEST(DeleteStatementTest) {
 }
 
 TEST(CreateStatementTest) {
-	SQLParserResult* stmt_list = SQLParser::parseSQLString("CREATE TABLE students (name TEXT, student_number INT, city INTEGER, grade DOUBLE)");
-	ASSERT(stmt_list->isValid);
-	ASSERT_EQ(stmt_list->numStatements(), 1);
-	ASSERT_EQ(stmt_list->getStatement(0)->type(), kStmtCreate);
+	SQLParserResult* result = SQLParser::parseSQLString("CREATE TABLE students (name TEXT, student_number INT, city INTEGER, grade DOUBLE)");
+	ASSERT(result->isValid);
+	ASSERT_EQ(result->size(), 1);
+	ASSERT_EQ(result->getStatement(0)->type(), kStmtCreate);
 
-	CreateStatement* stmt = (CreateStatement*) stmt_list->getStatement(0);
+	CreateStatement* stmt = (CreateStatement*) result->getStatement(0);
 	ASSERT_EQ(stmt->type, CreateStatement::kTable);
 	ASSERT_STREQ(stmt->table_name, "students");
 	ASSERT_NOTNULL(stmt->columns);
@@ -47,12 +47,12 @@ TEST(CreateStatementTest) {
 
 
 TEST(UpdateStatementTest) {
-	SQLParserResult* stmt_list = SQLParser::parseSQLString("UPDATE students SET grade = 5.0, name = 'test' WHERE name = 'Max Mustermann';");
-	ASSERT(stmt_list->isValid);
-	ASSERT_EQ(stmt_list->numStatements(), 1);
-	ASSERT_EQ(stmt_list->getStatement(0)->type(), kStmtUpdate);
+	SQLParserResult* result = SQLParser::parseSQLString("UPDATE students SET grade = 5.0, name = 'test' WHERE name = 'Max Mustermann';");
+	ASSERT(result->isValid);
+	ASSERT_EQ(result->size(), 1);
+	ASSERT_EQ(result->getStatement(0)->type(), kStmtUpdate);
 
-	UpdateStatement* stmt = (UpdateStatement*) stmt_list->getStatement(0);
+	UpdateStatement* stmt = (UpdateStatement*) result->getStatement(0);
 	ASSERT_NOTNULL(stmt->table);
 	ASSERT_STREQ(stmt->table->name, "students");
 	
@@ -99,16 +99,16 @@ TEST(PrepareStatementTest) {
 		"PREPARE stmt: SELECT * FROM data WHERE c1 = ?;"
 		"DEALLOCATE PREPARE stmt;";
 
-	TEST_PARSE_SQL_QUERY(query, stmt_list, 3);
+	TEST_PARSE_SQL_QUERY(query, result, 3);
 
-	TEST_CAST_STMT(stmt_list, 0, kStmtPrepare, PrepareStatement, prep1);
-	TEST_CAST_STMT(stmt_list, 1, kStmtPrepare, PrepareStatement, prep2);
-	TEST_CAST_STMT(stmt_list, 2, kStmtDrop, DropStatement, drop);
+	TEST_CAST_STMT(result, 0, kStmtPrepare, PrepareStatement, prep1);
+	TEST_CAST_STMT(result, 1, kStmtPrepare, PrepareStatement, prep2);
+	TEST_CAST_STMT(result, 2, kStmtDrop, DropStatement, drop);
 
 	// Prepare Statement #1
 	ASSERT_STREQ(prep1->name, "test");
 	ASSERT_EQ(prep1->placeholders.size(), 3);
-	ASSERT_EQ(prep1->query->numStatements(), 2);
+	ASSERT_EQ(prep1->query->size(), 2);
 	
 	TEST_CAST_STMT(prep1->query, 0, kStmtInsert, InsertStatement, insert);
 	TEST_CAST_STMT(prep1->query, 1, kStmtSelect, SelectStatement, select);

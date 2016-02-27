@@ -5,7 +5,7 @@
 #define TEST_PARSE_SQL_QUERY(query, output_var, num_statements) \
 	SQLParserResult* output_var = SQLParser::parseSQLString(query); \
 	ASSERT(output_var->isValid); \
-	ASSERT_EQ(output_var->numStatements(), num_statements);
+	ASSERT_EQ(output_var->size(), num_statements);
 
 
 #define TEST_PARSE_SINGLE_SQL(query, stmt_type, stmt_class, output_var) \

@@ -37,6 +37,7 @@ namespace hsql {
 		return result;
 	}
 
+
 	SQLParserResult* SQLParser::parseSQLString(const std::string& text) {
 		return parseSQLString(text.c_str());
 	}

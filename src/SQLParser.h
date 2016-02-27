@@ -1,7 +1,6 @@
 #ifndef __SQLPARSER_H_
 #define __SQLPARSER_H_
 
-#include "sqltypes.h"
 #include "SQLParserResult.h"
 #include "sql/statements.h"
 

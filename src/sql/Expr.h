@@ -26,8 +26,7 @@ typedef enum {
 typedef struct Expr Expr;
 
 /** 
- * @class Expr
- * @brief Represents SQL expressions (i.e. literals, operators, column_refs)
+ * Represents SQL expressions (i.e. literals, operators, column_refs)
  *
  * TODO: When destructing a placeholder expression, we might need to alter the placeholder_list
  */
