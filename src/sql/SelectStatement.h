@@ -9,98 +9,98 @@ namespace hsql {
 
 
 
-/**
- * @struct OrderDescription
- * @brief Description of the order by clause within a select statement
- * 
- * TODO: hold multiple expressions to be sorted by
- */
-typedef enum {
-	kOrderAsc,
-	kOrderDesc
-} OrderType;
+    /**
+     * @struct OrderDescription
+     * @brief Description of the order by clause within a select statement
+     *
+     * TODO: hold multiple expressions to be sorted by
+     */
+    typedef enum {
+        kOrderAsc,
+        kOrderDesc
+    } OrderType;
 
-struct OrderDescription {
-	OrderDescription(OrderType type, Expr* expr) :
-		type(type),
-		expr(expr) {}
-		
-	virtual ~OrderDescription() {
-		delete expr;
-	}
+    struct OrderDescription {
+        OrderDescription(OrderType type, Expr* expr) :
+            type(type),
+            expr(expr) {}
 
-	OrderType type;
-	Expr* expr;	
-};
+        virtual ~OrderDescription() {
+            delete expr;
+        }
 
-/**
- * @struct LimitDescription
- * @brief Description of the limit clause within a select statement
- */
-const int64_t kNoLimit = -1;
-const int64_t kNoOffset = -1;
-struct LimitDescription {
-	LimitDescription(int64_t limit, int64_t offset) :
-		limit(limit),
-		offset(offset) {}
+        OrderType type;
+        Expr* expr;
+    };
 
-	int64_t limit;
-	int64_t offset;	
-};
+    /**
+     * @struct LimitDescription
+     * @brief Description of the limit clause within a select statement
+     */
+    const int64_t kNoLimit = -1;
+    const int64_t kNoOffset = -1;
+    struct LimitDescription {
+        LimitDescription(int64_t limit, int64_t offset) :
+            limit(limit),
+            offset(offset) {}
 
-/**
- * @struct GroupByDescription
- */
-struct GroupByDescription {
-	GroupByDescription() : 
-		columns(NULL),
-		having(NULL) {}
+        int64_t limit;
+        int64_t offset;
+    };
 
-	~GroupByDescription() {
-		delete columns;
-		delete having;
-	}
+    /**
+     * @struct GroupByDescription
+     */
+    struct GroupByDescription {
+        GroupByDescription() :
+            columns(NULL),
+            having(NULL) {}
 
-	std::vector<Expr*>* columns;
-	Expr* having;
-};
+        ~GroupByDescription() {
+            delete columns;
+            delete having;
+        }
 
-/**
- * @struct SelectStatement
- * @brief Representation of a full select statement.
- * 
- * TODO: add union_order and union_limit
- */
-struct SelectStatement : SQLStatement {
-	SelectStatement() : 
-		SQLStatement(kStmtSelect),
-		from_table(NULL),
-		select_list(NULL),
-		where_clause(NULL),
-		group_by(NULL),
-		union_select(NULL),
-		order(NULL),
-		limit(NULL) {};
+        std::vector<Expr*>* columns;
+        Expr* having;
+    };
 
-	virtual ~SelectStatement() {
-		delete from_table;
-		delete select_list;
-		delete where_clause;
-		delete group_by;
-		delete order;
-		delete limit;
-	}
+    /**
+     * @struct SelectStatement
+     * @brief Representation of a full select statement.
+     *
+     * TODO: add union_order and union_limit
+     */
+    struct SelectStatement : SQLStatement {
+        SelectStatement() :
+            SQLStatement(kStmtSelect),
+            from_table(NULL),
+            select_list(NULL),
+            where_clause(NULL),
+            group_by(NULL),
+            union_select(NULL),
+            order(NULL),
+            limit(NULL) {};
 
-	TableRef* from_table;
-	bool select_distinct;
-	std::vector<Expr*>* select_list;
-	Expr* where_clause;	
-	GroupByDescription* group_by;
+        virtual ~SelectStatement() {
+            delete from_table;
+            delete select_list;
+            delete where_clause;
+            delete group_by;
+            delete order;
+            delete limit;
+        }
 
-	SelectStatement* union_select;
-	OrderDescription* order;
-	LimitDescription* limit;
-};
+        TableRef* from_table;
+        bool select_distinct;
+        std::vector<Expr*>* select_list;
+        Expr* where_clause;
+        GroupByDescription* group_by;
+
+        SelectStatement* union_select;
+        OrderDescription* order;
+        LimitDescription* limit;
+    };
 
 
 } // namespace hsql

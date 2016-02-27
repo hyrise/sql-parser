@@ -6,37 +6,39 @@
 
 namespace hsql {
 
-	typedef enum {
-		kStmtError, // unused
-		kStmtSelect,
-		kStmtImport,
-		kStmtInsert,
-		kStmtUpdate,
-		kStmtDelete,
-		kStmtCreate,
-		kStmtDrop,
-		kStmtPrepare,
-		kStmtExecute,
-		kStmtExport,
-		kStmtRename,
-		kStmtAlter
-	} StatementType;
+    typedef enum {
+        kStmtError, // unused
+        kStmtSelect,
+        kStmtImport,
+        kStmtInsert,
+        kStmtUpdate,
+        kStmtDelete,
+        kStmtCreate,
+        kStmtDrop,
+        kStmtPrepare,
+        kStmtExecute,
+        kStmtExport,
+        kStmtRename,
+        kStmtAlter
+    } StatementType;
 
 
-	/**
-	 * Base struct for every SQL statement
-	 */
-	struct SQLStatement {
-		SQLStatement(StatementType type) :
-			_type(type) {};
+    /**
+     * Base struct for every SQL statement
+     */
+    struct SQLStatement {
+        SQLStatement(StatementType type) :
+            _type(type) {};
 
-		virtual ~SQLStatement() {}
+        virtual ~SQLStatement() {}
 
-		virtual StatementType type() { return _type; }
+        virtual StatementType type() {
+            return _type;
+        }
 
-	private:
-		StatementType _type;
-	};
+    private:
+        StatementType _type;
+    };
 
 } // namespace hsql
 

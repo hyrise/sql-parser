@@ -9,6 +9,9 @@ LIBCPP      = $(shell find $(SRC) -name '*.cpp' -not -path "$(SRCPARSER)/*") $(S
 LIBOBJ      = $(LIBCPP:%.cpp=%.o)
 TESTCPP     = $(shell find test/lib/ -name '*.cpp')
 
+ALLLIB      = $(shell find $(SRC) -name '*.cpp' -not -path "$(SRCPARSER)/*") $(shell find $(SRC) -name '*.h' -not -path "$(SRCPARSER)/*")
+ALLTEST     = $(shell find test/lib/ -name '*.cpp') $(shell find test/lib/ -name '*.h')
+
 # compile & link flages
 CC         = g++
 CFLAGS     = -std=c++11 -Wall -fPIC
@@ -48,6 +51,10 @@ cleanall: clean cleanparser
 install:
 	cp $(TARGET) $(INSTALL)/lib/$(TARGET)
 
+format:
+	astyle --options=astyle.options $(ALLLIB)
+	astyle --options=astyle.options $(ALLTEST)
+
 ############
 ### Test ###
 ############
@@ -63,5 +70,3 @@ $(BIN)/sql_tests: library
 $(BIN)/sql_grammar_test: library
 	@mkdir -p $(BIN)/
 	$(CC) $(CTESTFLAGS) test/sql_grammar_test.cpp -o $(BIN)/sql_grammar_test -lsqlparser
-
-

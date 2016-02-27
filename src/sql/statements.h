@@ -1,5 +1,5 @@
 #ifndef __STATEMENTS_H__
-#define __STATEMENTS_H__ 
+#define __STATEMENTS_H__
 
 #include "SelectStatement.h"
 #include "ImportStatement.h"

@@ -31,3 +31,6 @@ lib-test/
 *.exe
 *.out
 *.app
+
+*.cpp.orig
+*.h.orig
