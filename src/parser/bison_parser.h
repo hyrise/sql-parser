@@ -214,7 +214,7 @@ union HSQL_STYPE
 	double fval;
 	int64_t ival;
 	char* sval;
-	uint uval;
+	unsigned uval;
 	bool bval;
 
 	hsql::SQLStatement* statement;

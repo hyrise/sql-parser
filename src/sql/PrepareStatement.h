@@ -37,7 +37,7 @@ namespace hsql {
             std::sort(placeholders.begin(), placeholders.end(), [](Expr* i, Expr* j) -> bool { return (i->ival < j->ival); });
 
             // Set the placeholder id on the Expr. This replaces the previously stored column id
-            for (uint i = 0; i < placeholders.size(); ++i) placeholders[i]->ival = i;
+            for (unsigned i = 0; i < placeholders.size(); ++i) placeholders[i]->ival = i;
         }
 
         const char* name;
