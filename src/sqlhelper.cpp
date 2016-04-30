@@ -5,31 +5,31 @@
 
 namespace hsql {
 
-    void printOperatorExpression(Expr* expr, uint numIndent);
+    void printOperatorExpression(Expr* expr, uintmax_t numIndent);
 
-    std::string indent(uint numIndent) {
+    std::string indent(uintmax_t numIndent) {
         return std::string(numIndent, '\t');
     }
-    void inprint(int64_t val, uint numIndent) {
-        printf("%s%ld  \n", indent(numIndent).c_str(), val);
+    void inprint(int64_t val, uintmax_t numIndent) {
+        printf("%s%lld  \n", indent(numIndent).c_str(), val);
     }
-    void inprint(float val, uint numIndent) {
+    void inprint(float val, uintmax_t numIndent) {
         printf("%s%f\n", indent(numIndent).c_str(), val);
     }
-    void inprint(const char* val, uint numIndent) {
+    void inprint(const char* val, uintmax_t numIndent) {
         printf("%s%s\n", indent(numIndent).c_str(), val);
     }
-    void inprint(const char* val, const char* val2, uint numIndent) {
+    void inprint(const char* val, const char* val2, uintmax_t numIndent) {
         printf("%s%s->%s\n", indent(numIndent).c_str(), val, val2);
     }
-    void inprintC(char val, uint numIndent) {
+    void inprintC(char val, uintmax_t numIndent) {
         printf("%s%c\n", indent(numIndent).c_str(), val);
     }
-    void inprintU(uint64_t val, uint numIndent) {
-        printf("%s%lu\n", indent(numIndent).c_str(), val);
+    void inprintU(uint64_t val, uintmax_t numIndent) {
+        printf("%s%llu\n", indent(numIndent).c_str(), val);
     }
 
-    void printTableRefInfo(TableRef* table, uint numIndent) {
+    void printTableRefInfo(TableRef* table, uintmax_t numIndent) {
         switch (table->type) {
         case kTableName:
             inprint(table->name, numIndent);
@@ -56,7 +56,7 @@ namespace hsql {
         }
     }
 
-    void printOperatorExpression(Expr* expr, uint numIndent) {
+    void printOperatorExpression(Expr* expr, uintmax_t numIndent) {
         if (expr == NULL) {
             inprint("null", numIndent);
             return;
@@ -83,7 +83,7 @@ namespace hsql {
         if (expr->expr2 != NULL) printExpression(expr->expr2, numIndent+1);
     }
 
-    void printExpression(Expr* expr, uint numIndent) {
+    void printExpression(Expr* expr, uintmax_t numIndent) {
         switch (expr->type) {
         case kExprStar:
             inprint("*", numIndent);
@@ -118,7 +118,7 @@ namespace hsql {
         }
     }
 
-    void printSelectStatementInfo(SelectStatement* stmt, uint numIndent) {
+    void printSelectStatementInfo(SelectStatement* stmt, uintmax_t numIndent) {
         inprint("SelectStatement", numIndent);
         inprint("Fields:", numIndent+1);
         for (Expr* expr : *stmt->selectList) printExpression(expr, numIndent+2);
@@ -152,19 +152,19 @@ namespace hsql {
 
 
 
-    void printImportStatementInfo(ImportStatement* stmt, uint numIndent) {
+    void printImportStatementInfo(ImportStatement* stmt, uintmax_t numIndent) {
         inprint("ImportStatment", numIndent);
         inprint(stmt->filePath, numIndent+1);
         inprint(stmt->tableName, numIndent+1);
     }
 
-    void printCreateStatementInfo(CreateStatement* stmt, uint numIndent) {
+    void printCreateStatementInfo(CreateStatement* stmt, uintmax_t numIndent) {
         inprint("CreateStatment", numIndent);
         inprint(stmt->tableName, numIndent+1);
         inprint(stmt->filePath, numIndent+1);
     }
 
-    void printInsertStatementInfo(InsertStatement* stmt, uint numIndent) {
+    void printInsertStatementInfo(InsertStatement* stmt, uintmax_t numIndent) {
         inprint("InsertStatment", numIndent);
         inprint(stmt->tableName, numIndent+1);
         if (stmt->columns != NULL) {

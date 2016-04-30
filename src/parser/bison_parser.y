@@ -102,7 +102,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult** result, yyscan_t scanner, const ch
 	double fval;
 	int64_t ival;
 	char* sval;
-	uint uval;
+	uintmax_t uval;
 	bool bval;
 
 	hsql::SQLStatement* statement;
