@@ -1,5 +1,8 @@
 C++ SQL Parser for Hyrise
 =========================
+[![GitHub release](https://img.shields.io/github/release/hyrise/sql-parser.svg?maxAge=2592000)]()
+[![Build Status](https://img.shields.io/travis/hyrise/sql-parser.svg?maxAge=2592000)](https://travis-ci.org/hyrise/sql-parser)
+
 
 This is a SQL Parser for C++. It parses the given SQL query into C++ objects.
 It is developed for integration in hyrise (https://github.com/hyrise/hyrise), but can be used in other environments as well.
