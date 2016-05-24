@@ -12,9 +12,9 @@ In March 2015 we've also written a short paper outlining discussing some develop
 **Note:** You can also find a detailed usage description at this [blog post](http://torpedro.github.io/tech/c++/sql/parser/2016/02/27/c++-sql-parser.html).
 
 **Requirements:**
- * gcc 4.8+
+ * gcc 4.8+ (or clang 3.4+)
 
-To use the SQL parser in your own projects you simply have to follow these few steps. The only requirement for is gcc 4.8+. Older versions of gcc might also work, but are untested.
+To use the SQL parser in your own projects you simply have to follow these few steps. The only requirement for is gcc 4.8+. Older versions of gcc/clang might also work, but are untested.
 
  1. Download the [latest release here](https://github.com/hyrise/sql-parser/releases)
  2. Compile the library `make` to create `libsqlparser.so`
@@ -24,12 +24,12 @@ To use the SQL parser in your own projects you simply have to follow these few s
  5. Include the `SQLParser.h` from `src/` and link the library in your project
 
 
-### Development
+### Extending the parser
 
 **Requirements for development:**
- * gcc 4.8 (or newer)
- * [bison](https://www.gnu.org/software/bison/) (tested with v3.0.2)
- * [flex](http://flex.sourceforge.net/) (tested with v2.5.5)
+ * gcc 4.8+ (or clang 3.4+)
+ * [bison](https://www.gnu.org/software/bison/) (v3.0.2+)
+ * [flex](http://flex.sourceforge.net/) (v2.5.5+)
 
 First step to extending this parser is cloning the repository `git clone git@github.com:hyrise/sql-parser.git` and making sure everything works by running the following steps:
 
