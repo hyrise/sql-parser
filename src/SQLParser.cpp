@@ -28,6 +28,8 @@ namespace hsql {
 
         if (hsql_parse(&result, scanner)) {
             // Returns an error stmt object
+            hsql__delete_buffer(state, scanner);
+            hsql_lex_destroy(scanner);
             return result;
         }
 

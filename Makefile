@@ -13,7 +13,7 @@ ALLLIB      = $(shell find $(SRC) -name '*.cpp' -not -path "$(SRCPARSER)/*") $(s
 ALLTEST     = $(shell find test/lib/ -name '*.cpp') $(shell find test/lib/ -name '*.h')
 
 # compile & link flages
-CFLAGS     = -std=c++11 -Wall -fPIC
+CFLAGS     = -std=c++11 -Wall -fPIC -g
 LIBFLAGS   = -shared
 TARGET     = libsqlparser.so
 INSTALL    = /usr/local

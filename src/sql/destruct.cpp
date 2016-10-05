@@ -6,10 +6,16 @@ namespace hsql {
 
 
     TableRef::~TableRef() {
-        delete name;
-        delete alias;
+        free(name);
+        free(alias);
         delete select;
-        delete list;
+        if(list) {
+            while(!list->empty()) {
+                delete list->back();
+                list->pop_back();
+            }
+            delete list;
+        }
     }
 
 

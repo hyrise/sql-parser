@@ -28,9 +28,12 @@ int main(int argc, char *argv[]) {
             hsql::printStatementInfo(stmt);
         }
 
+        delete result;
+
         return 0;
     } else {
         printf("Invalid SQL!\n");
+        delete result;
         return -1;
     }
 }
