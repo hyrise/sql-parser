@@ -52,7 +52,13 @@ namespace hsql {
             having(NULL) {}
 
         ~GroupByDescription() {
-            delete columns;
+            if(columns) {
+                while(!columns->empty()) {
+                    delete columns->back();
+                    columns->pop_back();
+                }
+                delete columns;
+            }
             delete having;
         }
 
@@ -78,7 +84,13 @@ namespace hsql {
 
         virtual ~SelectStatement() {
             delete fromTable;
-            delete selectList;
+            if(selectList) {
+                while(!selectList->empty()) {
+                    delete selectList->back();
+                    selectList->pop_back();
+                }
+                delete selectList;
+            }
             delete whereClause;
             delete groupBy;
             delete order;

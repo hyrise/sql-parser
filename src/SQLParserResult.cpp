@@ -20,7 +20,7 @@ namespace hsql {
             delete *it;
         }
 
-        delete errorMsg;
+        free(const_cast<char*>(errorMsg));
     }
 
 

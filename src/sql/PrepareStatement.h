@@ -20,6 +20,10 @@ namespace hsql {
         virtual ~PrepareStatement() {
             delete query;
             delete name;
+            while(!placeholders.empty()) {
+                delete placeholders.back();
+                placeholders.pop_back();
+            }
         }
 
         /**

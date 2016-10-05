@@ -16,7 +16,13 @@ namespace hsql {
 
         virtual ~ExecuteStatement() {
             delete name;
-            delete parameters;
+            if(parameters) {
+                while(!parameters->empty()) {
+                    delete parameters->back();
+                    parameters->pop_back();
+                }
+                delete parameters;
+            }
         }
 
         const char* name;

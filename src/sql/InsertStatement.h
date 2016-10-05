@@ -24,9 +24,21 @@ namespace hsql {
             select(NULL) {}
 
         virtual ~InsertStatement() {
-            delete tableName;
-            delete columns;
-            delete values;
+            free ((char*)tableName);
+            if(columns) {
+                while(!columns->empty()) {
+                    delete columns->back();
+                    columns->pop_back();
+                }
+                delete columns;
+            }
+            if(values) {
+                while(!values->empty()) {
+                    delete values->back();
+                    values->pop_back();
+                }
+                delete values;
+            }
             delete select;
         }
 

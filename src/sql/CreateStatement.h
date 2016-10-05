@@ -45,7 +45,13 @@ namespace hsql {
             columns(NULL) {};
 
         virtual ~CreateStatement() {
-            delete columns;
+            if(columns) {
+                while(!columns->empty()) {
+                    delete columns->back();
+                    columns->pop_back();
+                }
+                delete columns;
+            }
             delete filePath;
             delete tableName;
         }
