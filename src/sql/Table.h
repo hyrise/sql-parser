@@ -29,15 +29,7 @@ namespace hsql {
      * @brief Holds reference to tables. Can be either table names or a select statement.
      */
     struct TableRef {
-        TableRef(TableRefType type) :
-            type(type),
-            schema(NULL),
-            name(NULL),
-            alias(NULL),
-            select(NULL),
-            list(NULL),
-            join(NULL) {}
-
+        TableRef(TableRefType type);
         virtual ~TableRef();
 
         TableRefType type;
@@ -82,17 +74,8 @@ namespace hsql {
      * @brief Definition of a join table
      */
     struct JoinDefinition {
-        JoinDefinition() :
-            left(NULL),
-            right(NULL),
-            condition(NULL),
-            type(kJoinInner) {}
-
-        virtual ~JoinDefinition() {
-            delete left;
-            delete right;
-            delete condition;
-        }
+        JoinDefinition();
+        virtual ~JoinDefinition();
 
         TableRef* left;
         TableRef* right;

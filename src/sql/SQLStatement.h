@@ -25,14 +25,11 @@ namespace hsql {
      * Base struct for every SQL statement
      */
     struct SQLStatement {
-        SQLStatement(StatementType type) :
-            _type(type) {};
+        SQLStatement(StatementType type);
 
-        virtual ~SQLStatement() {}
+        virtual ~SQLStatement();
 
-        virtual StatementType type() {
-            return _type;
-        }
+        virtual StatementType type();
 
     private:
         StatementType _type;

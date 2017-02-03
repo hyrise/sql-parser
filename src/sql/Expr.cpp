@@ -15,6 +15,20 @@ namespace hsql {
 
 
 
+    Expr::Expr(ExprType type) :
+        type(type),
+        expr(NULL),
+        expr2(NULL),
+        name(NULL),
+        table(NULL),
+        alias(NULL) {};
+
+    Expr::~Expr() {
+        delete expr;
+        delete expr2;
+        delete name;
+        delete table;
+    }
 
     Expr* Expr::makeOpUnary(OperatorType op, Expr* expr) {
         Expr* e = new Expr(kExprOperator);
@@ -90,13 +104,6 @@ namespace hsql {
         Expr* e = new Expr(kExprPlaceholder);
         e->ival = id;
         return e;
-    }
-
-    Expr::~Expr() {
-        delete expr;
-        delete expr2;
-        delete name;
-        delete table;
     }
 
 } // namespace hsql

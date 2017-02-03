@@ -13,16 +13,8 @@ namespace hsql {
             kImportTbl, // Hyrise file format
         };
 
-        ImportStatement(ImportType type) :
-            SQLStatement(kStmtImport),
-            type(type),
-            filePath(NULL),
-            tableName(NULL) {};
-
-        virtual ~ImportStatement() {
-            delete filePath;
-            delete tableName;
-        }
+        ImportStatement(ImportType type);
+        virtual ~ImportStatement();
 
         ImportType type;
         const char* filePath;

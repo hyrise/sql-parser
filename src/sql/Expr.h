@@ -56,13 +56,7 @@ namespace hsql {
 
 
 
-        Expr(ExprType type) :
-            type(type),
-            expr(NULL),
-            expr2(NULL),
-            name(NULL),
-            table(NULL),
-            alias(NULL) {};
+        Expr(ExprType type);
 
         // Interesting side-effect:
         // Making the destructor virtual used to cause segmentation faults

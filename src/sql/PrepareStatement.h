@@ -12,15 +12,8 @@ namespace hsql {
      * Example: "PREPARE ins_prep: SELECT * FROM t1 WHERE c1 = ? AND c2 = ?"
      */
     struct PrepareStatement : SQLStatement {
-        PrepareStatement() :
-            SQLStatement(kStmtPrepare),
-            name(NULL),
-            query(NULL) {}
-
-        virtual ~PrepareStatement() {
-            delete query;
-            delete name;
-        }
+        PrepareStatement();
+        virtual ~PrepareStatement();
 
         /**
          * When setting the placeholders we need to make sure that they are in the correct order.
@@ -28,17 +21,7 @@ namespace hsql {
          *
          * @param vector of placeholders that the parser found
          */
-        void setPlaceholders(std::vector<void*> ph) {
-            for (void* e : ph) {
-                if (e != NULL)
-                    placeholders.push_back((Expr*) e);
-            }
-            // Sort by col-id
-            std::sort(placeholders.begin(), placeholders.end(), [](Expr* i, Expr* j) -> bool { return (i->ival < j->ival); });
-
-            // Set the placeholder id on the Expr. This replaces the previously stored column id
-            for (uintmax_t i = 0; i < placeholders.size(); ++i) placeholders[i]->ival = i;
-        }
+        void setPlaceholders(std::vector<void*> ph);
 
         const char* name;
         SQLParserResult* query;

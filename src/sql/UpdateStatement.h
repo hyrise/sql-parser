@@ -16,17 +16,8 @@ namespace hsql {
      * Represents SQL Update statements.
      */
     struct UpdateStatement : SQLStatement {
-        UpdateStatement() :
-            SQLStatement(kStmtUpdate),
-            table(NULL),
-            updates(NULL),
-            where(NULL) {}
-
-        virtual ~UpdateStatement() {
-            delete table;
-            delete updates;
-            delete where;
-        }
+        UpdateStatement();
+        virtual ~UpdateStatement();
 
         // TODO: switch to char* instead of TableRef
         TableRef* table;

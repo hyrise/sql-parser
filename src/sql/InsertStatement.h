@@ -15,20 +15,8 @@ namespace hsql {
             kInsertSelect
         };
 
-        InsertStatement(InsertType type) :
-            SQLStatement(kStmtInsert),
-            type(type),
-            tableName(NULL),
-            columns(NULL),
-            values(NULL),
-            select(NULL) {}
-
-        virtual ~InsertStatement() {
-            delete tableName;
-            delete columns;
-            delete values;
-            delete select;
-        }
+        InsertStatement(InsertType type);
+        virtual ~InsertStatement();
 
         InsertType type;
         const char* tableName;

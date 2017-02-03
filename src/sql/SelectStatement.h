@@ -16,13 +16,8 @@ namespace hsql {
      * TODO: hold multiple expressions to be sorted by
      */
     struct OrderDescription {
-        OrderDescription(OrderType type, Expr* expr) :
-            type(type),
-            expr(expr) {}
-
-        virtual ~OrderDescription() {
-            delete expr;
-        }
+        OrderDescription(OrderType type, Expr* expr);
+        virtual ~OrderDescription();
 
         OrderType type;
         Expr* expr;
@@ -35,9 +30,7 @@ namespace hsql {
      * Description of the limit clause within a select statement
      */
     struct LimitDescription {
-        LimitDescription(int64_t limit, int64_t offset) :
-            limit(limit),
-            offset(offset) {}
+        LimitDescription(int64_t limit, int64_t offset);
 
         int64_t limit;
         int64_t offset;
@@ -47,14 +40,9 @@ namespace hsql {
      * Description of the group-by clause within a select statement
      */
     struct GroupByDescription {
-        GroupByDescription() :
-            columns(NULL),
-            having(NULL) {}
-
-        ~GroupByDescription() {
-            delete columns;
-            delete having;
-        }
+        GroupByDescription();
+        // TODO: make virtual
+        ~GroupByDescription();
 
         std::vector<Expr*>* columns;
         Expr* having;
@@ -65,25 +53,8 @@ namespace hsql {
      * TODO: add union_order and union_limit
      */
     struct SelectStatement : SQLStatement {
-        SelectStatement() :
-            SQLStatement(kStmtSelect),
-            fromTable(NULL),
-            selectDistinct(false),
-            selectList(NULL),
-            whereClause(NULL),
-            groupBy(NULL),
-            unionSelect(NULL),
-            order(NULL),
-            limit(NULL) {};
-
-        virtual ~SelectStatement() {
-            delete fromTable;
-            delete selectList;
-            delete whereClause;
-            delete groupBy;
-            delete order;
-            delete limit;
-        }
+        SelectStatement();
+        virtual ~SelectStatement();
 
         TableRef* fromTable;
         bool selectDistinct;
