@@ -16,8 +16,9 @@ namespace hsql {
   Expr::~Expr() {
     delete expr;
     delete expr2;
-    delete name;
-    delete table;
+    free(name);
+    free(table);
+    free(alias);
   }
 
   Expr* Expr::makeOpUnary(OperatorType op, Expr* expr) {

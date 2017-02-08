@@ -142,8 +142,14 @@ namespace hsql {
     having(NULL) {}
 
   GroupByDescription::~GroupByDescription() {
-    delete columns;
     delete having;
+
+    if (columns != NULL) {
+      for (Expr* expr : *columns) {
+        delete expr;
+      }
+      delete columns;
+    }
   }
 
   // SelectStatement
@@ -160,11 +166,18 @@ namespace hsql {
 
   SelectStatement::~SelectStatement() {
     delete fromTable;
-    delete selectList;
     delete whereClause;
     delete groupBy;
     delete order;
     delete limit;
+
+    // Delete each element in the select list.
+    if (selectList != NULL) {
+      for (Expr* expr : *selectList) {
+        delete expr;
+      }
+      delete selectList;
+    }
   }
 
   // UpdateStatement
@@ -191,8 +204,8 @@ namespace hsql {
     join(NULL) {}
 
   TableRef::~TableRef() {
-    delete name;
-    delete alias;
+    free(name);
+    free(alias);
     delete select;
     delete list;
   }

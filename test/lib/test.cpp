@@ -8,13 +8,13 @@ class TestsManager {
   // http://www.parashift.com/c++-faq-lite/static-init-order-on-first-use.html
  public:
   static std::vector<std::string>& testNames() {
-    static std::vector<std::string>* _testNames = new std::vector<std::string>;
-    return *_testNames;
+    static std::vector<std::string> testNames;
+    return testNames;
   }
 
   static std::vector<void (*)(void)>& tests() {
-    static std::vector<void (*)(void)>* tests = new std::vector<void (*)(void)>;
-    return *tests;
+    static std::vector<void (*)(void)> tests;
+    return tests;
   }
 };
 
