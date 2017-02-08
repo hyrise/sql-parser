@@ -1967,7 +1967,7 @@ yyreduce:
 
   case 22:
 #line 306 "bison_parser.y" /* yacc.c:1646  */
-    { (yyval.sval) = (yyvsp[0].expr)->name; }
+    { (yyval.sval) = strdup((yyvsp[0].expr)->name); delete (yyvsp[0].expr); }
 #line 1972 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 

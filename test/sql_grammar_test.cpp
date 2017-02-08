@@ -18,9 +18,12 @@ std::vector<std::string> readlines(std::string path) {
         std::istringstream iss(line);
 
         // Skip comments
-        if (line[0] != '#') {
-            lines.push_back(line);
+        if (line[0] == '#' || 
+            (line[0] == '-' && line[1] == '-')) {
+            continue;
         }
+        
+        lines.push_back(line);
     }
     return lines;
 }
@@ -82,6 +85,8 @@ int main(int argc, char *argv[]) {
             // TODO: indicate whether expectFalse was set
             printf("\033[0;32m{      ok} (%.1fus)\033[0m %s\n", us, sql.c_str());
         }
+
+        delete result;
     }
 
     if (numFailed == 0) {

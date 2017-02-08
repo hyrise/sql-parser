@@ -303,7 +303,7 @@ import_file_type:
 	;
 
 file_path:
-		string_literal { $$ = $1->name; }
+		string_literal { $$ = strdup($1->name); delete $1; }
 	;
 
 

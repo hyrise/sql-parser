@@ -192,6 +192,7 @@ namespace hsql {
     delete fromTable;
     delete whereClause;
     delete groupBy;
+    delete unionSelect;
     delete order;
     delete limit;
 
@@ -236,10 +237,19 @@ namespace hsql {
     join(NULL) {}
 
   TableRef::~TableRef() {
+    free(schema);
     free(name);
     free(alias);
+
     delete select;
-    delete list;
+    delete join;
+
+    if (list != NULL) {
+      for (TableRef* table : *list) {
+        delete table;
+      }
+      delete list;
+    }
   }
 
   bool TableRef::hasSchema() {
