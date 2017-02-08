@@ -12,22 +12,22 @@ namespace hsql {
     fprintf(stderr, "SQLParser only has static methods atm! Do not initialize!\n");
   }
 
-
   SQLParserResult* SQLParser::parseSQLString(const char* text) {
     SQLParserResult* result = NULL;
     yyscan_t scanner;
     YY_BUFFER_STATE state;
 
     if (hsql_lex_init(&scanner)) {
-      // couldn't initialize
+      // Couldn't initialize the lexer.
       fprintf(stderr, "[Error] SQLParser: Error when initializing lexer!\n");
       return NULL;
     }
 
     state = hsql__scan_string(text, scanner);
 
+    // Parser and return early if it failed.
     if (hsql_parse(&result, scanner)) {
-      // Returns an error stmt object
+      // Returns an error stmt object.
       return result;
     }
 
