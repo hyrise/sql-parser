@@ -6,10 +6,10 @@
 #include "Table.h"
 
 namespace hsql {
-    typedef enum {
+    enum OrderType {
         kOrderAsc,
         kOrderDesc
-    } OrderType;
+    };
 
     /**
      * Description of the order by clause within a select statement

@@ -180,9 +180,6 @@ namespace hsql {
         delete where;
     }
 
-
-
-
     // TableRef
     TableRef::TableRef(TableRefType type) :
         type(type),
@@ -200,6 +197,15 @@ namespace hsql {
         delete list;
     }
 
+    bool TableRef::hasSchema() {
+        return schema != NULL;
+    }
+
+    char* TableRef::getName() {
+        if (alias != NULL) return alias;
+        else return name;
+    }
+
     // JoinDefinition
     JoinDefinition::JoinDefinition() :
         left(NULL),
@@ -212,7 +218,5 @@ namespace hsql {
         delete right;
         delete condition;
     }
-
-
 
 } // namespace hsql

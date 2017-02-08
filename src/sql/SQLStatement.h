@@ -5,7 +5,7 @@
 #include <vector>
 
 namespace hsql {
-    typedef enum {
+    enum StatementType {
         kStmtError, // unused
         kStmtSelect,
         kStmtImport,
@@ -19,7 +19,7 @@ namespace hsql {
         kStmtExport,
         kStmtRename,
         kStmtAlter
-    } StatementType;
+    };
 
     /**
      * Base struct for every SQL statement

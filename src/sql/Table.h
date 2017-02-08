@@ -11,23 +11,15 @@ namespace hsql {
     struct JoinDefinition;
     struct TableRef;
 
-
-    /**
-     * @enum TableRefType
-     * Types table references
-     */
-    typedef enum {
+    // Possible table reference types.
+    enum TableRefType {
         kTableName,
         kTableSelect,
         kTableJoin,
         kTableCrossProduct
-    } TableRefType;
+    };
 
-
-    /**
-     * @struct TableRef
-     * @brief Holds reference to tables. Can be either table names or a select statement.
-     */
+    // Holds reference to tables. Can be either table names or a select statement.
     struct TableRef {
         TableRef(TableRefType type);
         virtual ~TableRef();
@@ -42,37 +34,22 @@ namespace hsql {
         std::vector<TableRef*>* list;
         JoinDefinition* join;
 
+        // Returns true if a schema is set.
+        bool hasSchema();
 
-        /**
-         * Convenience accessor methods
-         */
-        inline bool hasSchema() {
-            return schema != NULL;
-        }
-
-        inline char* getName() {
-            if (alias != NULL) return alias;
-            else return name;
-        }
+        // Returns the alias, if it is set. Otherwise the name.
+        char* getName();
     };
 
-
-    /**
-     * @enum JoinType
-     * Types of joins
-     */
-    typedef enum {
+    // Possible types of joins.
+    enum JoinType {
         kJoinInner,
         kJoinOuter,
         kJoinLeft,
         kJoinRight,
-    } JoinType;
+    };
 
-
-    /**
-     * @struct JoinDefinition
-     * @brief Definition of a join table
-     */
+    // Definition of a join construct.
     struct JoinDefinition {
         JoinDefinition();
         virtual ~JoinDefinition();
@@ -83,8 +60,6 @@ namespace hsql {
 
         JoinType type;
     };
-
-
 
 } // namespace hsql
 #endif
