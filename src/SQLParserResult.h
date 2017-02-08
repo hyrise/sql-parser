@@ -43,6 +43,13 @@ namespace hsql {
     // Takes ownership of the statement.
     void addStatement(SQLStatement* stmt);
 
+    // Set whether parsing was successful.
+    void setIsValid(bool isValid);
+
+    // Set the details of the error, if available.
+    void setErrorDetails(const char* errorMsg, int errorLine, int errorColumn);
+
+
    private:
     // List of statements within the result.
     std::vector<SQLStatement*> statements_;

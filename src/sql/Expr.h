@@ -68,8 +68,8 @@ namespace hsql {
     int64_t ival;
     int64_t ival2;
 
-    OperatorType op_type;
-    char op_char;
+    OperatorType opType;
+    char opChar;
     bool distinct;
 
     // Convenience accessor methods.

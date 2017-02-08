@@ -22,7 +22,7 @@ namespace hsql {
 
   Expr* Expr::makeOpUnary(OperatorType op, Expr* expr) {
     Expr* e = new Expr(kExprOperator);
-    e->op_type = op;
+    e->opType = op;
     e->expr = expr;
     e->expr2 = NULL;
     return e;
@@ -30,8 +30,8 @@ namespace hsql {
 
   Expr* Expr::makeOpBinary(Expr* expr1, OperatorType op, Expr* expr2) {
     Expr* e = new Expr(kExprOperator);
-    e->op_type = op;
-    e->op_char = 0;
+    e->opType = op;
+    e->opChar = 0;
     e->expr = expr1;
     e->expr2 = expr2;
     return e;
@@ -39,8 +39,8 @@ namespace hsql {
 
   Expr* Expr::makeOpBinary(Expr* expr1, char op, Expr* expr2) {
     Expr* e = new Expr(kExprOperator);
-    e->op_type = SIMPLE_OP;
-    e->op_char = op;
+    e->opType = SIMPLE_OP;
+    e->opChar = op;
     e->expr = expr1;
     e->expr2 = expr2;
     return e;
@@ -114,11 +114,11 @@ namespace hsql {
   }
 
   bool Expr::isSimpleOp() {
-    return op_type == SIMPLE_OP;
+    return opType == SIMPLE_OP;
   }
 
   bool Expr::isSimpleOp(char op) {
-    return isSimpleOp() && op_char == op;
+    return isSimpleOp() && opChar == op;
   }
 
   char* substr(const char* source, int from, int to) {

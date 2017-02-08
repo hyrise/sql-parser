@@ -53,4 +53,14 @@ namespace hsql {
     return errorColumn_;
   }
 
+  void SQLParserResult::setIsValid(bool isValid) {
+    isValid_ = isValid;
+  }
+
+  void SQLParserResult::setErrorDetails(const char* errorMsg, int errorLine, int errorColumn) {
+    errorMsg_ = errorMsg;
+    errorLine_ = errorLine;
+    errorColumn_ = errorColumn;
+  }
+
 } // namespace hsql

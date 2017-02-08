@@ -32,7 +32,7 @@ namespace hsql {
     virtual StatementType type() const;
 
    private:
-    StatementType _type;
+    StatementType type_;
   };
 
 } // namespace hsql

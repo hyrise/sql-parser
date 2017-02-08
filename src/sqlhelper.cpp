@@ -62,9 +62,9 @@ namespace hsql {
       return;
     }
 
-    switch (expr->op_type) {
+    switch (expr->opType) {
     case Expr::SIMPLE_OP:
-      inprintC(expr->op_char, numIndent);
+      inprintC(expr->opChar, numIndent);
       break;
     case Expr::AND:
       inprint("AND", numIndent);
@@ -76,7 +76,7 @@ namespace hsql {
       inprint("NOT", numIndent);
       break;
     default:
-      inprintU(expr->op_type, numIndent);
+      inprintU(expr->opType, numIndent);
       break;
     }
     printExpression(expr->expr, numIndent + 1);

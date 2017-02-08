@@ -5,12 +5,12 @@ namespace hsql {
 
   // SQLStatement
   SQLStatement::SQLStatement(StatementType type) :
-    _type(type) {};
+    type_(type) {};
 
   SQLStatement::~SQLStatement() {}
 
   StatementType SQLStatement::type() const {
-    return _type;
+    return type_;
   }
 
   // ColumnDefinition
