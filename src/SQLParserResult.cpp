@@ -18,7 +18,7 @@ namespace hsql {
       delete statement;
     }
 
-    delete errorMsg_;
+    free(errorMsg_);
   }
 
   void SQLParserResult::addStatement(SQLStatement* stmt) {
@@ -57,7 +57,7 @@ namespace hsql {
     isValid_ = isValid;
   }
 
-  void SQLParserResult::setErrorDetails(const char* errorMsg, int errorLine, int errorColumn) {
+  void SQLParserResult::setErrorDetails(char* errorMsg, int errorLine, int errorColumn) {
     errorMsg_ = errorMsg;
     errorLine_ = errorLine;
     errorColumn_ = errorColumn;

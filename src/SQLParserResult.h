@@ -47,7 +47,8 @@ namespace hsql {
     void setIsValid(bool isValid);
 
     // Set the details of the error, if available.
-    void setErrorDetails(const char* errorMsg, int errorLine, int errorColumn);
+    // Takes ownership of errorMsg.
+    void setErrorDetails(char* errorMsg, int errorLine, int errorColumn);
 
 
    private:
@@ -58,7 +59,7 @@ namespace hsql {
     bool isValid_;
 
     // Error message, if an error occurred.
-    const char* errorMsg_;
+    char* errorMsg_;
 
     // Line number of the occurrance of the error in the query.
     int errorLine_;
