@@ -124,7 +124,7 @@ namespace hsql {
 
   char* substr(const char* source, int from, int to) {
     int len = to - from;
-    char* copy = new char[len + 1];
+    char* copy = (char*) malloc(len + 1);;
     strncpy(copy, source + from, len);
     copy[len] = '\0';
     return copy;

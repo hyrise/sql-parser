@@ -34,8 +34,8 @@ namespace hsql {
 
     CreateType type;
     bool ifNotExists; // default: false
-    const char* filePath; // default: NULL
-    const char* tableName; // default: NULL
+    char* filePath; // default: NULL
+    char* tableName; // default: NULL
     std::vector<ColumnDefinition*>* columns; // default: NULL
   };
 

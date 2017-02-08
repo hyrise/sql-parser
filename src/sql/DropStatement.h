@@ -20,7 +20,7 @@ namespace hsql {
     virtual ~DropStatement();
 
     EntityType type;
-    const char* name;
+    char* name;
   };
 
 } // namespace hsql
