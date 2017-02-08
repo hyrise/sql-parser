@@ -4,17 +4,30 @@ language: cpp
 install:
   - sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
   - sudo apt-get -qq update
-  - sudo apt-get install -y bison flex
   - sudo apt-get install -y g++-4.8 libstdc++-4.8-dev
+  - sudo apt-get install -y flex valgrind
   - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 90
   - sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.8 90
+  
+  # Install bison 3.0.4.
+  - wget http://ftp.gnu.org/gnu/bison/bison-3.0.4.tar.gz
+  - tar -xvzf bison-3.0.4.tar.gz
+  - cd bison-3.0.4
+  - ./configure && make && sudo make install
+  - cd ..
+
+  # Show installed versions.
   - which g++
   - g++ -v
+  - bison --version
+  - flex --version
+  - valgrind --version
 
 compiler:
   - gcc
   - clang
 
 script:
+  - make cleanall
   - make
   - make test

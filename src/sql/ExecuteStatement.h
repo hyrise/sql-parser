@@ -12,7 +12,7 @@ namespace hsql {
     ExecuteStatement();
     virtual ~ExecuteStatement();
 
-    const char* name;
+    char* name;
     std::vector<Expr*>* parameters;
   };
 

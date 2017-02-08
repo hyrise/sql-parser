@@ -22,6 +22,8 @@ TEST(DeleteStatementTest) {
 	ASSERT(stmt->expr->isType(kExprOperator));
 	ASSERT_STREQ(stmt->expr->expr->name, "grade");
 	ASSERT_EQ(stmt->expr->expr2->fval, 2.0);
+
+	delete result;
 }
 
 TEST(CreateStatementTest) {
@@ -43,6 +45,8 @@ TEST(CreateStatementTest) {
 	ASSERT_EQ(stmt->columns->at(1)->type, ColumnDefinition::INT);
 	ASSERT_EQ(stmt->columns->at(2)->type, ColumnDefinition::INT);
 	ASSERT_EQ(stmt->columns->at(3)->type, ColumnDefinition::DOUBLE);
+
+	delete result;
 }
 
 
@@ -69,25 +73,40 @@ TEST(UpdateStatementTest) {
 	ASSERT(stmt->where->isType(kExprOperator));
 	ASSERT(stmt->where->isSimpleOp('='));
 	ASSERT_STREQ(stmt->where->expr->name, "name");
-	ASSERT_STREQ(stmt->where->expr2->name, "Max Mustermann");
+	ASSERT_STREQ(stmt->where->expr2->name, "Max Mustermann");\
 
+	delete result;
 }
 
 
 TEST(InsertStatementTest) {
-	TEST_PARSE_SINGLE_SQL("INSERT INTO students VALUES ('Max Mustermann', 12345, 'Musterhausen', 2.0)", kStmtInsert, InsertStatement, stmt);
+	TEST_PARSE_SINGLE_SQL(
+		"INSERT INTO students VALUES ('Max Mustermann', 12345, 'Musterhausen', 2.0)",
+		kStmtInsert,
+		InsertStatement,
+		result,
+		stmt);
 
 	ASSERT_EQ(stmt->values->size(), 4);
 	// TODO
+
+	delete result;
 }
 
 
 TEST(DropTableStatementTest) {
-	TEST_PARSE_SINGLE_SQL("DROP TABLE students", kStmtDrop, DropStatement, stmt);
+	TEST_PARSE_SINGLE_SQL(
+		"DROP TABLE students",
+		kStmtDrop,
+		DropStatement,
+		result,
+		stmt);
 
 	ASSERT_EQ(stmt->type, DropStatement::kTable);
 	ASSERT_NOTNULL(stmt->name);
 	ASSERT_STREQ(stmt->name, "students");
+
+	delete result;
 }
 
 
@@ -134,12 +153,16 @@ TEST(PrepareStatementTest) {
 	// Deallocate Statement
 	ASSERT_EQ(drop->type, DropStatement::kPreparedStatement);
 	ASSERT_STREQ(drop->name, "stmt");
+
+	delete result;
 }
 
 
 TEST(ExecuteStatementTest) {
-	TEST_PARSE_SINGLE_SQL("EXECUTE test(1, 2);", kStmtExecute, ExecuteStatement, stmt);
+	TEST_PARSE_SINGLE_SQL("EXECUTE test(1, 2);", kStmtExecute, ExecuteStatement, result, stmt);
 
 	ASSERT_STREQ(stmt->name, "test");
 	ASSERT_EQ(stmt->parameters->size(), 2);
+
+	delete result;
 }

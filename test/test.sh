@@ -1,15 +1,28 @@
 #!/bin/bash
 
-# has to be executed from the root of the repository
+# Has to be executed from the root of the repository.
+# Usually invoked by `make test`.
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:./
 
+RET=0
+
+# Running the tests.
 bin/sql_grammar_test -f "test/lib/valid_queries.sql"
-RET1=$?
+RET=$(($RET + $?))
 
 bin/sql_tests
-RET2=$?
+RET=$(($RET + $?))
 
-if [[ $RET1 != 0 ]]; then exit $RET1; fi
-if [[ $RET2 != 0 ]]; then exit $RET2; fi
+# Running memory leak checks.
+echo ""
+echo "Running memory leak checks..."
 
-exit 0
+valgrind --leak-check=full --error-exitcode=1 \
+  ./bin/sql_grammar_test  -f "test/lib/valid_queries.sql" >> /dev/null
+RET=$(($RET + $?))
+
+valgrind --leak-check=full --error-exitcode=1 \
+  ./bin/sql_tests  -f "test/lib/valid_queries.sql" >> /dev/null
+RET=$(($RET + $?))
+
+exit $RET

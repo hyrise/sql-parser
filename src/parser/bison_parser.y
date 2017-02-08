@@ -19,6 +19,7 @@
 using namespace hsql;
 
 int yyerror(YYLTYPE* llocp, SQLParserResult** result, yyscan_t scanner, const char *msg) {
+	delete *result;
 
 	SQLParserResult* list = new SQLParserResult();
 	list->setIsValid(false);
@@ -132,6 +133,19 @@ int yyerror(YYLTYPE* llocp, SQLParserResult** result, yyscan_t scanner, const ch
 	std::vector<hsql::Expr*>* expr_vec;
 }
 
+
+/*********************************
+ ** Descrutor symbols
+ *********************************/
+%destructor { } <fval> <ival> <uval> <bval> <order_type>
+%destructor { free( ($$) ); } <sval>
+%destructor {
+	for (auto ptr : *($$)) {
+		delete ptr;
+	}
+	delete ($$);
+} <str_vec> <table_vec> <column_vec> <update_vec> <expr_vec>
+%destructor { delete ($$); } <*>
 
 
 /*********************************
@@ -303,7 +317,7 @@ import_file_type:
 	;
 
 file_path:
-		string_literal { $$ = $1->name; }
+		string_literal { $$ = strdup($1->name); delete $1; }
 	;
 
 

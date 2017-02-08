@@ -19,7 +19,7 @@ namespace hsql {
     type(type) {};
 
   ColumnDefinition::~ColumnDefinition() {
-    delete name;
+    free(name);
   }
 
   // CreateStatemnet
@@ -32,9 +32,15 @@ namespace hsql {
     columns(NULL) {};
 
   CreateStatement::~CreateStatement() {
-    delete columns;
-    delete filePath;
-    delete tableName;
+    free(filePath);
+    free(tableName);
+
+    if (columns != NULL) {
+      for (ColumnDefinition* def : *columns) {
+        delete def;
+      }
+      delete columns;
+    }
   }
 
   // DeleteStatement
@@ -44,7 +50,7 @@ namespace hsql {
     expr(NULL) {};
 
   DeleteStatement::~DeleteStatement() {
-    delete tableName;
+    free(tableName);
     delete expr;
   }
 
@@ -55,7 +61,7 @@ namespace hsql {
     name(NULL) {}
 
   DropStatement::~DropStatement() {
-    delete name;
+    free(name);
   }
 
   // ExecuteStatement
@@ -65,8 +71,14 @@ namespace hsql {
     parameters(NULL) {}
 
   ExecuteStatement::~ExecuteStatement() {
-    delete name;
-    delete parameters;
+    free(name);
+
+    if (parameters != NULL) {
+      for (Expr* param : *parameters) {
+        delete param;
+      }
+      delete parameters;
+    }
   }
 
   // ImportStatement
@@ -91,10 +103,22 @@ namespace hsql {
     select(NULL) {}
 
   InsertStatement::~InsertStatement() {
-    delete tableName;
-    delete columns;
-    delete values;
+    free(tableName);
     delete select;
+
+    if (columns != NULL) {
+      for (char* column : *columns) {
+        free(column);
+      }
+      delete columns;
+    }
+
+    if (values != NULL) {
+      for (Expr* expr : *values) {
+        delete expr;
+      }
+      delete values;
+    }
   }
 
   // PrepareStatement
@@ -105,7 +129,7 @@ namespace hsql {
 
   PrepareStatement::~PrepareStatement() {
     delete query;
-    delete name;
+    free(name);
   }
 
   void PrepareStatement::setPlaceholders(std::vector<void*> ph) {
@@ -114,7 +138,7 @@ namespace hsql {
         placeholders.push_back((Expr*) e);
     }
     // Sort by col-id
-    std::sort(placeholders.begin(), placeholders.end(), [](Expr * i, Expr * j) -> bool { return (i->ival < j->ival); });
+    std::sort(placeholders.begin(), placeholders.end(), [](Expr* i, Expr* j) -> bool { return (i->ival < j->ival); });
 
     // Set the placeholder id on the Expr. This replaces the previously stored column id
     for (uintmax_t i = 0; i < placeholders.size(); ++i) placeholders[i]->ival = i;
@@ -142,8 +166,14 @@ namespace hsql {
     having(NULL) {}
 
   GroupByDescription::~GroupByDescription() {
-    delete columns;
     delete having;
+
+    if (columns != NULL) {
+      for (Expr* expr : *columns) {
+        delete expr;
+      }
+      delete columns;
+    }
   }
 
   // SelectStatement
@@ -160,11 +190,19 @@ namespace hsql {
 
   SelectStatement::~SelectStatement() {
     delete fromTable;
-    delete selectList;
     delete whereClause;
     delete groupBy;
+    delete unionSelect;
     delete order;
     delete limit;
+
+    // Delete each element in the select list.
+    if (selectList != NULL) {
+      for (Expr* expr : *selectList) {
+        delete expr;
+      }
+      delete selectList;
+    }
   }
 
   // UpdateStatement
@@ -176,8 +214,16 @@ namespace hsql {
 
   UpdateStatement::~UpdateStatement() {
     delete table;
-    delete updates;
     delete where;
+
+    if (updates != NULL) {
+      for (UpdateClause* update : *updates) {
+        free(update->column);
+        delete update->value;
+        delete update;
+      }
+      delete updates;
+    }
   }
 
   // TableRef
@@ -191,10 +237,19 @@ namespace hsql {
     join(NULL) {}
 
   TableRef::~TableRef() {
-    delete name;
-    delete alias;
+    free(schema);
+    free(name);
+    free(alias);
+
     delete select;
-    delete list;
+    delete join;
+
+    if (list != NULL) {
+      for (TableRef* table : *list) {
+        delete table;
+      }
+      delete list;
+    }
   }
 
   bool TableRef::hasSchema() {

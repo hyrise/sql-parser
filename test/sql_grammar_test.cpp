@@ -18,9 +18,12 @@ std::vector<std::string> readlines(std::string path) {
         std::istringstream iss(line);
 
         // Skip comments
-        if (line[0] != '#') {
-            lines.push_back(line);
+        if (line[0] == '#' || 
+            (line[0] == '-' && line[1] == '-')) {
+            continue;
         }
+        
+        lines.push_back(line);
     }
     return lines;
 }
@@ -33,14 +36,14 @@ int main(int argc, char *argv[]) {
         return -1;
     }
 
-    bool expectFalse = false;
+    bool globalExpectFalse = false;
     bool useFile = false;
     std::string filePath = "";
     
     // Parse command line arguments
     int i = 1;
     for (; i < argc; ++i) {
-        if (STREQ(argv[i], "--false")) expectFalse = true;
+        if (STREQ(argv[i], "--false")) globalExpectFalse = true;
         else if (STREQ(argv[i], "-f")) {
             useFile = true;
             filePath = argv[++i];
@@ -62,6 +65,12 @@ int main(int argc, char *argv[]) {
     // Execute queries
     int numFailed = 0;
     for (std::string sql : queries) {
+        bool expectFalse = globalExpectFalse;
+        if (sql.at(0) == '!') {
+            expectFalse = !expectFalse;
+            sql = sql.substr(1);
+        }
+
         // Measuring the parsing time
         std::chrono::time_point<std::chrono::system_clock> start, end;
         start = std::chrono::system_clock::now();
@@ -82,6 +91,8 @@ int main(int argc, char *argv[]) {
             // TODO: indicate whether expectFalse was set
             printf("\033[0;32m{      ok} (%.1fus)\033[0m %s\n", us, sql.c_str());
         }
+
+        delete result;
     }
 
     if (numFailed == 0) {

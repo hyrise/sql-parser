@@ -2,9 +2,11 @@
 all: bison_parser.cpp flex_lexer.cpp
 
 bison_parser.cpp: bison_parser.y
+	@bison --version | head -n 1
 	bison bison_parser.y -v
 
 flex_lexer.cpp: flex_lexer.l
+	@flex --version
 	flex flex_lexer.l
 
 clean:

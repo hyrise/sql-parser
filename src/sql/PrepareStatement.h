@@ -23,8 +23,12 @@ namespace hsql {
      */
     void setPlaceholders(std::vector<void*> ph);
 
-    const char* name;
+    char* name;
     SQLParserResult* query;
+
+    // The expressions are not owned by this statement.
+    // Rather they are owned by the query and destroyed, when
+    // the query is destroyed.
     std::vector<Expr*> placeholders;
   };
 

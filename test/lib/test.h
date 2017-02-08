@@ -7,8 +7,10 @@
 
 
 #define TEST(name) \
-	void name(); \
-	namespace g_dummy { int _##name = AddTest(name, #name); } \
+	void name();\
+	namespace g_dummy {\
+		int _##name = AddTest(name, #name);\
+	}\
 	void name()
 
 
