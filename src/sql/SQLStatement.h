@@ -29,7 +29,7 @@ namespace hsql {
 
     virtual ~SQLStatement();
 
-    virtual StatementType type();
+    virtual StatementType type() const;
 
    private:
     StatementType _type;

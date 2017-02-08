@@ -4,33 +4,53 @@
 namespace hsql {
 
   SQLParserResult::SQLParserResult() :
-    isValid(true),
-    errorMsg(NULL) {};
+    isValid_(true),
+    errorMsg_(NULL) {};
 
   SQLParserResult::SQLParserResult(SQLStatement* stmt) :
-    isValid(true),
-    errorMsg(NULL) {
+    isValid_(true),
+    errorMsg_(NULL) {
     addStatement(stmt);
   };
 
   SQLParserResult::~SQLParserResult() {
-    for (std::vector<SQLStatement*>::iterator it = statements.begin(); it != statements.end(); ++it) {
-      delete *it;
+    for (SQLStatement* statement : statements_) {
+      delete statement;
     }
 
-    delete errorMsg;
+    delete errorMsg_;
   }
 
   void SQLParserResult::addStatement(SQLStatement* stmt) {
-    statements.push_back(stmt);
+    statements_.push_back(stmt);
   }
 
-  SQLStatement* SQLParserResult::getStatement(int id) {
-    return statements[id];
+  const SQLStatement* SQLParserResult::getStatement(int index) const {
+    return statements_[index];
   }
 
-  size_t SQLParserResult::size() {
-    return statements.size();
+  SQLStatement* SQLParserResult::getMutableStatement(int index) {
+    return statements_[index];
+  }
+
+  size_t SQLParserResult::size() const {
+    return statements_.size();
+  }
+
+  bool SQLParserResult::isValid() const {
+    return isValid_;
+  }
+
+  const char* SQLParserResult::errorMsg() const {
+    return errorMsg_;
+  }
+
+  int SQLParserResult::errorLine() const {
+    return errorLine_;
+  }
+
+  int SQLParserResult::errorColumn() const {
+    return errorColumn_;
   }
 
 } // namespace hsql

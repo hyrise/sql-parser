@@ -9,7 +9,7 @@ namespace hsql {
 
   SQLStatement::~SQLStatement() {}
 
-  StatementType SQLStatement::type() {
+  StatementType SQLStatement::type() const {
     return _type;
   }
 
