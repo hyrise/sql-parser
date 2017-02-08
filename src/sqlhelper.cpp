@@ -118,7 +118,7 @@ namespace hsql {
     }
   }
 
-  void printSelectStatementInfo(SelectStatement* stmt, uintmax_t numIndent) {
+  void printSelectStatementInfo(const SelectStatement* stmt, uintmax_t numIndent) {
     inprint("SelectStatement", numIndent);
     inprint("Fields:", numIndent + 1);
     for (Expr* expr : *stmt->selectList) printExpression(expr, numIndent + 2);
@@ -152,19 +152,19 @@ namespace hsql {
 
 
 
-  void printImportStatementInfo(ImportStatement* stmt, uintmax_t numIndent) {
+  void printImportStatementInfo(const ImportStatement* stmt, uintmax_t numIndent) {
     inprint("ImportStatment", numIndent);
     inprint(stmt->filePath, numIndent + 1);
     inprint(stmt->tableName, numIndent + 1);
   }
 
-  void printCreateStatementInfo(CreateStatement* stmt, uintmax_t numIndent) {
+  void printCreateStatementInfo(const CreateStatement* stmt, uintmax_t numIndent) {
     inprint("CreateStatment", numIndent);
     inprint(stmt->tableName, numIndent + 1);
     inprint(stmt->filePath, numIndent + 1);
   }
 
-  void printInsertStatementInfo(InsertStatement* stmt, uintmax_t numIndent) {
+  void printInsertStatementInfo(const InsertStatement* stmt, uintmax_t numIndent) {
     inprint("InsertStatment", numIndent);
     inprint(stmt->tableName, numIndent + 1);
     if (stmt->columns != NULL) {
@@ -186,19 +186,19 @@ namespace hsql {
     }
   }
 
-  void printStatementInfo(SQLStatement* stmt) {
+  void printStatementInfo(const SQLStatement* stmt) {
     switch (stmt->type()) {
     case kStmtSelect:
-      printSelectStatementInfo((SelectStatement*) stmt, 0);
+      printSelectStatementInfo((const SelectStatement*) stmt, 0);
       break;
     case kStmtInsert:
-      printInsertStatementInfo((InsertStatement*) stmt, 0);
+      printInsertStatementInfo((const InsertStatement*) stmt, 0);
       break;
     case kStmtCreate:
-      printCreateStatementInfo((CreateStatement*) stmt, 0);
+      printCreateStatementInfo((const CreateStatement*) stmt, 0);
       break;
     case kStmtImport:
-      printImportStatementInfo((ImportStatement*) stmt, 0);
+      printImportStatementInfo((const ImportStatement*) stmt, 0);
       break;
     default:
       break;
