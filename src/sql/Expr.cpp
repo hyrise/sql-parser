@@ -5,16 +5,6 @@
 
 namespace hsql {
 
-    char* substr(const char* source, int from, int to) {
-        int len = to-from;
-        char* copy = new char[len+1];
-        strncpy(copy, source+from, len);
-        copy[len] = '\0';
-        return copy;
-    }
-
-
-
     Expr::Expr(ExprType type) :
         type(type),
         expr(NULL),
@@ -38,8 +28,6 @@ namespace hsql {
         return e;
     }
 
-
-
     Expr* Expr::makeOpBinary(Expr* expr1, OperatorType op, Expr* expr2) {
         Expr* e = new Expr(kExprOperator);
         e->op_type = op;
@@ -57,8 +45,6 @@ namespace hsql {
         e->expr2 = expr2;
         return e;
     }
-
-
 
     Expr* Expr::makeLiteral(int64_t val) {
         Expr* e = new Expr(kExprLiteralInt);
@@ -106,4 +92,40 @@ namespace hsql {
         return e;
     }
 
+    bool Expr::isType(ExprType e_type) {
+        return e_type == type;
+    }
+
+    bool Expr::isLiteral() {
+        return isType(kExprLiteralInt) || isType(kExprLiteralFloat) || isType(kExprLiteralString) || isType(kExprPlaceholder);
+    }
+
+    bool Expr::hasAlias() {
+        return alias != NULL;
+    }
+
+    bool Expr::hasTable() {
+        return table != NULL;
+    }
+
+    char* Expr::getName() {
+        if (alias != NULL) return alias;
+        else return name;
+    }
+
+    bool Expr::isSimpleOp() {
+        return op_type == SIMPLE_OP;
+    }
+
+    bool Expr::isSimpleOp(char op) {
+        return isSimpleOp() && op_char == op;
+    }
+    
+    char* substr(const char* source, int from, int to) {
+        int len = to-from;
+        char* copy = new char[len+1];
+        strncpy(copy, source+from, len);
+        copy[len] = '\0';
+        return copy;
+    }
 } // namespace hsql

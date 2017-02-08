@@ -6,12 +6,11 @@
 
 namespace hsql {
 
-// Helper function
+    // Helper function used by the lexer.
+    // TODO: move to more appropriate place.
     char* substr(const char* source, int from, int to);
 
-
-
-    typedef enum {
+    enum ExprType {
         kExprLiteralFloat,
         kExprLiteralString,
         kExprLiteralInt,
@@ -20,27 +19,21 @@ namespace hsql {
         kExprColumnRef,
         kExprFunctionRef,
         kExprOperator
-    } ExprType;
-
+    };
 
     typedef struct Expr Expr;
 
-    /**
-     * Represents SQL expressions (i.e. literals, operators, column_refs)
-     *
-     * TODO: When destructing a placeholder expression, we might need to alter the placeholder_list
-     */
+    // Represents SQL expressions (i.e. literals, operators, column_refs).
+    // TODO: When destructing a placeholder expression, we might need to alter the placeholder_list.
     struct Expr {
-        /**
-         * Operator types. These are important for expressions of type kExprOperator
-         * Trivial types are those that can be described by a single character e.g:
-         * + - * / < > = %
-         * Non-trivial are:
-         * <> <= >= LIKE ISNULL NOT
-         */
-        typedef enum {
+        // Operator types. These are important for expressions of type kExprOperator.
+        // Trivial types are those that can be described by a single character e.g:
+        // + - * / < > = %
+        // Non-trivial are: <> <= >= LIKE ISNULL NOT
+        enum OperatorType {
             SIMPLE_OP,
-            // Binary
+
+            // Binary operators.
             NOT_EQUALS,
             LESS_EQ,
             GREATER_EQ,
@@ -48,18 +41,20 @@ namespace hsql {
             NOT_LIKE,
             AND,
             OR,
-            // Unary
+
+            // Unary operators.
             NOT,
             UMINUS,
             ISNULL
-        } OperatorType;
+        };
 
 
 
         Expr(ExprType type);
 
         // Interesting side-effect:
-        // Making the destructor virtual used to cause segmentation faults
+        // Making the destructor virtual used to cause segmentation faults.
+        // TODO: inspect.
         ~Expr();
 
         ExprType type;
@@ -77,47 +72,41 @@ namespace hsql {
         char op_char;
         bool distinct;
 
+        // Convenience accessor methods.
 
-        /**
-         * Convenience accessor methods
-         */
-        inline bool isType(ExprType e_type) {
-            return e_type == type;
-        }
-        inline bool isLiteral() {
-            return isType(kExprLiteralInt) || isType(kExprLiteralFloat) || isType(kExprLiteralString) || isType(kExprPlaceholder);
-        }
-        inline bool hasAlias() {
-            return alias != NULL;
-        }
-        inline bool hasTable() {
-            return table != NULL;
-        }
-        inline char* getName() {
-            if (alias != NULL) return alias;
-            else return name;
-        }
-        inline bool isSimpleOp() {
-            return op_type == SIMPLE_OP;
-        }
-        inline bool isSimpleOp(char op) {
-            return isSimpleOp() && op_char == op;
-        }
+        bool isType(ExprType e_type);
+
+        bool isLiteral();
+
+        bool hasAlias();
+
+        bool hasTable();
+
+        char* getName();
+
+        bool isSimpleOp();
+
+        bool isSimpleOp(char op);
 
 
-        /**
-         * Static expression constructors
-         */
+        // Static constructors.
+
         static Expr* makeOpUnary(OperatorType op, Expr* expr);
+
         static Expr* makeOpBinary(Expr* expr1, char op, Expr* expr2);
+
         static Expr* makeOpBinary(Expr* expr1, OperatorType op, Expr* expr2);
 
         static Expr* makeLiteral(int64_t val);
+
         static Expr* makeLiteral(double val);
+
         static Expr* makeLiteral(char* val);
 
         static Expr* makeColumnRef(char* name);
+
         static Expr* makeColumnRef(char* table, char* name);
+
         static Expr* makeFunctionRef(char* func_name, Expr* expr, bool distinct);
 
         static Expr* makePlaceholder(int id);
