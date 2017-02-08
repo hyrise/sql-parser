@@ -7,101 +7,59 @@
 
 namespace hsql {
 
-    struct SelectStatement;
-    struct JoinDefinition;
-    struct TableRef;
+  struct SelectStatement;
+  struct JoinDefinition;
+  struct TableRef;
 
+  // Possible table reference types.
+  enum TableRefType {
+    kTableName,
+    kTableSelect,
+    kTableJoin,
+    kTableCrossProduct
+  };
 
-    /**
-     * @enum TableRefType
-     * Types table references
-     */
-    typedef enum {
-        kTableName,
-        kTableSelect,
-        kTableJoin,
-        kTableCrossProduct
-    } TableRefType;
+  // Holds reference to tables. Can be either table names or a select statement.
+  struct TableRef {
+    TableRef(TableRefType type);
+    virtual ~TableRef();
 
+    TableRefType type;
 
-    /**
-     * @struct TableRef
-     * @brief Holds reference to tables. Can be either table names or a select statement.
-     */
-    struct TableRef {
-        TableRef(TableRefType type) :
-            type(type),
-            schema(NULL),
-            name(NULL),
-            alias(NULL),
-            select(NULL),
-            list(NULL),
-            join(NULL) {}
+    char* schema;
+    char* name;
+    char* alias;
 
-        virtual ~TableRef();
+    SelectStatement* select;
+    std::vector<TableRef*>* list;
+    JoinDefinition* join;
 
-        TableRefType type;
+    // Returns true if a schema is set.
+    bool hasSchema();
 
-        char* schema;
-        char* name;
-        char* alias;
+    // Returns the alias, if it is set. Otherwise the name.
+    char* getName();
+  };
 
-        SelectStatement* select;
-        std::vector<TableRef*>* list;
-        JoinDefinition* join;
+  // Possible types of joins.
+  enum JoinType {
+    kJoinInner,
+    kJoinOuter,
+    kJoinLeft,
+    kJoinRight,
+  };
 
+  // Definition of a join construct.
+  struct JoinDefinition {
+    JoinDefinition();
+    virtual ~JoinDefinition();
 
-        /**
-         * Convenience accessor methods
-         */
-        inline bool hasSchema() {
-            return schema != NULL;
-        }
+    TableRef* left;
+    TableRef* right;
+    Expr* condition;
 
-        inline char* getName() {
-            if (alias != NULL) return alias;
-            else return name;
-        }
-    };
-
-
-    /**
-     * @enum JoinType
-     * Types of joins
-     */
-    typedef enum {
-        kJoinInner,
-        kJoinOuter,
-        kJoinLeft,
-        kJoinRight,
-    } JoinType;
-
-
-    /**
-     * @struct JoinDefinition
-     * @brief Definition of a join table
-     */
-    struct JoinDefinition {
-        JoinDefinition() :
-            left(NULL),
-            right(NULL),
-            condition(NULL),
-            type(kJoinInner) {}
-
-        virtual ~JoinDefinition() {
-            delete left;
-            delete right;
-            delete condition;
-        }
-
-        TableRef* left;
-        TableRef* right;
-        Expr* condition;
-
-        JoinType type;
-    };
-
-
+    JoinType type;
+  };
 
 } // namespace hsql
 #endif

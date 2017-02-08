@@ -11,12 +11,12 @@ using namespace hsql;
 
 
 TEST(DeleteStatementTest) {
-	SQLParserResult* result = SQLParser::parseSQLString("DELETE FROM students WHERE grade > 2.0;");
-	ASSERT(result->isValid);
+	const SQLParserResult* result = SQLParser::parseSQLString("DELETE FROM students WHERE grade > 2.0;");
+	ASSERT(result->isValid());
 	ASSERT_EQ(result->size(), 1);
 	ASSERT(result->getStatement(0)->type() == kStmtDelete);
 
-	DeleteStatement* stmt = (DeleteStatement*) result->getStatement(0);
+	const DeleteStatement* stmt = (const DeleteStatement*) result->getStatement(0);
 	ASSERT_STREQ(stmt->tableName, "students");
 	ASSERT_NOTNULL(stmt->expr);
 	ASSERT(stmt->expr->isType(kExprOperator));
@@ -25,12 +25,12 @@ TEST(DeleteStatementTest) {
 }
 
 TEST(CreateStatementTest) {
-	SQLParserResult* result = SQLParser::parseSQLString("CREATE TABLE students (name TEXT, student_number INT, city INTEGER, grade DOUBLE)");
-	ASSERT(result->isValid);
+	const SQLParserResult* result = SQLParser::parseSQLString("CREATE TABLE students (name TEXT, student_number INT, city INTEGER, grade DOUBLE)");
+	ASSERT(result->isValid());
 	ASSERT_EQ(result->size(), 1);
 	ASSERT_EQ(result->getStatement(0)->type(), kStmtCreate);
 
-	CreateStatement* stmt = (CreateStatement*) result->getStatement(0);
+	const CreateStatement* stmt = (const CreateStatement*) result->getStatement(0);
 	ASSERT_EQ(stmt->type, CreateStatement::kTable);
 	ASSERT_STREQ(stmt->tableName, "students");
 	ASSERT_NOTNULL(stmt->columns);
@@ -47,12 +47,12 @@ TEST(CreateStatementTest) {
 
 
 TEST(UpdateStatementTest) {
-	SQLParserResult* result = SQLParser::parseSQLString("UPDATE students SET grade = 5.0, name = 'test' WHERE name = 'Max Mustermann';");
-	ASSERT(result->isValid);
+	const SQLParserResult* result = SQLParser::parseSQLString("UPDATE students SET grade = 5.0, name = 'test' WHERE name = 'Max Mustermann';");
+	ASSERT(result->isValid());
 	ASSERT_EQ(result->size(), 1);
 	ASSERT_EQ(result->getStatement(0)->type(), kStmtUpdate);
 
-	UpdateStatement* stmt = (UpdateStatement*) result->getStatement(0);
+	const UpdateStatement* stmt = (const UpdateStatement*) result->getStatement(0);
 	ASSERT_NOTNULL(stmt->table);
 	ASSERT_STREQ(stmt->table->name, "students");
 	

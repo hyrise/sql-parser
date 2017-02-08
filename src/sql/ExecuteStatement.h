@@ -4,24 +4,17 @@
 #include "SQLStatement.h"
 
 namespace hsql {
-    /**
-     * Represents SQL Execute statements.
-     * Example: "EXECUTE ins_prep(100, "test", 2.3);"
-     */
-    struct ExecuteStatement : SQLStatement {
-        ExecuteStatement() :
-            SQLStatement(kStmtExecute),
-            name(NULL),
-            parameters(NULL) {}
+  /**
+   * Represents SQL Execute statements.
+   * Example: "EXECUTE ins_prep(100, "test", 2.3);"
+   */
+  struct ExecuteStatement : SQLStatement {
+    ExecuteStatement();
+    virtual ~ExecuteStatement();
 
-        virtual ~ExecuteStatement() {
-            delete name;
-            delete parameters;
-        }
-
-        const char* name;
-        std::vector<Expr*>* parameters;
-    };
+    const char* name;
+    std::vector<Expr*>* parameters;
+  };
 
 } // namsepace hsql
 #endif

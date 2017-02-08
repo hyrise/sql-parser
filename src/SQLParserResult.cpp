@@ -3,39 +3,64 @@
 
 namespace hsql {
 
-    SQLParserResult::SQLParserResult() :
-        isValid(true),
-        errorMsg(NULL) {};
+  SQLParserResult::SQLParserResult() :
+    isValid_(true),
+    errorMsg_(NULL) {};
 
+  SQLParserResult::SQLParserResult(SQLStatement* stmt) :
+    isValid_(true),
+    errorMsg_(NULL) {
+    addStatement(stmt);
+  };
 
-    SQLParserResult::SQLParserResult(SQLStatement* stmt) :
-        isValid(true),
-        errorMsg(NULL) {
-        addStatement(stmt);
-    };
-
-
-    SQLParserResult::~SQLParserResult() {
-        for (std::vector<SQLStatement*>::iterator it = statements.begin(); it != statements.end(); ++it) {
-            delete *it;
-        }
-
-        delete errorMsg;
+  SQLParserResult::~SQLParserResult() {
+    for (SQLStatement* statement : statements_) {
+      delete statement;
     }
 
+    delete errorMsg_;
+  }
 
-    void SQLParserResult::addStatement(SQLStatement* stmt) {
-        statements.push_back(stmt);
-    }
+  void SQLParserResult::addStatement(SQLStatement* stmt) {
+    statements_.push_back(stmt);
+  }
 
+  const SQLStatement* SQLParserResult::getStatement(int index) const {
+    return statements_[index];
+  }
 
-    SQLStatement* SQLParserResult::getStatement(int id) {
-        return statements[id];
-    }
+  SQLStatement* SQLParserResult::getMutableStatement(int index) {
+    return statements_[index];
+  }
 
+  size_t SQLParserResult::size() const {
+    return statements_.size();
+  }
 
-    size_t SQLParserResult::size() {
-        return statements.size();
-    }
+  bool SQLParserResult::isValid() const {
+    return isValid_;
+  }
+
+  const char* SQLParserResult::errorMsg() const {
+    return errorMsg_;
+  }
+
+  int SQLParserResult::errorLine() const {
+    return errorLine_;
+  }
+
+  int SQLParserResult::errorColumn() const {
+    return errorColumn_;
+  }
+
+  void SQLParserResult::setIsValid(bool isValid) {
+    isValid_ = isValid;
+  }
+
+  void SQLParserResult::setErrorDetails(const char* errorMsg, int errorLine, int errorColumn) {
+    errorMsg_ = errorMsg;
+    errorLine_ = errorLine;
+    errorColumn_ = errorColumn;
+  }
 
 } // namespace hsql

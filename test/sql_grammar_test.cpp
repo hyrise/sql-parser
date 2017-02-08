@@ -67,15 +67,15 @@ int main(int argc, char *argv[]) {
         start = std::chrono::system_clock::now();
 
         // Parsing
-        SQLParserResult* stmt_list = SQLParser::parseSQLString(sql.c_str());
+        SQLParserResult* result = SQLParser::parseSQLString(sql.c_str());
 
         end = std::chrono::system_clock::now();
         std::chrono::duration<double> elapsed_seconds = end-start;
         double us = elapsed_seconds.count() * 1000 * 1000;
 
-        if (expectFalse == stmt_list->isValid) {
+        if (expectFalse == result->isValid()) {
             printf("\033[0;31m{  failed}\033[0m\n");
-            printf("\t\033[0;31m%s (L%d:%d)\n\033[0m", stmt_list->errorMsg, stmt_list->errorLine, stmt_list->errorColumn);
+            printf("\t\033[0;31m%s (L%d:%d)\n\033[0m", result->errorMsg(), result->errorLine(), result->errorColumn());
             printf("\t%s\n", sql.c_str());
             numFailed++;
         } else {

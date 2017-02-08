@@ -21,10 +21,8 @@ using namespace hsql;
 int yyerror(YYLTYPE* llocp, SQLParserResult** result, yyscan_t scanner, const char *msg) {
 
 	SQLParserResult* list = new SQLParserResult();
-	list->isValid = false;
-	list->errorMsg = strdup(msg);
-	list->errorLine = llocp->first_line;
-	list->errorColumn = llocp->first_column;
+	list->setIsValid(false);
+	list->setErrorDetails(strdup(msg), llocp->first_line, llocp->first_column);
 
 	*result = list;
 	return 0;

@@ -31,17 +31,17 @@
 
 
 class AssertionFailedException: public std::exception {
-public:
-    AssertionFailedException(std::string msg) :
-        std::exception(),
-        _msg(msg) {};
+ public:
+  AssertionFailedException(std::string msg) :
+    std::exception(),
+    _msg(msg) {};
 
-    virtual const char* what() const throw() {
-        return _msg.c_str();
-    }
+  virtual const char* what() const throw() {
+    return _msg.c_str();
+  }
 
-protected:
-    std::string _msg;
+ protected:
+  std::string _msg;
 };
 
 int AddTest(void (*foo)(void), std::string name);
