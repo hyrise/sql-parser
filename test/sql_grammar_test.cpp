@@ -36,14 +36,14 @@ int main(int argc, char *argv[]) {
         return -1;
     }
 
-    bool expectFalse = false;
+    bool globalExpectFalse = false;
     bool useFile = false;
     std::string filePath = "";
     
     // Parse command line arguments
     int i = 1;
     for (; i < argc; ++i) {
-        if (STREQ(argv[i], "--false")) expectFalse = true;
+        if (STREQ(argv[i], "--false")) globalExpectFalse = true;
         else if (STREQ(argv[i], "-f")) {
             useFile = true;
             filePath = argv[++i];
@@ -65,6 +65,12 @@ int main(int argc, char *argv[]) {
     // Execute queries
     int numFailed = 0;
     for (std::string sql : queries) {
+        bool expectFalse = globalExpectFalse;
+        if (sql.at(0) == '!') {
+            expectFalse = !expectFalse;
+            sql = sql.substr(1);
+        }
+
         // Measuring the parsing time
         std::chrono::time_point<std::chrono::system_clock> start, end;
         start = std::chrono::system_clock::now();

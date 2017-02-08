@@ -37,3 +37,10 @@ PREPARE prep2 { INSERT INTO test VALUES (?, 0, 0); INSERT INTO test VALUES (0, ?
 EXECUTE prep_inst(1, 2, 3);
 EXECUTE prep;
 DEALLOCATE PREPARE prep;
+# Error expeced
+!
+!1
+!gibberish;
+!SELECT abc;
+!CREATE TABLE "table" FROM TBL FILE 'students.tbl';SELECT 1
+!CREATE TABLE "table" FROM TBL FILE 'students.tbl';1
