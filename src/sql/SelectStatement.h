@@ -6,66 +6,66 @@
 #include "Table.h"
 
 namespace hsql {
-    enum OrderType {
-        kOrderAsc,
-        kOrderDesc
-    };
+  enum OrderType {
+    kOrderAsc,
+    kOrderDesc
+  };
 
-    /**
-     * Description of the order by clause within a select statement
-     * TODO: hold multiple expressions to be sorted by
-     */
-    struct OrderDescription {
-        OrderDescription(OrderType type, Expr* expr);
-        virtual ~OrderDescription();
+  /**
+   * Description of the order by clause within a select statement
+   * TODO: hold multiple expressions to be sorted by
+   */
+  struct OrderDescription {
+    OrderDescription(OrderType type, Expr* expr);
+    virtual ~OrderDescription();
 
-        OrderType type;
-        Expr* expr;
-    };
+    OrderType type;
+    Expr* expr;
+  };
 
-    const int64_t kNoLimit = -1;
-    const int64_t kNoOffset = -1;
+  const int64_t kNoLimit = -1;
+  const int64_t kNoOffset = -1;
 
-    /**
-     * Description of the limit clause within a select statement
-     */
-    struct LimitDescription {
-        LimitDescription(int64_t limit, int64_t offset);
+  /**
+   * Description of the limit clause within a select statement
+   */
+  struct LimitDescription {
+    LimitDescription(int64_t limit, int64_t offset);
 
-        int64_t limit;
-        int64_t offset;
-    };
+    int64_t limit;
+    int64_t offset;
+  };
 
-    /**
-     * Description of the group-by clause within a select statement
-     */
-    struct GroupByDescription {
-        GroupByDescription();
-        // TODO: make virtual
-        ~GroupByDescription();
+  /**
+   * Description of the group-by clause within a select statement
+   */
+  struct GroupByDescription {
+    GroupByDescription();
+    // TODO: make virtual
+    ~GroupByDescription();
 
-        std::vector<Expr*>* columns;
-        Expr* having;
-    };
+    std::vector<Expr*>* columns;
+    Expr* having;
+  };
 
-    /**
-     * Representation of a full SQL select statement.
-     * TODO: add union_order and union_limit
-     */
-    struct SelectStatement : SQLStatement {
-        SelectStatement();
-        virtual ~SelectStatement();
+  /**
+   * Representation of a full SQL select statement.
+   * TODO: add union_order and union_limit
+   */
+  struct SelectStatement : SQLStatement {
+    SelectStatement();
+    virtual ~SelectStatement();
 
-        TableRef* fromTable;
-        bool selectDistinct;
-        std::vector<Expr*>* selectList;
-        Expr* whereClause;
-        GroupByDescription* groupBy;
+    TableRef* fromTable;
+    bool selectDistinct;
+    std::vector<Expr*>* selectList;
+    Expr* whereClause;
+    GroupByDescription* groupBy;
 
-        SelectStatement* unionSelect;
-        OrderDescription* order;
-        LimitDescription* limit;
-    };
+    SelectStatement* unionSelect;
+    OrderDescription* order;
+    LimitDescription* limit;
+  };
 
 } // namespace hsql
 #endif

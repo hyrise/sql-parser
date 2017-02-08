@@ -5,39 +5,39 @@
 
 // Note: Implementations of constructors and destructors can be found in statements.cpp.
 namespace hsql {
-    // Represents definition of a table column
-    struct ColumnDefinition {
-        enum DataType {
-            TEXT,
-            INT,
-            DOUBLE
-        };
-
-        ColumnDefinition(char* name, DataType type);
-        virtual ~ColumnDefinition();
-
-        char* name;
-        DataType type;
+  // Represents definition of a table column
+  struct ColumnDefinition {
+    enum DataType {
+      TEXT,
+      INT,
+      DOUBLE
     };
 
+    ColumnDefinition(char* name, DataType type);
+    virtual ~ColumnDefinition();
 
-    // Represents SQL Create statements.
-    // Example: "CREATE TABLE students (name TEXT, student_number INTEGER, city TEXT, grade DOUBLE)"
-    struct CreateStatement : SQLStatement {
-        enum CreateType {
-            kTable,
-            kTableFromTbl // Hyrise file format
-        };
+    char* name;
+    DataType type;
+  };
 
-        CreateStatement(CreateType type);
-        virtual ~CreateStatement();
 
-        CreateType type;
-        bool ifNotExists; // default: false
-        const char* filePath; // default: NULL
-        const char* tableName; // default: NULL
-        std::vector<ColumnDefinition*>* columns; // default: NULL
+  // Represents SQL Create statements.
+  // Example: "CREATE TABLE students (name TEXT, student_number INTEGER, city TEXT, grade DOUBLE)"
+  struct CreateStatement : SQLStatement {
+    enum CreateType {
+      kTable,
+      kTableFromTbl // Hyrise file format
     };
+
+    CreateStatement(CreateType type);
+    virtual ~CreateStatement();
+
+    CreateType type;
+    bool ifNotExists; // default: false
+    const char* filePath; // default: NULL
+    const char* tableName; // default: NULL
+    std::vector<ColumnDefinition*>* columns; // default: NULL
+  };
 
 } // namespace hsql
 #endif

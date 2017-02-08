@@ -5,35 +5,35 @@
 #include <vector>
 
 namespace hsql {
-    enum StatementType {
-        kStmtError, // unused
-        kStmtSelect,
-        kStmtImport,
-        kStmtInsert,
-        kStmtUpdate,
-        kStmtDelete,
-        kStmtCreate,
-        kStmtDrop,
-        kStmtPrepare,
-        kStmtExecute,
-        kStmtExport,
-        kStmtRename,
-        kStmtAlter
-    };
+  enum StatementType {
+    kStmtError, // unused
+    kStmtSelect,
+    kStmtImport,
+    kStmtInsert,
+    kStmtUpdate,
+    kStmtDelete,
+    kStmtCreate,
+    kStmtDrop,
+    kStmtPrepare,
+    kStmtExecute,
+    kStmtExport,
+    kStmtRename,
+    kStmtAlter
+  };
 
-    /**
-     * Base struct for every SQL statement
-     */
-    struct SQLStatement {
-        SQLStatement(StatementType type);
+  /**
+   * Base struct for every SQL statement
+   */
+  struct SQLStatement {
+    SQLStatement(StatementType type);
 
-        virtual ~SQLStatement();
+    virtual ~SQLStatement();
 
-        virtual StatementType type();
+    virtual StatementType type();
 
-    private:
-        StatementType _type;
-    };
+   private:
+    StatementType _type;
+  };
 
 } // namespace hsql
 #endif // __SQLSTATEMENT_H__
