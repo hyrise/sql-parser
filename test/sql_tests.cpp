@@ -2,8 +2,8 @@
  * sql_tests.cpp
  */
 
-#include "lib/test.h"
-#include "lib/helper.h"
+#include "thirdparty/microtest/microtest.h"
+#include "sql_asserts.h"
 #include "SQLParser.h"
 #include "sqlhelper.h"
 
@@ -166,3 +166,5 @@ TEST(ExecuteStatementTest) {
 
 	delete result;
 }
+
+TEST_MAIN();
