@@ -44,3 +44,4 @@ DEALLOCATE PREPARE prep;
 !SELECT abc;
 !CREATE TABLE "table" FROM TBL FILE 'students.tbl';SELECT 1
 !CREATE TABLE "table" FROM TBL FILE 'students.tbl';1
+!INSERT INTO test_table VALUESd (1, 2, 'test');

@@ -1,7 +1,7 @@
 
 
-#include "test.h"
-#include "helper.h"
+#include "thirdparty/microtest/microtest.h"
+#include "sql_asserts.h"
 #include "SQLParser.h"
 
 using namespace hsql;

@@ -6,23 +6,16 @@ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:./
 
 RET=0
 
-# Running the tests.
-bin/sql_grammar_test -f "test/lib/valid_queries.sql"
-RET=$(($RET + $?))
+bin/sql_tests -f "test/valid_queries.sql"
+RET=$?
 
-bin/sql_tests
-RET=$(($RET + $?))
-
-# Running memory leak checks.
-echo ""
-echo "Running memory leak checks..."
-
-valgrind --leak-check=full --error-exitcode=1 \
-  ./bin/sql_grammar_test  -f "test/lib/valid_queries.sql" >> /dev/null
-RET=$(($RET + $?))
-
-valgrind --leak-check=full --error-exitcode=1 \
-  ./bin/sql_tests  -f "test/lib/valid_queries.sql" >> /dev/null
-RET=$(($RET + $?))
+if [ $RET -eq 0 ]; then
+	# Running memory leak checks.
+	echo ""
+	echo "Running memory leak checks..."
+	valgrind --leak-check=full --error-exitcode=1 --log-fd=3 \
+	  ./bin/sql_tests -f "test/valid_queries.sql" 3>&1 >/dev/null 2>/dev/null
+	RET=$?
+fi
 
 exit $RET
