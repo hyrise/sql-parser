@@ -5,6 +5,8 @@
 #include <fstream>
 #include <sstream>
 #include <vector>
+
+#include "thirdparty/microtest/microtest.h"
 #include "SQLParser.h"
 
 using namespace hsql;
@@ -30,10 +32,11 @@ std::vector<std::string> readlines(std::string path) {
 
 #define STREQ(a, b) (std::string(a).compare(std::string(b)) == 0)
 
-int main(int argc, char *argv[]) {
-    if (argc <= 1) {
+TEST(AutoGrammarTest) {
+    const std::vector<std::string>& args = mt::Runtime::args();
+    if (args.size() <= 1) {
         fprintf(stderr, "Usage: grammar_test [--false] [-f path] query, ...\n");
-        return -1;
+        return;
     }
 
     bool globalExpectFalse = false;
@@ -41,12 +44,12 @@ int main(int argc, char *argv[]) {
     std::string filePath = "";
     
     // Parse command line arguments
-    int i = 1;
-    for (; i < argc; ++i) {
-        if (STREQ(argv[i], "--false")) globalExpectFalse = true;
-        else if (STREQ(argv[i], "-f")) {
+    uint i = 1;
+    for (; i < args.size(); ++i) {
+        if (STREQ(args[i], "--false")) globalExpectFalse = true;
+        else if (STREQ(args[i], "-f")) {
             useFile = true;
-            filePath = argv[++i];
+            filePath = args[++i];
         } else {
             break;
         }
@@ -58,7 +61,7 @@ int main(int argc, char *argv[]) {
     if (useFile) {
         queries = readlines(filePath);
     } else {
-        for (; i < argc; ++i) queries.push_back(argv[i]);
+        for (; i < args.size(); ++i) queries.push_back(args[i]);
     }
 
 
@@ -97,9 +100,9 @@ int main(int argc, char *argv[]) {
 
     if (numFailed == 0) {
         printf("\033[0;32m{      ok} \033[0mAll %lu grammar tests completed successfully!\n", queries.size());
-        return 0;
     } else {
         fprintf(stderr, "\033[0;31m{  failed} \033[0mSome grammar tests failed! %d out of %lu tests failed!\n", numFailed, queries.size());
-        return -1;
     }
+    ASSERT_EQ(numFailed, 0);
 }
+

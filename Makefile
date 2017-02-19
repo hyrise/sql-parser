@@ -7,18 +7,18 @@ SRCPARSER  = src/parser
 PARSERFILES = $(SRCPARSER)/bison_parser.cpp $(SRCPARSER)/flex_lexer.cpp
 LIBCPP      = $(shell find $(SRC) -name '*.cpp' -not -path "$(SRCPARSER)/*") $(SRCPARSER)/bison_parser.cpp $(SRCPARSER)/flex_lexer.cpp
 LIBOBJ      = $(LIBCPP:%.cpp=%.o)
-TESTCPP     = $(shell find test/lib/ -name '*.cpp')
+TESTCPP     = $(shell find test/ -name '*.cpp')
 
 ALLLIB      = $(shell find $(SRC) -name '*.cpp' -not -path "$(SRCPARSER)/*") $(shell find $(SRC) -name '*.h' -not -path "$(SRCPARSER)/*")
 ALLTEST     = $(shell find test/lib/ -name '*.cpp') $(shell find test/lib/ -name '*.h')
 
 # compile & link flages
-CFLAGS     = -std=c++11 -Wall -fPIC
+CFLAGS     = -std=c++11 -Wall -fPIC -g
 LIBFLAGS   = -shared
 TARGET     = libsqlparser.so
 INSTALL    = /usr/local
 
-CTESTFLAGS = -Wall -Isrc/ -Itest/ -L./ -std=c++11 -lstdc++
+CTESTFLAGS = -Wall -Isrc/ -Itest/ -L./ -std=c++11 -lstdc++ -g
 
 all: library
 
@@ -58,7 +58,7 @@ format:
 ### Test ###
 ############
 
-test: $(BIN)/sql_tests $(BIN)/sql_grammar_test
+test: $(BIN)/sql_tests
 	bash test/test.sh
 
 # test whete
@@ -68,8 +68,4 @@ test_install:
 
 $(BIN)/sql_tests: library
 	@mkdir -p $(BIN)/
-	$(CXX) $(CTESTFLAGS) $(TESTCPP) test/sql_tests.cpp -o $(BIN)/sql_tests -lsqlparser
-
-$(BIN)/sql_grammar_test: library
-	@mkdir -p $(BIN)/
-	$(CXX) $(CTESTFLAGS) test/sql_grammar_test.cpp -o $(BIN)/sql_grammar_test -lsqlparser
+	$(CXX) $(CTESTFLAGS) $(TESTCPP) -o $(BIN)/sql_tests -lsqlparser

@@ -140,8 +140,10 @@ int yyerror(YYLTYPE* llocp, SQLParserResult** result, yyscan_t scanner, const ch
 %destructor { } <fval> <ival> <uval> <bval> <order_type>
 %destructor { free( ($$) ); } <sval>
 %destructor {
-	for (auto ptr : *($$)) {
-		delete ptr;
+	if (($$) != NULL) {
+		for (auto ptr : *($$)) {
+			delete ptr;
+		}
 	}
 	delete ($$);
 } <str_vec> <table_vec> <column_vec> <update_vec> <expr_vec>

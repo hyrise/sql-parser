@@ -1,8 +1,8 @@
-/* A Bison parser, made by GNU Bison 3.0.2.  */
+/* A Bison parser, made by GNU Bison 3.0.4.  */
 
 /* Bison interface for Yacc-like parsers in C
 
-   Copyright (C) 1984, 1989-1990, 2000-2013 Free Software Foundation, Inc.
+   Copyright (C) 1984, 1989-1990, 2000-2015 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -206,7 +206,7 @@ extern int hsql_debug;
 
 /* Value type.  */
 #if ! defined HSQL_STYPE && ! defined HSQL_STYPE_IS_DECLARED
-typedef union HSQL_STYPE HSQL_STYPE;
+
 union HSQL_STYPE
 {
 #line 100 "bison_parser.y" /* yacc.c:1909  */
@@ -247,6 +247,8 @@ union HSQL_STYPE
 
 #line 249 "bison_parser.h" /* yacc.c:1909  */
 };
+
+typedef union HSQL_STYPE HSQL_STYPE;
 # define HSQL_STYPE_IS_TRIVIAL 1
 # define HSQL_STYPE_IS_DECLARED 1
 #endif
