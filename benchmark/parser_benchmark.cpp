@@ -6,53 +6,31 @@
 #include "parser/bison_parser.h"
 #include "parser/flex_lexer.h"
 
-#define TIME_DIFF(start, end) \
-  std::chrono::duration_cast<std::chrono::duration<double>>(end - start);
-
-const std::string simpleQuery = "SELECT * FROM test;";
-const std::string subSelect = "SELECT age, street AS address FROM (SELECT d, e, f FROM a, b);";
+#include "benchmark_utils.h"
 
 
-static void BM_SimpleSelect(benchmark::State& st) {
+PARSE_QUERY_BENCHMARK(BM_SimpleSelect,
+  "SELECT * FROM test;");
+
+PARSE_QUERY_BENCHMARK(BM_SimpleSubSelect, 
+  "SELECT age, street AS address FROM (SELECT * FROM data);");
+
+PARSE_QUERY_BENCHMARK(BM_TwoSelects, 
+  "SELECT * FROM test; SELECT age, street AS address FROM data;");
+
+// Benchmark the influence of increasing size of the query, while
+// the number of tokens remain unchanged.
+static void BM_CharacterCount(benchmark::State& st) {
+  std::string query = "SELECT %name% FROM test;";
+  std::string filler = std::string(st.range(0), 'a');
+  query.replace(7, 6, filler);
+
   while (st.KeepRunning()) {
-    hsql::SQLParserResult* result = hsql::SQLParser::parseSQLString(simpleQuery);
+    hsql::SQLParserResult* result = hsql::SQLParser::parseSQLString(query);
     delete result;
   }
 }
-BENCHMARK(BM_SimpleSelect);
-
-
-static void BM_SubSelectFull(benchmark::State& st) {
-  while (st.KeepRunning()) {
-    hsql::SQLParserResult* result = hsql::SQLParser::parseSQLString(subSelect.c_str());
-    delete result;
-  }
-}
-BENCHMARK(BM_SubSelectFull);
-
-
-
-static void BM_SubSelectLex(benchmark::State& st) {
-  while (st.KeepRunning()) {
-    // auto start = std::chrono::high_resolution_clock::now();
-    
-    // Run the lexer.
-    yyscan_t scanner;
-    YY_BUFFER_STATE state;
-
-    if (hsql_lex_init(&scanner)) {
-      // Couldn't initialize the lexer.
-      fprintf(stderr, "[Error] SQLParser: Error when initializing lexer!\n");
-      break;
-    }
-
-    state = hsql__scan_string(subSelect.c_str(), scanner);
-
-    hsql__delete_buffer(state, scanner);
-    hsql_lex_destroy(scanner);
-  }
-}
-BENCHMARK(BM_SubSelectLex);
+BENCHMARK(BM_CharacterCount)->RangeMultiplier(4)->Range(1 << 4, 1 << 16);
 
 
 BENCHMARK_MAIN();
