@@ -487,6 +487,12 @@ select_no_paren:
 			$$->order = $4;
 			$$->limit = $5;
 		}
+	|	select_clause set_operator select_with_paren opt_order opt_limit {
+			$$ = $1;
+			$$->unionSelect = $3;
+			$$->order = $4;
+			$$->limit = $5;
+		}
 	;
 
 set_operator:
@@ -678,7 +684,7 @@ table_ref:
 
 table_ref_atomic:
 		table_ref_name
-	|	'(' select_statement ')' alias {
+	|	'(' select_statement ')' opt_alias {
 			auto tbl = new TableRef(kTableSelect);
 			tbl->select = $2;
 			tbl->alias = $4;
