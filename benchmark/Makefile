@@ -1,7 +1,7 @@
 
 CFLAGS = -std=c++11 -lstdc++ -Wall -I../src/ -L../
 
-all: run
+all: parser_benchmark
 
 run: parser_benchmark
 	@export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:../ && ./parser_benchmark
