@@ -34,3 +34,5 @@ lib-test/
 
 *.cpp.orig
 *.h.orig
+
+benchmark/parser_benchmark

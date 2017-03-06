@@ -54,6 +54,9 @@ format:
 	astyle --options=astyle.options $(ALLLIB)
 	astyle --options=astyle.options $(ALLTEST)
 
+run_benchmark:
+	make -C benchmark/ clean run
+
 ############
 ### Test ###
 ############
