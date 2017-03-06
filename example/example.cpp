@@ -31,7 +31,11 @@ int main(int argc, char *argv[]) {
         delete result;
         return 0;
     } else {
-        printf("Invalid SQL!\n");
+        fprintf(stderr, "Given string is not a valid SQL query.\n");
+        fprintf(stderr, "%s (L%d:%d)\n", 
+                result->errorMsg(),
+                result->errorLine(),
+                result->errorColumn());
         delete result;
         return -1;
     }
