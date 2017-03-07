@@ -10,7 +10,7 @@
 
 using namespace hsql;
 
-TEST(TPCHQueryTests) {
+TEST(TPCHQueryGrammarTests) {
   std::vector<std::string> files = {
     "test/queries/tpc-h-01.sql",
     "test/queries/tpc-h-02.sql",
@@ -21,7 +21,9 @@ TEST(TPCHQueryTests) {
     "test/queries/tpc-h-07.sql",
     "test/queries/tpc-h-08.sql",
     "test/queries/tpc-h-09.sql",
-    "test/queries/tpc-h-10.sql"
+    "test/queries/tpc-h-10.sql",
+    "test/queries/tpc-h-11-15.sql",
+    "test/queries/tpc-h-16-22.sql"
   };
 
   int testsFailed = 0;
