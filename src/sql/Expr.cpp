@@ -2,6 +2,7 @@
 #include "Expr.h"
 #include <stdio.h>
 #include <string.h>
+#include "SelectStatement.h"
 
 namespace hsql {
 
@@ -9,6 +10,8 @@ namespace hsql {
     type(type),
     expr(NULL),
     expr2(NULL),
+    exprList(NULL),
+    select(NULL),
     name(NULL),
     table(NULL),
     alias(NULL) {};
@@ -16,9 +19,17 @@ namespace hsql {
   Expr::~Expr() {
     delete expr;
     delete expr2;
+    delete select;
     free(name);
     free(table);
     free(alias);
+
+    if (exprList != NULL) {
+      for (Expr* e : *exprList) {
+        delete e;
+      }
+      delete exprList;
+    }
   }
 
   Expr* Expr::makeOpUnary(OperatorType op, Expr* expr) {

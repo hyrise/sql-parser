@@ -478,7 +478,12 @@ select_no_paren:
 		select_clause opt_order opt_limit {
 			$$ = $1;
 			$$->order = $2;
-			$$->limit = $3;
+
+			// Limit could have been set by TOP.
+			if ($3 != NULL) {
+				delete $$->limit;
+				$$->limit = $3;
+			}
 		}
 	|	select_clause set_operator select_clause opt_order opt_limit {
 			// TODO: allow multiple unions (through linked list)
@@ -487,13 +492,23 @@ select_no_paren:
 			$$ = $1;
 			$$->unionSelect = $3;
 			$$->order = $4;
-			$$->limit = $5;
+
+			// Limit could have been set by TOP.
+			if ($5 != NULL) {
+				delete $$->limit;
+				$$->limit = $5;
+			}
 		}
 	|	select_clause set_operator select_with_paren opt_order opt_limit {
 			$$ = $1;
 			$$->unionSelect = $3;
 			$$->order = $4;
-			$$->limit = $5;
+
+			// Limit could have been set by TOP.
+			if ($5 != NULL) {
+				delete $$->limit;
+				$$->limit = $5;
+			}
 		}
 	;
 

@@ -193,7 +193,6 @@ namespace hsql {
     delete whereClause;
     delete groupBy;
     delete unionSelect;
-    delete order;
     delete limit;
 
     // Delete each element in the select list.
@@ -202,6 +201,13 @@ namespace hsql {
         delete expr;
       }
       delete selectList;
+    }
+
+    if (order != NULL) {
+      for (OrderDescription* desc : *order) {
+        delete desc;
+      }
+      delete order;
     }
   }
 

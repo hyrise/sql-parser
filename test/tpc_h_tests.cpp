@@ -38,6 +38,7 @@ TEST(TPCHQueryTests) {
     } else {
       mt::printOk(file_path.c_str());
     }
+    delete result;
   }
   ASSERT_EQ(testsFailed, 0);
 }
