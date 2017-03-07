@@ -6,6 +6,7 @@
 #include <vector>
 
 namespace hsql {
+  class SelectStatement;
 
   // Helper function used by the lexer.
   // TODO: move to more appropriate place.
@@ -19,7 +20,8 @@ namespace hsql {
     kExprPlaceholder,
     kExprColumnRef,
     kExprFunctionRef,
-    kExprOperator
+    kExprOperator,
+    kExprSelect
   };
 
   typedef struct Expr Expr;
@@ -66,6 +68,7 @@ namespace hsql {
     Expr* expr;
     Expr* expr2;
     std::vector<Expr*>* exprList;
+    SelectStatement* select;
     char* name;
     char* table;
     char* alias;
@@ -76,6 +79,7 @@ namespace hsql {
     OperatorType opType;
     char opChar;
     bool distinct;
+
 
     // Convenience accessor methods.
 
@@ -117,6 +121,8 @@ namespace hsql {
     static Expr* makeFunctionRef(char* func_name, std::vector<Expr*>* exprList, bool distinct);
 
     static Expr* makePlaceholder(int id);
+
+    static Expr* makeSelect(SelectStatement* select);
   };
 
 // Zero initializes an Expr object and assigns it to a space in the heap

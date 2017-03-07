@@ -102,6 +102,12 @@ namespace hsql {
     return e;
   }
 
+  Expr* Expr::makeSelect(SelectStatement* select) {
+    Expr* e = new Expr(kExprSelect);
+    e->select = select;
+    return e;
+  }
+
   bool Expr::isType(ExprType e_type) {
     return e_type == type;
   }

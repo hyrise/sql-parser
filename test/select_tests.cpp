@@ -157,3 +157,30 @@ TEST(SelectBetweenTest) {
 
   delete result;
 }
+
+TEST(SelectConditionalSelectTest) {
+  TEST_PARSE_SINGLE_SQL(
+    "SELECT * FROM t WHERE a = (SELECT MIN(v) FROM tt);",
+    kStmtSelect,
+    SelectStatement,
+    result,
+    stmt);
+
+  Expr* where = stmt->whereClause;
+  ASSERT_NOTNULL(where);
+  ASSERT(where->isType(kExprOperator));
+  ASSERT(where->isSimpleOp('='));
+
+  ASSERT_NOTNULL(where->expr);
+  ASSERT_STREQ(where->expr->getName(), "a");
+  ASSERT(where->expr->isType(kExprColumnRef));
+
+  ASSERT_NOTNULL(where->expr2);
+  ASSERT(where->expr2->isType(kExprSelect));
+
+  SelectStatement* select2 = where->expr2->select;
+  ASSERT_NOTNULL(select2);
+  ASSERT_STREQ(select2->fromTable->getName(), "tt")
+
+  delete result;
+}

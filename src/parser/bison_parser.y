@@ -612,6 +612,7 @@ operand:
 	|	unary_expr
 	|	binary_expr
 	|	function_expr
+	|	'(' select_no_paren ')' { $$ = Expr::makeSelect($2); }
 	;
 
 scalar_expr:
@@ -633,7 +634,7 @@ binary_expr:
 	|	operand '*' operand	{ $$ = Expr::makeOpBinary($1, '*', $3); }
 	|	operand '%' operand	{ $$ = Expr::makeOpBinary($1, '%', $3); }
 	|	operand '^' operand	{ $$ = Expr::makeOpBinary($1, '^', $3); }
-	|	operand LIKE operand	{ $$ = Expr::makeOpBinary($1, Expr::LIKE, $3); }
+	|	operand LIKE operand		{ $$ = Expr::makeOpBinary($1, Expr::LIKE, $3); }
 	|	operand NOT LIKE operand	{ $$ = Expr::makeOpBinary($1, Expr::NOT_LIKE, $4); }
 	;
 
@@ -643,11 +644,11 @@ logic_expr:
 	;
 
 comp_expr:
-		operand '=' operand		{ $$ = Expr::makeOpBinary($1, '=', $3); }
+		operand '=' operand			{ $$ = Expr::makeOpBinary($1, '=', $3); }
 	|	operand NOTEQUALS operand	{ $$ = Expr::makeOpBinary($1, Expr::NOT_EQUALS, $3); }
-	|	operand '<' operand		{ $$ = Expr::makeOpBinary($1, '<', $3); }
-	|	operand '>' operand		{ $$ = Expr::makeOpBinary($1, '>', $3); }
-	|	operand LESSEQ operand	{ $$ = Expr::makeOpBinary($1, Expr::LESS_EQ, $3); }
+	|	operand '<' operand			{ $$ = Expr::makeOpBinary($1, '<', $3); }
+	|	operand '>' operand			{ $$ = Expr::makeOpBinary($1, '>', $3); }
+	|	operand LESSEQ operand		{ $$ = Expr::makeOpBinary($1, Expr::LESS_EQ, $3); }
 	|	operand GREATEREQ operand	{ $$ = Expr::makeOpBinary($1, Expr::GREATER_EQ, $3); }
 	;
 
