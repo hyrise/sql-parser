@@ -815,11 +815,15 @@ join_clause:
 		;
 
 opt_join_type:
-		INNER 	{ $$ = kJoinInner; }
-	|	OUTER 	{ $$ = kJoinOuter; }
-	|	LEFT 	{ $$ = kJoinLeft; }
-	|	RIGHT 	{ $$ = kJoinRight; }
-	|	/* empty, default */ 	{ $$ = kJoinInner; }
+		INNER		{ $$ = kJoinInner; }
+	|	OUTER		{ $$ = kJoinOuter; }
+	|	LEFT OUTER	{ $$ = kJoinLeftOuter; }
+	|	RIGHT OUTER	{ $$ = kJoinRightOuter; }
+	|	LEFT		{ $$ = kJoinLeft; }
+	|	RIGHT		{ $$ = kJoinRight; }
+	|	CROSS		{ $$ = kJoinCross; }
+	|	NATURAL		{ $$ = kJoinNatural; }
+	|	/* empty, default */	{ $$ = kJoinInner; }
 	;
 
 

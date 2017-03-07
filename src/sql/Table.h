@@ -47,6 +47,10 @@ namespace hsql {
     kJoinOuter,
     kJoinLeft,
     kJoinRight,
+    kJoinLeftOuter,
+    kJoinRightOuter,
+    kJoinCross,
+    kJoinNatural
   };
 
   // Definition of a join construct.
