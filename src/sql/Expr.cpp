@@ -79,10 +79,10 @@ namespace hsql {
     return e;
   }
 
-  Expr* Expr::makeFunctionRef(char* func_name, Expr* expr, bool distinct) {
+  Expr* Expr::makeFunctionRef(char* func_name, std::vector<Expr*>* exprList, bool distinct) {
     Expr* e = new Expr(kExprFunctionRef);
     e->name = func_name;
-    e->expr = expr;
+    e->exprList = exprList;
     e->distinct = distinct;
     return e;
   }

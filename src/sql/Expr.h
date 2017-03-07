@@ -3,6 +3,7 @@
 
 #include <stdlib.h>
 #include <memory>
+#include <vector>
 
 namespace hsql {
 
@@ -61,6 +62,7 @@ namespace hsql {
 
     Expr* expr;
     Expr* expr2;
+    std::vector<Expr*>* exprList;
     char* name;
     char* table;
     char* alias;
@@ -107,7 +109,7 @@ namespace hsql {
 
     static Expr* makeColumnRef(char* table, char* name);
 
-    static Expr* makeFunctionRef(char* func_name, Expr* expr, bool distinct);
+    static Expr* makeFunctionRef(char* func_name, std::vector<Expr*>* exprList, bool distinct);
 
     static Expr* makePlaceholder(int id);
   };

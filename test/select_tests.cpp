@@ -20,6 +20,45 @@ TEST(SelectTest) {
   delete result;
 }
 
+TEST(SelectExprTest) {
+  TEST_PARSE_SINGLE_SQL(
+    "SELECT a, MAX(b), CUSTOM(c, F(un)) FROM students;",
+    kStmtSelect,
+    SelectStatement,
+    result,
+    stmt);
+
+  ASSERT_NULL(stmt->whereClause);
+  ASSERT_NULL(stmt->groupBy);
+
+  ASSERT_EQ(stmt->selectList->size(), 3);
+  
+  ASSERT(stmt->selectList->at(0)->isType(kExprColumnRef));
+  ASSERT_STREQ(stmt->selectList->at(0)->getName(), "a");
+
+  ASSERT(stmt->selectList->at(1)->isType(kExprFunctionRef));
+  ASSERT_STREQ(stmt->selectList->at(1)->getName(), "MAX");
+  ASSERT_NOTNULL(stmt->selectList->at(1)->exprList);
+  ASSERT_EQ(stmt->selectList->at(1)->exprList->size(), 1);
+  ASSERT(stmt->selectList->at(1)->exprList->at(0)->isType(kExprColumnRef));
+  ASSERT_STREQ(stmt->selectList->at(1)->exprList->at(0)->getName(), "b");
+
+  ASSERT(stmt->selectList->at(2)->isType(kExprFunctionRef));
+  ASSERT_STREQ(stmt->selectList->at(2)->getName(), "CUSTOM");
+  ASSERT_NOTNULL(stmt->selectList->at(2)->exprList);
+  ASSERT_EQ(stmt->selectList->at(2)->exprList->size(), 2);
+  ASSERT(stmt->selectList->at(2)->exprList->at(0)->isType(kExprColumnRef));
+  ASSERT_STREQ(stmt->selectList->at(2)->exprList->at(0)->getName(), "c");
+
+  ASSERT(stmt->selectList->at(2)->exprList->at(1)->isType(kExprFunctionRef));
+  ASSERT_STREQ(stmt->selectList->at(2)->exprList->at(1)->getName(), "F");
+  ASSERT_EQ(stmt->selectList->at(2)->exprList->at(1)->exprList->size(), 1);
+  ASSERT(stmt->selectList->at(2)->exprList->at(1)->exprList->at(0)->isType(kExprColumnRef));
+  ASSERT_STREQ(stmt->selectList->at(2)->exprList->at(1)->exprList->at(0)->getName(), "un");
+
+  delete result;
+}
+
 
 TEST(SelectHavingTest) {
   TEST_PARSE_SINGLE_SQL(

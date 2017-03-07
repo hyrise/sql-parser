@@ -644,7 +644,7 @@ comp_expr:
 	;
 
 function_expr:
-		IDENTIFIER '(' opt_distinct expr ')' { $$ = Expr::makeFunctionRef($1, $4, $3); }
+		IDENTIFIER '(' opt_distinct expr_list ')' { $$ = Expr::makeFunctionRef($1, $4, $3); }
 	;
 
 column_name:
