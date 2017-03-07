@@ -32,7 +32,7 @@ TEST(SelectExprTest) {
   ASSERT_NULL(stmt->groupBy);
 
   ASSERT_EQ(stmt->selectList->size(), 3);
-  
+
   ASSERT(stmt->selectList->at(0)->isType(kExprColumnRef));
   ASSERT_STREQ(stmt->selectList->at(0)->getName(), "a");
 
@@ -111,7 +111,6 @@ TEST(SelectGroupDistinctTest) {
   delete result;
 }
 
-
 TEST(OrderByTest) {
   TEST_PARSE_SINGLE_SQL(
     "SELECT grade, city FROM students ORDER BY grade, city DESC;",
@@ -129,6 +128,32 @@ TEST(OrderByTest) {
 
   ASSERT_EQ(stmt->order->at(1)->type, kOrderDesc);
   ASSERT_STREQ(stmt->order->at(1)->expr->name, "city");
+
+  delete result;
+}
+
+TEST(SelectBetweenTest) {
+  TEST_PARSE_SINGLE_SQL(
+    "SELECT grade, city FROM students WHERE grade BETWEEN 1 and c;",
+    kStmtSelect,
+    SelectStatement,
+    result,
+    stmt);
+
+
+  Expr* where = stmt->whereClause;
+  ASSERT_NOTNULL(where);
+  ASSERT(where->isType(kExprOperator));
+  ASSERT_EQ(where->opType, Expr::BETWEEN);
+
+  ASSERT_STREQ(where->expr->getName(), "grade");
+  ASSERT(where->expr->isType(kExprColumnRef));
+
+  ASSERT_EQ(where->exprList->size(), 2);
+  ASSERT(where->exprList->at(0)->isType(kExprLiteralInt));
+  ASSERT_EQ(where->exprList->at(0)->ival, 1);
+  ASSERT(where->exprList->at(1)->isType(kExprColumnRef));
+  ASSERT_STREQ(where->exprList->at(1)->getName(), "c");
 
   delete result;
 }

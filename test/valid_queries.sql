@@ -10,6 +10,7 @@ SELECT * FROM (SELECT * FROM t1);
 SELECT * FROM t1 UNION (SELECT * FROM t2 UNION SELECT * FROM t3) ORDER BY col1;
 SELECT TOP 10 * FROM t1 ORDER BY col1, col2;
 SELECT a, MAX(b), MAX(c, d), CUSTOM(q, UP(r)) AS f FROM t1;
+SELECT * FROM t WHERE a BETWEEN 1 and c;
 # JOIN
 SELECT t1.a, t1.b, t2.c FROM "table" AS t1 JOIN (SELECT * FROM foo JOIN bar ON foo.id = bar.id) t2 ON t1.a = t2.b WHERE (t1.b OR NOT t1.a) AND t2.c = 12.5
 SELECT * FROM t1 JOIN t2 ON c1 = c2;

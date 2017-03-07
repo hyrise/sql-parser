@@ -32,9 +32,11 @@ namespace hsql {
     // + - * / < > = %
     // Non-trivial are: <> <= >= LIKE ISNULL NOT
     enum OperatorType {
-      SIMPLE_OP,
+      // Ternary operators
+      BETWEEN,
 
       // Binary operators.
+      SIMPLE_OP,
       NOT_EQUALS,
       LESS_EQ,
       GREATER_EQ,
@@ -60,6 +62,7 @@ namespace hsql {
 
     ExprType type;
 
+    // TODO: Replace expressions by list.
     Expr* expr;
     Expr* expr2;
     std::vector<Expr*>* exprList;
@@ -98,6 +101,8 @@ namespace hsql {
     static Expr* makeOpBinary(Expr* expr1, char op, Expr* expr2);
 
     static Expr* makeOpBinary(Expr* expr1, OperatorType op, Expr* expr2);
+
+    static Expr* makeBetween(Expr* expr, Expr* left, Expr* right);
 
     static Expr* makeLiteral(int64_t val);
 

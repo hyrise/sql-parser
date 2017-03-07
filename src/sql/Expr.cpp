@@ -47,6 +47,15 @@ namespace hsql {
     return e;
   }
 
+  Expr* Expr::makeBetween(Expr* expr, Expr* left, Expr* right) {
+    Expr* e = new Expr(kExprOperator);
+    e->expr = expr;
+    e->exprList = new std::vector<Expr*>();
+    e->exprList->push_back(left);
+    e->exprList->push_back(right);
+    return e;
+  }
+
   Expr* Expr::makeLiteral(int64_t val) {
     Expr* e = new Expr(kExprLiteralInt);
     e->ival = val;

@@ -195,7 +195,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult** result, yyscan_t scanner, const ch
 %type <uval>		import_file_type opt_join_type column_type
 %type <table> 		from_clause table_ref table_ref_atomic table_ref_name
 %type <table>		join_clause join_table table_ref_name_no_alias
-%type <expr> 		expr scalar_expr unary_expr binary_expr function_expr star_expr expr_alias placeholder_expr
+%type <expr> 		expr operand scalar_expr unary_expr binary_expr logic_expr function_expr between_expr star_expr expr_alias placeholder_expr
 %type <expr> 		column_name literal int_literal num_literal string_literal
 %type <expr> 		comp_expr opt_where join_condition opt_having
 %type <limit>		opt_limit opt_top
@@ -601,6 +601,12 @@ expr_alias:
 	;
 
 expr:
+		operand
+	|	between_expr
+	|	logic_expr
+	;
+
+operand:
 		'(' expr ')' { $$ = $2; }
 	|	scalar_expr
 	|	unary_expr
@@ -615,36 +621,42 @@ scalar_expr:
 	;
 
 unary_expr:
-		'-' expr { $$ = Expr::makeOpUnary(Expr::UMINUS, $2); }
-	|	NOT expr { $$ = Expr::makeOpUnary(Expr::NOT, $2); }
+		'-' operand { $$ = Expr::makeOpUnary(Expr::UMINUS, $2); }
+	|	NOT operand { $$ = Expr::makeOpUnary(Expr::NOT, $2); }
 	;
 
 binary_expr:
 		comp_expr
-	|	expr '-' expr	{ $$ = Expr::makeOpBinary($1, '-', $3); }
-	|	expr '+' expr	{ $$ = Expr::makeOpBinary($1, '+', $3); }
-	|	expr '/' expr	{ $$ = Expr::makeOpBinary($1, '/', $3); }
-	|	expr '*' expr	{ $$ = Expr::makeOpBinary($1, '*', $3); }
-	|	expr '%' expr	{ $$ = Expr::makeOpBinary($1, '%', $3); }
-	|	expr '^' expr	{ $$ = Expr::makeOpBinary($1, '^', $3); }
-	|	expr AND expr	{ $$ = Expr::makeOpBinary($1, Expr::AND, $3); }
-	|	expr OR expr	{ $$ = Expr::makeOpBinary($1, Expr::OR, $3); }
-	|	expr LIKE expr	{ $$ = Expr::makeOpBinary($1, Expr::LIKE, $3); }
-	|	expr NOT LIKE expr	{ $$ = Expr::makeOpBinary($1, Expr::NOT_LIKE, $4); }
+	|	operand '-' operand	{ $$ = Expr::makeOpBinary($1, '-', $3); }
+	|	operand '+' operand	{ $$ = Expr::makeOpBinary($1, '+', $3); }
+	|	operand '/' operand	{ $$ = Expr::makeOpBinary($1, '/', $3); }
+	|	operand '*' operand	{ $$ = Expr::makeOpBinary($1, '*', $3); }
+	|	operand '%' operand	{ $$ = Expr::makeOpBinary($1, '%', $3); }
+	|	operand '^' operand	{ $$ = Expr::makeOpBinary($1, '^', $3); }
+	|	operand LIKE operand	{ $$ = Expr::makeOpBinary($1, Expr::LIKE, $3); }
+	|	operand NOT LIKE operand	{ $$ = Expr::makeOpBinary($1, Expr::NOT_LIKE, $4); }
 	;
 
+logic_expr:
+		expr AND expr	{ $$ = Expr::makeOpBinary($1, Expr::AND, $3); }
+	|	expr OR expr	{ $$ = Expr::makeOpBinary($1, Expr::OR, $3); }
+	;
 
 comp_expr:
-		expr '=' expr		{ $$ = Expr::makeOpBinary($1, '=', $3); }
-	|	expr NOTEQUALS expr	{ $$ = Expr::makeOpBinary($1, Expr::NOT_EQUALS, $3); }
-	|	expr '<' expr		{ $$ = Expr::makeOpBinary($1, '<', $3); }
-	|	expr '>' expr		{ $$ = Expr::makeOpBinary($1, '>', $3); }
-	|	expr LESSEQ expr	{ $$ = Expr::makeOpBinary($1, Expr::LESS_EQ, $3); }
-	|	expr GREATEREQ expr	{ $$ = Expr::makeOpBinary($1, Expr::GREATER_EQ, $3); }
+		operand '=' operand		{ $$ = Expr::makeOpBinary($1, '=', $3); }
+	|	operand NOTEQUALS operand	{ $$ = Expr::makeOpBinary($1, Expr::NOT_EQUALS, $3); }
+	|	operand '<' operand		{ $$ = Expr::makeOpBinary($1, '<', $3); }
+	|	operand '>' operand		{ $$ = Expr::makeOpBinary($1, '>', $3); }
+	|	operand LESSEQ operand	{ $$ = Expr::makeOpBinary($1, Expr::LESS_EQ, $3); }
+	|	operand GREATEREQ operand	{ $$ = Expr::makeOpBinary($1, Expr::GREATER_EQ, $3); }
 	;
 
 function_expr:
 		IDENTIFIER '(' opt_distinct expr_list ')' { $$ = Expr::makeFunctionRef($1, $4, $3); }
+	;
+
+between_expr:
+		operand BETWEEN operand AND operand { $$ = Expr::makeBetween($1, $3, $5); }
 	;
 
 column_name:

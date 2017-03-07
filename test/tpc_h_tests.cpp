@@ -28,8 +28,8 @@ TEST(TPCHQueryTests) {
   for (const std::string& file_path : files) {
     std::ifstream t(file_path.c_str());
     std::string query((std::istreambuf_iterator<char>(t)),
-                       std::istreambuf_iterator<char>());
-    
+                      std::istreambuf_iterator<char>());
+
     SQLParserResult* result = SQLParser::parseSQLString(query.c_str());
     if (!result->isValid()) {
       mt::printFailed(file_path.c_str());
