@@ -169,12 +169,11 @@ int yyerror(YYLTYPE* llocp, SQLParserResult** result, yyscan_t scanner, const ch
 %token INSERT ISNULL OFFSET RENAME SCHEMA SELECT SORTED
 %token TABLES UNIQUE UNLOAD UPDATE VALUES AFTER ALTER CROSS
 %token DELTA GROUP INDEX INNER LIMIT LOCAL MERGE MINUS ORDER
-%token OUTER RIGHT TABLE UNION USING WHERE CALL DATE DESC
-%token DROP FILE FROM FULL HASH HINT INTO JOIN LEFT LIKE
-%token LOAD NULL PART PLAN SHOW TEXT TIME VIEW WITH ADD ALL
-%token AND ASC CSV FOR INT KEY NOT OFF SET TBL TOP AS BY IF
-%token IN IS OF ON OR TO
-
+%token OUTER RIGHT TABLE UNION USING WHERE CALL CASE DATE
+%token DESC DROP ELSE FILE FROM FULL HASH HINT INTO JOIN
+%token LEFT LIKE LOAD NULL PART PLAN SHOW TEXT THEN TIME
+%token VIEW WHEN WITH ADD ALL AND ASC CSV END FOR INT KEY
+%token NOT OFF SET TBL TOP AS BY IF IN IS OF ON OR TO
 
 /*********************************
  ** Non-Terminal types (http://www.gnu.org/software/bison/manual/html_node/Type-Decl.html)
@@ -198,7 +197,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult** result, yyscan_t scanner, const ch
 %type <expr> 		expr operand scalar_expr unary_expr binary_expr logic_expr exists_expr
 %type <expr>		function_expr between_expr star_expr expr_alias placeholder_expr
 %type <expr> 		column_name literal int_literal num_literal string_literal
-%type <expr> 		comp_expr opt_where join_condition opt_having
+%type <expr> 		comp_expr opt_where join_condition opt_having case_expr
 %type <limit>		opt_limit opt_top
 %type <order>		order_desc
 %type <order_type>	opt_order_type
@@ -606,6 +605,7 @@ expr:
 	|	between_expr
 	|	logic_expr
 	|	exists_expr
+	|	case_expr
 	;
 
 operand:
@@ -643,6 +643,11 @@ binary_expr:
 logic_expr:
 		expr AND expr	{ $$ = Expr::makeOpBinary($1, Expr::AND, $3); }
 	|	expr OR expr	{ $$ = Expr::makeOpBinary($1, Expr::OR, $3); }
+	;
+
+// TODO: allow no else specified
+case_expr:
+		CASE WHEN operand THEN operand ELSE operand END { $$ = Expr::makeCase($3, $5, $7); }
 	;
 
 exists_expr:

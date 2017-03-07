@@ -184,7 +184,7 @@ TEST(SelectConditionalSelectTest) {
 
   SelectStatement* select2 = cond1->expr2->select;
   ASSERT_NOTNULL(select2);
-  ASSERT_STREQ(select2->fromTable->getName(), "tt")
+  ASSERT_STREQ(select2->fromTable->getName(), "tt");
 
 
   // EXISTS (SELECT ...)
@@ -193,7 +193,33 @@ TEST(SelectConditionalSelectTest) {
   ASSERT_NOTNULL(cond2->select);
 
   SelectStatement* ex_select = cond2->select;
-  ASSERT_STREQ(ex_select->fromTable->getName(), "test")
+  ASSERT_STREQ(ex_select->fromTable->getName(), "test");
+
+  delete result;
+}
+
+TEST(SelectCaseWhen) {
+  TEST_PARSE_SINGLE_SQL(
+    "SELECT MAX(CASE WHEN a = 'foo' THEN x ELSE 0 END) FROM test;",
+    kStmtSelect,
+    SelectStatement,
+    result,
+    stmt);
+
+  ASSERT_EQ(stmt->selectList->size(), 1);
+  Expr* func = stmt->selectList->at(0);
+
+  ASSERT_NOTNULL(func);
+  ASSERT(func->isType(kExprFunctionRef));
+  ASSERT_EQ(func->exprList->size(), 1);
+
+  Expr* caseExpr = func->exprList->at(0);
+  ASSERT_NOTNULL(caseExpr);
+  ASSERT(caseExpr->isType(kExprOperator));
+  ASSERT_EQ(caseExpr->opType, Expr::CASE);
+  ASSERT(caseExpr->expr->isType(kExprOperator));
+  ASSERT(caseExpr->expr->isSimpleOp('='));
+  ASSERT_EQ(caseExpr->exprList->size(), 2);
 
   delete result;
 }

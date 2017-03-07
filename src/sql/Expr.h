@@ -38,6 +38,7 @@ namespace hsql {
 
       // Ternary operators
       BETWEEN,
+      CASE,
 
       // Binary operators.
       SIMPLE_OP,
@@ -110,6 +111,8 @@ namespace hsql {
     static Expr* makeOpBinary(Expr* expr1, OperatorType op, Expr* expr2);
 
     static Expr* makeBetween(Expr* expr, Expr* left, Expr* right);
+
+    static Expr* makeCase(Expr* expr, Expr* then, Expr* other);
 
     static Expr* makeLiteral(int64_t val);
 

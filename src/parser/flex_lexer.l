@@ -54,10 +54,7 @@
 <COMMENT>[^\n]*	/* skipping comment content until a end of line is read */;
 <COMMENT>\n 	BEGIN(INITIAL);
 
-
 [ \t\n]+	/* skip whitespace */;
-
-
 
 DEALLOCATE	TOKEN(DEALLOCATE)
 PARAMETERS	TOKEN(PARAMETERS)
@@ -127,9 +124,11 @@ UNION		TOKEN(UNION)
 USING		TOKEN(USING)
 WHERE		TOKEN(WHERE)
 CALL		TOKEN(CALL)
+CASE		TOKEN(CASE)
 DATE		TOKEN(DATE)
 DESC		TOKEN(DESC)
 DROP		TOKEN(DROP)
+ELSE		TOKEN(ELSE)
 FILE		TOKEN(FILE)
 FROM		TOKEN(FROM)
 FULL		TOKEN(FULL)
@@ -145,14 +144,17 @@ PART		TOKEN(PART)
 PLAN		TOKEN(PLAN)
 SHOW		TOKEN(SHOW)
 TEXT		TOKEN(TEXT)
+THEN		TOKEN(THEN)
 TIME		TOKEN(TIME)
 VIEW		TOKEN(VIEW)
+WHEN		TOKEN(WHEN)
 WITH		TOKEN(WITH)
 ADD			TOKEN(ADD)
 ALL			TOKEN(ALL)
 AND			TOKEN(AND)
 ASC			TOKEN(ASC)
 CSV			TOKEN(CSV)
+END			TOKEN(END)
 FOR			TOKEN(FOR)
 INT			TOKEN(INT)
 KEY			TOKEN(KEY)
@@ -171,14 +173,11 @@ ON			TOKEN(ON)
 OR			TOKEN(OR)
 TO			TOKEN(TO)
 
-
 "<>" 		TOKEN(NOTEQUALS)
 "<="		TOKEN(LESSEQ)
 ">="		TOKEN(GREATEREQ)
 
-
 [-+*/(){},.;<>=^%:?]	{ return yytext[0]; }
-
 
 [0-9]+"."[0-9]* |
 "."[0-9]*	{
@@ -201,7 +200,6 @@ TO			TOKEN(TO)
 	yylval->sval = strdup(yytext);
 	return SQL_IDENTIFIER;
 }
-
 
 '[^'\n]*' {
 	// Crop the leading and trailing quote char
