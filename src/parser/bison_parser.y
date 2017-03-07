@@ -131,6 +131,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult** result, yyscan_t scanner, const ch
 	std::vector<hsql::ColumnDefinition*>* column_vec;
 	std::vector<hsql::UpdateClause*>* update_vec;
 	std::vector<hsql::Expr*>* expr_vec;
+	std::vector<hsql::OrderDescription*>* order_vec;
 }
 
 
@@ -146,7 +147,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult** result, yyscan_t scanner, const ch
 		}
 	}
 	delete ($$);
-} <str_vec> <table_vec> <column_vec> <update_vec> <expr_vec>
+} <str_vec> <table_vec> <column_vec> <update_vec> <expr_vec> <order_vec>
 %destructor { delete ($$); } <*>
 
 
@@ -197,8 +198,8 @@ int yyerror(YYLTYPE* llocp, SQLParserResult** result, yyscan_t scanner, const ch
 %type <expr> 		expr scalar_expr unary_expr binary_expr function_expr star_expr expr_alias placeholder_expr
 %type <expr> 		column_name literal int_literal num_literal string_literal
 %type <expr> 		comp_expr opt_where join_condition opt_having
-%type <order>		opt_order
-%type <limit>		opt_limit
+%type <limit>		opt_limit opt_top
+%type <order>		order_desc
 %type <order_type>	opt_order_type
 %type <column_t>	column_def
 %type <update_t>	update_clause
@@ -207,6 +208,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult** result, yyscan_t scanner, const ch
 %type <str_vec>		ident_commalist opt_column_list
 %type <expr_vec> 	expr_list select_list literal_list
 %type <table_vec> 	table_ref_commalist
+%type <order_vec>	opt_order order_list
 %type <update_vec>	update_clause_commalist
 %type <column_vec>	column_def_commalist
 
@@ -502,13 +504,14 @@ set_operator:
 	;
 
 select_clause:
-		SELECT opt_distinct select_list from_clause opt_where opt_group {
+		SELECT opt_top opt_distinct select_list from_clause opt_where opt_group {
 			$$ = new SelectStatement();
-			$$->selectDistinct = $2;
-			$$->selectList = $3;
-			$$->fromTable = $4;
-			$$->whereClause = $5;
-			$$->groupBy = $6;
+			$$->limit = $2;
+			$$->selectDistinct = $3;
+			$$->selectList = $4;
+			$$->fromTable = $5;
+			$$->whereClause = $6;
+			$$->groupBy = $7;
 		}
 	;
 
@@ -520,7 +523,6 @@ opt_distinct:
 select_list:
 		expr_list
 	;
-
 
 from_clause:
 		FROM table_ref { $$ = $2; }
@@ -546,8 +548,17 @@ opt_having:
 	|	/* empty */ { $$ = NULL; }
 
 opt_order:
-		ORDER BY expr opt_order_type { $$ = new OrderDescription($4, $3); }
+		ORDER BY order_list { $$ = $3; }
 	|	/* empty */ { $$ = NULL; }
+	;
+
+order_list:
+		order_desc { $$ = new std::vector<OrderDescription*>(); $$->push_back($1); }
+	|	order_list ',' order_desc { $1->push_back($3); $$ = $1; }
+	;
+
+order_desc:
+		expr opt_order_type { $$ = new OrderDescription($2, $1); }
 	;
 
 opt_order_type:
@@ -556,6 +567,12 @@ opt_order_type:
 	|	/* empty */ { $$ = kOrderAsc; }
 	;
 
+// TODO: TOP and LIMIT can take more than just int literals.
+
+opt_top:
+		TOP int_literal { $$ = new LimitDescription($2->ival, kNoOffset); delete $2; }
+	|	/* empty */ { $$ = NULL; }
+	;
 
 opt_limit:
 		LIMIT int_literal { $$ = new LimitDescription($2->ival, kNoOffset); delete $2; }

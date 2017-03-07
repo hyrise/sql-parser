@@ -73,3 +73,23 @@ TEST(SelectGroupDistinctTest) {
 }
 
 
+TEST(OrderByTest) {
+  TEST_PARSE_SINGLE_SQL(
+    "SELECT grade, city FROM students ORDER BY grade, city DESC;",
+    kStmtSelect,
+    SelectStatement,
+    result,
+    stmt);
+
+  ASSERT_NULL(stmt->whereClause);
+  ASSERT_NOTNULL(stmt->order);
+
+  ASSERT_EQ(stmt->order->size(), 2);
+  ASSERT_EQ(stmt->order->at(0)->type, kOrderAsc);
+  ASSERT_STREQ(stmt->order->at(0)->expr->name, "grade");
+
+  ASSERT_EQ(stmt->order->at(1)->type, kOrderDesc);
+  ASSERT_STREQ(stmt->order->at(1)->expr->name, "city");
+
+  delete result;
+}

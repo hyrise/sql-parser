@@ -139,8 +139,8 @@ namespace hsql {
 
     if (stmt->order != NULL) {
       inprint("OrderBy:", numIndent + 1);
-      printExpression(stmt->order->expr, numIndent + 2);
-      if (stmt->order->type == kOrderAsc) inprint("ascending", numIndent + 2);
+      printExpression(stmt->order->at(0)->expr, numIndent + 2);
+      if (stmt->order->at(0)->type == kOrderAsc) inprint("ascending", numIndent + 2);
       else inprint("descending", numIndent + 2);
     }
 

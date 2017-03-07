@@ -63,7 +63,7 @@ namespace hsql {
     GroupByDescription* groupBy;
 
     SelectStatement* unionSelect;
-    OrderDescription* order;
+    std::vector<OrderDescription*>* order;
     LimitDescription* limit;
   };
 
