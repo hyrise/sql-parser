@@ -133,9 +133,9 @@ namespace hsql {
 
     static Expr* makeExists(SelectStatement* select);
 
-    static Expr* makeInOperator(Expr* expr, std::vector<Expr*>* exprList, bool notIn);
+    static Expr* makeInOperator(Expr* expr, std::vector<Expr*>* exprList);
 
-    static Expr* makeInOperator(Expr* expr, SelectStatement* select, bool notIn);
+    static Expr* makeInOperator(Expr* expr, SelectStatement* select);
   };
 
 // Zero initializes an Expr object and assigns it to a space in the heap

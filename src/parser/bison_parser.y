@@ -661,12 +661,11 @@ logic_expr:
 	|	expr OR expr	{ $$ = Expr::makeOpBinary($1, Expr::OR, $3); }
 	;
 
-// TODO:
 in_expr:
-		operand IN '(' expr_list ')'			{ $$ = Expr::makeInOperator($1, $4, false); }
-	|	operand NOT IN '(' expr_list ')'		{ $$ = Expr::makeInOperator($1, $5, true); }
-	|	operand IN '(' select_no_paren ')'		{ $$ = Expr::makeInOperator($1, $4, false); }
-	|	operand NOT IN '(' select_no_paren ')'	{ $$ = Expr::makeInOperator($1, $5, true); }
+		operand IN '(' expr_list ')'			{ $$ = Expr::makeInOperator($1, $4); }
+	|	operand NOT IN '(' expr_list ')'		{ $$ = Expr::makeOpUnary(Expr::NOT, Expr::makeInOperator($1, $5)); }
+	|	operand IN '(' select_no_paren ')'		{ $$ = Expr::makeInOperator($1, $4); }
+	|	operand NOT IN '(' select_no_paren ')'	{ $$ = Expr::makeOpUnary(Expr::NOT, Expr::makeInOperator($1, $5)); }
 	;
 
 // TODO: allow no else specified
@@ -676,6 +675,7 @@ case_expr:
 
 exists_expr:
 		EXISTS '(' select_no_paren ')' { $$ = Expr::makeExists($3); }
+	|	NOT EXISTS '(' select_no_paren ')' { $$ = Expr::makeOpUnary(Expr::NOT, Expr::makeExists($4)); }
 	;
 
 comp_expr:
