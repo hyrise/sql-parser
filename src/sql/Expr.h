@@ -34,6 +34,8 @@ namespace hsql {
     // + - * / < > = %
     // Non-trivial are: <> <= >= LIKE ISNULL NOT
     enum OperatorType {
+      NONE,
+
       // Ternary operators
       BETWEEN,
 
@@ -50,7 +52,8 @@ namespace hsql {
       // Unary operators.
       NOT,
       UMINUS,
-      ISNULL
+      ISNULL,
+      EXISTS
     };
 
 
@@ -123,6 +126,8 @@ namespace hsql {
     static Expr* makePlaceholder(int id);
 
     static Expr* makeSelect(SelectStatement* select);
+
+    static Expr* makeExists(SelectStatement* select);
   };
 
 // Zero initializes an Expr object and assigns it to a space in the heap

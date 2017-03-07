@@ -50,6 +50,7 @@ namespace hsql {
   Expr* Expr::makeBetween(Expr* expr, Expr* left, Expr* right) {
     Expr* e = new Expr(kExprOperator);
     e->expr = expr;
+    e->opType = BETWEEN;
     e->exprList = new std::vector<Expr*>();
     e->exprList->push_back(left);
     e->exprList->push_back(right);
@@ -104,6 +105,13 @@ namespace hsql {
 
   Expr* Expr::makeSelect(SelectStatement* select) {
     Expr* e = new Expr(kExprSelect);
+    e->select = select;
+    return e;
+  }
+
+  Expr* Expr::makeExists(SelectStatement* select) {
+    Expr* e = new Expr(kExprOperator);
+    e->opType = EXISTS;
     e->select = select;
     return e;
   }

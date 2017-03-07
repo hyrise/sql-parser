@@ -160,7 +160,7 @@ TEST(SelectBetweenTest) {
 
 TEST(SelectConditionalSelectTest) {
   TEST_PARSE_SINGLE_SQL(
-    "SELECT * FROM t WHERE a = (SELECT MIN(v) FROM tt);",
+    "SELECT * FROM t WHERE a = (SELECT MIN(v) FROM tt) AND EXISTS (SELECT * FROM test WHERE x < a);",
     kStmtSelect,
     SelectStatement,
     result,
@@ -169,18 +169,31 @@ TEST(SelectConditionalSelectTest) {
   Expr* where = stmt->whereClause;
   ASSERT_NOTNULL(where);
   ASSERT(where->isType(kExprOperator));
-  ASSERT(where->isSimpleOp('='));
+  ASSERT_EQ(where->opType, Expr::AND);
 
-  ASSERT_NOTNULL(where->expr);
-  ASSERT_STREQ(where->expr->getName(), "a");
-  ASSERT(where->expr->isType(kExprColumnRef));
+  // a = (SELECT ...)
+  Expr* cond1 = where->expr;
+  ASSERT_NOTNULL(cond1);
+  ASSERT_NOTNULL(cond1->expr);
+  ASSERT(cond1->isSimpleOp('='));
+  ASSERT_STREQ(cond1->expr->getName(), "a");
+  ASSERT(cond1->expr->isType(kExprColumnRef));
 
-  ASSERT_NOTNULL(where->expr2);
-  ASSERT(where->expr2->isType(kExprSelect));
+  ASSERT_NOTNULL(cond1->expr2);
+  ASSERT(cond1->expr2->isType(kExprSelect));
 
-  SelectStatement* select2 = where->expr2->select;
+  SelectStatement* select2 = cond1->expr2->select;
   ASSERT_NOTNULL(select2);
   ASSERT_STREQ(select2->fromTable->getName(), "tt")
+
+
+  // EXISTS (SELECT ...)
+  Expr* cond2 = where->expr2;
+  ASSERT_EQ(cond2->opType, Expr::EXISTS);
+  ASSERT_NOTNULL(cond2->select);
+
+  SelectStatement* ex_select = cond2->select;
+  ASSERT_STREQ(ex_select->fromTable->getName(), "test")
 
   delete result;
 }
