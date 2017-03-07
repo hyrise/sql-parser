@@ -49,6 +49,7 @@ namespace hsql {
       NOT_LIKE,
       AND,
       OR,
+      IN,
 
       // Unary operators.
       NOT,
@@ -131,6 +132,10 @@ namespace hsql {
     static Expr* makeSelect(SelectStatement* select);
 
     static Expr* makeExists(SelectStatement* select);
+
+    static Expr* makeInOperator(Expr* expr, std::vector<Expr*>* exprList, bool notIn);
+
+    static Expr* makeInOperator(Expr* expr, SelectStatement* select, bool notIn);
   };
 
 // Zero initializes an Expr object and assigns it to a space in the heap

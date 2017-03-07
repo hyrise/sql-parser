@@ -137,6 +137,40 @@ namespace hsql {
     return e;
   }
 
+  Expr* Expr::makeInOperator(Expr* expr, std::vector<Expr*>* exprList, bool notIn) {
+    Expr* e = new Expr(kExprOperator);
+    e->opType = IN;
+    e->expr = expr;
+    e->exprList = exprList;
+
+    // If it is NOT IN, wrap the IN in a NOT operator.
+    if (notIn) {
+      Expr* neg = new Expr(kExprOperator);
+      neg->opType = NOT;
+      neg->expr = e;
+      return neg;
+    }
+
+    return e;
+  }
+
+  Expr* Expr::makeInOperator(Expr* expr, SelectStatement* select, bool notIn) {
+    Expr* e = new Expr(kExprOperator);
+    e->opType = IN;
+    e->expr = expr;
+    e->select = select;
+
+    // If it is NOT IN, wrap the IN in a NOT operator.
+    if (notIn) {
+      Expr* neg = new Expr(kExprOperator);
+      neg->opType = NOT;
+      neg->expr = e;
+      return neg;
+    }
+
+    return e;
+  }
+
   bool Expr::isType(ExprType e_type) {
     return e_type == type;
   }

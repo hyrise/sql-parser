@@ -197,7 +197,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult** result, yyscan_t scanner, const ch
 %type <expr> 		expr operand scalar_expr unary_expr binary_expr logic_expr exists_expr
 %type <expr>		function_expr between_expr star_expr expr_alias placeholder_expr
 %type <expr> 		column_name literal int_literal num_literal string_literal
-%type <expr> 		comp_expr opt_where join_condition opt_having case_expr
+%type <expr> 		comp_expr opt_where join_condition opt_having case_expr in_expr
 %type <limit>		opt_limit opt_top
 %type <order>		order_desc
 %type <order_type>	opt_order_type
@@ -621,6 +621,7 @@ expr:
 	|	logic_expr
 	|	exists_expr
 	|	case_expr
+	|	in_expr
 	;
 
 operand:
@@ -645,12 +646,12 @@ unary_expr:
 
 binary_expr:
 		comp_expr
-	|	operand '-' operand	{ $$ = Expr::makeOpBinary($1, '-', $3); }
-	|	operand '+' operand	{ $$ = Expr::makeOpBinary($1, '+', $3); }
-	|	operand '/' operand	{ $$ = Expr::makeOpBinary($1, '/', $3); }
-	|	operand '*' operand	{ $$ = Expr::makeOpBinary($1, '*', $3); }
-	|	operand '%' operand	{ $$ = Expr::makeOpBinary($1, '%', $3); }
-	|	operand '^' operand	{ $$ = Expr::makeOpBinary($1, '^', $3); }
+	|	operand '-' operand			{ $$ = Expr::makeOpBinary($1, '-', $3); }
+	|	operand '+' operand			{ $$ = Expr::makeOpBinary($1, '+', $3); }
+	|	operand '/' operand			{ $$ = Expr::makeOpBinary($1, '/', $3); }
+	|	operand '*' operand			{ $$ = Expr::makeOpBinary($1, '*', $3); }
+	|	operand '%' operand			{ $$ = Expr::makeOpBinary($1, '%', $3); }
+	|	operand '^' operand			{ $$ = Expr::makeOpBinary($1, '^', $3); }
 	|	operand LIKE operand		{ $$ = Expr::makeOpBinary($1, Expr::LIKE, $3); }
 	|	operand NOT LIKE operand	{ $$ = Expr::makeOpBinary($1, Expr::NOT_LIKE, $4); }
 	;
@@ -660,9 +661,17 @@ logic_expr:
 	|	expr OR expr	{ $$ = Expr::makeOpBinary($1, Expr::OR, $3); }
 	;
 
+// TODO:
+in_expr:
+		operand IN '(' expr_list ')'			{ $$ = Expr::makeInOperator($1, $4, false); }
+	|	operand NOT IN '(' expr_list ')'		{ $$ = Expr::makeInOperator($1, $5, true); }
+	|	operand IN '(' select_no_paren ')'		{ $$ = Expr::makeInOperator($1, $4, false); }
+	|	operand NOT IN '(' select_no_paren ')'	{ $$ = Expr::makeInOperator($1, $5, true); }
+	;
+
 // TODO: allow no else specified
 case_expr:
-		CASE WHEN operand THEN operand ELSE operand END { $$ = Expr::makeCase($3, $5, $7); }
+		CASE WHEN expr THEN operand ELSE operand END { $$ = Expr::makeCase($3, $5, $7); }
 	;
 
 exists_expr:
@@ -714,7 +723,6 @@ int_literal:
 star_expr:
 		'*' { $$ = new Expr(kExprStar); }
 	;
-
 
 placeholder_expr:
 		'?' {
