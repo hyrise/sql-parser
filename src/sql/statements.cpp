@@ -138,7 +138,7 @@ namespace hsql {
         placeholders.push_back((Expr*) e);
     }
     // Sort by col-id
-    std::sort(placeholders.begin(), placeholders.end(), [](Expr* i, Expr* j) -> bool { return (i->ival < j->ival); });
+    std::sort(placeholders.begin(), placeholders.end(), [](Expr * i, Expr * j) -> bool { return (i->ival < j->ival); });
 
     // Set the placeholder id on the Expr. This replaces the previously stored column id
     for (uintmax_t i = 0; i < placeholders.size(); ++i) placeholders[i]->ival = i;

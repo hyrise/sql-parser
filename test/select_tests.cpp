@@ -46,7 +46,7 @@ TEST(SelectDistinctTest) {
   TEST_PARSE_SINGLE_SQL(
     "SELECT DISTINCT grade, city FROM students;",
     kStmtSelect,
-    SelectStatement, 
+    SelectStatement,
     result,
     stmt);
 
