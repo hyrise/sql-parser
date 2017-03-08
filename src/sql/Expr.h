@@ -3,8 +3,10 @@
 
 #include <stdlib.h>
 #include <memory>
+#include <vector>
 
 namespace hsql {
+  class SelectStatement;
 
   // Helper function used by the lexer.
   // TODO: move to more appropriate place.
@@ -18,7 +20,8 @@ namespace hsql {
     kExprPlaceholder,
     kExprColumnRef,
     kExprFunctionRef,
-    kExprOperator
+    kExprOperator,
+    kExprSelect
   };
 
   typedef struct Expr Expr;
@@ -31,9 +34,14 @@ namespace hsql {
     // + - * / < > = %
     // Non-trivial are: <> <= >= LIKE ISNULL NOT
     enum OperatorType {
-      SIMPLE_OP,
+      NONE,
+
+      // Ternary operators
+      BETWEEN,
+      CASE,
 
       // Binary operators.
+      SIMPLE_OP,
       NOT_EQUALS,
       LESS_EQ,
       GREATER_EQ,
@@ -41,11 +49,13 @@ namespace hsql {
       NOT_LIKE,
       AND,
       OR,
+      IN,
 
       // Unary operators.
       NOT,
       UMINUS,
-      ISNULL
+      ISNULL,
+      EXISTS
     };
 
 
@@ -59,8 +69,11 @@ namespace hsql {
 
     ExprType type;
 
+    // TODO: Replace expressions by list.
     Expr* expr;
     Expr* expr2;
+    std::vector<Expr*>* exprList;
+    SelectStatement* select;
     char* name;
     char* table;
     char* alias;
@@ -71,6 +84,7 @@ namespace hsql {
     OperatorType opType;
     char opChar;
     bool distinct;
+
 
     // Convenience accessor methods.
 
@@ -97,6 +111,10 @@ namespace hsql {
 
     static Expr* makeOpBinary(Expr* expr1, OperatorType op, Expr* expr2);
 
+    static Expr* makeBetween(Expr* expr, Expr* left, Expr* right);
+
+    static Expr* makeCase(Expr* expr, Expr* then, Expr* other);
+
     static Expr* makeLiteral(int64_t val);
 
     static Expr* makeLiteral(double val);
@@ -107,9 +125,17 @@ namespace hsql {
 
     static Expr* makeColumnRef(char* table, char* name);
 
-    static Expr* makeFunctionRef(char* func_name, Expr* expr, bool distinct);
+    static Expr* makeFunctionRef(char* func_name, std::vector<Expr*>* exprList, bool distinct);
 
     static Expr* makePlaceholder(int id);
+
+    static Expr* makeSelect(SelectStatement* select);
+
+    static Expr* makeExists(SelectStatement* select);
+
+    static Expr* makeInOperator(Expr* expr, std::vector<Expr*>* exprList);
+
+    static Expr* makeInOperator(Expr* expr, SelectStatement* select);
   };
 
 // Zero initializes an Expr object and assigns it to a space in the heap

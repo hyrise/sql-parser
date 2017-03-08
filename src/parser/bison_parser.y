@@ -131,6 +131,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult** result, yyscan_t scanner, const ch
 	std::vector<hsql::ColumnDefinition*>* column_vec;
 	std::vector<hsql::UpdateClause*>* update_vec;
 	std::vector<hsql::Expr*>* expr_vec;
+	std::vector<hsql::OrderDescription*>* order_vec;
 }
 
 
@@ -146,7 +147,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult** result, yyscan_t scanner, const ch
 		}
 	}
 	delete ($$);
-} <str_vec> <table_vec> <column_vec> <update_vec> <expr_vec>
+} <str_vec> <table_vec> <column_vec> <update_vec> <expr_vec> <order_vec>
 %destructor { delete ($$); } <*>
 
 
@@ -168,12 +169,11 @@ int yyerror(YYLTYPE* llocp, SQLParserResult** result, yyscan_t scanner, const ch
 %token INSERT ISNULL OFFSET RENAME SCHEMA SELECT SORTED
 %token TABLES UNIQUE UNLOAD UPDATE VALUES AFTER ALTER CROSS
 %token DELTA GROUP INDEX INNER LIMIT LOCAL MERGE MINUS ORDER
-%token OUTER RIGHT TABLE UNION USING WHERE CALL DATE DESC
-%token DROP FILE FROM FULL HASH HINT INTO JOIN LEFT LIKE
-%token LOAD NULL PART PLAN SHOW TEXT TIME VIEW WITH ADD ALL
-%token AND ASC CSV FOR INT KEY NOT OFF SET TBL TOP AS BY IF
-%token IN IS OF ON OR TO
-
+%token OUTER RIGHT TABLE UNION USING WHERE CALL CASE DATE
+%token DESC DROP ELSE FILE FROM FULL HASH HINT INTO JOIN
+%token LEFT LIKE LOAD NULL PART PLAN SHOW TEXT THEN TIME
+%token VIEW WHEN WITH ADD ALL AND ASC CSV END FOR INT KEY
+%token NOT OFF SET TBL TOP AS BY IF IN IS OF ON OR TO
 
 /*********************************
  ** Non-Terminal types (http://www.gnu.org/software/bison/manual/html_node/Type-Decl.html)
@@ -194,11 +194,12 @@ int yyerror(YYLTYPE* llocp, SQLParserResult** result, yyscan_t scanner, const ch
 %type <uval>		import_file_type opt_join_type column_type
 %type <table> 		from_clause table_ref table_ref_atomic table_ref_name
 %type <table>		join_clause join_table table_ref_name_no_alias
-%type <expr> 		expr scalar_expr unary_expr binary_expr function_expr star_expr expr_alias placeholder_expr
+%type <expr> 		expr operand scalar_expr unary_expr binary_expr logic_expr exists_expr
+%type <expr>		function_expr between_expr star_expr expr_alias placeholder_expr
 %type <expr> 		column_name literal int_literal num_literal string_literal
-%type <expr> 		comp_expr opt_where join_condition opt_having
-%type <order>		opt_order
-%type <limit>		opt_limit
+%type <expr> 		comp_expr opt_where join_condition opt_having case_expr in_expr
+%type <limit>		opt_limit opt_top
+%type <order>		order_desc
 %type <order_type>	opt_order_type
 %type <column_t>	column_def
 %type <update_t>	update_clause
@@ -207,6 +208,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult** result, yyscan_t scanner, const ch
 %type <str_vec>		ident_commalist opt_column_list
 %type <expr_vec> 	expr_list select_list literal_list
 %type <table_vec> 	table_ref_commalist
+%type <order_vec>	opt_order order_list
 %type <update_vec>	update_clause_commalist
 %type <column_vec>	column_def_commalist
 
@@ -476,7 +478,12 @@ select_no_paren:
 		select_clause opt_order opt_limit {
 			$$ = $1;
 			$$->order = $2;
-			$$->limit = $3;
+
+			// Limit could have been set by TOP.
+			if ($3 != NULL) {
+				delete $$->limit;
+				$$->limit = $3;
+			}
 		}
 	|	select_clause set_operator select_clause opt_order opt_limit {
 			// TODO: allow multiple unions (through linked list)
@@ -485,13 +492,23 @@ select_no_paren:
 			$$ = $1;
 			$$->unionSelect = $3;
 			$$->order = $4;
-			$$->limit = $5;
+
+			// Limit could have been set by TOP.
+			if ($5 != NULL) {
+				delete $$->limit;
+				$$->limit = $5;
+			}
 		}
 	|	select_clause set_operator select_with_paren opt_order opt_limit {
 			$$ = $1;
 			$$->unionSelect = $3;
 			$$->order = $4;
-			$$->limit = $5;
+
+			// Limit could have been set by TOP.
+			if ($5 != NULL) {
+				delete $$->limit;
+				$$->limit = $5;
+			}
 		}
 	;
 
@@ -502,13 +519,14 @@ set_operator:
 	;
 
 select_clause:
-		SELECT opt_distinct select_list from_clause opt_where opt_group {
+		SELECT opt_top opt_distinct select_list from_clause opt_where opt_group {
 			$$ = new SelectStatement();
-			$$->selectDistinct = $2;
-			$$->selectList = $3;
-			$$->fromTable = $4;
-			$$->whereClause = $5;
-			$$->groupBy = $6;
+			$$->limit = $2;
+			$$->selectDistinct = $3;
+			$$->selectList = $4;
+			$$->fromTable = $5;
+			$$->whereClause = $6;
+			$$->groupBy = $7;
 		}
 	;
 
@@ -520,7 +538,6 @@ opt_distinct:
 select_list:
 		expr_list
 	;
-
 
 from_clause:
 		FROM table_ref { $$ = $2; }
@@ -546,8 +563,17 @@ opt_having:
 	|	/* empty */ { $$ = NULL; }
 
 opt_order:
-		ORDER BY expr opt_order_type { $$ = new OrderDescription($4, $3); }
+		ORDER BY order_list { $$ = $3; }
 	|	/* empty */ { $$ = NULL; }
+	;
+
+order_list:
+		order_desc { $$ = new std::vector<OrderDescription*>(); $$->push_back($1); }
+	|	order_list ',' order_desc { $1->push_back($3); $$ = $1; }
+	;
+
+order_desc:
+		expr opt_order_type { $$ = new OrderDescription($2, $1); }
 	;
 
 opt_order_type:
@@ -556,6 +582,12 @@ opt_order_type:
 	|	/* empty */ { $$ = kOrderAsc; }
 	;
 
+// TODO: TOP and LIMIT can take more than just int literals.
+
+opt_top:
+		TOP int_literal { $$ = new LimitDescription($2->ival, kNoOffset); delete $2; }
+	|	/* empty */ { $$ = NULL; }
+	;
 
 opt_limit:
 		LIMIT int_literal { $$ = new LimitDescription($2->ival, kNoOffset); delete $2; }
@@ -584,11 +616,21 @@ expr_alias:
 	;
 
 expr:
+		operand
+	|	between_expr
+	|	logic_expr
+	|	exists_expr
+	|	case_expr
+	|	in_expr
+	;
+
+operand:
 		'(' expr ')' { $$ = $2; }
 	|	scalar_expr
 	|	unary_expr
 	|	binary_expr
 	|	function_expr
+	|	'(' select_no_paren ')' { $$ = Expr::makeSelect($2); }
 	;
 
 scalar_expr:
@@ -598,36 +640,59 @@ scalar_expr:
 	;
 
 unary_expr:
-		'-' expr { $$ = Expr::makeOpUnary(Expr::UMINUS, $2); }
-	|	NOT expr { $$ = Expr::makeOpUnary(Expr::NOT, $2); }
+		'-' operand { $$ = Expr::makeOpUnary(Expr::UMINUS, $2); }
+	|	NOT operand { $$ = Expr::makeOpUnary(Expr::NOT, $2); }
 	;
 
 binary_expr:
 		comp_expr
-	|	expr '-' expr	{ $$ = Expr::makeOpBinary($1, '-', $3); }
-	|	expr '+' expr	{ $$ = Expr::makeOpBinary($1, '+', $3); }
-	|	expr '/' expr	{ $$ = Expr::makeOpBinary($1, '/', $3); }
-	|	expr '*' expr	{ $$ = Expr::makeOpBinary($1, '*', $3); }
-	|	expr '%' expr	{ $$ = Expr::makeOpBinary($1, '%', $3); }
-	|	expr '^' expr	{ $$ = Expr::makeOpBinary($1, '^', $3); }
-	|	expr AND expr	{ $$ = Expr::makeOpBinary($1, Expr::AND, $3); }
-	|	expr OR expr	{ $$ = Expr::makeOpBinary($1, Expr::OR, $3); }
-	|	expr LIKE expr	{ $$ = Expr::makeOpBinary($1, Expr::LIKE, $3); }
-	|	expr NOT LIKE expr	{ $$ = Expr::makeOpBinary($1, Expr::NOT_LIKE, $4); }
+	|	operand '-' operand			{ $$ = Expr::makeOpBinary($1, '-', $3); }
+	|	operand '+' operand			{ $$ = Expr::makeOpBinary($1, '+', $3); }
+	|	operand '/' operand			{ $$ = Expr::makeOpBinary($1, '/', $3); }
+	|	operand '*' operand			{ $$ = Expr::makeOpBinary($1, '*', $3); }
+	|	operand '%' operand			{ $$ = Expr::makeOpBinary($1, '%', $3); }
+	|	operand '^' operand			{ $$ = Expr::makeOpBinary($1, '^', $3); }
+	|	operand LIKE operand		{ $$ = Expr::makeOpBinary($1, Expr::LIKE, $3); }
+	|	operand NOT LIKE operand	{ $$ = Expr::makeOpBinary($1, Expr::NOT_LIKE, $4); }
 	;
 
+logic_expr:
+		expr AND expr	{ $$ = Expr::makeOpBinary($1, Expr::AND, $3); }
+	|	expr OR expr	{ $$ = Expr::makeOpBinary($1, Expr::OR, $3); }
+	;
+
+in_expr:
+		operand IN '(' expr_list ')'			{ $$ = Expr::makeInOperator($1, $4); }
+	|	operand NOT IN '(' expr_list ')'		{ $$ = Expr::makeOpUnary(Expr::NOT, Expr::makeInOperator($1, $5)); }
+	|	operand IN '(' select_no_paren ')'		{ $$ = Expr::makeInOperator($1, $4); }
+	|	operand NOT IN '(' select_no_paren ')'	{ $$ = Expr::makeOpUnary(Expr::NOT, Expr::makeInOperator($1, $5)); }
+	;
+
+// TODO: allow no else specified
+case_expr:
+		CASE WHEN expr THEN operand ELSE operand END { $$ = Expr::makeCase($3, $5, $7); }
+	;
+
+exists_expr:
+		EXISTS '(' select_no_paren ')' { $$ = Expr::makeExists($3); }
+	|	NOT EXISTS '(' select_no_paren ')' { $$ = Expr::makeOpUnary(Expr::NOT, Expr::makeExists($4)); }
+	;
 
 comp_expr:
-		expr '=' expr		{ $$ = Expr::makeOpBinary($1, '=', $3); }
-	|	expr NOTEQUALS expr	{ $$ = Expr::makeOpBinary($1, Expr::NOT_EQUALS, $3); }
-	|	expr '<' expr		{ $$ = Expr::makeOpBinary($1, '<', $3); }
-	|	expr '>' expr		{ $$ = Expr::makeOpBinary($1, '>', $3); }
-	|	expr LESSEQ expr	{ $$ = Expr::makeOpBinary($1, Expr::LESS_EQ, $3); }
-	|	expr GREATEREQ expr	{ $$ = Expr::makeOpBinary($1, Expr::GREATER_EQ, $3); }
+		operand '=' operand			{ $$ = Expr::makeOpBinary($1, '=', $3); }
+	|	operand NOTEQUALS operand	{ $$ = Expr::makeOpBinary($1, Expr::NOT_EQUALS, $3); }
+	|	operand '<' operand			{ $$ = Expr::makeOpBinary($1, '<', $3); }
+	|	operand '>' operand			{ $$ = Expr::makeOpBinary($1, '>', $3); }
+	|	operand LESSEQ operand		{ $$ = Expr::makeOpBinary($1, Expr::LESS_EQ, $3); }
+	|	operand GREATEREQ operand	{ $$ = Expr::makeOpBinary($1, Expr::GREATER_EQ, $3); }
 	;
 
 function_expr:
-		IDENTIFIER '(' opt_distinct expr ')' { $$ = Expr::makeFunctionRef($1, $4, $3); }
+		IDENTIFIER '(' opt_distinct expr_list ')' { $$ = Expr::makeFunctionRef($1, $4, $3); }
+	;
+
+between_expr:
+		operand BETWEEN operand AND operand { $$ = Expr::makeBetween($1, $3, $5); }
 	;
 
 column_name:
@@ -658,7 +723,6 @@ int_literal:
 star_expr:
 		'*' { $$ = new Expr(kExprStar); }
 	;
-
 
 placeholder_expr:
 		'?' {
@@ -751,11 +815,15 @@ join_clause:
 		;
 
 opt_join_type:
-		INNER 	{ $$ = kJoinInner; }
-	|	OUTER 	{ $$ = kJoinOuter; }
-	|	LEFT 	{ $$ = kJoinLeft; }
-	|	RIGHT 	{ $$ = kJoinRight; }
-	|	/* empty, default */ 	{ $$ = kJoinInner; }
+		INNER		{ $$ = kJoinInner; }
+	|	OUTER		{ $$ = kJoinOuter; }
+	|	LEFT OUTER	{ $$ = kJoinLeftOuter; }
+	|	RIGHT OUTER	{ $$ = kJoinRightOuter; }
+	|	LEFT		{ $$ = kJoinLeft; }
+	|	RIGHT		{ $$ = kJoinRight; }
+	|	CROSS		{ $$ = kJoinCross; }
+	|	NATURAL		{ $$ = kJoinNatural; }
+	|	/* empty, default */	{ $$ = kJoinInner; }
 	;
 
 

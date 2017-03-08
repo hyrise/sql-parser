@@ -10,7 +10,7 @@ LIBOBJ      = $(LIBCPP:%.cpp=%.o)
 TESTCPP     = $(shell find test/ -name '*.cpp')
 
 ALLLIB      = $(shell find $(SRC) -name '*.cpp' -not -path "$(SRCPARSER)/*") $(shell find $(SRC) -name '*.h' -not -path "$(SRCPARSER)/*")
-ALLTEST     = $(shell find test/lib/ -name '*.cpp') $(shell find test/lib/ -name '*.h')
+ALLTEST     = $(shell find test/ -name '*.cpp') $(shell find test/ -name '*.h')
 
 # compile & link flages
 CFLAGS     = -std=c++11 -Wall -fPIC -g
