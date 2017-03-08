@@ -151,7 +151,7 @@ namespace hsql {
     e->opType = IN;
     e->expr = expr;
     e->select = select;
-    
+
     return e;
   }
 
