@@ -343,6 +343,13 @@ create_statement:
 			$$->tableName = $4;
 			$$->columns = $6;
 		}
+	|	CREATE VIEW opt_not_exists table_name opt_column_list AS select_statement {
+			$$ = new CreateStatement(CreateStatement::kView);
+			$$->ifNotExists = $3;
+			$$->tableName = $4;
+			$$->viewColumns = $5;
+			$$->select = $7;
+		}
 	;
 
 opt_not_exists:
@@ -378,6 +385,10 @@ column_type:
 drop_statement:
 		DROP TABLE table_name {
 			$$ = new DropStatement(DropStatement::kTable);
+			$$->name = $3;
+		}
+	|	DROP VIEW table_name {
+			$$ = new DropStatement(DropStatement::kView);
 			$$->name = $3;
 		}
 	|	DEALLOCATE PREPARE IDENTIFIER {

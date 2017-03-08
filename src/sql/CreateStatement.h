@@ -5,9 +5,12 @@
 
 // Note: Implementations of constructors and destructors can be found in statements.cpp.
 namespace hsql {
+  struct SelectStatement;
+
   // Represents definition of a table column
   struct ColumnDefinition {
     enum DataType {
+      UNKNOWN,
       TEXT,
       INT,
       DOUBLE
@@ -26,7 +29,8 @@ namespace hsql {
   struct CreateStatement : SQLStatement {
     enum CreateType {
       kTable,
-      kTableFromTbl // Hyrise file format
+      kTableFromTbl, // Hyrise file format
+      kView
     };
 
     CreateStatement(CreateType type);
@@ -37,6 +41,8 @@ namespace hsql {
     char* filePath; // default: NULL
     char* tableName; // default: NULL
     std::vector<ColumnDefinition*>* columns; // default: NULL
+    std::vector<char*>* viewColumns;
+    SelectStatement* select;
   };
 
 } // namespace hsql

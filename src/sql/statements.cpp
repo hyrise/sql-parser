@@ -29,17 +29,27 @@ namespace hsql {
     ifNotExists(false),
     filePath(NULL),
     tableName(NULL),
-    columns(NULL) {};
+    columns(NULL),
+    viewColumns(NULL),
+    select(NULL) {};
 
   CreateStatement::~CreateStatement() {
     free(filePath);
     free(tableName);
+    delete select;
 
     if (columns != NULL) {
       for (ColumnDefinition* def : *columns) {
         delete def;
       }
       delete columns;
+    }
+
+    if (viewColumns != NULL) {
+      for (char* column : *viewColumns) {
+        free(column);
+      }
+      delete viewColumns;
     }
   }
 
