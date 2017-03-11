@@ -36,7 +36,7 @@ To use the SQL parser in your own projects you simply have to follow these few s
 
 First step to extending this parser is cloning the repository `git clone git@github.com:hyrise/sql-parser.git` and making sure everything works by running the following steps:
 
-``` 
+```bash
 make parser   # builds the bison parser and flex lexer
 make library  # builds the libsqlparser.so
 make test     # runs the tests with the library
@@ -44,7 +44,7 @@ make test     # runs the tests with the library
 
 Rerun these steps whenever you change part of the parse. To execute the entire pipeline automatically you can run:
 
-```
+```bash
 make cleanall  # cleans the parser build and library build
 make test      # build parser, library and runs the tests
 ```

@@ -49,6 +49,9 @@ cleanall: clean cleanparser
 
 install:
 	cp $(TARGET) $(INSTALL)/lib/$(TARGET)
+	cp -r src $(INSTALL)/include/hsql
+	find $(INSTALL)/include/hsql -not -name '*.h' -type f | xargs rm
+
 
 format:
 	astyle --options=astyle.options $(ALLLIB)
