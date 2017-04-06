@@ -3029,13 +3029,13 @@ yyreduce:
 
   case 102:
 #line 654 "bison_parser.y" /* yacc.c:1646  */
-    { (yyval.expr) = Expr::makeOpUnary(Expr::UMINUS, (yyvsp[0].expr)); }
+    { (yyval.expr) = Expr::makeOpUnary(kOpMinus, (yyvsp[0].expr)); }
 #line 3034 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 103:
 #line 655 "bison_parser.y" /* yacc.c:1646  */
-    { (yyval.expr) = Expr::makeOpUnary(Expr::NOT, (yyvsp[0].expr)); }
+    { (yyval.expr) = Expr::makeOpUnary(kOpNot, (yyvsp[0].expr)); }
 #line 3040 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
@@ -3077,25 +3077,25 @@ yyreduce:
 
   case 111:
 #line 666 "bison_parser.y" /* yacc.c:1646  */
-    { (yyval.expr) = Expr::makeOpBinary((yyvsp[-2].expr), Expr::LIKE, (yyvsp[0].expr)); }
+    { (yyval.expr) = Expr::makeOpBinary((yyvsp[-2].expr), kOpLike, (yyvsp[0].expr)); }
 #line 3082 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 112:
 #line 667 "bison_parser.y" /* yacc.c:1646  */
-    { (yyval.expr) = Expr::makeOpBinary((yyvsp[-3].expr), Expr::NOT_LIKE, (yyvsp[0].expr)); }
+    { (yyval.expr) = Expr::makeOpBinary((yyvsp[-3].expr), kOpNotLike, (yyvsp[0].expr)); }
 #line 3088 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 113:
 #line 671 "bison_parser.y" /* yacc.c:1646  */
-    { (yyval.expr) = Expr::makeOpBinary((yyvsp[-2].expr), Expr::AND, (yyvsp[0].expr)); }
+    { (yyval.expr) = Expr::makeOpBinary((yyvsp[-2].expr), kOpAnd, (yyvsp[0].expr)); }
 #line 3094 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 114:
 #line 672 "bison_parser.y" /* yacc.c:1646  */
-    { (yyval.expr) = Expr::makeOpBinary((yyvsp[-2].expr), Expr::OR, (yyvsp[0].expr)); }
+    { (yyval.expr) = Expr::makeOpBinary((yyvsp[-2].expr), kOpOr, (yyvsp[0].expr)); }
 #line 3100 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
@@ -3107,7 +3107,7 @@ yyreduce:
 
   case 116:
 #line 677 "bison_parser.y" /* yacc.c:1646  */
-    { (yyval.expr) = Expr::makeOpUnary(Expr::NOT, Expr::makeInOperator((yyvsp[-5].expr), (yyvsp[-1].expr_vec))); }
+    { (yyval.expr) = Expr::makeOpUnary(kOpNot, Expr::makeInOperator((yyvsp[-5].expr), (yyvsp[-1].expr_vec))); }
 #line 3112 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
@@ -3119,7 +3119,7 @@ yyreduce:
 
   case 118:
 #line 679 "bison_parser.y" /* yacc.c:1646  */
-    { (yyval.expr) = Expr::makeOpUnary(Expr::NOT, Expr::makeInOperator((yyvsp[-5].expr), (yyvsp[-1].select_stmt))); }
+    { (yyval.expr) = Expr::makeOpUnary(kOpNot, Expr::makeInOperator((yyvsp[-5].expr), (yyvsp[-1].select_stmt))); }
 #line 3124 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
@@ -3137,7 +3137,7 @@ yyreduce:
 
   case 121:
 #line 689 "bison_parser.y" /* yacc.c:1646  */
-    { (yyval.expr) = Expr::makeOpUnary(Expr::NOT, Expr::makeExists((yyvsp[-1].select_stmt))); }
+    { (yyval.expr) = Expr::makeOpUnary(kOpNot, Expr::makeExists((yyvsp[-1].select_stmt))); }
 #line 3142 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
@@ -3149,7 +3149,7 @@ yyreduce:
 
   case 123:
 #line 694 "bison_parser.y" /* yacc.c:1646  */
-    { (yyval.expr) = Expr::makeOpBinary((yyvsp[-2].expr), Expr::NOT_EQUALS, (yyvsp[0].expr)); }
+    { (yyval.expr) = Expr::makeOpBinary((yyvsp[-2].expr), kOpNotEquals, (yyvsp[0].expr)); }
 #line 3154 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
@@ -3167,13 +3167,13 @@ yyreduce:
 
   case 126:
 #line 697 "bison_parser.y" /* yacc.c:1646  */
-    { (yyval.expr) = Expr::makeOpBinary((yyvsp[-2].expr), Expr::LESS_EQ, (yyvsp[0].expr)); }
+    { (yyval.expr) = Expr::makeOpBinary((yyvsp[-2].expr), kOpLessEq, (yyvsp[0].expr)); }
 #line 3172 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 127:
 #line 698 "bison_parser.y" /* yacc.c:1646  */
-    { (yyval.expr) = Expr::makeOpBinary((yyvsp[-2].expr), Expr::GREATER_EQ, (yyvsp[0].expr)); }
+    { (yyval.expr) = Expr::makeOpBinary((yyvsp[-2].expr), kOpGreaterEq, (yyvsp[0].expr)); }
 #line 3178 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
