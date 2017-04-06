@@ -27,15 +27,17 @@ library: $(TARGET)
 $(TARGET): $(LIBOBJ)
 	$(CXX) $(LIBFLAGS) -o $(TARGET) $(LIBOBJ)
 
-
 %.o: %.cpp $(PARSERFILES)
 	$(CXX) $(CFLAGS) -c -o $@ $<
 
-$(SRCPARSER)/bison_parser.cpp: parser
-$(SRCPARSER)/flex_lexer.cpp: parser
+$(SRCPARSER)/bison_parser.cpp:
+	make -C $(SRCPARSER)/ bison_parser.cpp
+
+$(SRCPARSER)/flex_lexer.cpp:
+	make -C $(SRCPARSER)/ flex_lexer.cpp
 
 parser:
-	make -C $(SRCPARSER)/
+	make -C $(SRCPARSER) all
 
 clean:
 	rm -f $(TARGET)
@@ -51,7 +53,6 @@ install:
 	cp $(TARGET) $(INSTALL)/lib/$(TARGET)
 	cp -r src $(INSTALL)/include/hsql
 	find $(INSTALL)/include/hsql -not -name '*.h' -type f | xargs rm
-
 
 format:
 	astyle --options=astyle.options $(ALLLIB)
