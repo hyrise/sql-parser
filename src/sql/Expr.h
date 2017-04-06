@@ -36,7 +36,7 @@ namespace hsql {
     kOpCase,
 
     // Binary operators.
-    // Simple operators are identified by the opChar field (e.g. =, >, <).
+    // Simple operators are identified by the opChar field (e.g. +, -, =, >, <).
     kOpSimple,
 
     kOpNotEquals,
@@ -60,13 +60,9 @@ namespace hsql {
   // Represents SQL expressions (i.e. literals, operators, column_refs).
   // TODO: When destructing a placeholder expression, we might need to alter the placeholder_list.
   struct Expr {
-    
-    Expr(ExprType type);
 
-    // Interesting side-effect:
-    // Making the destructor virtual used to cause segmentation faults.
-    // TODO: inspect.
-    ~Expr();
+    Expr(ExprType type);
+    virtual ~Expr();
 
     ExprType type;
 
@@ -89,19 +85,19 @@ namespace hsql {
 
     // Convenience accessor methods.
 
-    bool isType(ExprType e_type);
+    bool isType(ExprType exprType) const;
 
-    bool isLiteral();
+    bool isLiteral() const;
 
-    bool hasAlias();
+    bool hasAlias() const;
 
-    bool hasTable();
+    bool hasTable() const;
 
-    char* getName();
+    const char* getName() const;
 
-    bool isSimpleOp();
+    bool isSimpleOp() const;
 
-    bool isSimpleOp(char op);
+    bool isSimpleOp(char op) const;
 
 
     // Static constructors.

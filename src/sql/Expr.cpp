@@ -155,32 +155,32 @@ namespace hsql {
     return e;
   }
 
-  bool Expr::isType(ExprType e_type) {
-    return e_type == type;
+  bool Expr::isType(ExprType exprType) const {
+    return exprType == type;
   }
 
-  bool Expr::isLiteral() {
+  bool Expr::isLiteral() const {
     return isType(kExprLiteralInt) || isType(kExprLiteralFloat) || isType(kExprLiteralString) || isType(kExprPlaceholder);
   }
 
-  bool Expr::hasAlias() {
+  bool Expr::hasAlias() const {
     return alias != NULL;
   }
 
-  bool Expr::hasTable() {
+  bool Expr::hasTable() const {
     return table != NULL;
   }
 
-  char* Expr::getName() {
+  const char* Expr::getName() const {
     if (alias != NULL) return alias;
     else return name;
   }
 
-  bool Expr::isSimpleOp() {
+  bool Expr::isSimpleOp() const {
     return opType == kOpSimple;
   }
 
-  bool Expr::isSimpleOp(char op) {
+  bool Expr::isSimpleOp(char op) const {
     return isSimpleOp() && opChar == op;
   }
 

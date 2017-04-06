@@ -35,10 +35,10 @@ namespace hsql {
     JoinDefinition* join;
 
     // Returns true if a schema is set.
-    bool hasSchema();
+    bool hasSchema() const;
 
     // Returns the alias, if it is set. Otherwise the name.
-    char* getName();
+    const char* getName() const;
   };
 
   // Possible types of joins.

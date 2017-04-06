@@ -15,7 +15,7 @@ namespace hsql {
     // Takes ownership of the statement.
     SQLParserResult(SQLStatement* stmt);
 
-    // Deletes all statements in the resul.
+    // Deletes all statements in the result.
     virtual ~SQLParserResult();
 
     // Returns true if parsing was successful.
@@ -40,7 +40,7 @@ namespace hsql {
     SQLStatement* getMutableStatement(int index);
 
     // Adds a statement to the result list of statements.
-    // Takes ownership of the statement.
+    // SQLParserResult takes ownership of the statement.
     void addStatement(SQLStatement* stmt);
 
     // Set whether parsing was successful.

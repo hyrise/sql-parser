@@ -268,11 +268,11 @@ namespace hsql {
     }
   }
 
-  bool TableRef::hasSchema() {
+  bool TableRef::hasSchema() const {
     return schema != NULL;
   }
 
-  char* TableRef::getName() {
+  const char* TableRef::getName() const {
     if (alias != NULL) return alias;
     else return name;
   }
