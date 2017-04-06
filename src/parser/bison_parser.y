@@ -651,8 +651,8 @@ scalar_expr:
 	;
 
 unary_expr:
-		'-' operand { $$ = Expr::makeOpUnary(Expr::UMINUS, $2); }
-	|	NOT operand { $$ = Expr::makeOpUnary(Expr::NOT, $2); }
+		'-' operand { $$ = Expr::makeOpUnary(kOpMinus, $2); }
+	|	NOT operand { $$ = Expr::makeOpUnary(kOpNot, $2); }
 	;
 
 binary_expr:
@@ -663,20 +663,20 @@ binary_expr:
 	|	operand '*' operand			{ $$ = Expr::makeOpBinary($1, '*', $3); }
 	|	operand '%' operand			{ $$ = Expr::makeOpBinary($1, '%', $3); }
 	|	operand '^' operand			{ $$ = Expr::makeOpBinary($1, '^', $3); }
-	|	operand LIKE operand		{ $$ = Expr::makeOpBinary($1, Expr::LIKE, $3); }
-	|	operand NOT LIKE operand	{ $$ = Expr::makeOpBinary($1, Expr::NOT_LIKE, $4); }
+	|	operand LIKE operand		{ $$ = Expr::makeOpBinary($1, kOpLike, $3); }
+	|	operand NOT LIKE operand	{ $$ = Expr::makeOpBinary($1, kOpNotLike, $4); }
 	;
 
 logic_expr:
-		expr AND expr	{ $$ = Expr::makeOpBinary($1, Expr::AND, $3); }
-	|	expr OR expr	{ $$ = Expr::makeOpBinary($1, Expr::OR, $3); }
+		expr AND expr	{ $$ = Expr::makeOpBinary($1, kOpAnd, $3); }
+	|	expr OR expr	{ $$ = Expr::makeOpBinary($1, kOpOr, $3); }
 	;
 
 in_expr:
 		operand IN '(' expr_list ')'			{ $$ = Expr::makeInOperator($1, $4); }
-	|	operand NOT IN '(' expr_list ')'		{ $$ = Expr::makeOpUnary(Expr::NOT, Expr::makeInOperator($1, $5)); }
+	|	operand NOT IN '(' expr_list ')'		{ $$ = Expr::makeOpUnary(kOpNot, Expr::makeInOperator($1, $5)); }
 	|	operand IN '(' select_no_paren ')'		{ $$ = Expr::makeInOperator($1, $4); }
-	|	operand NOT IN '(' select_no_paren ')'	{ $$ = Expr::makeOpUnary(Expr::NOT, Expr::makeInOperator($1, $5)); }
+	|	operand NOT IN '(' select_no_paren ')'	{ $$ = Expr::makeOpUnary(kOpNot, Expr::makeInOperator($1, $5)); }
 	;
 
 // TODO: allow no else specified
@@ -686,16 +686,16 @@ case_expr:
 
 exists_expr:
 		EXISTS '(' select_no_paren ')' { $$ = Expr::makeExists($3); }
-	|	NOT EXISTS '(' select_no_paren ')' { $$ = Expr::makeOpUnary(Expr::NOT, Expr::makeExists($4)); }
+	|	NOT EXISTS '(' select_no_paren ')' { $$ = Expr::makeOpUnary(kOpNot, Expr::makeExists($4)); }
 	;
 
 comp_expr:
 		operand '=' operand			{ $$ = Expr::makeOpBinary($1, '=', $3); }
-	|	operand NOTEQUALS operand	{ $$ = Expr::makeOpBinary($1, Expr::NOT_EQUALS, $3); }
+	|	operand NOTEQUALS operand	{ $$ = Expr::makeOpBinary($1, kOpNotEquals, $3); }
 	|	operand '<' operand			{ $$ = Expr::makeOpBinary($1, '<', $3); }
 	|	operand '>' operand			{ $$ = Expr::makeOpBinary($1, '>', $3); }
-	|	operand LESSEQ operand		{ $$ = Expr::makeOpBinary($1, Expr::LESS_EQ, $3); }
-	|	operand GREATEREQ operand	{ $$ = Expr::makeOpBinary($1, Expr::GREATER_EQ, $3); }
+	|	operand LESSEQ operand		{ $$ = Expr::makeOpBinary($1, kOpLessEq, $3); }
+	|	operand GREATEREQ operand	{ $$ = Expr::makeOpBinary($1, kOpGreaterEq, $3); }
 	;
 
 function_expr:

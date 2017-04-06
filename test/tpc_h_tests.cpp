@@ -69,18 +69,18 @@ TEST(TPCHQueryDetailTest) {
   Expr* where = select20->whereClause;
   ASSERT_NOTNULL(where);
   ASSERT(where->isType(kExprOperator));
-  ASSERT_EQ(where->opType, Expr::AND);
+  ASSERT_EQ(where->opType, kOpAnd);
 
   Expr* andExpr2 = where->expr;
   ASSERT_NOTNULL(andExpr2);
   ASSERT(andExpr2->isType(kExprOperator));
-  ASSERT_EQ(andExpr2->opType, Expr::AND);
+  ASSERT_EQ(andExpr2->opType, kOpAnd);
 
   // Test IN expression.
   Expr* inExpr = andExpr2->expr;
   ASSERT_NOTNULL(inExpr);
   ASSERT(inExpr->isType(kExprOperator));
-  ASSERT_EQ(inExpr->opType, Expr::IN);
+  ASSERT_EQ(inExpr->opType, kOpIn);
 
   ASSERT_STREQ(inExpr->expr->getName(), "S_SUPPKEY");
   ASSERT_NOTNULL(inExpr->select);

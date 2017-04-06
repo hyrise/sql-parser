@@ -144,7 +144,7 @@ TEST(SelectBetweenTest) {
   Expr* where = stmt->whereClause;
   ASSERT_NOTNULL(where);
   ASSERT(where->isType(kExprOperator));
-  ASSERT_EQ(where->opType, Expr::BETWEEN);
+  ASSERT_EQ(where->opType, kOpBetween);
 
   ASSERT_STREQ(where->expr->getName(), "grade");
   ASSERT(where->expr->isType(kExprColumnRef));
@@ -169,7 +169,7 @@ TEST(SelectConditionalSelectTest) {
   Expr* where = stmt->whereClause;
   ASSERT_NOTNULL(where);
   ASSERT(where->isType(kExprOperator));
-  ASSERT_EQ(where->opType, Expr::AND);
+  ASSERT_EQ(where->opType, kOpAnd);
 
   // a = (SELECT ...)
   Expr* cond1 = where->expr;
@@ -189,7 +189,7 @@ TEST(SelectConditionalSelectTest) {
 
   // EXISTS (SELECT ...)
   Expr* cond2 = where->expr2;
-  ASSERT_EQ(cond2->opType, Expr::EXISTS);
+  ASSERT_EQ(cond2->opType, kOpExists);
   ASSERT_NOTNULL(cond2->select);
 
   SelectStatement* ex_select = cond2->select;
@@ -216,7 +216,7 @@ TEST(SelectCaseWhen) {
   Expr* caseExpr = func->exprList->at(0);
   ASSERT_NOTNULL(caseExpr);
   ASSERT(caseExpr->isType(kExprOperator));
-  ASSERT_EQ(caseExpr->opType, Expr::CASE);
+  ASSERT_EQ(caseExpr->opType, kOpCase);
   ASSERT(caseExpr->expr->isType(kExprOperator));
   ASSERT(caseExpr->expr->isSimpleOp('='));
   ASSERT_EQ(caseExpr->exprList->size(), 2);
