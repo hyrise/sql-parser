@@ -12,8 +12,8 @@
 
 #define FLEX_SCANNER
 #define YY_FLEX_MAJOR_VERSION 2
-#define YY_FLEX_MINOR_VERSION 5
-#define YY_FLEX_SUBMINOR_VERSION 35
+#define YY_FLEX_MINOR_VERSION 6
+#define YY_FLEX_SUBMINOR_VERSION 1
 #if YY_FLEX_SUBMINOR_VERSION > 0
 #define FLEX_BETA
 #endif
@@ -92,25 +92,13 @@ typedef unsigned int flex_uint32_t;
 
 #endif /* ! FLEXINT_H */
 
-#ifdef __cplusplus
-
-/* The "const" storage-class-modifier is valid. */
-#define YY_USE_CONST
-
-#else	/* ! __cplusplus */
-
-/* C99 requires __STDC__ to be defined as 1. */
-#if defined (__STDC__)
-
-#define YY_USE_CONST
-
-#endif	/* defined (__STDC__) */
-#endif	/* ! __cplusplus */
-
-#ifdef YY_USE_CONST
+/* TODO: this is always defined, so inline it */
 #define yyconst const
+
+#if defined(__GNUC__) && __GNUC__ >= 3
+#define yynoreturn __attribute__((__noreturn__))
 #else
-#define yyconst
+#define yynoreturn
 #endif
 
 /* An opaque pointer. */
@@ -165,7 +153,7 @@ struct yy_buffer_state
 	/* Size of input buffer in bytes, not including room for EOB
 	 * characters.
 	 */
-	yy_size_t yy_buf_size;
+	int yy_buf_size;
 
 	/* Number of characters read into yy_ch_buf, not including EOB
 	 * characters.
@@ -193,7 +181,7 @@ struct yy_buffer_state
 
     int yy_bs_lineno; /**< The line count. */
     int yy_bs_column; /**< The column count. */
-    
+
 	/* Whether to try to fill the input buffer when we reach the
 	 * end of it.
 	 */
@@ -222,7 +210,7 @@ void hsql_free (void * ,yyscan_t yyscanner );
 
 /* Begin user sect3 */
 
-#define hsql_wrap(n) 1
+#define hsql_wrap(yyscanner) (/*CONSTCOND*/1)
 #define YY_SKIP_YYWRAP
 
 #define yytext_ptr yytext_r
@@ -264,19 +252,23 @@ void hsql_set_extra (YY_EXTRA_TYPE user_defined ,yyscan_t yyscanner );
 
 FILE *hsql_get_in (yyscan_t yyscanner );
 
-void hsql_set_in  (FILE * in_str ,yyscan_t yyscanner );
+void hsql_set_in  (FILE * _in_str ,yyscan_t yyscanner );
 
 FILE *hsql_get_out (yyscan_t yyscanner );
 
-void hsql_set_out  (FILE * out_str ,yyscan_t yyscanner );
+void hsql_set_out  (FILE * _out_str ,yyscan_t yyscanner );
 
-int hsql_get_leng (yyscan_t yyscanner );
+			int hsql_get_leng (yyscan_t yyscanner );
 
 char *hsql_get_text (yyscan_t yyscanner );
 
 int hsql_get_lineno (yyscan_t yyscanner );
 
-void hsql_set_lineno (int line_number ,yyscan_t yyscanner );
+void hsql_set_lineno (int _line_number ,yyscan_t yyscanner );
+
+int hsql_get_column  (yyscan_t yyscanner );
+
+void hsql_set_column (int _column_no ,yyscan_t yyscanner );
 
 YYSTYPE * hsql_get_lval (yyscan_t yyscanner );
 
@@ -355,6 +347,6 @@ extern int hsql_lex \
 #line 213 "flex_lexer.l"
 
 
-#line 359 "flex_lexer.h"
+#line 351 "flex_lexer.h"
 #undef hsql_IN_HEADER
 #endif /* hsql_HEADER_H */
