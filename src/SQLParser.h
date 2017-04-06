@@ -1,5 +1,5 @@
-#ifndef __SQLPARSER_H_
-#define __SQLPARSER_H_
+#ifndef __SQLPARSER__SQLPARSER_H__
+#define __SQLPARSER__SQLPARSER_H__
 
 #include "SQLParserResult.h"
 #include "sql/statements.h"

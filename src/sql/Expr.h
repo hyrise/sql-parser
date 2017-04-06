@@ -1,5 +1,5 @@
-#ifndef __EXPRESSION_H__
-#define __EXPRESSION_H__
+#ifndef __SQLPARSER__EXPR_H__
+#define __SQLPARSER__EXPR_H__
 
 #include <stdlib.h>
 #include <memory>

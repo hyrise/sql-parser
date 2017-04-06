@@ -1,5 +1,5 @@
-#ifndef __TABLEREF_H__
-#define __TABLEREF_H__
+#ifndef __SQLPARSER__TABLEREF_H__
+#define __SQLPARSER__TABLEREF_H__
 
 #include "Expr.h"
 #include <stdio.h>

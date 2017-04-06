@@ -1,5 +1,5 @@
-#ifndef __SQLPARSERRESULT__
-#define __SQLPARSERRESULT__
+#ifndef __SQLPARSER__SQLPARSER_RESULT_H__
+#define __SQLPARSER__SQLPARSER_RESULT_H__
 
 #include "sql/SQLStatement.h"
 
@@ -70,4 +70,4 @@ namespace hsql {
 
 } // namespace hsql
 
-#endif // __SQLPARSERRESULT__
+#endif // __SQLPARSER__SQLPARSER_RESULT_H__

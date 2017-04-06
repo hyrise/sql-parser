@@ -1,5 +1,5 @@
-#ifndef __UPDATE_STATEMENT_H__
-#define __UPDATE_STATEMENT_H__
+#ifndef __SQLPARSER__UPDATE_STATEMENT_H__
+#define __SQLPARSER__UPDATE_STATEMENT_H__
 
 #include "SQLStatement.h"
 

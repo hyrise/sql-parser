@@ -1,5 +1,5 @@
-#ifndef __PREPARE_STATEMENT_H__
-#define __PREPARE_STATEMENT_H__
+#ifndef __SQLPARSER__PREPARE_STATEMENT_H__
+#define __SQLPARSER__PREPARE_STATEMENT_H__
 
 #include "../SQLParserResult.h"
 #include "SQLStatement.h"

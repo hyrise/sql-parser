@@ -1,5 +1,5 @@
-#ifndef __SQLSTATEMENT_H__
-#define __SQLSTATEMENT_H__
+#ifndef __SQLPARSER__SQLSTATEMENT_H__
+#define __SQLPARSER__SQLSTATEMENT_H__
 
 #include "Expr.h"
 #include <vector>
@@ -36,4 +36,4 @@ namespace hsql {
   };
 
 } // namespace hsql
-#endif // __SQLSTATEMENT_H__
+#endif // __SQLPARSER__SQLSTATEMENT_H__
