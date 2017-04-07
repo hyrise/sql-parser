@@ -48,7 +48,7 @@
 extern int hsql_debug;
 #endif
 /* "%code requires" blocks.  */
-#line 41 "bison_parser.y" /* yacc.c:1909  */
+#line 36 "bison_parser.y" /* yacc.c:1909  */
 
 // %code requires block	
 
@@ -214,7 +214,7 @@ extern int hsql_debug;
 
 union HSQL_STYPE
 {
-#line 100 "bison_parser.y" /* yacc.c:1909  */
+#line 95 "bison_parser.y" /* yacc.c:1909  */
 
 	double fval;
 	int64_t ival;
@@ -242,7 +242,7 @@ union HSQL_STYPE
 	hsql::GroupByDescription* group_t;
 	hsql::UpdateClause* update_t;
 
-	hsql::SQLParserResult* stmt_list;
+	std::vector<hsql::SQLStatement*>* stmt_vec;
 
 	std::vector<char*>* str_vec;
 	std::vector<hsql::TableRef*>* table_vec;
@@ -275,6 +275,6 @@ struct HSQL_LTYPE
 
 
 
-int hsql_parse (hsql::SQLParserResult** result, yyscan_t scanner);
+int hsql_parse (hsql::SQLParserResult* result, yyscan_t scanner);
 
 #endif /* !YY_HSQL_BISON_PARSER_H_INCLUDED  */
