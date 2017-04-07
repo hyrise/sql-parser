@@ -3,9 +3,11 @@
  */
 
 #include "thirdparty/microtest/microtest.h"
-#include "sql_asserts.h"
+
 #include "SQLParser.h"
-#include "sqlhelper.h"
+#include "util/sqlhelper.h"
+
+#include "sql_asserts.h"
 
 using namespace hsql;
 

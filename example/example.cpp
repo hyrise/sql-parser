@@ -6,7 +6,7 @@
 #include "SQLParser.h"
 
 // contains printing utilities
-#include "sqlhelper.h"
+#include "util/sqlhelper.h"
 
 int main(int argc, char *argv[]) {
     if (argc <= 1) {

@@ -13,6 +13,10 @@ namespace hsql {
     return type_;
   }
 
+  bool SQLStatement::isType(StatementType type) const {
+    return (type_ == type);
+  }
+
   // ColumnDefinition
   ColumnDefinition::ColumnDefinition(char* name, DataType type) :
     name(name),
