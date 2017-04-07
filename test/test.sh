@@ -32,6 +32,7 @@ fi
 printf "\n${GREEN}Running memory leak checks...${NC}\n"
 valgrind --leak-check=full --error-exitcode=200 --log-fd=3 \
   ./bin/sql_tests -f "test/valid_queries.sql" 3>&1 >/dev/null 2>/dev/null
+MEM_LEAK_RET=$?
 
 if [ $MEM_LEAK_RET -ne 200 ]; then
 	printf "${GREEN}Memory leak check succeeded!${NC}\n"
