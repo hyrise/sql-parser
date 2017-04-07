@@ -19,6 +19,10 @@ int main(int argc, char *argv[]) {
     hsql::SQLParserResult* result = hsql::SQLParser::parseSQLString(query);
 
     // check whether the parsing was successful
+    if (!result) {
+        return -1;
+    }
+
     if (result->isValid()) {
         printf("Parsed successfully!\n");
         printf("Number of statements: %lu\n", result->size());
