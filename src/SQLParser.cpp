@@ -13,20 +13,21 @@ namespace hsql {
   }
 
   SQLParserResult* SQLParser::parseSQLString(const char* text) {
-    SQLParserResult* result = NULL;
+    SQLParserResult* result = new SQLParserResult();
     yyscan_t scanner;
     YY_BUFFER_STATE state;
 
     if (hsql_lex_init(&scanner)) {
       // Couldn't initialize the lexer.
       fprintf(stderr, "[Error] SQLParser: Error when initializing lexer!\n");
+      delete result;
       return NULL;
     }
 
     state = hsql__scan_string(text, scanner);
 
     // Parser and return early if it failed.
-    if (hsql_parse(&result, scanner)) {
+    if (hsql_parse(result, scanner)) {
       // Returns an error stmt object.
       hsql__delete_buffer(state, scanner);
       hsql_lex_destroy(scanner);

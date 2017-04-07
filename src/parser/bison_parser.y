@@ -18,14 +18,9 @@
 
 using namespace hsql;
 
-int yyerror(YYLTYPE* llocp, SQLParserResult** result, yyscan_t scanner, const char *msg) {
-	delete *result;
-
-	SQLParserResult* list = new SQLParserResult();
-	list->setIsValid(false);
-	list->setErrorDetails(strdup(msg), llocp->first_line, llocp->first_column);
-
-	*result = list;
+int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const char *msg) {
+	result->setIsValid(false);
+	result->setErrorDetails(strdup(msg), llocp->first_line, llocp->first_column);
 	return 0;
 }
 
@@ -90,7 +85,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult** result, yyscan_t scanner, const ch
 %lex-param   { yyscan_t scanner }
 
 // Define additional parameters for yyparse
-%parse-param { hsql::SQLParserResult** result }
+%parse-param { hsql::SQLParserResult* result }
 %parse-param { yyscan_t scanner }
 
 
@@ -124,7 +119,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult** result, yyscan_t scanner, const ch
 	hsql::GroupByDescription* group_t;
 	hsql::UpdateClause* update_t;
 
-	hsql::SQLParserResult* stmt_list;
+	std::vector<hsql::SQLStatement*>* stmt_vec;
 
 	std::vector<char*>* str_vec;
 	std::vector<hsql::TableRef*>* table_vec;
@@ -147,7 +142,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult** result, yyscan_t scanner, const ch
 		}
 	}
 	delete ($$);
-} <str_vec> <table_vec> <column_vec> <update_vec> <expr_vec> <order_vec>
+} <str_vec> <table_vec> <column_vec> <update_vec> <expr_vec> <order_vec> <stmt_vec>
 %destructor { delete ($$); } <*>
 
 
@@ -178,7 +173,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult** result, yyscan_t scanner, const ch
 /*********************************
  ** Non-Terminal types (http://www.gnu.org/software/bison/manual/html_node/Type-Decl.html)
  *********************************/
-%type <stmt_list>	statement_list
+%type <stmt_vec>	statement_list
 %type <statement> 	statement preparable_statement
 %type <exec_stmt>	execute_statement
 %type <prep_stmt>	prepare_statement
@@ -243,14 +238,18 @@ int yyerror(YYLTYPE* llocp, SQLParserResult** result, yyscan_t scanner, const ch
 // Defines our general input.
 input:
 		statement_list opt_semicolon {
-			*result = $1;
+		  for (SQLStatement* stmt : *$1) {
+		    // Transfers ownership of the statement.
+		  	result->addStatement(stmt);
+		  }
+		  delete $1;
 		}
 	;
 
 
 statement_list:
-		statement { $$ = new SQLParserResult($1); }
-	|	statement_list ';' statement { $1->addStatement($3); $$ = $1; }
+		statement { $$ = new std::vector<SQLStatement*>(); $$->push_back($1); }
+	|	statement_list ';' statement { $1->push_back($3); $$ = $1; }
 	;
 
 statement:
@@ -288,7 +287,11 @@ prepare_statement:
 	|	PREPARE IDENTIFIER '{' statement_list opt_semicolon '}' {
 			$$ = new PrepareStatement();
 			$$->name = $2;
-			$$->query = $4;
+			$$->query = new SQLParserResult();
+		  for (SQLStatement* stmt : *$4) {
+		  	$$->query->addStatement(stmt);
+		  }
+		  delete $4;
 		}
 	;
 
