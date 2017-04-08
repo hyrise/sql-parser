@@ -18,11 +18,18 @@ namespace hsql {
     // Deletes all statements in the result.
     virtual ~SQLParserResult();
 
+    // Set whether parsing was successful.
+    void setIsValid(bool isValid);
+
     // Returns true if parsing was successful.
     bool isValid() const;
 
     // Returns the number of statements in the result.
     size_t size() const;
+
+    // Set the details of the error, if available.
+    // Takes ownership of errorMsg.
+    void setErrorDetails(char* errorMsg, int errorLine, int errorColumn);
 
     // Returns the error message, if an error occurred.
     const char* errorMsg() const;
@@ -33,23 +40,25 @@ namespace hsql {
     // Returns the column number of the occurrance of the error in the query.
     int errorColumn() const;
 
+    // Adds a statement to the result list of statements.
+    // SQLParserResult takes ownership of the statement.
+    void addStatement(SQLStatement* stmt);
+
     // Gets the SQL statement with the given index.
     const SQLStatement* getStatement(int index) const;
 
     // Gets the non const SQL statement with the given index.
     SQLStatement* getMutableStatement(int index);
 
-    // Adds a statement to the result list of statements.
-    // SQLParserResult takes ownership of the statement.
-    void addStatement(SQLStatement* stmt);
+    // Get the list of all statements.
+    const std::vector<SQLStatement*>& getStatements() const;
 
-    // Set whether parsing was successful.
-    void setIsValid(bool isValid);
+    // Returns a copy of the list of all statements in this result.
+    // Removes them from this result.
+    std::vector<SQLStatement*> releaseStatements();
 
-    // Set the details of the error, if available.
-    // Takes ownership of errorMsg.
-    void setErrorDetails(char* errorMsg, int errorLine, int errorColumn);
-
+    // Deletes all statements and other data within the result.
+    void reset();
 
    private:
     // List of statements within the result.

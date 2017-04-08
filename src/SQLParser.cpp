@@ -27,7 +27,9 @@ namespace hsql {
 
     // Parse the tokens.
     // If parsing fails, the result will contain an error object.
-    hsql_parse(result, scanner);
+    int ret = hsql_parse(result, scanner);
+    bool success = (ret == 0);
+    result->setIsValid(success);
 
     hsql__delete_buffer(state, scanner);
     hsql_lex_destroy(scanner);

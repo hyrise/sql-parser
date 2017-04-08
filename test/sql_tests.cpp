@@ -161,4 +161,24 @@ TEST(ExecuteStatementTest) {
   ASSERT_EQ(stmt->parameters->size(), 2);
 }
 
+TEST(ReleaseStatementTest) {
+  TEST_PARSE_SINGLE_SQL(
+    "SELECT * FROM students;",
+    kStmtSelect,
+    SelectStatement,
+    result,
+    stmt);
+
+  ASSERT_EQ(1, result.size());
+  ASSERT_NULL(stmt->whereClause);
+
+  std::vector<SQLStatement*> statements = result.releaseStatements();
+
+  ASSERT_EQ(0, result.size());
+
+  for (SQLStatement* stmt : statements) {
+    delete stmt;
+  }
+}
+
 TEST_MAIN();
