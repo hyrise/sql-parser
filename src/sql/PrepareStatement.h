@@ -24,6 +24,8 @@ namespace hsql {
     void setPlaceholders(std::vector<void*> ph);
 
     char* name;
+
+    // The result that is stored within this prepared statement.
     SQLParserResult* query;
 
     // The expressions are not owned by this statement.

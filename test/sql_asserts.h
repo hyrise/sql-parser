@@ -3,8 +3,8 @@
 
 
 #define TEST_PARSE_SQL_QUERY(query, result, numStatements) \
-	SQLParserResult result; \
-  SQLParser::parseSQLString(query, &result); \
+	hsql::SQLParserResult result; \
+  hsql::SQLParser::parseSQLString(query, &result); \
 	ASSERT(result.isValid()); \
 	ASSERT_EQ(result.size(), numStatements);
 
