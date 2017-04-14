@@ -1,5 +1,5 @@
-#ifndef __TABLEREF_H__
-#define __TABLEREF_H__
+#ifndef __SQLPARSER__TABLEREF_H__
+#define __SQLPARSER__TABLEREF_H__
 
 #include "Expr.h"
 #include <stdio.h>
@@ -35,10 +35,10 @@ namespace hsql {
     JoinDefinition* join;
 
     // Returns true if a schema is set.
-    bool hasSchema();
+    bool hasSchema() const;
 
     // Returns the alias, if it is set. Otherwise the name.
-    char* getName();
+    const char* getName() const;
   };
 
   // Possible types of joins.

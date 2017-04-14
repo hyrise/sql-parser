@@ -13,6 +13,10 @@ namespace hsql {
     return type_;
   }
 
+  bool SQLStatement::isType(StatementType type) const {
+    return (type_ == type);
+  }
+
   // ColumnDefinition
   ColumnDefinition::ColumnDefinition(char* name, DataType type) :
     name(name),
@@ -268,11 +272,11 @@ namespace hsql {
     }
   }
 
-  bool TableRef::hasSchema() {
+  bool TableRef::hasSchema() const {
     return schema != NULL;
   }
 
-  char* TableRef::getName() {
+  const char* TableRef::getName() const {
     if (alias != NULL) return alias;
     else return name;
   }

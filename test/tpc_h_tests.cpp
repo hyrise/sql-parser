@@ -1,7 +1,9 @@
 #include "thirdparty/microtest/microtest.h"
-#include "sql_asserts.h"
+
 #include "SQLParser.h"
-#include "sqlhelper.h"
+#include "util/sqlhelper.h"
+
+#include "sql_asserts.h"
 
 #include <string>
 #include <fstream>
@@ -37,15 +39,15 @@ TEST(TPCHQueryGrammarTests) {
   for (const std::string& file_path : files) {
     std::string query = readFileContents(file_path);
 
-    SQLParserResult* result = SQLParser::parseSQLString(query.c_str());
-    if (!result->isValid()) {
+    SQLParserResult result;
+    SQLParser::parseSQLString(query.c_str(), &result);
+    if (!result.isValid()) {
       mt::printFailed(file_path.c_str());
-      printf("%s           %s (L%d:%d)%s\n", mt::red(), result->errorMsg(), result->errorLine(), result->errorColumn(), mt::def());
+      printf("%s           %s (L%d:%d)%s\n", mt::red(), result.errorMsg(), result.errorLine(), result.errorColumn(), mt::def());
       ++testsFailed;
     } else {
       mt::printOk(file_path.c_str());
     }
-    delete result;
   }
   ASSERT_EQ(testsFailed, 0);
 }
@@ -53,11 +55,12 @@ TEST(TPCHQueryGrammarTests) {
 TEST(TPCHQueryDetailTest) {
   std::string query = readFileContents("test/queries/tpc-h-16-22.sql");
 
-  SQLParserResult* result = SQLParser::parseSQLString(query.c_str());
-  ASSERT(result->isValid());
-  ASSERT_EQ(result->size(), 7);
+  SQLParserResult result;
+  SQLParser::parseSQLString(query.c_str(), &result);
+  ASSERT(result.isValid());
+  ASSERT_EQ(result.size(), 7);
 
-  const SQLStatement* stmt20 = result->getStatement(4);
+  const SQLStatement* stmt20 = result.getStatement(4);
   ASSERT_EQ(stmt20->type(), kStmtSelect);
 
   const SelectStatement* select20 = (const SelectStatement*) stmt20;
@@ -69,18 +72,18 @@ TEST(TPCHQueryDetailTest) {
   Expr* where = select20->whereClause;
   ASSERT_NOTNULL(where);
   ASSERT(where->isType(kExprOperator));
-  ASSERT_EQ(where->opType, Expr::AND);
+  ASSERT_EQ(where->opType, kOpAnd);
 
   Expr* andExpr2 = where->expr;
   ASSERT_NOTNULL(andExpr2);
   ASSERT(andExpr2->isType(kExprOperator));
-  ASSERT_EQ(andExpr2->opType, Expr::AND);
+  ASSERT_EQ(andExpr2->opType, kOpAnd);
 
   // Test IN expression.
   Expr* inExpr = andExpr2->expr;
   ASSERT_NOTNULL(inExpr);
   ASSERT(inExpr->isType(kExprOperator));
-  ASSERT_EQ(inExpr->opType, Expr::IN);
+  ASSERT_EQ(inExpr->opType, kOpIn);
 
   ASSERT_STREQ(inExpr->expr->getName(), "S_SUPPKEY");
   ASSERT_NOTNULL(inExpr->select);
@@ -93,6 +96,4 @@ TEST(TPCHQueryDetailTest) {
   ASSERT_EQ(select20->order->size(), 1);
   ASSERT(select20->order->at(0)->expr->isType(kExprColumnRef));
   ASSERT_STREQ(select20->order->at(0)->expr->getName(), "S_NAME");
-
-  delete result;
 }

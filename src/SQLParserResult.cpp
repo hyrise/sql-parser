@@ -4,21 +4,17 @@
 namespace hsql {
 
   SQLParserResult::SQLParserResult() :
-    isValid_(true),
+    isValid_(false),
     errorMsg_(NULL) {};
 
   SQLParserResult::SQLParserResult(SQLStatement* stmt) :
-    isValid_(true),
+    isValid_(false),
     errorMsg_(NULL) {
     addStatement(stmt);
   };
 
   SQLParserResult::~SQLParserResult() {
-    for (SQLStatement* statement : statements_) {
-      delete statement;
-    }
-
-    free(errorMsg_);
+    reset();
   }
 
   void SQLParserResult::addStatement(SQLStatement* stmt) {
@@ -61,6 +57,32 @@ namespace hsql {
     errorMsg_ = errorMsg;
     errorLine_ = errorLine;
     errorColumn_ = errorColumn;
+  }
+
+  const std::vector<SQLStatement*>& SQLParserResult::getStatements() const {
+    return statements_;
+  }
+
+  std::vector<SQLStatement*> SQLParserResult::releaseStatements() {
+    std::vector<SQLStatement*> copy = statements_;
+
+    statements_.clear();
+
+    return copy;
+  }
+
+  void SQLParserResult::reset() {
+    for (SQLStatement* statement : statements_) {
+      delete statement;
+    }
+    statements_.clear();
+
+    isValid_ = false;
+
+    free(errorMsg_);
+    errorMsg_ = NULL;
+    errorLine_ = -1;
+    errorColumn_ = -1;
   }
 
 } // namespace hsql

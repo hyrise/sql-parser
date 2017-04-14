@@ -1,5 +1,5 @@
-#ifndef __IMPORT_STATEMENT_H__
-#define __IMPORT_STATEMENT_H__
+#ifndef __SQLPARSER__IMPORT_STATEMENT_H__
+#define __SQLPARSER__IMPORT_STATEMENT_H__
 
 #include "SQLStatement.h"
 

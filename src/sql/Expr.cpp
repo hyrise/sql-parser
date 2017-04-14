@@ -51,7 +51,7 @@ namespace hsql {
 
   Expr* Expr::makeOpBinary(Expr* expr1, char op, Expr* expr2) {
     Expr* e = new Expr(kExprOperator);
-    e->opType = SIMPLE_OP;
+    e->opType = kOpSimple;
     e->opChar = op;
     e->expr = expr1;
     e->expr2 = expr2;
@@ -61,7 +61,7 @@ namespace hsql {
   Expr* Expr::makeBetween(Expr* expr, Expr* left, Expr* right) {
     Expr* e = new Expr(kExprOperator);
     e->expr = expr;
-    e->opType = BETWEEN;
+    e->opType = kOpBetween;
     e->exprList = new std::vector<Expr*>();
     e->exprList->push_back(left);
     e->exprList->push_back(right);
@@ -71,7 +71,7 @@ namespace hsql {
   Expr* Expr::makeCase(Expr* expr, Expr* then, Expr* other) {
     Expr* e = new Expr(kExprOperator);
     e->expr = expr;
-    e->opType = CASE;
+    e->opType = kOpCase;
     e->exprList = new std::vector<Expr*>();
     e->exprList->push_back(then);
     e->exprList->push_back(other);
@@ -132,14 +132,14 @@ namespace hsql {
 
   Expr* Expr::makeExists(SelectStatement* select) {
     Expr* e = new Expr(kExprOperator);
-    e->opType = EXISTS;
+    e->opType = kOpExists;
     e->select = select;
     return e;
   }
 
   Expr* Expr::makeInOperator(Expr* expr, std::vector<Expr*>* exprList) {
     Expr* e = new Expr(kExprOperator);
-    e->opType = IN;
+    e->opType = kOpIn;
     e->expr = expr;
     e->exprList = exprList;
 
@@ -148,39 +148,39 @@ namespace hsql {
 
   Expr* Expr::makeInOperator(Expr* expr, SelectStatement* select) {
     Expr* e = new Expr(kExprOperator);
-    e->opType = IN;
+    e->opType = kOpIn;
     e->expr = expr;
     e->select = select;
 
     return e;
   }
 
-  bool Expr::isType(ExprType e_type) {
-    return e_type == type;
+  bool Expr::isType(ExprType exprType) const {
+    return exprType == type;
   }
 
-  bool Expr::isLiteral() {
+  bool Expr::isLiteral() const {
     return isType(kExprLiteralInt) || isType(kExprLiteralFloat) || isType(kExprLiteralString) || isType(kExprPlaceholder);
   }
 
-  bool Expr::hasAlias() {
+  bool Expr::hasAlias() const {
     return alias != NULL;
   }
 
-  bool Expr::hasTable() {
+  bool Expr::hasTable() const {
     return table != NULL;
   }
 
-  char* Expr::getName() {
+  const char* Expr::getName() const {
     if (alias != NULL) return alias;
     else return name;
   }
 
-  bool Expr::isSimpleOp() {
-    return opType == SIMPLE_OP;
+  bool Expr::isSimpleOp() const {
+    return opType == kOpSimple;
   }
 
-  bool Expr::isSimpleOp(char op) {
+  bool Expr::isSimpleOp(char op) const {
     return isSimpleOp() && opChar == op;
   }
 

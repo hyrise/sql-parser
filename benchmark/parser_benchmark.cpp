@@ -31,6 +31,18 @@ PARSE_QUERY_BENCHMARK(BM_LongSelectElement26,
 PARSE_QUERY_BENCHMARK(BM_LongSelectElement52,
   "SELECT aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa FROM test;");
 
+// Prepare and Execute benchmarks.
+PARSE_QUERY_BENCHMARK(BM_ExecuteStatement,
+  "EXECUTE procedure;");
+
+PARSE_QUERY_BENCHMARK(BM_ExecuteWith2ParametersStatement,
+  "EXECUTE procedure(11, 'test');");
+
+PARSE_QUERY_BENCHMARK(BM_ExecuteWith10ParametersStatement,
+  "EXECUTE procedure(11, 'test', 5.6, 4.2, 'abc', 6, 7, 8, 9, 10000);");
+
+
+
 // Benchmark the influence of increasing size of the query, while
 // the number of tokens remains unchanged.
 static void BM_CharacterCount(benchmark::State& st) {

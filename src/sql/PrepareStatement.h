@@ -1,5 +1,5 @@
-#ifndef __PREPARE_STATEMENT_H__
-#define __PREPARE_STATEMENT_H__
+#ifndef __SQLPARSER__PREPARE_STATEMENT_H__
+#define __SQLPARSER__PREPARE_STATEMENT_H__
 
 #include "../SQLParserResult.h"
 #include "SQLStatement.h"
@@ -24,6 +24,8 @@ namespace hsql {
     void setPlaceholders(std::vector<void*> ph);
 
     char* name;
+
+    // The result that is stored within this prepared statement.
     SQLParserResult* query;
 
     // The expressions are not owned by this statement.

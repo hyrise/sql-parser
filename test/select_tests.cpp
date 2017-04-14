@@ -16,8 +16,6 @@ TEST(SelectTest) {
 
   ASSERT_NULL(stmt->whereClause);
   ASSERT_NULL(stmt->groupBy);
-
-  delete result;
 }
 
 TEST(SelectExprTest) {
@@ -55,8 +53,6 @@ TEST(SelectExprTest) {
   ASSERT_EQ(stmt->selectList->at(2)->exprList->at(1)->exprList->size(), 1);
   ASSERT(stmt->selectList->at(2)->exprList->at(1)->exprList->at(0)->isType(kExprColumnRef));
   ASSERT_STREQ(stmt->selectList->at(2)->exprList->at(1)->exprList->at(0)->getName(), "un");
-
-  delete result;
 }
 
 
@@ -76,8 +72,6 @@ TEST(SelectHavingTest) {
   ASSERT(group->having->isSimpleOp('<'));
   ASSERT(group->having->expr->isType(kExprFunctionRef));
   ASSERT(group->having->expr2->isType(kExprLiteralFloat));
-
-  delete result;
 }
 
 
@@ -91,8 +85,6 @@ TEST(SelectDistinctTest) {
 
   ASSERT(stmt->selectDistinct);
   ASSERT_NULL(stmt->whereClause);
-
-  delete result;
 }
 
 TEST(SelectGroupDistinctTest) {
@@ -107,8 +99,6 @@ TEST(SelectGroupDistinctTest) {
   ASSERT_EQ(stmt->selectList->size(), 3);
   ASSERT(!stmt->selectList->at(1)->distinct);
   ASSERT(stmt->selectList->at(2)->distinct);
-
-  delete result;
 }
 
 TEST(OrderByTest) {
@@ -128,8 +118,6 @@ TEST(OrderByTest) {
 
   ASSERT_EQ(stmt->order->at(1)->type, kOrderDesc);
   ASSERT_STREQ(stmt->order->at(1)->expr->name, "city");
-
-  delete result;
 }
 
 TEST(SelectBetweenTest) {
@@ -144,7 +132,7 @@ TEST(SelectBetweenTest) {
   Expr* where = stmt->whereClause;
   ASSERT_NOTNULL(where);
   ASSERT(where->isType(kExprOperator));
-  ASSERT_EQ(where->opType, Expr::BETWEEN);
+  ASSERT_EQ(where->opType, kOpBetween);
 
   ASSERT_STREQ(where->expr->getName(), "grade");
   ASSERT(where->expr->isType(kExprColumnRef));
@@ -154,8 +142,6 @@ TEST(SelectBetweenTest) {
   ASSERT_EQ(where->exprList->at(0)->ival, 1);
   ASSERT(where->exprList->at(1)->isType(kExprColumnRef));
   ASSERT_STREQ(where->exprList->at(1)->getName(), "c");
-
-  delete result;
 }
 
 TEST(SelectConditionalSelectTest) {
@@ -169,7 +155,7 @@ TEST(SelectConditionalSelectTest) {
   Expr* where = stmt->whereClause;
   ASSERT_NOTNULL(where);
   ASSERT(where->isType(kExprOperator));
-  ASSERT_EQ(where->opType, Expr::AND);
+  ASSERT_EQ(where->opType, kOpAnd);
 
   // a = (SELECT ...)
   Expr* cond1 = where->expr;
@@ -189,13 +175,11 @@ TEST(SelectConditionalSelectTest) {
 
   // EXISTS (SELECT ...)
   Expr* cond2 = where->expr2;
-  ASSERT_EQ(cond2->opType, Expr::EXISTS);
+  ASSERT_EQ(cond2->opType, kOpExists);
   ASSERT_NOTNULL(cond2->select);
 
   SelectStatement* ex_select = cond2->select;
   ASSERT_STREQ(ex_select->fromTable->getName(), "test");
-
-  delete result;
 }
 
 TEST(SelectCaseWhen) {
@@ -216,10 +200,8 @@ TEST(SelectCaseWhen) {
   Expr* caseExpr = func->exprList->at(0);
   ASSERT_NOTNULL(caseExpr);
   ASSERT(caseExpr->isType(kExprOperator));
-  ASSERT_EQ(caseExpr->opType, Expr::CASE);
+  ASSERT_EQ(caseExpr->opType, kOpCase);
   ASSERT(caseExpr->expr->isType(kExprOperator));
   ASSERT(caseExpr->expr->isSimpleOp('='));
   ASSERT_EQ(caseExpr->exprList->size(), 2);
-
-  delete result;
 }

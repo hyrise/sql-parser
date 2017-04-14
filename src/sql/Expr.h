@@ -1,5 +1,5 @@
-#ifndef __EXPRESSION_H__
-#define __EXPRESSION_H__
+#ifndef __SQLPARSER__EXPR_H__
+#define __SQLPARSER__EXPR_H__
 
 #include <stdlib.h>
 #include <memory>
@@ -24,48 +24,45 @@ namespace hsql {
     kExprSelect
   };
 
+  // Operator types. These are important for expressions of type kExprOperator.
+  // Trivial types are those that can be described by a single character e.g:
+  // + - * / < > = %
+  // Non-trivial are: <> <= >= LIKE ISNULL NOT
+  enum OperatorType {
+    kOpNone,
+
+    // Ternary operators
+    kOpBetween,
+    kOpCase,
+
+    // Binary operators.
+    // Simple operators are identified by the opChar field (e.g. +, -, =, >, <).
+    kOpSimple,
+
+    kOpNotEquals,
+    kOpLessEq,
+    kOpGreaterEq,
+    kOpLike,
+    kOpNotLike,
+    kOpAnd,
+    kOpOr,
+    kOpIn,
+
+    // Unary operators.
+    kOpNot,
+    kOpMinus,
+    kOpIsNull,
+    kOpExists
+  };
+
   typedef struct Expr Expr;
 
   // Represents SQL expressions (i.e. literals, operators, column_refs).
   // TODO: When destructing a placeholder expression, we might need to alter the placeholder_list.
   struct Expr {
-    // Operator types. These are important for expressions of type kExprOperator.
-    // Trivial types are those that can be described by a single character e.g:
-    // + - * / < > = %
-    // Non-trivial are: <> <= >= LIKE ISNULL NOT
-    enum OperatorType {
-      NONE,
-
-      // Ternary operators
-      BETWEEN,
-      CASE,
-
-      // Binary operators.
-      SIMPLE_OP,
-      NOT_EQUALS,
-      LESS_EQ,
-      GREATER_EQ,
-      LIKE,
-      NOT_LIKE,
-      AND,
-      OR,
-      IN,
-
-      // Unary operators.
-      NOT,
-      UMINUS,
-      ISNULL,
-      EXISTS
-    };
-
-
 
     Expr(ExprType type);
-
-    // Interesting side-effect:
-    // Making the destructor virtual used to cause segmentation faults.
-    // TODO: inspect.
-    ~Expr();
+    virtual ~Expr();
 
     ExprType type;
 
@@ -88,19 +85,19 @@ namespace hsql {
 
     // Convenience accessor methods.
 
-    bool isType(ExprType e_type);
+    bool isType(ExprType exprType) const;
 
-    bool isLiteral();
+    bool isLiteral() const;
 
-    bool hasAlias();
+    bool hasAlias() const;
 
-    bool hasTable();
+    bool hasTable() const;
 
-    char* getName();
+    const char* getName() const;
 
-    bool isSimpleOp();
+    bool isSimpleOp() const;
 
-    bool isSimpleOp(char op);
+    bool isSimpleOp(char op) const;
 
 
     // Static constructors.

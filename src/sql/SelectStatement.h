@@ -1,5 +1,5 @@
-#ifndef __SELECT_STATEMENT_H__
-#define __SELECT_STATEMENT_H__
+#ifndef __SQLPARSER__SELECT_STATEMENT_H__
+#define __SQLPARSER__SELECT_STATEMENT_H__
 
 #include "SQLStatement.h"
 #include "Expr.h"
@@ -13,7 +13,6 @@ namespace hsql {
 
   /**
    * Description of the order by clause within a select statement
-   * TODO: hold multiple expressions to be sorted by
    */
   struct OrderDescription {
     OrderDescription(OrderType type, Expr* expr);
@@ -41,8 +40,7 @@ namespace hsql {
    */
   struct GroupByDescription {
     GroupByDescription();
-    // TODO: make virtual
-    ~GroupByDescription();
+    virtual ~GroupByDescription();
 
     std::vector<Expr*>* columns;
     Expr* having;
