@@ -18,7 +18,7 @@ Finally you will need to include your new file in `src/sql/statements.h`.
 ### Extending the Grammar
 
 Related files:
-````
+```
 src/parser/bison_parser.y
 src/parser/flex_lexer.l
 src/parser/keywordlist_generator.py

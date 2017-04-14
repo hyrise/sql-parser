@@ -1,18 +1,18 @@
-C++ SQL Parser for Hyrise
+C++ SQL Parser
 =========================
 [![GitHub release](https://img.shields.io/github/release/hyrise/sql-parser.svg?maxAge=2592000)]()
 [![Build Status](https://img.shields.io/travis/hyrise/sql-parser.svg?maxAge=2592000)](https://travis-ci.org/hyrise/sql-parser)
 
 
 This is a SQL Parser for C++. It parses the given SQL query into C++ objects.
-It is developed for integration in hyrise (https://github.com/hyrise/hyrise), but can be used in other environments as well.
+It has been developed for integration in [Hyrise](https://github.com/hyrise/hyrise), but can be used in other environments as well.
 
 In March 2015 we've also written a short paper outlining discussing some development details and the integration into our database Hyrise. You can find the paper [here](http://torpedro.com/paper/HyriseSQL-03-2015.pdf).
 
 
-### Usage
+## Usage
 
-**Note:** You can also find a detailed usage description at this [blog post](http://torpedro.github.io/tech/c++/sql/parser/2016/02/27/c++-sql-parser.html).
+**Note:** You can also find the description of an example program at this [blog post](http://torpedro.github.io/tech/c++/sql/parser/2016/02/27/c++-sql-parser.html).
 
 **Requirements:**
  * gcc 4.8+ (or clang 3.4+)
@@ -26,8 +26,21 @@ To use the SQL parser in your own projects you simply have to follow these few s
  4. Take a look at the [example project here](https://github.com/hyrise/sql-parser/tree/master/example)
  5. Include the `SQLParser.h` from `src/` and link the library in your project
 
+```cpp
+/* Basic Usage in Code */
 
-### Extending the parser
+#include "hsql/SQLParser.h"
+
+/* ... */
+
+{
+    std::string query = "SELECT * FROM test;";
+    hsql::SQLParserResult result;
+    hsql::SQLParser::parseSQLString(query, &result);
+}
+```
+
+## Extending the parser
 
 **Requirements for development:**
  * gcc 4.8+ (or clang 3.4+)
@@ -50,23 +63,25 @@ make test      # build parser, library and runs the tests
 ```
 
 
-#### How to contribute
+## How to contribute
 
 We strongly encourage you to contribute to this project! If you want to contribute to this project there are several options. If you've noticed a bug or would like an improvement let us know by creating a [new issue](https://github.com/hyrise/sql-parser/issues). If you want to develop a new feature yourself or just improve the quality of the system, feel free to fork the reposistory and implement your changes. Open a pull request as soon as your done and we will look over it. If we think it's good then your pull request will be merged into this repository.
 
 
-### Resources
+## Resources
 
  * [Working Syntax Examples](docs/syntax.md)
  * [Developer Documentation](docs/dev-docs.md)
+ * [Example Blog Post](http://torpedro.github.io/tech/c++/sql/parser/2016/02/27/c++-sql-parser.html)
+ * [Development Paper (2015)](http://torpedro.com/paper/HyriseSQL-03-2015.pdf)
 
 
-### License
+## License
 
 HYRISE sql-parser is licensed as open source after the OpenSource "Licence of the Hasso-Plattner Institute" declared in the LICENSE file of this project.
 
 
-### Contributers
+## Contributers
 
 The following people contributed to HYRISE sql-parser in various forms.
 
