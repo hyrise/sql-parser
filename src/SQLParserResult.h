@@ -15,6 +15,9 @@ namespace hsql {
     // Takes ownership of the statement.
     SQLParserResult(SQLStatement* stmt);
 
+    // Move constructor.
+    SQLParserResult(SQLParserResult&& moved);
+
     // Deletes all statements in the result.
     virtual ~SQLParserResult();
 

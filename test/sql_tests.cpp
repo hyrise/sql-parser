@@ -127,4 +127,33 @@ TEST(ReleaseStatementTest) {
   }
 }
 
+
+SQLParserResult parse_and_move(std::string query) {
+  hsql::SQLParserResult result;
+  hsql::SQLParser::parseSQLString(query, &result);
+  // Moves on return.
+  return result;
+}
+
+SQLParserResult move_in_and_back(SQLParserResult res) {
+  // Moves on return.
+  return res;
+}
+
+TEST(MoveSQLResultTest) {
+  SQLParserResult res = parse_and_move("SELECT * FROM test;");
+  ASSERT(res.isValid());
+  ASSERT_EQ(1, res.size());
+
+  // Moved around.
+  SQLParserResult new_res = move_in_and_back(std::move(res));
+
+  // Original object should be invalid.
+  ASSERT_FALSE(res.isValid());
+  ASSERT_EQ(0, res.size());
+
+  ASSERT(new_res.isValid());
+  ASSERT_EQ(1, new_res.size());
+}
+
 TEST_MAIN();
