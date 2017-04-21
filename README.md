@@ -39,10 +39,10 @@ To use the SQL parser in your own projects you simply have to follow these few s
     hsql::SQLParser::parseSQLString(query, &result);
     
     if (result.isValid() && result.size() > 0) {
-        const SQLStatement* statement = result.getStatement(0);
+        const hsql::SQLStatement* statement = result.getStatement(0);
         
         if (statement.isType(hsql::SelectStatement)) {
-            const SelectStatement* select = (const SelectStatement*) statement;
+            const hsql::SelectStatement* select = (const hsql::SelectStatement*) statement;
             /* ... */
         }
     }
