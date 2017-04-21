@@ -28,7 +28,7 @@ $(TARGET): $(LIBOBJ)
 	$(CXX) $(LIBFLAGS) -o $(TARGET) $(LIBOBJ)
 
 $(SRCPARSER)/flex_lexer.o: $(SRCPARSER)/flex_lexer.cpp
-	$(CXX) $(CFLAGS) -c -o $@ $< -Wno-sign-compare
+	$(CXX) $(CFLAGS) -c -o $@ $< -Wno-sign-compare -Wno-unneeded-internal-declaration -Wno-deprecated-register
 
 %.o: %.cpp $(PARSERCPP)
 	$(CXX) $(CFLAGS) -c -o $@ $<
