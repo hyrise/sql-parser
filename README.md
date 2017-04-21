@@ -39,38 +39,13 @@ To use the SQL parser in your own projects you simply have to follow these few s
 
 ```
 
-## Extending the Parser
-
-**Requirements for development:**
- * gcc 4.8+ (or clang 3.4+)
- * [bison](https://www.gnu.org/software/bison/) (v3.0.2+)
- * [flex](http://flex.sourceforge.net/) (v2.5.5+)
-
-First step to extending this parser is cloning the repository `git clone git@github.com:hyrise/sql-parser.git` and making sure everything works by running the following steps:
-
-```bash
-make parser   # builds the bison parser and flex lexer
-make library  # builds the libsqlparser.so
-make test     # runs the tests with the library
-```
-
-Rerun these steps whenever you change part of the parse. To execute the entire pipeline automatically you can run:
-
-```bash
-make cleanall  # cleans the parser build and library build
-make test      # build parser, library and runs the tests
-```
 
 
 ## How to Contribute
 
+**[Developer Documentation](docs/)**
+
 We strongly encourage you to contribute to this project! If you want to contribute to this project there are several options. If you've noticed a bug or would like an improvement let us know by creating a [new issue](https://github.com/hyrise/sql-parser/issues). If you want to develop a new feature yourself or just improve the quality of the system, feel free to fork the reposistory and implement your changes. Open a pull request as soon as your done and we will look over it. If we think it's good then your pull request will be merged into this repository.
-
-
-## Resources
-
- * [Working Syntax Examples](docs/syntax.md)
- * [Developer Documentation](docs/dev-docs.md)
 
 
 ## License
