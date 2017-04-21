@@ -21,7 +21,7 @@ To use the SQL parser in your own projects you simply have to follow these few s
 
  1. Download the [latest release here](https://github.com/hyrise/sql-parser/releases)
  2. Compile the library `make` to create `libsqlparser.so`
- 3. *(Optional)* Run `make install` to copy the library to `/usr/local/lib/`
+ 3. *(Optional, Recommended)* Run `make install` to copy the library to `/usr/local/lib/`
  4. Run the tests `make test` to make sure everything worked
  5. Include the `SQLParser.h` from `src/` (or from `/usr/local/lib/hsql/` if you installed it) and link the library in your project
  6. Take a look at the [example project here](https://github.com/hyrise/sql-parser/tree/master/example)
@@ -32,14 +32,28 @@ To use the SQL parser in your own projects you simply have to follow these few s
 /* ... */
 
 {
+    // Basic Usage Example
+    
     const std::string query = "...";
     hsql::SQLParserResult result;
     hsql::SQLParser::parseSQLString(query, &result);
+    
+    if (result.isValid() && result.size() > 0) {
+        const SQLStatement* statement = result.getStatement(0);
+        
+        if (statement.isType(hsql::SelectStatement)) {
+            const SelectStatement* select = (const SelectStatement*) statement;
+            /* ... */
+        }
+    }
 }
-
 ```
 
+Quick Links:
 
+ * [SQLParser.h](src/SQLParser.h)
+ * [SQLParserResult.h](src/SQLParserResult.h)
+ * [SelectStatement.h](src/sql/SelectStatement.h)
 
 ## How to Contribute
 
