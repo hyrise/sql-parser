@@ -3,7 +3,7 @@ all: bison_parser.cpp flex_lexer.cpp
 
 bison_parser.cpp: bison_parser.y
 	@bison --version | head -n 1
-	bison bison_parser.y -v
+	bison bison_parser.y --output=bison_parser.cpp --defines=bison_parser.h --verbose
 
 flex_lexer.cpp: flex_lexer.l
 	@flex --version
@@ -14,4 +14,4 @@ clean:
 
 # Tests if the parser builds correctly and doesn't contain conflicts.
 test:
-	! bison bison_parser.y -v 2>&1 | grep "conflict" >&2
+	! bison bison_parser.y -v --output=conflict_test.cpp 2>&1 | grep "conflict" >&2

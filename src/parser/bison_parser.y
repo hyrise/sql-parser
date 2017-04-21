@@ -56,9 +56,9 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
     }
 }
 
-// Define the names of the created files
-%output  "bison_parser.cpp"
-%defines "bison_parser.h"
+// Define the names of the created files (defined in Makefile)
+// %output  "bison_parser.cpp"
+// %defines "bison_parser.h"
 
 // Tell bison to create a reentrant parser
 %define api.pure full

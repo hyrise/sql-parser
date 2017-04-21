@@ -4,8 +4,8 @@ SRC        = src
 SRCPARSER  = src/parser
 
 # files
-PARSERFILES = $(SRCPARSER)/bison_parser.cpp $(SRCPARSER)/flex_lexer.cpp
-LIBCPP      = $(shell find $(SRC) -name '*.cpp' -not -path "$(SRCPARSER)/*") $(SRCPARSER)/bison_parser.cpp $(SRCPARSER)/flex_lexer.cpp
+PARSERCPP   = $(SRCPARSER)/bison_parser.cpp $(SRCPARSER)/flex_lexer.cpp
+LIBCPP      = $(shell find $(SRC) -name '*.cpp' -not -path "$(SRCPARSER)/*") $(PARSERCPP)
 LIBOBJ      = $(LIBCPP:%.cpp=%.o)
 TESTCPP     = $(shell find test/ -name '*.cpp')
 
@@ -27,13 +27,16 @@ library: $(TARGET)
 $(TARGET): $(LIBOBJ)
 	$(CXX) $(LIBFLAGS) -o $(TARGET) $(LIBOBJ)
 
-%.o: %.cpp $(PARSERFILES)
+$(SRCPARSER)/flex_lexer.o: $(SRCPARSER)/flex_lexer.cpp
+	$(CXX) $(CFLAGS) -c -o $@ $< -Wno-sign-compare
+
+%.o: %.cpp $(PARSERCPP)
 	$(CXX) $(CFLAGS) -c -o $@ $<
 
-$(SRCPARSER)/bison_parser.cpp:
+$(SRCPARSER)/bison_parser.cpp: $(SRCPARSER)/bison_parser.y
 	make -C $(SRCPARSER)/ bison_parser.cpp
 
-$(SRCPARSER)/flex_lexer.cpp:
+$(SRCPARSER)/flex_lexer.cpp: $(SRCPARSER)/flex_lexer.l
 	make -C $(SRCPARSER)/ flex_lexer.cpp
 
 parser:
