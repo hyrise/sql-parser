@@ -1,7 +1,7 @@
 Developer Documentation
 =======================
 
-## Basic Requirements Requirements
+## Basic Requirements
 
 **Requirements for development:**
  * gcc 4.8+ (or clang 3.4+)
