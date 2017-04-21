@@ -37,7 +37,7 @@ TEST(CreateStatementTest) {
   ASSERT_EQ(result.getStatement(0)->type(), kStmtCreate);
 
   const CreateStatement* stmt = (const CreateStatement*) result.getStatement(0);
-  ASSERT_EQ(stmt->type, CreateStatement::kTable);
+  ASSERT_EQ(stmt->type, kCreateTable);
   ASSERT_STREQ(stmt->tableName, "students");
   ASSERT_NOTNULL(stmt->columns);
   ASSERT_EQ(stmt->columns->size(), 4);
@@ -102,7 +102,7 @@ TEST(DropTableStatementTest) {
     result,
     stmt);
 
-  ASSERT_EQ(stmt->type, DropStatement::kTable);
+  ASSERT_EQ(stmt->type, kDropTable);
   ASSERT_NOTNULL(stmt->name);
   ASSERT_STREQ(stmt->name, "students");
 }

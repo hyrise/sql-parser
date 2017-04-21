@@ -174,13 +174,13 @@ namespace hsql {
       }
     }
     switch (stmt->type) {
-    case InsertStatement::kInsertValues:
+    case kInsertValues:
       inprint("Values", numIndent + 1);
       for (Expr* expr : *stmt->values) {
         printExpression(expr, numIndent + 2);
       }
       break;
-    case InsertStatement::kInsertSelect:
+    case kInsertSelect:
       printSelectStatementInfo(stmt->select, numIndent + 1);
       break;
     }

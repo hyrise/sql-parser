@@ -313,14 +313,14 @@ execute_statement:
  ******************************/
 import_statement:
 		IMPORT FROM import_file_type FILE file_path INTO table_name {
-			$$ = new ImportStatement((ImportStatement::ImportType) $3);
+			$$ = new ImportStatement((ImportType) $3);
 			$$->filePath = $5;
 			$$->tableName = $7;
 		}
 	;
 
 import_file_type:
-		CSV { $$ = ImportStatement::kImportCSV; }
+		CSV { $$ = kImportCSV; }
 	;
 
 file_path:
@@ -335,19 +335,19 @@ file_path:
  ******************************/
 create_statement:
 		CREATE TABLE opt_not_exists table_name FROM TBL FILE file_path {
-			$$ = new CreateStatement(CreateStatement::kTableFromTbl);
+			$$ = new CreateStatement(kCreateTableFromTbl);
 			$$->ifNotExists = $3;
 			$$->tableName = $4;
 			$$->filePath = $8;
 		}
 	|	CREATE TABLE opt_not_exists table_name '(' column_def_commalist ')' {
-			$$ = new CreateStatement(CreateStatement::kTable);
+			$$ = new CreateStatement(kCreateTable);
 			$$->ifNotExists = $3;
 			$$->tableName = $4;
 			$$->columns = $6;
 		}
 	|	CREATE VIEW opt_not_exists table_name opt_column_list AS select_statement {
-			$$ = new CreateStatement(CreateStatement::kView);
+			$$ = new CreateStatement(kCreateView);
 			$$->ifNotExists = $3;
 			$$->tableName = $4;
 			$$->viewColumns = $5;
@@ -387,15 +387,15 @@ column_type:
 
 drop_statement:
 		DROP TABLE table_name {
-			$$ = new DropStatement(DropStatement::kTable);
+			$$ = new DropStatement(kDropTable);
 			$$->name = $3;
 		}
 	|	DROP VIEW table_name {
-			$$ = new DropStatement(DropStatement::kView);
+			$$ = new DropStatement(kDropView);
 			$$->name = $3;
 		}
 	|	DEALLOCATE PREPARE IDENTIFIER {
-			$$ = new DropStatement(DropStatement::kPreparedStatement);
+			$$ = new DropStatement(kDropPreparedStatement);
 			$$->name = $3;
 		}
 	;
@@ -427,13 +427,13 @@ truncate_statement:
  ******************************/
 insert_statement:
 		INSERT INTO table_name opt_column_list VALUES '(' literal_list ')' {
-			$$ = new InsertStatement(InsertStatement::kInsertValues);
+			$$ = new InsertStatement(kInsertValues);
 			$$->tableName = $3;
 			$$->columns = $4;
 			$$->values = $7;
 		}
 	|	INSERT INTO table_name opt_column_list select_no_paren {
-			$$ = new InsertStatement(InsertStatement::kInsertSelect);
+			$$ = new InsertStatement(kInsertSelect);
 			$$->tableName = $3;
 			$$->columns = $4;
 			$$->select = $5;

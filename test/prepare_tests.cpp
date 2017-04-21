@@ -11,6 +11,8 @@ using hsql::kStmtInsert;
 using hsql::kStmtPrepare;
 using hsql::kStmtSelect;
 
+using hsql::kDropPreparedStatement;
+
 using hsql::DropStatement;
 using hsql::ExecuteStatement;
 using hsql::InsertStatement;
@@ -69,7 +71,7 @@ TEST(PrepareMultiStatementTest) {
   ASSERT_EQ(prep2->placeholders.size(), 1);
 
   // Deallocate Statement
-  ASSERT_EQ(drop->type, DropStatement::kPreparedStatement);
+  ASSERT_EQ(drop->type, kDropPreparedStatement);
   ASSERT_STREQ(drop->name, "stmt");
 }
 
