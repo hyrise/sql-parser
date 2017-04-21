@@ -188,7 +188,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 %type <bval> 		opt_not_exists opt_distinct
 %type <uval>		import_file_type opt_join_type column_type
 %type <table> 		from_clause table_ref table_ref_atomic table_ref_name
-%type <table>		join_clause join_table table_ref_name_no_alias
+%type <table>		join_clause table_ref_name_no_alias
 %type <expr> 		expr operand scalar_expr unary_expr binary_expr logic_expr exists_expr
 %type <expr>		function_expr between_expr star_expr expr_alias placeholder_expr
 %type <expr> 		column_name literal int_literal num_literal string_literal
@@ -225,11 +225,11 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 %left		'^'
 
 /* Unary Operators */
-%right 		UMINUS
+%right  UMINUS
 %left		'[' ']'
 %left		'(' ')'
 %left		'.'
-
+%left   JOIN
 %%
 /*********************************
  ** Section 3: Grammar Definition
@@ -817,7 +817,7 @@ opt_alias:
  ******************************/
 
 join_clause:
-		join_table opt_join_type JOIN join_table ON join_condition
+		table_ref_atomic opt_join_type JOIN table_ref_atomic ON join_condition
 		{ 
 			$$ = new TableRef(kTableJoin);
 			$$->join = new JoinDefinition();
@@ -839,17 +839,6 @@ opt_join_type:
 	|	NATURAL		{ $$ = kJoinNatural; }
 	|	/* empty, default */	{ $$ = kJoinInner; }
 	;
-
-
-
-join_table:
-		'(' select_statement ')' alias {
-			auto tbl = new TableRef(kTableSelect);
-			tbl->select = $2;
-			tbl->alias = $4;
-			$$ = tbl;
-		}
-	|	table_ref_name;
 
 
 join_condition:

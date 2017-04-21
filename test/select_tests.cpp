@@ -205,3 +205,45 @@ TEST(SelectCaseWhen) {
   ASSERT(caseExpr->expr->isSimpleOp('='));
   ASSERT_EQ(caseExpr->exprList->size(), 2);
 }
+
+TEST(SelectJoin) {
+  TEST_PARSE_SINGLE_SQL(
+    "SELECT City.name, Product.category, SUM(price) FROM fact\
+      INNER JOIN City ON fact.city_id = City.id\
+      OUTER JOIN Product ON fact.product_id = Product.id\
+      GROUP BY City.name, Product.category;",
+    kStmtSelect,
+    SelectStatement,
+    result,
+    stmt);
+
+  const TableRef* table = stmt->fromTable;
+  const JoinDefinition* outer_join = table->join;
+  ASSERT_EQ(table->type, kTableJoin);
+  ASSERT_EQ(outer_join->type, kJoinOuter);
+
+  ASSERT_EQ(outer_join->right->type, kTableName);
+  ASSERT_STREQ(outer_join->right->name, "Product");
+  ASSERT(outer_join->condition->isSimpleOp('='));
+  ASSERT_STREQ(outer_join->condition->expr->table, "fact");
+  ASSERT_STREQ(outer_join->condition->expr->name, "product_id");
+  ASSERT_STREQ(outer_join->condition->expr2->table, "Product");
+  ASSERT_STREQ(outer_join->condition->expr2->name, "id");
+
+  // Joins are are left associative.
+  // So the second join should be on the left.
+  ASSERT_EQ(outer_join->left->type, kTableJoin);
+
+  const JoinDefinition* inner_join = outer_join->left->join;
+  ASSERT_EQ(inner_join->type, kJoinInner);
+  ASSERT_EQ(inner_join->left->type, kTableName);
+  ASSERT_STREQ(inner_join->left->name, "fact");
+  ASSERT_EQ(inner_join->right->type, kTableName);
+  ASSERT_STREQ(inner_join->right->name, "City");
+
+  ASSERT(inner_join->condition->isSimpleOp('='));
+  ASSERT_STREQ(inner_join->condition->expr->table, "fact");
+  ASSERT_STREQ(inner_join->condition->expr->name, "city_id");
+  ASSERT_STREQ(inner_join->condition->expr2->table, "City");
+  ASSERT_STREQ(inner_join->condition->expr2->name, "id");
+}
