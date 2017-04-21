@@ -23,16 +23,15 @@ namespace hsql {
     DataType type;
   };
 
+  enum CreateType {
+    kCreateTable,
+    kCreateTableFromTbl, // Hyrise file format
+    kCreateView
+  };
 
   // Represents SQL Create statements.
   // Example: "CREATE TABLE students (name TEXT, student_number INTEGER, city TEXT, grade DOUBLE)"
   struct CreateStatement : SQLStatement {
-    enum CreateType {
-      kTable,
-      kTableFromTbl, // Hyrise file format
-      kView
-    };
-
     CreateStatement(CreateType type);
     virtual ~CreateStatement();
 
@@ -46,4 +45,5 @@ namespace hsql {
   };
 
 } // namespace hsql
+
 #endif

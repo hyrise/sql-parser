@@ -5,21 +5,23 @@
 
 // Note: Implementations of constructors and destructors can be found in statements.cpp.
 namespace hsql {
+
+  enum DropType {
+    kDropTable,
+    kDropSchema,
+    kDropIndex,
+    kDropView,
+    kDropPreparedStatement
+  };
+
   // Represents SQL Delete statements.
   // Example "DROP TABLE students;"
   struct DropStatement : SQLStatement {
-    enum EntityType {
-      kTable,
-      kSchema,
-      kIndex,
-      kView,
-      kPreparedStatement
-    };
 
-    DropStatement(EntityType type);
+    DropStatement(DropType type);
     virtual ~DropStatement();
 
-    EntityType type;
+    DropType type;
     char* name;
   };
 

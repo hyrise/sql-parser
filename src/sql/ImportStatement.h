@@ -4,15 +4,13 @@
 #include "SQLStatement.h"
 
 namespace hsql {
-  /**
-   * Represents SQL Import statements.
-   */
-  struct ImportStatement : SQLStatement {
-    enum ImportType {
-      kImportCSV,
-      kImportTbl, // Hyrise file format
-    };
+  enum ImportType {
+    kImportCSV,
+    kImportTbl, // Hyrise file format
+  };
 
+  // Represents SQL Import statements.
+  struct ImportStatement : SQLStatement {
     ImportStatement(ImportType type);
     virtual ~ImportStatement();
 
@@ -22,6 +20,5 @@ namespace hsql {
   };
 
 } // namespace hsql
-
 
 #endif

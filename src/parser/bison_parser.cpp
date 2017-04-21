@@ -2558,7 +2558,7 @@ yyreduce:
   case 20:
 #line 315 "bison_parser.y" /* yacc.c:1646  */
     {
-			(yyval.import_stmt) = new ImportStatement((ImportStatement::ImportType) (yyvsp[-4].uval));
+			(yyval.import_stmt) = new ImportStatement((ImportType) (yyvsp[-4].uval));
 			(yyval.import_stmt)->filePath = (yyvsp[-2].sval);
 			(yyval.import_stmt)->tableName = (yyvsp[0].sval);
 		}
@@ -2567,7 +2567,7 @@ yyreduce:
 
   case 21:
 #line 323 "bison_parser.y" /* yacc.c:1646  */
-    { (yyval.uval) = ImportStatement::kImportCSV; }
+    { (yyval.uval) = kImportCSV; }
 #line 2572 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
@@ -2580,7 +2580,7 @@ yyreduce:
   case 23:
 #line 337 "bison_parser.y" /* yacc.c:1646  */
     {
-			(yyval.create_stmt) = new CreateStatement(CreateStatement::kTableFromTbl);
+			(yyval.create_stmt) = new CreateStatement(kCreateTableFromTbl);
 			(yyval.create_stmt)->ifNotExists = (yyvsp[-5].bval);
 			(yyval.create_stmt)->tableName = (yyvsp[-4].sval);
 			(yyval.create_stmt)->filePath = (yyvsp[0].sval);
@@ -2591,7 +2591,7 @@ yyreduce:
   case 24:
 #line 343 "bison_parser.y" /* yacc.c:1646  */
     {
-			(yyval.create_stmt) = new CreateStatement(CreateStatement::kTable);
+			(yyval.create_stmt) = new CreateStatement(kCreateTable);
 			(yyval.create_stmt)->ifNotExists = (yyvsp[-4].bval);
 			(yyval.create_stmt)->tableName = (yyvsp[-3].sval);
 			(yyval.create_stmt)->columns = (yyvsp[-1].column_vec);
@@ -2602,7 +2602,7 @@ yyreduce:
   case 25:
 #line 349 "bison_parser.y" /* yacc.c:1646  */
     {
-			(yyval.create_stmt) = new CreateStatement(CreateStatement::kView);
+			(yyval.create_stmt) = new CreateStatement(kCreateView);
 			(yyval.create_stmt)->ifNotExists = (yyvsp[-4].bval);
 			(yyval.create_stmt)->tableName = (yyvsp[-3].sval);
 			(yyval.create_stmt)->viewColumns = (yyvsp[-2].str_vec);
@@ -2670,7 +2670,7 @@ yyreduce:
   case 35:
 #line 389 "bison_parser.y" /* yacc.c:1646  */
     {
-			(yyval.drop_stmt) = new DropStatement(DropStatement::kTable);
+			(yyval.drop_stmt) = new DropStatement(kDropTable);
 			(yyval.drop_stmt)->name = (yyvsp[0].sval);
 		}
 #line 2677 "bison_parser.cpp" /* yacc.c:1646  */
@@ -2679,7 +2679,7 @@ yyreduce:
   case 36:
 #line 393 "bison_parser.y" /* yacc.c:1646  */
     {
-			(yyval.drop_stmt) = new DropStatement(DropStatement::kView);
+			(yyval.drop_stmt) = new DropStatement(kDropView);
 			(yyval.drop_stmt)->name = (yyvsp[0].sval);
 		}
 #line 2686 "bison_parser.cpp" /* yacc.c:1646  */
@@ -2688,7 +2688,7 @@ yyreduce:
   case 37:
 #line 397 "bison_parser.y" /* yacc.c:1646  */
     {
-			(yyval.drop_stmt) = new DropStatement(DropStatement::kPreparedStatement);
+			(yyval.drop_stmt) = new DropStatement(kDropPreparedStatement);
 			(yyval.drop_stmt)->name = (yyvsp[0].sval);
 		}
 #line 2695 "bison_parser.cpp" /* yacc.c:1646  */
@@ -2716,7 +2716,7 @@ yyreduce:
   case 40:
 #line 429 "bison_parser.y" /* yacc.c:1646  */
     {
-			(yyval.insert_stmt) = new InsertStatement(InsertStatement::kInsertValues);
+			(yyval.insert_stmt) = new InsertStatement(kInsertValues);
 			(yyval.insert_stmt)->tableName = (yyvsp[-5].sval);
 			(yyval.insert_stmt)->columns = (yyvsp[-4].str_vec);
 			(yyval.insert_stmt)->values = (yyvsp[-1].expr_vec);
@@ -2727,7 +2727,7 @@ yyreduce:
   case 41:
 #line 435 "bison_parser.y" /* yacc.c:1646  */
     {
-			(yyval.insert_stmt) = new InsertStatement(InsertStatement::kInsertSelect);
+			(yyval.insert_stmt) = new InsertStatement(kInsertSelect);
 			(yyval.insert_stmt)->tableName = (yyvsp[-2].sval);
 			(yyval.insert_stmt)->columns = (yyvsp[-1].str_vec);
 			(yyval.insert_stmt)->select = (yyvsp[0].select_stmt);

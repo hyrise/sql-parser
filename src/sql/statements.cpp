@@ -17,6 +17,10 @@ namespace hsql {
     return (type_ == type);
   }
 
+  bool SQLStatement::is(StatementType type) const {
+    return isType(type);
+  }
+
   // ColumnDefinition
   ColumnDefinition::ColumnDefinition(char* name, DataType type) :
     name(name),
@@ -69,7 +73,7 @@ namespace hsql {
   }
 
   // DropStatament
-  DropStatement::DropStatement(EntityType type) :
+  DropStatement::DropStatement(DropType type) :
     SQLStatement(kStmtDrop),
     type(type),
     name(NULL) {}

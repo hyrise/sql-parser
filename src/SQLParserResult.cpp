@@ -13,6 +13,16 @@ namespace hsql {
     addStatement(stmt);
   };
 
+  // Move constructor.
+  SQLParserResult::SQLParserResult(SQLParserResult&& moved) {
+    isValid_ = moved.isValid_;
+    errorMsg_ = moved.errorMsg_;
+    statements_ = std::move(moved.statements_);
+
+    moved.errorMsg_ = NULL;
+    moved.reset();
+  }
+
   SQLParserResult::~SQLParserResult() {
     reset();
   }

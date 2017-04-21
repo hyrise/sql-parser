@@ -11,9 +11,8 @@ namespace hsql {
     kOrderDesc
   };
 
-  /**
-   * Description of the order by clause within a select statement
-   */
+
+  // Description of the order by clause within a select statement.
   struct OrderDescription {
     OrderDescription(OrderType type, Expr* expr);
     virtual ~OrderDescription();
@@ -25,9 +24,7 @@ namespace hsql {
   const int64_t kNoLimit = -1;
   const int64_t kNoOffset = -1;
 
-  /**
-   * Description of the limit clause within a select statement
-   */
+  // Description of the limit clause within a select statement.
   struct LimitDescription {
     LimitDescription(int64_t limit, int64_t offset);
 
@@ -35,9 +32,7 @@ namespace hsql {
     int64_t offset;
   };
 
-  /**
-   * Description of the group-by clause within a select statement
-   */
+  // Description of the group-by clause within a select statement.
   struct GroupByDescription {
     GroupByDescription();
     virtual ~GroupByDescription();
@@ -46,10 +41,8 @@ namespace hsql {
     Expr* having;
   };
 
-  /**
-   * Representation of a full SQL select statement.
-   * TODO: add union_order and union_limit
-   */
+  // Representation of a full SQL select statement.
+  // TODO: add union_order and union_limit.
   struct SelectStatement : SQLStatement {
     SelectStatement();
     virtual ~SelectStatement();
@@ -66,4 +59,5 @@ namespace hsql {
   };
 
 } // namespace hsql
+
 #endif

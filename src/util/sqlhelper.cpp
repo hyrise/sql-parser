@@ -11,7 +11,7 @@ namespace hsql {
     return std::string(numIndent, '\t');
   }
   void inprint(int64_t val, uintmax_t numIndent) {
-    printf("%s%lld  \n", indent(numIndent).c_str(), val);
+    printf("%s%ld  \n", indent(numIndent).c_str(), val);
   }
   void inprint(float val, uintmax_t numIndent) {
     printf("%s%f\n", indent(numIndent).c_str(), val);
@@ -26,7 +26,7 @@ namespace hsql {
     printf("%s%c\n", indent(numIndent).c_str(), val);
   }
   void inprintU(uint64_t val, uintmax_t numIndent) {
-    printf("%s%llu\n", indent(numIndent).c_str(), val);
+    printf("%s%lu\n", indent(numIndent).c_str(), val);
   }
 
   void printTableRefInfo(TableRef* table, uintmax_t numIndent) {
@@ -174,13 +174,13 @@ namespace hsql {
       }
     }
     switch (stmt->type) {
-    case InsertStatement::kInsertValues:
+    case kInsertValues:
       inprint("Values", numIndent + 1);
       for (Expr* expr : *stmt->values) {
         printExpression(expr, numIndent + 2);
       }
       break;
-    case InsertStatement::kInsertSelect:
+    case kInsertSelect:
       printSelectStatementInfo(stmt->select, numIndent + 1);
       break;
     }

@@ -37,7 +37,7 @@ TEST(CreateStatementTest) {
   ASSERT_EQ(result.getStatement(0)->type(), kStmtCreate);
 
   const CreateStatement* stmt = (const CreateStatement*) result.getStatement(0);
-  ASSERT_EQ(stmt->type, CreateStatement::kTable);
+  ASSERT_EQ(stmt->type, kCreateTable);
   ASSERT_STREQ(stmt->tableName, "students");
   ASSERT_NOTNULL(stmt->columns);
   ASSERT_EQ(stmt->columns->size(), 4);
@@ -102,7 +102,7 @@ TEST(DropTableStatementTest) {
     result,
     stmt);
 
-  ASSERT_EQ(stmt->type, DropStatement::kTable);
+  ASSERT_EQ(stmt->type, kDropTable);
   ASSERT_NOTNULL(stmt->name);
   ASSERT_STREQ(stmt->name, "students");
 }
@@ -125,6 +125,35 @@ TEST(ReleaseStatementTest) {
   for (SQLStatement* stmt : statements) {
     delete stmt;
   }
+}
+
+
+SQLParserResult parse_and_move(std::string query) {
+  hsql::SQLParserResult result;
+  hsql::SQLParser::parseSQLString(query, &result);
+  // Moves on return.
+  return result;
+}
+
+SQLParserResult move_in_and_back(SQLParserResult res) {
+  // Moves on return.
+  return res;
+}
+
+TEST(MoveSQLResultTest) {
+  SQLParserResult res = parse_and_move("SELECT * FROM test;");
+  ASSERT(res.isValid());
+  ASSERT_EQ(1, res.size());
+
+  // Moved around.
+  SQLParserResult new_res = move_in_and_back(std::move(res));
+
+  // Original object should be invalid.
+  ASSERT_FALSE(res.isValid());
+  ASSERT_EQ(0, res.size());
+
+  ASSERT(new_res.isValid());
+  ASSERT_EQ(1, new_res.size());
 }
 
 TEST_MAIN();

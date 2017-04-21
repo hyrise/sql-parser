@@ -6,7 +6,7 @@
 #include <vector>
 
 namespace hsql {
-  class SelectStatement;
+  struct SelectStatement;
 
   // Helper function used by the lexer.
   // TODO: move to more appropriate place.

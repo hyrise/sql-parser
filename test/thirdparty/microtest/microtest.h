@@ -1,9 +1,9 @@
 //
-// microtest
+// microtest.h
 //
-// URL: https://github.com/torpedro/microtest
+// URL: https://github.com/torpedro/microtest.h
 // Author: Pedro Flemming (http://torpedro.com/)
-// License: MIT License (https://github.com/torpedro/microtest/blob/master/LICENSE)
+// License: MIT License (https://github.com/torpedro/microtest.h/blob/master/LICENSE)
 // Copyright (c) 2017 Pedro Flemming
 //
 // This is a small header-only C++ unit testing framework.
@@ -37,8 +37,18 @@
   ASSERT_TRUE(value != NULL);
 
 #define ASSERT_STREQ(a, b)\
-  if (std::string(a).compare(std::string(b)) != 0)\
-    throw mt::AssertFailedException(#a " == " #b, __FILE__, __LINE__);
+  if (std::string(a).compare(std::string(b)) != 0) {\
+    printf("%s{    info} %s", mt::yellow(), mt::def());\
+    std::cout << "Actual values: " << a << " != " << b << std::endl;\
+    throw mt::AssertFailedException(#a " == " #b, __FILE__, __LINE__);\
+  }
+
+#define ASSERT_STRNEQ(a, b)\
+  if (std::string(a).compare(std::string(b)) !== 0) {\
+    printf("%s{    info} %s", mt::yellow(), mt::def());\
+    std::cout << "Actual values: " << a << " == " << b << std::endl;\
+    throw mt::AssertFailedException(#a " != " #b, __FILE__, __LINE__);\
+  }
 
 #define ASSERT_EQ(a, b)\
   if (a != b) {\
@@ -175,7 +185,8 @@ namespace mt {
         }
       }
 
-      return num_failed;
+      int return_code = (num_failed > 0) ? 1 : 0;
+      return return_code;
     }
   };
 

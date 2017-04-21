@@ -1,6 +1,29 @@
 Developer Documentation
 =======================
 
+## Basic Requirements
+
+**Requirements for development:**
+ * gcc 4.8+ (or clang 3.4+)
+ * [bison](https://www.gnu.org/software/bison/) (v3.0.2+)
+ * [flex](http://flex.sourceforge.net/) (v2.5.5+)
+
+First step to extending this parser is cloning the repository `git clone git@github.com:hyrise/sql-parser.git` and making sure everything works by running the following steps:
+
+```bash
+make parser   # builds the bison parser and flex lexer
+make library  # builds the libsqlparser.so
+make test     # runs the tests with the library
+```
+
+Rerun these steps whenever you change part of the parse. To execute the entire pipeline automatically you can run:
+
+```bash
+make cleanall  # cleans the parser build and library build
+make test      # build parser, library and runs the tests
+```
+
+
 ## Developing New Functionality
 
 This section contains information about how to extend this parser with new functionalities.
@@ -18,7 +41,7 @@ Finally you will need to include your new file in `src/sql/statements.h`.
 ### Extending the Grammar
 
 Related files:
-````
+```
 src/parser/bison_parser.y
 src/parser/flex_lexer.l
 src/parser/keywordlist_generator.py

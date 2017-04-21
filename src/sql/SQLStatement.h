@@ -21,10 +21,9 @@ namespace hsql {
     kStmtAlter
   };
 
-  /**
-   * Base struct for every SQL statement
-   */
+  // Base struct for every SQL statement
   struct SQLStatement {
+
     SQLStatement(StatementType type);
 
     virtual ~SQLStatement();
@@ -33,9 +32,14 @@ namespace hsql {
 
     bool isType(StatementType type) const;
 
+    // Shorthand for isType(type).
+    bool is(StatementType type) const;
+
    private:
     StatementType type_;
+
   };
 
 } // namespace hsql
+
 #endif // __SQLPARSER__SQLSTATEMENT_H__
