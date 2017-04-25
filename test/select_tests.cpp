@@ -58,7 +58,7 @@ TEST(SelectExprTest) {
 
 TEST(SelectHavingTest) {
   TEST_PARSE_SINGLE_SQL(
-    "SELECT city, AVG(grade) AS avg_grade FROM students GROUP BY city HAVING AVG(grade) < 2.0",
+    "SELECT city, AVG(grade) AS avg_grade FROM students GROUP BY city HAVING AVG(grade) < -2.0",
     kStmtSelect,
     SelectStatement,
     result,
@@ -72,6 +72,7 @@ TEST(SelectHavingTest) {
   ASSERT(group->having->isSimpleOp('<'));
   ASSERT(group->having->expr->isType(kExprFunctionRef));
   ASSERT(group->having->expr2->isType(kExprLiteralFloat));
+  ASSERT_EQ(group->having->expr2->fval, -2.0);
 }
 
 
@@ -122,7 +123,7 @@ TEST(OrderByTest) {
 
 TEST(SelectBetweenTest) {
   TEST_PARSE_SINGLE_SQL(
-    "SELECT grade, city FROM students WHERE grade BETWEEN 1 and c;",
+    "SELECT grade, city FROM students WHERE grade BETWEEN -1 and c;",
     kStmtSelect,
     SelectStatement,
     result,
@@ -139,7 +140,7 @@ TEST(SelectBetweenTest) {
 
   ASSERT_EQ(where->exprList->size(), 2);
   ASSERT(where->exprList->at(0)->isType(kExprLiteralInt));
-  ASSERT_EQ(where->exprList->at(0)->ival, 1);
+  ASSERT_EQ(where->exprList->at(0)->ival, -1);
   ASSERT(where->exprList->at(1)->isType(kExprColumnRef));
   ASSERT_STREQ(where->exprList->at(1)->getName(), "c");
 }
