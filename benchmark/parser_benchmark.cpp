@@ -10,12 +10,39 @@
 #include "benchmark_utils.h"
 
 
-PARSE_QUERY_BENCHMARK(BM_SimpleSelect,
+PARSE_QUERY_BENCHMARK(BM_Q1SimpleSelect,
   "SELECT * FROM test;");
 
-PARSE_QUERY_BENCHMARK(BM_SimpleSubSelect,
-  "SELECT age, street AS address FROM (SELECT * FROM data);");
+PARSE_QUERY_BENCHMARK(BM_Q2SimpleSubSelect,
+  "SELECT a, b AS address FROM (SELECT * FROM test WHERE c < 100 AND b > 3) t1 WHERE a < 10 AND b < 100;");
 
+PARSE_QUERY_BENCHMARK(BM_Q3SingleJoin,
+  "SELECT \"left\".a, \"left\".b, \"right\".a, \"right\".b FROM table_a AS \"left\" JOIN table_b AS \"right\" ON \"left\".a = \"right\".a;");
+
+PARSE_QUERY_BENCHMARK(BM_Q4TPCHQuery,
+"SELECT"
+"  l_orderkey,"
+"  SUM(l_extendedprice * (1 - l_discount)) AS revenue,"
+"    o_orderdate,"
+"    o_shippriority"
+"  FROM"
+"    customer,"
+"    orders,"
+"    lineitem"
+"  WHERE"
+"    c_mktsegment = '%s'"
+"    and c_custkey = o_custkey"
+"    and l_orderkey = o_orderkey"
+"    and o_orderdate < '%s'"
+"    and l_shipdate > '%s'"
+"  GROUP BY"
+"    l_orderkey,"
+"    o_orderdate,"
+"    o_shippriority"
+"  ORDER BY"
+"    revenue DESC,"
+"    o_orderdate;"
+  );
 PARSE_QUERY_BENCHMARK(BM_TwoSelects,
   "SELECT * FROM test; SELECT age, street AS address FROM data;");
 

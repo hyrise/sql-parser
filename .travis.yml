@@ -29,5 +29,11 @@ compiler:
 
 script:
   - make cleanall
-  - make
+  - make -j4
+
   - make test
+  - make test_format
+  - make test_example
+
+  # Test if benchmark can be built.
+  # - make build_benchmark
