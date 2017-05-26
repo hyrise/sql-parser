@@ -9,24 +9,15 @@
 namespace hsql {
 
   // Represents SQL Prepare statements.
-  // Example: "PREPARE ins_prep: SELECT * FROM t1 WHERE c1 = ? AND c2 = ?"
+  // Example: PREPARE test FROM 'SELECT * FROM test WHERE a = ?;'
   struct PrepareStatement : SQLStatement {
     PrepareStatement();
     virtual ~PrepareStatement();
 
-    // When setting the placeholders we need to make sure that they are in the correct order.
-    // To ensure that, during parsing we store the character position use that to sort the list here.
-    void setPlaceholders(std::vector<void*> ph);
-
     char* name;
 
-    // The result that is stored within this prepared statement.
-    SQLParserResult* query;
-
-    // The expressions are not owned by this statement.
-    // Rather they are owned by the query and destroyed, when
-    // the query is destroyed.
-    std::vector<Expr*> placeholders;
+    // The query that is supposed to be prepared.
+    char* query;
   };
 
 } // namsepace hsql

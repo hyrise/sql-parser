@@ -63,6 +63,11 @@ namespace hsql {
     // Deletes all statements and other data within the result.
     void reset();
 
+    // Does NOT take ownership.
+    void addParameter(Expr* parameter);
+
+    const std::vector<Expr*>& parameters();
+
    private:
     // List of statements within the result.
     std::vector<SQLStatement*> statements_;
@@ -78,6 +83,9 @@ namespace hsql {
 
     // Column number of the occurrance of the error in the query.
     int errorColumn_;
+
+    // Does NOT have ownership.
+    std::vector<Expr*> parameters_;
   };
 
 } // namespace hsql
