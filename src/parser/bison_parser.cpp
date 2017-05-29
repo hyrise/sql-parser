@@ -146,18 +146,18 @@ extern int hsql_debug;
 
 // Auto update column and line number
 #define YY_USER_ACTION \
-    yylloc->first_line = yylloc->last_line; \
-    yylloc->first_column = yylloc->last_column; \
-    for(int i = 0; yytext[i] != '\0'; i++) { \
-    	yylloc->total_column++; \
-        if(yytext[i] == '\n') { \
-            yylloc->last_line++; \
-            yylloc->last_column = 0; \
-        } \
-        else { \
-            yylloc->last_column++; \
-        } \
-    }
+		yylloc->first_line = yylloc->last_line; \
+		yylloc->first_column = yylloc->last_column; \
+		for(int i = 0; yytext[i] != '\0'; i++) { \
+			yylloc->total_column++; \
+				if(yytext[i] == '\n') { \
+						yylloc->last_line++; \
+						yylloc->last_column = 0; \
+				} \
+				else { \
+						yylloc->last_column++; \
+				} \
+		}
 
 #line 163 "bison_parser.cpp" /* yacc.c:355  */
 
@@ -2421,21 +2421,21 @@ yyreduce:
         case 2:
 #line 237 "bison_parser.y" /* yacc.c:1646  */
     {
-		  for (SQLStatement* stmt : *(yyvsp[-1].stmt_vec)) {
-		    // Transfers ownership of the statement.
-		  	result->addStatement(stmt);
-		  }
+			for (SQLStatement* stmt : *(yyvsp[-1].stmt_vec)) {
+				// Transfers ownership of the statement.
+				result->addStatement(stmt);
+			}
 
-		 	unsigned param_id = 0;
-		  for (void* param : yyloc.param_list) {
-		  	if (param != nullptr) {
-		  		Expr* expr = (Expr*) param;
-		  		expr->ival = param_id;
-		  		result->addParameter(expr);
-		  		++param_id;
-		  	}
-		  }
-		  delete (yyvsp[-1].stmt_vec);
+			unsigned param_id = 0;
+			for (void* param : yyloc.param_list) {
+				if (param != nullptr) {
+					Expr* expr = (Expr*) param;
+					expr->ival = param_id;
+					result->addParameter(expr);
+					++param_id;
+				}
+			}
+			delete (yyvsp[-1].stmt_vec);
 		}
 #line 2441 "bison_parser.cpp" /* yacc.c:1646  */
     break;

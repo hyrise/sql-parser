@@ -58,18 +58,18 @@ extern int hsql_debug;
 
 // Auto update column and line number
 #define YY_USER_ACTION \
-    yylloc->first_line = yylloc->last_line; \
-    yylloc->first_column = yylloc->last_column; \
-    for(int i = 0; yytext[i] != '\0'; i++) { \
-    	yylloc->total_column++; \
-        if(yytext[i] == '\n') { \
-            yylloc->last_line++; \
-            yylloc->last_column = 0; \
-        } \
-        else { \
-            yylloc->last_column++; \
-        } \
-    }
+		yylloc->first_line = yylloc->last_line; \
+		yylloc->first_column = yylloc->last_column; \
+		for(int i = 0; yytext[i] != '\0'; i++) { \
+			yylloc->total_column++; \
+				if(yytext[i] == '\n') { \
+						yylloc->last_line++; \
+						yylloc->last_column = 0; \
+				} \
+				else { \
+						yylloc->last_column++; \
+				} \
+		}
 
 #line 75 "bison_parser.h" /* yacc.c:1909  */
 
