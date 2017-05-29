@@ -40,18 +40,18 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 
 // Auto update column and line number
 #define YY_USER_ACTION \
-    yylloc->first_line = yylloc->last_line; \
-    yylloc->first_column = yylloc->last_column; \
-    for(int i = 0; yytext[i] != '\0'; i++) { \
-    	yylloc->total_column++; \
-        if(yytext[i] == '\n') { \
-            yylloc->last_line++; \
-            yylloc->last_column = 0; \
-        } \
-        else { \
-            yylloc->last_column++; \
-        } \
-    }
+		yylloc->first_line = yylloc->last_line; \
+		yylloc->first_column = yylloc->last_column; \
+		for(int i = 0; yytext[i] != '\0'; i++) { \
+			yylloc->total_column++; \
+				if(yytext[i] == '\n') { \
+						yylloc->last_line++; \
+						yylloc->last_column = 0; \
+				} \
+				else { \
+						yylloc->last_column++; \
+				} \
+		}
 }
 
 // Define the names of the created files (defined in Makefile)
@@ -235,21 +235,21 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 // Defines our general input.
 input:
 		statement_list opt_semicolon {
-		  for (SQLStatement* stmt : *$1) {
-		    // Transfers ownership of the statement.
-		  	result->addStatement(stmt);
-		  }
+			for (SQLStatement* stmt : *$1) {
+				// Transfers ownership of the statement.
+				result->addStatement(stmt);
+			}
 
-		 	unsigned param_id = 0;
-		  for (void* param : yyloc.param_list) {
-		  	if (param != nullptr) {
-		  		Expr* expr = (Expr*) param;
-		  		expr->ival = param_id;
-		  		result->addParameter(expr);
-		  		++param_id;
-		  	}
-		  }
-		  delete $1;
+			unsigned param_id = 0;
+			for (void* param : yyloc.param_list) {
+				if (param != nullptr) {
+					Expr* expr = (Expr*) param;
+					expr->ival = param_id;
+					result->addParameter(expr);
+					++param_id;
+				}
+			}
+			delete $1;
 		}
 	;
 

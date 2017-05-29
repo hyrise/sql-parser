@@ -1,10 +1,7 @@
 #ifndef __SQLPARSER__PREPARE_STATEMENT_H__
 #define __SQLPARSER__PREPARE_STATEMENT_H__
 
-#include "../SQLParserResult.h"
 #include "SQLStatement.h"
-#include "SelectStatement.h"
-#include <algorithm>
 
 namespace hsql {
 

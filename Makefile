@@ -41,7 +41,6 @@ all: library
 library: $(TARGET)
 
 $(TARGET): $(LIBOBJ)
-	echo $(mode)
 	$(CXX) $(LIBFLAGS) -o $(TARGET) $(LIBOBJ)
 
 $(SRCPARSER)/flex_lexer.o: $(SRCPARSER)/flex_lexer.cpp $(SRCPARSER)/bison_parser.cpp
