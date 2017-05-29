@@ -41,6 +41,7 @@ all: library
 library: $(TARGET)
 
 $(TARGET): $(LIBOBJ)
+	echo $(mode)
 	$(CXX) $(LIBFLAGS) -o $(TARGET) $(LIBOBJ)
 
 $(SRCPARSER)/flex_lexer.o: $(SRCPARSER)/flex_lexer.cpp $(SRCPARSER)/bison_parser.cpp
@@ -71,7 +72,6 @@ install:
 	rm -rf $(INSTALL)/include/hsql
 	cp -r src $(INSTALL)/include/hsql
 	find $(INSTALL)/include/hsql -not -name '*.h' -type f | xargs rm
-
 
 #################
 ### Benchmark ###
