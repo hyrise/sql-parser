@@ -19,14 +19,19 @@ LIBFLAGS   = -shared
 TARGET     = libsqlparser.so
 INSTALL    = /usr/local
 
-CTESTFLAGS = -Wall -Isrc/ -Itest/ -L./ -std=c++11 -lstdc++ -O3
+CTESTFLAGS = -Wall -Isrc/ -Itest/ -L./ -std=c++11 -lstdc++
 
 # Set compile mode to -g or -O3.
+MODE_LOG = ""
 mode ?= release
 ifeq ($(mode), debug)
 	CFLAGS += -g
+	CTESTFLAGS += -g
+	MODE_LOG = "Building in \033[1;31mdebug\033[0m mode"
 else
 	CFLAGS += -O3
+	CTESTFLAGS += -O3
+	MODE_LOG = "Building in \033[0;32mrelease\033[0m mode ('make mode=debug' for debug mode)"
 endif
 
 GMAKE = make mode=$(mode)
@@ -36,7 +41,6 @@ all: library
 library: $(TARGET)
 
 $(TARGET): $(LIBOBJ)
-	echo $(mode)
 	$(CXX) $(LIBFLAGS) -o $(TARGET) $(LIBOBJ)
 
 $(SRCPARSER)/flex_lexer.o: $(SRCPARSER)/flex_lexer.cpp $(SRCPARSER)/bison_parser.cpp
@@ -108,3 +112,5 @@ format:
 	astyle --options=astyle.options $(ALLTEST)
 	astyle --options=astyle.options $(EXAMPLESRC)
 
+log_mode:
+	@echo $(MODE_LOG)

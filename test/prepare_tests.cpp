@@ -3,7 +3,8 @@
 #include "sql_asserts.h"
 #include "SQLParser.h"
 
-using hsql::kExprPlaceholder;
+using hsql::kExprParameter;
+using hsql::kExprLiteralInt;
 
 using hsql::kStmtDrop;
 using hsql::kStmtExecute;
@@ -21,63 +22,76 @@ using hsql::SelectStatement;
 
 
 TEST(PrepareSingleStatementTest) {
-  const std::string query = "PREPARE test: SELECT * FROM students WHERE grade = ?;";
-  TEST_PARSE_SINGLE_SQL(query, kStmtPrepare, PrepareStatement, result, prepare);
+  TEST_PARSE_SINGLE_SQL(
+    "PREPARE test FROM 'SELECT * FROM students WHERE grade = ?';",
+    kStmtPrepare,
+    PrepareStatement,
+    result,
+    prepare);
 
-  const SelectStatement* select = (const SelectStatement*) prepare->query->getStatement(0);
+  ASSERT_STREQ(prepare->name, "test");
+  ASSERT_STREQ(prepare->query, "SELECT * FROM students WHERE grade = ?");
 
-  ASSERT(select->whereClause->isSimpleOp('='));
-  ASSERT_EQ(select->whereClause->expr2, prepare->placeholders[0])
+  TEST_PARSE_SINGLE_SQL(
+    prepare->query,
+    kStmtSelect,
+    SelectStatement,
+    result2,
+    select);
+
+  ASSERT_EQ(result2.parameters().size(), 1);
+  ASSERT(select->whereClause->expr2->isType(kExprParameter))
+  ASSERT_EQ(select->whereClause->expr2->ival, 0)
+
 }
 
-TEST(PrepareMultiStatementTest) {
-  const std::string query = "PREPARE test {"
-                            "INSERT INTO test VALUES(?);"
-                            "SELECT ?, test FROM test WHERE c1 = ?;"
-                            "};"
-                            "PREPARE stmt: SELECT * FROM data WHERE c1 = ?;"
-                            "DEALLOCATE PREPARE stmt;";
+TEST(DeallocatePrepareStatementTest) {
+  TEST_PARSE_SINGLE_SQL(
+    "DEALLOCATE PREPARE test;",
+    kStmtDrop,
+    DropStatement,
+    result,
+    drop);
 
-  TEST_PARSE_SQL_QUERY(query, result, 3);
-
-  TEST_CAST_STMT(result, 0, kStmtPrepare, PrepareStatement, prep1);
-  TEST_CAST_STMT(result, 1, kStmtPrepare, PrepareStatement, prep2);
-  TEST_CAST_STMT(result, 2, kStmtDrop, DropStatement, drop);
-
-  // Prepare Statement #1
-  ASSERT_STREQ(prep1->name, "test");
-  ASSERT_EQ(prep1->placeholders.size(), 3);
-  ASSERT_EQ(prep1->query->size(), 2);
-
-  TEST_CAST_STMT((*prep1->query), 0, kStmtInsert, InsertStatement, insert);
-  TEST_CAST_STMT((*prep1->query), 1, kStmtSelect, SelectStatement, select);
-
-  ASSERT(insert->values->at(0)->isType(kExprPlaceholder));
-  ASSERT(select->selectList->at(0)->isType(kExprPlaceholder));
-  ASSERT(select->whereClause->expr2->isType(kExprPlaceholder));
-
-  // Check IDs of placeholders
-  ASSERT_EQ(insert->values->at(0)->ival, 0);
-  ASSERT_EQ(insert->values->at(0), prep1->placeholders[0]);
-
-  ASSERT_EQ(select->selectList->at(0)->ival, 1);
-  ASSERT_EQ(select->selectList->at(0), prep1->placeholders[1]);
-
-  ASSERT_EQ(select->whereClause->expr2->ival, 2);
-  ASSERT_EQ(select->whereClause->expr2, prep1->placeholders[2]);
-
-  // Prepare Statement #2
-  ASSERT_STREQ(prep2->name, "stmt");
-  ASSERT_EQ(prep2->placeholders.size(), 1);
-
-  // Deallocate Statement
   ASSERT_EQ(drop->type, kDropPreparedStatement);
-  ASSERT_STREQ(drop->name, "stmt");
+  ASSERT_STREQ(drop->name, "test");
 }
 
+
+TEST(StatementWithParameters) {
+  TEST_PARSE_SINGLE_SQL(
+    "SELECT * FROM test WHERE a = ? AND b = ?",
+    kStmtSelect,
+    SelectStatement,
+    result,
+    stmt);
+
+  const hsql::Expr* eq1 = stmt->whereClause->expr;
+  const hsql::Expr* eq2 = stmt->whereClause->expr2;
+
+  ASSERT_EQ(result.parameters().size(), 2);
+
+  ASSERT(eq1->isSimpleOp('='))
+  ASSERT(eq1->expr->isType(hsql::kExprColumnRef))
+  ASSERT(eq1->expr2->isType(kExprParameter))
+  ASSERT_EQ(eq1->expr2->ival, 0)
+  ASSERT_EQ(result.parameters()[0], eq1->expr2);
+
+
+  ASSERT(eq2->isSimpleOp('='))
+  ASSERT(eq2->expr->isType(hsql::kExprColumnRef))
+  ASSERT(eq2->expr2->isType(kExprParameter))
+  ASSERT_EQ(eq2->expr2->ival, 1)
+  ASSERT_EQ(result.parameters()[1], eq2->expr2);
+}
 
 TEST(ExecuteStatementTest) {
-  TEST_PARSE_SINGLE_SQL("EXECUTE test(1, 2);", kStmtExecute, ExecuteStatement, result, stmt);
+  TEST_PARSE_SINGLE_SQL(
+    "EXECUTE test(1, 2);",
+    kStmtExecute,
+    ExecuteStatement,
+    result,
+    stmt);
 
   ASSERT_STREQ(stmt->name, "test");
   ASSERT_EQ(stmt->parameters->size(), 2);

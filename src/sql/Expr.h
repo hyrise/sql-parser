@@ -17,7 +17,7 @@ namespace hsql {
     kExprLiteralString,
     kExprLiteralInt,
     kExprStar,
-    kExprPlaceholder,
+    kExprParameter,
     kExprColumnRef,
     kExprFunctionRef,
     kExprOperator,
@@ -124,7 +124,7 @@ namespace hsql {
 
     static Expr* makeFunctionRef(char* func_name, std::vector<Expr*>* exprList, bool distinct);
 
-    static Expr* makePlaceholder(int id);
+    static Expr* makeParameter(int id);
 
     static Expr* makeSelect(SelectStatement* select);
 

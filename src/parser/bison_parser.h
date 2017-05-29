@@ -48,7 +48,7 @@
 extern int hsql_debug;
 #endif
 /* "%code requires" blocks.  */
-#line 36 "bison_parser.y" /* yacc.c:1909  */
+#line 34 "bison_parser.y" /* yacc.c:1909  */
 
 // %code requires block	
 
@@ -58,18 +58,18 @@ extern int hsql_debug;
 
 // Auto update column and line number
 #define YY_USER_ACTION \
-    yylloc->first_line = yylloc->last_line; \
-    yylloc->first_column = yylloc->last_column; \
-    for(int i = 0; yytext[i] != '\0'; i++) { \
-    	yylloc->total_column++; \
-        if(yytext[i] == '\n') { \
-            yylloc->last_line++; \
-            yylloc->last_column = 0; \
-        } \
-        else { \
-            yylloc->last_column++; \
-        } \
-    }
+		yylloc->first_line = yylloc->last_line; \
+		yylloc->first_column = yylloc->last_column; \
+		for(int i = 0; yytext[i] != '\0'; i++) { \
+			yylloc->total_column++; \
+				if(yytext[i] == '\n') { \
+						yylloc->last_line++; \
+						yylloc->last_column = 0; \
+				} \
+				else { \
+						yylloc->last_column++; \
+				} \
+		}
 
 #line 75 "bison_parser.h" /* yacc.c:1909  */
 
@@ -214,7 +214,7 @@ extern int hsql_debug;
 
 union HSQL_STYPE
 {
-#line 95 "bison_parser.y" /* yacc.c:1909  */
+#line 92 "bison_parser.y" /* yacc.c:1909  */
 
 	double fval;
 	int64_t ival;

@@ -11,6 +11,7 @@ SELECT * FROM t1 UNION (SELECT * FROM t2 UNION SELECT * FROM t3) ORDER BY col1;
 SELECT TOP 10 * FROM t1 ORDER BY col1, col2;
 SELECT a, MAX(b), MAX(c, d), CUSTOM(q, UP(r)) AS f FROM t1;
 SELECT * FROM t WHERE a BETWEEN 1 and c;
+SELECT * FROM t WHERE a = ? AND b = ?;
 SELECT City.name, Product.category, SUM(price) FROM fact INNER JOIN City ON fact.city_id = City.id INNER JOIN Product ON fact.product_id = Product.id GROUP BY City.name, Product.category;
 # JOIN
 SELECT t1.a, t1.b, t2.c FROM "table" AS t1 JOIN (SELECT * FROM foo JOIN bar ON foo.id = bar.id) t2 ON t1.a = t2.b WHERE (t1.b OR NOT t1.a) AND t2.c = 12.5
@@ -37,8 +38,8 @@ UPDATE students SET grade = 1.0;
 # DROP
 DROP TABLE students;
 # PREPARE
-PREPARE prep_inst: INSERT INTO test VALUES (?, ?, ?);
-PREPARE prep2 { INSERT INTO test VALUES (?, 0, 0); INSERT INTO test VALUES (0, ?, 0); INSERT INTO test VALUES (0, 0, ?); };
+PREPARE prep_inst FROM 'INSERT INTO test VALUES (?, ?, ?)';
+PREPARE prep2 FROM 'INSERT INTO test VALUES (?, 0, 0); INSERT INTO test VALUES (0, ?, 0); INSERT INTO test VALUES (0, 0, ?);';
 EXECUTE prep_inst(1, 2, 3);
 EXECUTE prep;
 DEALLOCATE PREPARE prep;
@@ -50,3 +51,4 @@ DEALLOCATE PREPARE prep;
 !CREATE TABLE "table" FROM TBL FILE 'students.tbl';SELECT 1
 !CREATE TABLE "table" FROM TBL FILE 'students.tbl';1
 !INSERT INTO test_table VALUESd (1, 2, 'test');
+!SELECT * FROM t WHERE a = ? AND b = ?;SELECT 1;

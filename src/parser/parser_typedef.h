@@ -22,15 +22,12 @@ struct HSQL_CUST_LTYPE {
 
 	int total_column;
 
-	// Placeholder
-	int placeholder_id;
-	std::vector<void*> placeholder_list;
+	// Parameters.
+	// int param_id;
+	std::vector<void*> param_list;
 };
 
 #define HSQL_LTYPE HSQL_CUST_LTYPE
 #define HSQL_LTYPE_IS_DECLARED 1
-
-
-
 
 #endif

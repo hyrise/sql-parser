@@ -118,8 +118,8 @@ namespace hsql {
     return e;
   }
 
-  Expr* Expr::makePlaceholder(int id) {
-    Expr* e = new Expr(kExprPlaceholder);
+  Expr* Expr::makeParameter(int id) {
+    Expr* e = new Expr(kExprParameter);
     e->ival = id;
     return e;
   }
@@ -160,7 +160,7 @@ namespace hsql {
   }
 
   bool Expr::isLiteral() const {
-    return isType(kExprLiteralInt) || isType(kExprLiteralFloat) || isType(kExprLiteralString) || isType(kExprPlaceholder);
+    return isType(kExprLiteralInt) || isType(kExprLiteralFloat) || isType(kExprLiteralString) || isType(kExprParameter);
   }
 
   bool Expr::hasAlias() const {

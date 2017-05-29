@@ -24,8 +24,6 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 	return 0;
 }
 
-
-
 %}
 /*********************************
  ** Section 2: Bison Parser Declarations
@@ -42,18 +40,18 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 
 // Auto update column and line number
 #define YY_USER_ACTION \
-    yylloc->first_line = yylloc->last_line; \
-    yylloc->first_column = yylloc->last_column; \
-    for(int i = 0; yytext[i] != '\0'; i++) { \
-    	yylloc->total_column++; \
-        if(yytext[i] == '\n') { \
-            yylloc->last_line++; \
-            yylloc->last_column = 0; \
-        } \
-        else { \
-            yylloc->last_column++; \
-        } \
-    }
+		yylloc->first_line = yylloc->last_line; \
+		yylloc->first_column = yylloc->last_column; \
+		for(int i = 0; yytext[i] != '\0'; i++) { \
+			yylloc->total_column++; \
+				if(yytext[i] == '\n') { \
+						yylloc->last_line++; \
+						yylloc->last_column = 0; \
+				} \
+				else { \
+						yylloc->last_column++; \
+				} \
+		}
 }
 
 // Define the names of the created files (defined in Makefile)
@@ -77,7 +75,6 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 	@$.first_line = 0;
 	@$.last_line = 0;
 	@$.total_column = 0;
-	@$.placeholder_id = 0;
 };
 
 
@@ -184,13 +181,13 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 %type <delete_stmt> delete_statement truncate_statement
 %type <update_stmt> update_statement
 %type <drop_stmt>	drop_statement
-%type <sval> 		table_name opt_alias alias file_path
+%type <sval> 		table_name opt_alias alias file_path prepare_target_query
 %type <bval> 		opt_not_exists opt_distinct
 %type <uval>		import_file_type opt_join_type column_type
 %type <table> 		from_clause table_ref table_ref_atomic table_ref_name
 %type <table>		join_clause table_ref_name_no_alias
 %type <expr> 		expr operand scalar_expr unary_expr binary_expr logic_expr exists_expr
-%type <expr>		function_expr between_expr star_expr expr_alias placeholder_expr
+%type <expr>		function_expr between_expr star_expr expr_alias param_expr
 %type <expr> 		column_name literal int_literal num_literal string_literal
 %type <expr> 		comp_expr opt_where join_condition opt_having case_expr in_expr
 %type <limit>		opt_limit opt_top
@@ -238,11 +235,21 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 // Defines our general input.
 input:
 		statement_list opt_semicolon {
-		  for (SQLStatement* stmt : *$1) {
-		    // Transfers ownership of the statement.
-		  	result->addStatement(stmt);
-		  }
-		  delete $1;
+			for (SQLStatement* stmt : *$1) {
+				// Transfers ownership of the statement.
+				result->addStatement(stmt);
+			}
+
+			unsigned param_id = 0;
+			for (void* param : yyloc.param_list) {
+				if (param != nullptr) {
+					Expr* expr = (Expr*) param;
+					expr->ival = param_id;
+					result->addParameter(expr);
+					++param_id;
+				}
+			}
+			delete $1;
 		}
 	;
 
@@ -253,11 +260,7 @@ statement_list:
 	;
 
 statement:
-		prepare_statement {
-			$1->setPlaceholders(yyloc.placeholder_list);
-			yyloc.placeholder_list.clear();
-			$$ = $1;
-		}
+		prepare_statement
 	|	preparable_statement
 	;
 
@@ -279,21 +282,14 @@ preparable_statement:
  * Prepared Statement
  ******************************/
 prepare_statement:
-		PREPARE IDENTIFIER ':' preparable_statement {
+		PREPARE IDENTIFIER FROM prepare_target_query {
 			$$ = new PrepareStatement();
 			$$->name = $2;
-			$$->query = new SQLParserResult($4);
-		}
-	|	PREPARE IDENTIFIER '{' statement_list opt_semicolon '}' {
-			$$ = new PrepareStatement();
-			$$->name = $2;
-			$$->query = new SQLParserResult();
-		  for (SQLStatement* stmt : *$4) {
-		  	$$->query->addStatement(stmt);
-		  }
-		  delete $4;
+			$$->query = $4;
 		}
 	;
+
+prepare_target_query: STRING
 
 execute_statement:
 		EXECUTE IDENTIFIER {
@@ -717,7 +713,7 @@ column_name:
 literal:
 		string_literal
 	|	num_literal
-	|	placeholder_expr
+	|	param_expr
 	;
 
 string_literal:
@@ -738,10 +734,11 @@ star_expr:
 		'*' { $$ = new Expr(kExprStar); }
 	;
 
-placeholder_expr:
+param_expr:
 		'?' {
-			$$ = Expr::makePlaceholder(yylloc.total_column);
-			yyloc.placeholder_list.push_back($$);
+			$$ = Expr::makeParameter(yylloc.total_column);
+			$$->ival2 = yyloc.param_list.size();
+			yyloc.param_list.push_back($$);
 		}
 	;
 
