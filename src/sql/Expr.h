@@ -21,7 +21,8 @@ namespace hsql {
     kExprColumnRef,
     kExprFunctionRef,
     kExprOperator,
-    kExprSelect
+    kExprSelect,
+    kExprHint
   };
 
   // Operator types. These are important for expressions of type kExprOperator.
@@ -101,6 +102,8 @@ namespace hsql {
 
 
     // Static constructors.
+
+    static Expr* make(ExprType type);
 
     static Expr* makeOpUnary(OperatorType op, Expr* expr);
 

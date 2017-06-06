@@ -48,7 +48,7 @@ namespace hsql {
 
     if (!SQLParser::parseSQLString(text, result)) {
       delete result;
-      return NULL;
+      return nullptr;
     }
 
     return result;

@@ -133,7 +133,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 %destructor { } <fval> <ival> <uval> <bval> <order_type>
 %destructor { free( ($$) ); } <sval>
 %destructor {
-	if (($$) != NULL) {
+	if (($$) != nullptr) {
 		for (auto ptr : *($$)) {
 			delete ptr;
 		}
@@ -149,7 +149,6 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 %token <sval> IDENTIFIER STRING
 %token <fval> FLOATVAL
 %token <ival> INTVAL
-%token <uval> NOTEQUALS LESSEQ GREATEREQ
 
 /* SQL Keywords */
 %token DEALLOCATE PARAMETERS INTERSECT TEMPORARY TIMESTAMP
@@ -189,7 +188,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 %type <expr> 		expr operand scalar_expr unary_expr binary_expr logic_expr exists_expr
 %type <expr>		function_expr between_expr star_expr expr_alias param_expr
 %type <expr> 		column_name literal int_literal num_literal string_literal
-%type <expr> 		comp_expr opt_where join_condition opt_having case_expr in_expr
+%type <expr> 		comp_expr opt_where join_condition opt_having case_expr in_expr hint
 %type <limit>		opt_limit opt_top
 %type <order>		order_desc
 %type <order_type>	opt_order_type
@@ -198,7 +197,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 %type <group_t>		opt_group
 
 %type <str_vec>		ident_commalist opt_column_list
-%type <expr_vec> 	expr_list select_list literal_list
+%type <expr_vec> 	expr_list select_list literal_list hint_list opt_hints
 %type <table_vec> 	table_ref_commalist
 %type <order_vec>	opt_order order_list
 %type <update_vec>	update_clause_commalist
@@ -260,8 +259,14 @@ statement_list:
 	;
 
 statement:
-		prepare_statement
-	|	preparable_statement
+		prepare_statement opt_hints {
+			$$ = $1;
+			$$->hints = $2;
+		}
+	|	preparable_statement opt_hints {
+			$$ = $1;
+			$$->hints = $2;
+		}
 	;
 
 
@@ -275,6 +280,34 @@ preparable_statement:
 	|	update_statement { $$ = $1; }
 	|	drop_statement { $$ = $1; }
 	|	execute_statement { $$ = $1; }
+	;
+
+
+/******************************
+ * Hints
+ ******************************/
+
+opt_hints:
+    WITH HINT '(' hint_list ')' { $$ = $4; }
+  | /* empty */ { $$ = nullptr; }
+  ;
+
+
+hint_list:
+	  hint { $$ = new std::vector<Expr*>(); $$->push_back($1); }
+	| hint_list ',' hint { $1->push_back($3); $$ = $1; }
+	;
+
+hint:
+		IDENTIFIER {
+			$$ = Expr::make(kExprHint);
+			$$->name = $1;
+		}
+	| IDENTIFIER '(' literal_list ')' {
+			$$ = Expr::make(kExprHint);
+			$$->name = $1;
+			$$->exprList = $3;
+		}
 	;
 
 
@@ -439,7 +472,7 @@ insert_statement:
 
 opt_column_list:
 		'(' ident_commalist ')' { $$ = $2; }
-	|	/* empty */ { $$ = NULL; }
+	|	/* empty */ { $$ = nullptr; }
 	;
 
 
@@ -490,7 +523,7 @@ select_no_paren:
 			$$->order = $2;
 
 			// Limit could have been set by TOP.
-			if ($3 != NULL) {
+			if ($3 != nullptr) {
 				delete $$->limit;
 				$$->limit = $3;
 			}
@@ -504,7 +537,7 @@ select_no_paren:
 			$$->order = $4;
 
 			// Limit could have been set by TOP.
-			if ($5 != NULL) {
+			if ($5 != nullptr) {
 				delete $$->limit;
 				$$->limit = $5;
 			}
@@ -515,7 +548,7 @@ select_no_paren:
 			$$->order = $4;
 
 			// Limit could have been set by TOP.
-			if ($5 != NULL) {
+			if ($5 != nullptr) {
 				delete $$->limit;
 				$$->limit = $5;
 			}
@@ -556,7 +589,7 @@ from_clause:
 
 opt_where:
 		WHERE expr { $$ = $2; }
-	|	/* empty */ { $$ = NULL; }
+	|	/* empty */ { $$ = nullptr; }
 	;
 
 opt_group:
@@ -565,16 +598,16 @@ opt_group:
 			$$->columns = $3;
 			$$->having = $4;
 		}
-	|	/* empty */ { $$ = NULL; }
+	|	/* empty */ { $$ = nullptr; }
 	;
 
 opt_having:
 		HAVING expr { $$ = $2; }
-	|	/* empty */ { $$ = NULL; }
+	|	/* empty */ { $$ = nullptr; }
 
 opt_order:
 		ORDER BY order_list { $$ = $3; }
-	|	/* empty */ { $$ = NULL; }
+	|	/* empty */ { $$ = nullptr; }
 	;
 
 order_list:
@@ -596,13 +629,13 @@ opt_order_type:
 
 opt_top:
 		TOP int_literal { $$ = new LimitDescription($2->ival, kNoOffset); delete $2; }
-	|	/* empty */ { $$ = NULL; }
+	|	/* empty */ { $$ = nullptr; }
 	;
 
 opt_limit:
 		LIMIT int_literal { $$ = new LimitDescription($2->ival, kNoOffset); delete $2; }
 	|	LIMIT int_literal OFFSET int_literal { $$ = new LimitDescription($2->ival, $4->ival); delete $2; delete $4; }
-	|	/* empty */ { $$ = NULL; }
+	|	/* empty */ { $$ = nullptr; }
 	;
 
 /******************************
@@ -731,7 +764,7 @@ int_literal:
 	;
 
 star_expr:
-		'*' { $$ = new Expr(kExprStar); }
+		'*' { $$ = Expr::make(kExprStar); }
 	;
 
 param_expr:
@@ -795,7 +828,7 @@ table_ref_name_no_alias:
 
 table_name:
 		IDENTIFIER
-	|	IDENTIFIER '.' IDENTIFIER
+	|	IDENTIFIER '.' IDENTIFIER { $$ = $3; }
 	;
 
 
@@ -806,7 +839,7 @@ alias:
 
 opt_alias:
 		alias
-	|	/* empty */ { $$ = NULL; }
+	|	/* empty */ { $$ = nullptr; }
 
 
 /******************************

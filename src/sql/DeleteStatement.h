@@ -8,7 +8,7 @@ namespace hsql {
 
   // Represents SQL Delete statements.
   // Example: "DELETE FROM students WHERE grade > 3.0"
-  // Note: if (expr == NULL) => delete all rows (truncate)
+  // Note: if (expr == nullptr) => delete all rows (truncate)
   struct DeleteStatement : SQLStatement {
     DeleteStatement();
     virtual ~DeleteStatement();

@@ -3,24 +3,6 @@
 
 namespace hsql {
 
-  // SQLStatement
-  SQLStatement::SQLStatement(StatementType type) :
-    type_(type) {};
-
-  SQLStatement::~SQLStatement() {}
-
-  StatementType SQLStatement::type() const {
-    return type_;
-  }
-
-  bool SQLStatement::isType(StatementType type) const {
-    return (type_ == type);
-  }
-
-  bool SQLStatement::is(StatementType type) const {
-    return isType(type);
-  }
-
   // ColumnDefinition
   ColumnDefinition::ColumnDefinition(char* name, DataType type) :
     name(name),
@@ -35,25 +17,25 @@ namespace hsql {
     SQLStatement(kStmtCreate),
     type(type),
     ifNotExists(false),
-    filePath(NULL),
-    tableName(NULL),
-    columns(NULL),
-    viewColumns(NULL),
-    select(NULL) {};
+    filePath(nullptr),
+    tableName(nullptr),
+    columns(nullptr),
+    viewColumns(nullptr),
+    select(nullptr) {};
 
   CreateStatement::~CreateStatement() {
     free(filePath);
     free(tableName);
     delete select;
 
-    if (columns != NULL) {
+    if (columns != nullptr) {
       for (ColumnDefinition* def : *columns) {
         delete def;
       }
       delete columns;
     }
 
-    if (viewColumns != NULL) {
+    if (viewColumns != nullptr) {
       for (char* column : *viewColumns) {
         free(column);
       }
@@ -64,8 +46,8 @@ namespace hsql {
   // DeleteStatement
   DeleteStatement::DeleteStatement() :
     SQLStatement(kStmtDelete),
-    tableName(NULL),
-    expr(NULL) {};
+    tableName(nullptr),
+    expr(nullptr) {};
 
   DeleteStatement::~DeleteStatement() {
     free(tableName);
@@ -76,7 +58,7 @@ namespace hsql {
   DropStatement::DropStatement(DropType type) :
     SQLStatement(kStmtDrop),
     type(type),
-    name(NULL) {}
+    name(nullptr) {}
 
   DropStatement::~DropStatement() {
     free(name);
@@ -85,13 +67,13 @@ namespace hsql {
   // ExecuteStatement
   ExecuteStatement::ExecuteStatement() :
     SQLStatement(kStmtExecute),
-    name(NULL),
-    parameters(NULL) {}
+    name(nullptr),
+    parameters(nullptr) {}
 
   ExecuteStatement::~ExecuteStatement() {
     free(name);
 
-    if (parameters != NULL) {
+    if (parameters != nullptr) {
       for (Expr* param : *parameters) {
         delete param;
       }
@@ -103,8 +85,8 @@ namespace hsql {
   ImportStatement::ImportStatement(ImportType type) :
     SQLStatement(kStmtImport),
     type(type),
-    filePath(NULL),
-    tableName(NULL) {};
+    filePath(nullptr),
+    tableName(nullptr) {};
 
   ImportStatement::~ImportStatement() {
     delete filePath;
@@ -115,23 +97,23 @@ namespace hsql {
   InsertStatement::InsertStatement(InsertType type) :
     SQLStatement(kStmtInsert),
     type(type),
-    tableName(NULL),
-    columns(NULL),
-    values(NULL),
-    select(NULL) {}
+    tableName(nullptr),
+    columns(nullptr),
+    values(nullptr),
+    select(nullptr) {}
 
   InsertStatement::~InsertStatement() {
     free(tableName);
     delete select;
 
-    if (columns != NULL) {
+    if (columns != nullptr) {
       for (char* column : *columns) {
         free(column);
       }
       delete columns;
     }
 
-    if (values != NULL) {
+    if (values != nullptr) {
       for (Expr* expr : *values) {
         delete expr;
       }
@@ -157,13 +139,13 @@ namespace hsql {
 
   // GroypByDescription
   GroupByDescription::GroupByDescription() :
-    columns(NULL),
-    having(NULL) {}
+    columns(nullptr),
+    having(nullptr) {}
 
   GroupByDescription::~GroupByDescription() {
     delete having;
 
-    if (columns != NULL) {
+    if (columns != nullptr) {
       for (Expr* expr : *columns) {
         delete expr;
       }
@@ -174,14 +156,14 @@ namespace hsql {
   // SelectStatement
   SelectStatement::SelectStatement() :
     SQLStatement(kStmtSelect),
-    fromTable(NULL),
+    fromTable(nullptr),
     selectDistinct(false),
-    selectList(NULL),
-    whereClause(NULL),
-    groupBy(NULL),
-    unionSelect(NULL),
-    order(NULL),
-    limit(NULL) {};
+    selectList(nullptr),
+    whereClause(nullptr),
+    groupBy(nullptr),
+    unionSelect(nullptr),
+    order(nullptr),
+    limit(nullptr) {};
 
   SelectStatement::~SelectStatement() {
     delete fromTable;
@@ -191,14 +173,14 @@ namespace hsql {
     delete limit;
 
     // Delete each element in the select list.
-    if (selectList != NULL) {
+    if (selectList != nullptr) {
       for (Expr* expr : *selectList) {
         delete expr;
       }
       delete selectList;
     }
 
-    if (order != NULL) {
+    if (order != nullptr) {
       for (OrderDescription* desc : *order) {
         delete desc;
       }
@@ -209,15 +191,15 @@ namespace hsql {
   // UpdateStatement
   UpdateStatement::UpdateStatement() :
     SQLStatement(kStmtUpdate),
-    table(NULL),
-    updates(NULL),
-    where(NULL) {}
+    table(nullptr),
+    updates(nullptr),
+    where(nullptr) {}
 
   UpdateStatement::~UpdateStatement() {
     delete table;
     delete where;
 
-    if (updates != NULL) {
+    if (updates != nullptr) {
       for (UpdateClause* update : *updates) {
         free(update->column);
         delete update->value;
@@ -230,12 +212,12 @@ namespace hsql {
   // TableRef
   TableRef::TableRef(TableRefType type) :
     type(type),
-    schema(NULL),
-    name(NULL),
-    alias(NULL),
-    select(NULL),
-    list(NULL),
-    join(NULL) {}
+    schema(nullptr),
+    name(nullptr),
+    alias(nullptr),
+    select(nullptr),
+    list(nullptr),
+    join(nullptr) {}
 
   TableRef::~TableRef() {
     free(schema);
@@ -245,7 +227,7 @@ namespace hsql {
     delete select;
     delete join;
 
-    if (list != NULL) {
+    if (list != nullptr) {
       for (TableRef* table : *list) {
         delete table;
       }
@@ -254,19 +236,19 @@ namespace hsql {
   }
 
   bool TableRef::hasSchema() const {
-    return schema != NULL;
+    return schema != nullptr;
   }
 
   const char* TableRef::getName() const {
-    if (alias != NULL) return alias;
+    if (alias != nullptr) return alias;
     else return name;
   }
 
   // JoinDefinition
   JoinDefinition::JoinDefinition() :
-    left(NULL),
-    right(NULL),
-    condition(NULL),
+    left(nullptr),
+    right(nullptr),
+    condition(nullptr),
     type(kJoinInner) {}
 
   JoinDefinition::~JoinDefinition() {
