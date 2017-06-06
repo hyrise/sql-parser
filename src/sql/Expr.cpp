@@ -8,13 +8,13 @@ namespace hsql {
 
   Expr::Expr(ExprType type) :
     type(type),
-    expr(NULL),
-    expr2(NULL),
-    exprList(NULL),
-    select(NULL),
-    name(NULL),
-    table(NULL),
-    alias(NULL) {};
+    expr(nullptr),
+    expr2(nullptr),
+    exprList(nullptr),
+    select(nullptr),
+    name(nullptr),
+    table(nullptr),
+    alias(nullptr) {};
 
   Expr::~Expr() {
     delete expr;
@@ -24,7 +24,7 @@ namespace hsql {
     free(table);
     free(alias);
 
-    if (exprList != NULL) {
+    if (exprList != nullptr) {
       for (Expr* e : *exprList) {
         delete e;
       }
@@ -32,11 +32,16 @@ namespace hsql {
     }
   }
 
+  Expr* Expr::make(ExprType type) {
+    Expr* e = new Expr(type);
+    return e;
+  }
+
   Expr* Expr::makeOpUnary(OperatorType op, Expr* expr) {
     Expr* e = new Expr(kExprOperator);
     e->opType = op;
     e->expr = expr;
-    e->expr2 = NULL;
+    e->expr2 = nullptr;
     return e;
   }
 
@@ -164,15 +169,15 @@ namespace hsql {
   }
 
   bool Expr::hasAlias() const {
-    return alias != NULL;
+    return alias != nullptr;
   }
 
   bool Expr::hasTable() const {
-    return table != NULL;
+    return table != nullptr;
   }
 
   const char* Expr::getName() const {
-    if (alias != NULL) return alias;
+    if (alias != nullptr) return alias;
     else return name;
   }
 

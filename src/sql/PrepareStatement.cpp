@@ -5,8 +5,8 @@ namespace hsql {
   // PrepareStatement
   PrepareStatement::PrepareStatement() :
     SQLStatement(kStmtPrepare),
-    name(NULL),
-    query(NULL) {}
+    name(nullptr),
+    query(nullptr) {}
 
   PrepareStatement::~PrepareStatement() {
     free(name);

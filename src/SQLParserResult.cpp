@@ -6,11 +6,11 @@ namespace hsql {
 
   SQLParserResult::SQLParserResult() :
     isValid_(false),
-    errorMsg_(NULL) {};
+    errorMsg_(nullptr) {};
 
   SQLParserResult::SQLParserResult(SQLStatement* stmt) :
     isValid_(false),
-    errorMsg_(NULL) {
+    errorMsg_(nullptr) {
     addStatement(stmt);
   };
 
@@ -20,7 +20,7 @@ namespace hsql {
     errorMsg_ = moved.errorMsg_;
     statements_ = std::move(moved.statements_);
 
-    moved.errorMsg_ = NULL;
+    moved.errorMsg_ = nullptr;
     moved.reset();
   }
 
@@ -91,7 +91,7 @@ namespace hsql {
     isValid_ = false;
 
     free(errorMsg_);
-    errorMsg_ = NULL;
+    errorMsg_ = nullptr;
     errorLine_ = -1;
     errorColumn_ = -1;
   }

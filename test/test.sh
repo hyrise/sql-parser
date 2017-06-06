@@ -36,6 +36,7 @@ MEM_LEAK_RET=$?
 
 if [ $MEM_LEAK_RET -ne 200 ]; then
 	printf "${GREEN}Memory leak check succeeded!${NC}\n"
+	MEM_LEAK_RET=0
 else
 	MEM_LEAK_RET=1
 	RET=1

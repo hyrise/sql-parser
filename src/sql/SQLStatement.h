@@ -35,6 +35,8 @@ namespace hsql {
     // Shorthand for isType(type).
     bool is(StatementType type) const;
 
+    std::vector<Expr*>* hints;
+
    private:
     StatementType type_;
 

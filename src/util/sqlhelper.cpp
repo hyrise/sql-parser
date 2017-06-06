@@ -50,14 +50,14 @@ namespace hsql {
       for (TableRef* tbl : *table->list) printTableRefInfo(tbl, numIndent);
       break;
     }
-    if (table->alias != NULL) {
+    if (table->alias != nullptr) {
       inprint("Alias", numIndent + 1);
       inprint(table->alias, numIndent + 2);
     }
   }
 
   void printOperatorExpression(Expr* expr, uintmax_t numIndent) {
-    if (expr == NULL) {
+    if (expr == nullptr) {
       inprint("null", numIndent);
       return;
     }
@@ -80,7 +80,7 @@ namespace hsql {
       break;
     }
     printExpression(expr->expr, numIndent + 1);
-    if (expr->expr2 != NULL) printExpression(expr->expr2, numIndent + 1);
+    if (expr->expr2 != nullptr) printExpression(expr->expr2, numIndent + 1);
   }
 
   void printExpression(Expr* expr, uintmax_t numIndent) {
@@ -112,7 +112,7 @@ namespace hsql {
       fprintf(stderr, "Unrecognized expression type %d\n", expr->type);
       return;
     }
-    if (expr->alias != NULL) {
+    if (expr->alias != nullptr) {
       inprint("Alias", numIndent + 1);
       inprint(expr->alias, numIndent + 2);
     }
@@ -126,25 +126,25 @@ namespace hsql {
     inprint("Sources:", numIndent + 1);
     printTableRefInfo(stmt->fromTable, numIndent + 2);
 
-    if (stmt->whereClause != NULL) {
+    if (stmt->whereClause != nullptr) {
       inprint("Search Conditions:", numIndent + 1);
       printExpression(stmt->whereClause, numIndent + 2);
     }
 
 
-    if (stmt->unionSelect != NULL) {
+    if (stmt->unionSelect != nullptr) {
       inprint("Union:", numIndent + 1);
       printSelectStatementInfo(stmt->unionSelect, numIndent + 2);
     }
 
-    if (stmt->order != NULL) {
+    if (stmt->order != nullptr) {
       inprint("OrderBy:", numIndent + 1);
       printExpression(stmt->order->at(0)->expr, numIndent + 2);
       if (stmt->order->at(0)->type == kOrderAsc) inprint("ascending", numIndent + 2);
       else inprint("descending", numIndent + 2);
     }
 
-    if (stmt->limit != NULL) {
+    if (stmt->limit != nullptr) {
       inprint("Limit:", numIndent + 1);
       inprint(stmt->limit->limit, numIndent + 2);
     }
@@ -167,7 +167,7 @@ namespace hsql {
   void printInsertStatementInfo(const InsertStatement* stmt, uintmax_t numIndent) {
     inprint("InsertStatment", numIndent);
     inprint(stmt->tableName, numIndent + 1);
-    if (stmt->columns != NULL) {
+    if (stmt->columns != nullptr) {
       inprint("Columns", numIndent + 1);
       for (char* col_name : *stmt->columns) {
         inprint(col_name, numIndent + 2);
