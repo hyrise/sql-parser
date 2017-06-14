@@ -1,6 +1,6 @@
 
 #include "sqlhelper.h"
-#include <stdio.h>
+#include <iostream>
 #include <string>
 
 namespace hsql {
@@ -11,22 +11,22 @@ namespace hsql {
     return std::string(numIndent, '\t');
   }
   void inprint(int64_t val, uintmax_t numIndent) {
-    printf("%s%lld  \n", indent(numIndent).c_str(), val);
+    std::cout << indent(numIndent).c_str() << val << "  " << std::endl;
   }
   void inprint(float val, uintmax_t numIndent) {
-    printf("%s%f\n", indent(numIndent).c_str(), val);
+    std::cout << indent(numIndent).c_str() << val << std::endl;
   }
   void inprint(const char* val, uintmax_t numIndent) {
-    printf("%s%s\n", indent(numIndent).c_str(), val);
+    std::cout << indent(numIndent).c_str() << val << std::endl;
   }
   void inprint(const char* val, const char* val2, uintmax_t numIndent) {
-    printf("%s%s->%s\n", indent(numIndent).c_str(), val, val2);
+    std::cout << indent(numIndent).c_str() << val << "->" << val2 << std::endl;
   }
   void inprintC(char val, uintmax_t numIndent) {
-    printf("%s%c\n", indent(numIndent).c_str(), val);
+    std::cout << indent(numIndent).c_str() << val << std::endl;
   }
   void inprintU(uint64_t val, uintmax_t numIndent) {
-    printf("%s%llu\n", indent(numIndent).c_str(), val);
+    std::cout << indent(numIndent).c_str() << val << std::endl;
   }
 
   void printTableRefInfo(TableRef* table, uintmax_t numIndent) {
@@ -109,7 +109,7 @@ namespace hsql {
       printOperatorExpression(expr, numIndent);
       break;
     default:
-      fprintf(stderr, "Unrecognized expression type %d\n", expr->type);
+      std::cerr << "Unrecognized expression type " << expr->type << std::endl;
       return;
     }
     if (expr->alias != nullptr) {
