@@ -25,7 +25,7 @@ int main(int argc, char* argv[]) {
     printf("Parsed successfully!\n");
     printf("Number of statements: %lu\n", result.size());
 
-    for (uint i = 0; i < result.size(); ++i) {
+    for (auto i = 0u; i < result.size(); ++i) {
       // Print a statement summary.
       hsql::printStatementInfo(result.getStatement(i));
     }
