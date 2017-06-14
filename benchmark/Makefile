@@ -2,7 +2,7 @@
 SRC = ./
 CPP  = $(shell find $(SRC) -name '*.cpp')
 
-CFLAGS = -std=c++11 -lstdc++ -Wall -I../src/ -L../ -O3
+CFLAGS = -std=c++11 -lstdc++ -Wall -Werror -I../src/ -L../ -O3
 
 all: parser_benchmark
 
