@@ -14,12 +14,12 @@ ALLTEST     = $(shell find test/ -name '*.cpp') $(shell find test/ -name '*.h')
 EXAMPLESRC  = $(shell find example/ -name '*.cpp') $(shell find example/ -name '*.h')
 
 # Compiler & linker flags.
-CFLAGS     = -std=c++11 -Wall -fPIC
+CFLAGS     = -std=c++11 -Wall -Werror -fPIC
 LIBFLAGS   = -shared
 TARGET     = libsqlparser.so
 INSTALL    = /usr/local
 
-CTESTFLAGS = -Wall -Isrc/ -Itest/ -L./ -std=c++11 -lstdc++
+CTESTFLAGS = -Wall -Werror -Isrc/ -Itest/ -L./ -std=c++11 -lstdc++
 
 # Set compile mode to -g or -O3.
 MODE_LOG = ""
