@@ -689,12 +689,12 @@ unary_expr:
 
 binary_expr:
 		comp_expr
-	|	operand '-' operand			{ $$ = Expr::makeOpBinary($1, '-', $3); }
-	|	operand '+' operand			{ $$ = Expr::makeOpBinary($1, '+', $3); }
-	|	operand '/' operand			{ $$ = Expr::makeOpBinary($1, '/', $3); }
-	|	operand '*' operand			{ $$ = Expr::makeOpBinary($1, '*', $3); }
-	|	operand '%' operand			{ $$ = Expr::makeOpBinary($1, '%', $3); }
-	|	operand '^' operand			{ $$ = Expr::makeOpBinary($1, '^', $3); }
+	|	operand '-' operand			{ $$ = Expr::makeOpBinary($1, kOpSubtract, $3); }
+	|	operand '+' operand			{ $$ = Expr::makeOpBinary($1, kOpAdd, $3); }
+	|	operand '/' operand			{ $$ = Expr::makeOpBinary($1, kOpDivide, $3); }
+	|	operand '*' operand			{ $$ = Expr::makeOpBinary($1, kOpMultiply, $3); }
+	|	operand '%' operand			{ $$ = Expr::makeOpBinary($1, kOpModulo, $3); }
+	|	operand '^' operand			{ $$ = Expr::makeOpBinary($1, kOpPower, $3); }
 	|	operand LIKE operand		{ $$ = Expr::makeOpBinary($1, kOpLike, $3); }
 	|	operand NOT LIKE operand	{ $$ = Expr::makeOpBinary($1, kOpNotLike, $4); }
 	;
@@ -722,10 +722,10 @@ exists_expr:
 	;
 
 comp_expr:
-		operand '=' operand			{ $$ = Expr::makeOpBinary($1, '=', $3); }
+		operand '=' operand			{ $$ = Expr::makeOpBinary($1, kOpEquals, $3); }
 	|	operand NOTEQUALS operand	{ $$ = Expr::makeOpBinary($1, kOpNotEquals, $3); }
-	|	operand '<' operand			{ $$ = Expr::makeOpBinary($1, '<', $3); }
-	|	operand '>' operand			{ $$ = Expr::makeOpBinary($1, '>', $3); }
+	|	operand '<' operand			{ $$ = Expr::makeOpBinary($1, kOpLess, $3); }
+	|	operand '>' operand			{ $$ = Expr::makeOpBinary($1, kOpGreater, $3); }
 	|	operand LESSEQ operand		{ $$ = Expr::makeOpBinary($1, kOpLessEq, $3); }
 	|	operand GREATEREQ operand	{ $$ = Expr::makeOpBinary($1, kOpGreaterEq, $3); }
 	;

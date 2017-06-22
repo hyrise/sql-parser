@@ -63,9 +63,6 @@ namespace hsql {
     }
 
     switch (expr->opType) {
-    case kOpSimple:
-      inprintC(expr->opChar, numIndent);
-      break;
     case kOpAnd:
       inprint("AND", numIndent);
       break;

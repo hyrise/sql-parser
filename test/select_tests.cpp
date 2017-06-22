@@ -69,7 +69,7 @@ TEST(SelectHavingTest) {
   GroupByDescription* group = stmt->groupBy;
   ASSERT_NOTNULL(group);
   ASSERT_EQ(group->columns->size(), 1);
-  ASSERT(group->having->isSimpleOp('<'));
+  ASSERT_EQ(group->having->opType, kOpLess);
   ASSERT(group->having->expr->isType(kExprFunctionRef));
   ASSERT(group->having->expr2->isType(kExprLiteralFloat));
   ASSERT_EQ(group->having->expr2->fval, -2.0);
@@ -162,7 +162,7 @@ TEST(SelectConditionalSelectTest) {
   Expr* cond1 = where->expr;
   ASSERT_NOTNULL(cond1);
   ASSERT_NOTNULL(cond1->expr);
-  ASSERT(cond1->isSimpleOp('='));
+  ASSERT_EQ(cond1->opType, kOpEquals);
   ASSERT_STREQ(cond1->expr->getName(), "a");
   ASSERT(cond1->expr->isType(kExprColumnRef));
 
@@ -203,7 +203,7 @@ TEST(SelectCaseWhen) {
   ASSERT(caseExpr->isType(kExprOperator));
   ASSERT_EQ(caseExpr->opType, kOpCase);
   ASSERT(caseExpr->expr->isType(kExprOperator));
-  ASSERT(caseExpr->expr->isSimpleOp('='));
+  ASSERT_EQ(caseExpr->expr->opType, kOpEquals);
   ASSERT_EQ(caseExpr->exprList->size(), 2);
 }
 
@@ -225,7 +225,7 @@ TEST(SelectJoin) {
 
   ASSERT_EQ(outer_join->right->type, kTableName);
   ASSERT_STREQ(outer_join->right->name, "Product");
-  ASSERT(outer_join->condition->isSimpleOp('='));
+  ASSERT_EQ(outer_join->condition->opType, kOpEquals);
   ASSERT_STREQ(outer_join->condition->expr->table, "fact");
   ASSERT_STREQ(outer_join->condition->expr->name, "product_id");
   ASSERT_STREQ(outer_join->condition->expr2->table, "Product");
@@ -242,7 +242,7 @@ TEST(SelectJoin) {
   ASSERT_EQ(inner_join->right->type, kTableName);
   ASSERT_STREQ(inner_join->right->name, "City");
 
-  ASSERT(inner_join->condition->isSimpleOp('='));
+  ASSERT_EQ(inner_join->condition->opType, kOpEquals);
   ASSERT_STREQ(inner_join->condition->expr->table, "fact");
   ASSERT_STREQ(inner_join->condition->expr->name, "city_id");
   ASSERT_STREQ(inner_join->condition->expr2->table, "City");

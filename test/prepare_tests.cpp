@@ -71,14 +71,14 @@ TEST(StatementWithParameters) {
 
   ASSERT_EQ(result.parameters().size(), 2);
 
-  ASSERT(eq1->isSimpleOp('='))
+  ASSERT_EQ(eq1->opType, hsql::kOpEquals)
   ASSERT(eq1->expr->isType(hsql::kExprColumnRef))
   ASSERT(eq1->expr2->isType(kExprParameter))
   ASSERT_EQ(eq1->expr2->ival, 0)
   ASSERT_EQ(result.parameters()[0], eq1->expr2);
 
 
-  ASSERT(eq2->isSimpleOp('='))
+  ASSERT_EQ(eq2->opType, hsql::kOpEquals)
   ASSERT(eq2->expr->isType(hsql::kExprColumnRef))
   ASSERT(eq2->expr2->isType(kExprParameter))
   ASSERT_EQ(eq2->expr2->ival, 1)
