@@ -37,12 +37,12 @@ namespace hsql {
     kOpCase,
 
     // Binary operators.
-    kOpAdd,
-    kOpSubtract,
-    kOpMultiply,
-    kOpDivide,
-    kOpModulo,
-    kOpPower,
+    kOpPlus,
+    kOpMinus,
+    kOpAsterisk,
+    kOpSlash,
+    kOpPercentage,
+    kOpCaret,
 
     kOpEquals,
     kOpNotEquals,
@@ -58,7 +58,7 @@ namespace hsql {
 
     // Unary operators.
     kOpNot,
-    kOpMinus,
+    kOpUnaryMinus,
     kOpIsNull,
     kOpExists
   };

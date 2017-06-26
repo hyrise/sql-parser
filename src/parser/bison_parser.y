@@ -683,18 +683,18 @@ scalar_expr:
 	;
 
 unary_expr:
-		'-' operand { $$ = Expr::makeOpUnary(kOpMinus, $2); }
+		'-' operand { $$ = Expr::makeOpUnary(kOpUnaryMinus, $2); }
 	|	NOT operand { $$ = Expr::makeOpUnary(kOpNot, $2); }
 	;
 
 binary_expr:
 		comp_expr
-	|	operand '-' operand			{ $$ = Expr::makeOpBinary($1, kOpSubtract, $3); }
-	|	operand '+' operand			{ $$ = Expr::makeOpBinary($1, kOpAdd, $3); }
-	|	operand '/' operand			{ $$ = Expr::makeOpBinary($1, kOpDivide, $3); }
-	|	operand '*' operand			{ $$ = Expr::makeOpBinary($1, kOpMultiply, $3); }
-	|	operand '%' operand			{ $$ = Expr::makeOpBinary($1, kOpModulo, $3); }
-	|	operand '^' operand			{ $$ = Expr::makeOpBinary($1, kOpPower, $3); }
+	|	operand '-' operand			{ $$ = Expr::makeOpBinary($1, kOpMinus, $3); }
+	|	operand '+' operand			{ $$ = Expr::makeOpBinary($1, kOpPlus, $3); }
+	|	operand '/' operand			{ $$ = Expr::makeOpBinary($1, kOpSlash, $3); }
+	|	operand '*' operand			{ $$ = Expr::makeOpBinary($1, kOpAsterisk, $3); }
+	|	operand '%' operand			{ $$ = Expr::makeOpBinary($1, kOpPercentage, $3); }
+	|	operand '^' operand			{ $$ = Expr::makeOpBinary($1, kOpCaret, $3); }
 	|	operand LIKE operand		{ $$ = Expr::makeOpBinary($1, kOpLike, $3); }
 	|	operand NOT LIKE operand	{ $$ = Expr::makeOpBinary($1, kOpNotLike, $4); }
 	;
