@@ -50,7 +50,7 @@ extern int hsql_debug;
 /* "%code requires" blocks.  */
 #line 34 "bison_parser.y" /* yacc.c:1915  */
 
-// %code requires block	
+// %code requires block
 
 #include "../sql/statements.h"
 #include "../SQLParserResult.h"

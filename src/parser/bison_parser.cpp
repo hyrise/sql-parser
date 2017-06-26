@@ -76,7 +76,7 @@
  * bison_parser.y
  * defines bison_parser.h
  * outputs bison_parser.c
- * 
+ *
  * Grammar File Spec: http://dinosaur.compilertools.net/bison/bison_6.html
  *
  */
@@ -138,7 +138,7 @@ extern int hsql_debug;
 /* "%code requires" blocks.  */
 #line 34 "bison_parser.y" /* yacc.c:355  */
 
-// %code requires block	
+// %code requires block
 
 #include "../sql/statements.h"
 #include "../SQLParserResult.h"
@@ -3086,7 +3086,7 @@ yyreduce:
 
   case 108:
 #line 686 "bison_parser.y" /* yacc.c:1661  */
-    { (yyval.expr) = Expr::makeOpUnary(kOpMinus, (yyvsp[0].expr)); }
+    { (yyval.expr) = Expr::makeOpUnary(kOpUnaryMinus, (yyvsp[0].expr)); }
 #line 3091 "bison_parser.cpp" /* yacc.c:1661  */
     break;
 
@@ -3098,37 +3098,37 @@ yyreduce:
 
   case 111:
 #line 692 "bison_parser.y" /* yacc.c:1661  */
-    { (yyval.expr) = Expr::makeOpBinary((yyvsp[-2].expr), kOpSubtract, (yyvsp[0].expr)); }
+    { (yyval.expr) = Expr::makeOpBinary((yyvsp[-2].expr), kOpMinus, (yyvsp[0].expr)); }
 #line 3103 "bison_parser.cpp" /* yacc.c:1661  */
     break;
 
   case 112:
 #line 693 "bison_parser.y" /* yacc.c:1661  */
-    { (yyval.expr) = Expr::makeOpBinary((yyvsp[-2].expr), kOpAdd, (yyvsp[0].expr)); }
+    { (yyval.expr) = Expr::makeOpBinary((yyvsp[-2].expr), kOpPlus, (yyvsp[0].expr)); }
 #line 3109 "bison_parser.cpp" /* yacc.c:1661  */
     break;
 
   case 113:
 #line 694 "bison_parser.y" /* yacc.c:1661  */
-    { (yyval.expr) = Expr::makeOpBinary((yyvsp[-2].expr), kOpDivide, (yyvsp[0].expr)); }
+    { (yyval.expr) = Expr::makeOpBinary((yyvsp[-2].expr), kOpSlash, (yyvsp[0].expr)); }
 #line 3115 "bison_parser.cpp" /* yacc.c:1661  */
     break;
 
   case 114:
 #line 695 "bison_parser.y" /* yacc.c:1661  */
-    { (yyval.expr) = Expr::makeOpBinary((yyvsp[-2].expr), kOpMultiply, (yyvsp[0].expr)); }
+    { (yyval.expr) = Expr::makeOpBinary((yyvsp[-2].expr), kOpAsterisk, (yyvsp[0].expr)); }
 #line 3121 "bison_parser.cpp" /* yacc.c:1661  */
     break;
 
   case 115:
 #line 696 "bison_parser.y" /* yacc.c:1661  */
-    { (yyval.expr) = Expr::makeOpBinary((yyvsp[-2].expr), kOpModulo, (yyvsp[0].expr)); }
+    { (yyval.expr) = Expr::makeOpBinary((yyvsp[-2].expr), kOpPercentage, (yyvsp[0].expr)); }
 #line 3127 "bison_parser.cpp" /* yacc.c:1661  */
     break;
 
   case 116:
 #line 697 "bison_parser.y" /* yacc.c:1661  */
-    { (yyval.expr) = Expr::makeOpBinary((yyvsp[-2].expr), kOpPower, (yyvsp[0].expr)); }
+    { (yyval.expr) = Expr::makeOpBinary((yyvsp[-2].expr), kOpCaret, (yyvsp[0].expr)); }
 #line 3133 "bison_parser.cpp" /* yacc.c:1661  */
     break;
 
@@ -3366,7 +3366,7 @@ yyreduce:
 
   case 162:
 #line 851 "bison_parser.y" /* yacc.c:1661  */
-    { 
+    {
 			(yyval.table) = new TableRef(kTableJoin);
 			(yyval.table)->join = new JoinDefinition();
 			(yyval.table)->join->type = (JoinType) (yyvsp[-4].uval);
