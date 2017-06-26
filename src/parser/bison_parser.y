@@ -3,7 +3,7 @@
  * bison_parser.y
  * defines bison_parser.h
  * outputs bison_parser.c
- * 
+ *
  * Grammar File Spec: http://dinosaur.compilertools.net/bison/bison_6.html
  *
  */
@@ -32,7 +32,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 
 // Specify code that is included in the generated .h and .c files
 %code requires {
-// %code requires block	
+// %code requires block
 
 #include "../sql/statements.h"
 #include "../SQLParserResult.h"
@@ -639,7 +639,7 @@ opt_limit:
 	;
 
 /******************************
- * Expressions 
+ * Expressions
  ******************************/
 expr_list:
 		expr_alias { $$ = new std::vector<Expr*>(); $$->push_back($1); }
@@ -777,7 +777,7 @@ param_expr:
 
 
 /******************************
- * Table 
+ * Table
  ******************************/
 table_ref:
 		table_ref_atomic
@@ -832,7 +832,7 @@ table_name:
 	;
 
 
-alias:	
+alias:
 		AS IDENTIFIER { $$ = $2; }
 	|	IDENTIFIER
 	;
@@ -848,7 +848,7 @@ opt_alias:
 
 join_clause:
 		table_ref_atomic opt_join_type JOIN table_ref_atomic ON join_condition
-		{ 
+		{
 			$$ = new TableRef(kTableJoin);
 			$$->join = new JoinDefinition();
 			$$->join->type = (JoinType) $2;
