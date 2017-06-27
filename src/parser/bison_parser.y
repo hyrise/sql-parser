@@ -734,7 +734,8 @@ comp_expr:
 	;
 
 function_expr:
-		IDENTIFIER '(' opt_distinct expr_list ')' { $$ = Expr::makeFunctionRef($1, $4, $3); }
+		IDENTIFIER '(' ')' { $$ = Expr::makeFunctionRef($1, new std::vector<Expr*>(), false); }
+	|	IDENTIFIER '(' opt_distinct expr_list ')' { $$ = Expr::makeFunctionRef($1, $4, $3); }
 	;
 
 between_expr:
