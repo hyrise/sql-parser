@@ -685,6 +685,9 @@ scalar_expr:
 unary_expr:
 		'-' operand { $$ = Expr::makeOpUnary(kOpMinus, $2); }
 	|	NOT operand { $$ = Expr::makeOpUnary(kOpNot, $2); }
+	|	operand ISNULL { $$ = Expr::makeOpUnary(kOpIsNull, $1); }
+	|	operand IS NULL { $$ = Expr::makeOpUnary(kOpIsNull, $1); }
+	|	operand IS NOT NULL { $$ = Expr::makeOpUnary(kOpNot, Expr::makeOpUnary(kOpIsNull, $1)); }
 	;
 
 binary_expr:

@@ -35,4 +35,7 @@ lib-test/
 *.cpp.orig
 *.h.orig
 
+# Vim Swap Files
+*.swp
+
 benchmark/parser_benchmark
