@@ -16,6 +16,7 @@ enum ExprType {
     kExprLiteralFloat,
     kExprLiteralString,
     kExprLiteralInt,
+    kExprLiteralNull,
     kExprStar,
     kExprParameter,
     kExprColumnRef,
@@ -47,9 +48,11 @@ enum OperatorType {
     kOpGreaterEq,
     kOpLike,
     kOpNotLike,
+    kOpILike,
     kOpAnd,
     kOpOr,
     kOpIn,
+    kOpConcat,
 
     // Unary operators.
     kOpNot,
@@ -120,6 +123,8 @@ struct Expr {
     static Expr* makeLiteral(double val);
 
     static Expr* makeLiteral(char* val);
+
+    static Expr* makeNullLiteral();
 
     static Expr* makeColumnRef(char* name);
 

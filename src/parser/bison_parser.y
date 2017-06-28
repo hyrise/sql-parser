@@ -15,6 +15,7 @@
 #include "flex_lexer.h"
 
 #include <stdio.h>
+#include <string.h>
 
 using namespace hsql;
 
@@ -165,7 +166,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 %token LEFT LIKE LOAD NULL PART PLAN SHOW TEXT THEN TIME
 %token VIEW WHEN WITH ADD ALL AND ASC CSV END FOR INT KEY
 %token NOT OFF SET TBL TOP AS BY IF IN IS OF ON OR TO
-%token ARRAY
+%token ARRAY CONCAT ILIKE
 
 /*********************************
  ** Non-Terminal types (http://www.gnu.org/software/bison/manual/html_node/Type-Decl.html)
@@ -190,7 +191,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 %type <expr>		function_expr between_expr star_expr expr_alias param_expr
 %type <expr> 		column_name literal int_literal num_literal string_literal
 %type <expr> 		comp_expr opt_where join_condition opt_having case_expr in_expr hint
-%type <expr> 		array_expr array_index
+%type <expr> 		array_expr array_index null_literal
 %type <limit>		opt_limit opt_top
 %type <order>		order_desc
 %type <order_type>	opt_order_type
@@ -212,7 +213,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 %left		OR
 %left		AND
 %right		NOT
-%right		'=' EQUALS NOTEQUALS LIKE
+%right		'=' EQUALS NOTEQUALS LIKE ILIKE
 %nonassoc	'<' '>' LESS GREATER LESSEQ GREATEREQ
 
 %nonassoc	NOTNULL
@@ -665,7 +666,6 @@ expr:
 	|	between_expr
 	|	logic_expr
 	|	exists_expr
-	|	case_expr
 	|	in_expr
 	;
 
@@ -675,6 +675,7 @@ operand:
 	|	scalar_expr
 	|	unary_expr
 	|	binary_expr
+	|	case_expr
 	|	function_expr
 	|	array_expr
 	|	'(' select_no_paren ')' { $$ = Expr::makeSelect($2); }
@@ -704,6 +705,8 @@ binary_expr:
 	|	operand '^' operand			{ $$ = Expr::makeOpBinary($1, '^', $3); }
 	|	operand LIKE operand		{ $$ = Expr::makeOpBinary($1, kOpLike, $3); }
 	|	operand NOT LIKE operand	{ $$ = Expr::makeOpBinary($1, kOpNotLike, $4); }
+	|	operand ILIKE operand		{ $$ = Expr::makeOpBinary($1, kOpILike, $3); }
+	|	operand CONCAT operand	{ $$ = Expr::makeOpBinary($1, kOpConcat, $3); }
 	;
 
 logic_expr:
@@ -764,6 +767,7 @@ column_name:
 literal:
 		string_literal
 	|	num_literal
+	|	null_literal
 	|	param_expr
 	;
 
@@ -779,6 +783,10 @@ num_literal:
 
 int_literal:
 		INTVAL { $$ = Expr::makeLiteral($1); }
+	;
+
+null_literal:
+	    	NULL { $$ = Expr::makeNullLiteral(); }
 	;
 
 star_expr:
@@ -874,7 +882,24 @@ join_clause:
 			$$->join->right = $4;
 			$$->join->condition = $6;
 		}
-		;
+	|
+		table_ref_atomic opt_join_type JOIN table_ref_atomic USING '(' column_name ')'
+		{ 
+			$$ = new TableRef(kTableJoin);
+			$$->join = new JoinDefinition();
+			$$->join->type = (JoinType) $2;
+			$$->join->left = $1;
+			$$->join->right = $4;
+			auto left_col = Expr::makeColumnRef(strdup($7->name));
+			if ($7->alias != nullptr) left_col->alias = strdup($7->alias);
+			if ($1->getName() != nullptr) left_col->table = strdup($1->getName());
+			auto right_col = Expr::makeColumnRef(strdup($7->name));
+			if ($7->alias != nullptr) right_col->alias = strdup($7->alias);
+			if ($4->getName() != nullptr) right_col->table = strdup($4->getName());
+			$$->join->condition = Expr::makeOpBinary(left_col, '=', right_col);
+			delete $7;
+		}
+	;
 
 opt_join_type:
 		INNER		{ $$ = kJoinInner; }

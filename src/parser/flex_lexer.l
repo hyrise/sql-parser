@@ -139,6 +139,7 @@ INTO		TOKEN(INTO)
 JOIN		TOKEN(JOIN)
 LEFT		TOKEN(LEFT)
 LIKE		TOKEN(LIKE)
+ILIKE		TOKEN(ILIKE)
 LOAD		TOKEN(LOAD)
 NULL		TOKEN(NULL)
 PART		TOKEN(PART)
@@ -174,11 +175,13 @@ ON			TOKEN(ON)
 OR			TOKEN(OR)
 TO			TOKEN(TO)
 
+"!="		TOKEN(NOTEQUALS)
 "<>" 		TOKEN(NOTEQUALS)
 "<="		TOKEN(LESSEQ)
 ">="		TOKEN(GREATEREQ)
+"||"		TOKEN(CONCAT)
 
-[-+*/(){},.;<>=^%:?]	{ return yytext[0]; }
+[-+*/(){},.;<>=^%:?[\]|]	{ return yytext[0]; }
 
 -?[0-9]+"."[0-9]* |
 "."[0-9]*	{

@@ -48,7 +48,7 @@
 extern int hsql_debug;
 #endif
 /* "%code requires" blocks.  */
-#line 34 "bison_parser.y" /* yacc.c:1909  */
+#line 35 "bison_parser.y" /* yacc.c:1909  */
 
 // %code requires block	
 
@@ -199,14 +199,16 @@ extern int hsql_debug;
     SQL_OR = 376,
     SQL_TO = 377,
     SQL_ARRAY = 378,
-    SQL_EQUALS = 379,
-    SQL_NOTEQUALS = 380,
-    SQL_LESS = 381,
-    SQL_GREATER = 382,
-    SQL_LESSEQ = 383,
-    SQL_GREATEREQ = 384,
-    SQL_NOTNULL = 385,
-    SQL_UMINUS = 386
+    SQL_CONCAT = 379,
+    SQL_ILIKE = 380,
+    SQL_EQUALS = 381,
+    SQL_NOTEQUALS = 382,
+    SQL_LESS = 383,
+    SQL_GREATER = 384,
+    SQL_LESSEQ = 385,
+    SQL_GREATEREQ = 386,
+    SQL_NOTNULL = 387,
+    SQL_UMINUS = 388
   };
 #endif
 
@@ -215,7 +217,7 @@ extern int hsql_debug;
 
 union HSQL_STYPE
 {
-#line 92 "bison_parser.y" /* yacc.c:1909  */
+#line 93 "bison_parser.y" /* yacc.c:1909  */
 
 	double fval;
 	int64_t ival;
@@ -252,7 +254,7 @@ union HSQL_STYPE
 	std::vector<hsql::Expr*>* expr_vec;
 	std::vector<hsql::OrderDescription*>* order_vec;
 
-#line 256 "bison_parser.h" /* yacc.c:1909  */
+#line 258 "bison_parser.h" /* yacc.c:1909  */
 };
 
 typedef union HSQL_STYPE HSQL_STYPE;

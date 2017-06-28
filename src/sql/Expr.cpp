@@ -101,6 +101,11 @@ Expr* Expr::makeLiteral(char* string) {
     return e;
 }
 
+Expr* Expr::makeNullLiteral() {
+    Expr* e = new Expr(kExprLiteralNull);
+    return e;
+}
+
 Expr* Expr::makeColumnRef(char* name) {
     Expr* e = new Expr(kExprColumnRef);
     e->name = name;
