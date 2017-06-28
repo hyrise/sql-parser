@@ -6,13 +6,13 @@
 #include <vector>
 
 namespace hsql {
-  struct SelectStatement;
+struct SelectStatement;
 
-  // Helper function used by the lexer.
-  // TODO: move to more appropriate place.
-  char* substr(const char* source, int from, int to);
+// Helper function used by the lexer.
+// TODO: move to more appropriate place.
+char* substr(const char* source, int from, int to);
 
-  enum ExprType {
+enum ExprType {
     kExprLiteralFloat,
     kExprLiteralString,
     kExprLiteralInt,
@@ -22,14 +22,16 @@ namespace hsql {
     kExprFunctionRef,
     kExprOperator,
     kExprSelect,
-    kExprHint
-  };
+    kExprHint,
+    kExprArray,
+    kExprArrayIndex
+};
 
-  // Operator types. These are important for expressions of type kExprOperator.
-  // Trivial types are those that can be described by a single character e.g:
-  // + - * / < > = %
-  // Non-trivial are: <> <= >= LIKE ISNULL NOT
-  enum OperatorType {
+// Operator types. These are important for expressions of type kExprOperator.
+// Trivial types are those that can be described by a single character e.g:
+// + - * / < > = %
+// Non-trivial are: <> <= >= LIKE ISNULL NOT
+enum OperatorType {
     kOpNone,
 
     // Ternary operators
@@ -54,14 +56,14 @@ namespace hsql {
     kOpMinus,
     kOpIsNull,
     kOpExists
-  };
+};
 
-  typedef struct Expr Expr;
+typedef struct Expr Expr;
 
-  // Represents SQL expressions (i.e. literals, operators, column_refs).
-  // TODO: When destructing a placeholder expression, we might need to alter the placeholder_list.
-  struct Expr {
-
+// Represents SQL expressions (i.e. literals, operators, column_refs).
+// TODO: When destructing a placeholder expression, we might need to alter the
+// placeholder_list.
+struct Expr {
     Expr(ExprType type);
     virtual ~Expr();
 
@@ -83,7 +85,6 @@ namespace hsql {
     char opChar;
     bool distinct;
 
-
     // Convenience accessor methods.
 
     bool isType(ExprType exprType) const;
@@ -99,7 +100,6 @@ namespace hsql {
     bool isSimpleOp() const;
 
     bool isSimpleOp(char op) const;
-
 
     // Static constructors.
 
@@ -125,7 +125,12 @@ namespace hsql {
 
     static Expr* makeColumnRef(char* table, char* name);
 
-    static Expr* makeFunctionRef(char* func_name, std::vector<Expr*>* exprList, bool distinct);
+    static Expr* makeFunctionRef(char* func_name, std::vector<Expr*>* exprList,
+                                 bool distinct);
+
+    static Expr* makeArray(std::vector<Expr*>* exprList);
+
+    static Expr* makeArrayIndex(Expr* expr, int64_t index);
 
     static Expr* makeParameter(int id);
 
@@ -136,22 +141,21 @@ namespace hsql {
     static Expr* makeInOperator(Expr* expr, std::vector<Expr*>* exprList);
 
     static Expr* makeInOperator(Expr* expr, SelectStatement* select);
-  };
+};
 
 // Zero initializes an Expr object and assigns it to a space in the heap
 // For Hyrise we still had to put in the explicit NULL constructor
 // http://www.ex-parrot.com/~chris/random/initialise.html
 // Unused
-#define ALLOC_EXPR(var, type) 		\
-	Expr* var;						\
-	do {							\
-		Expr zero = {type};			\
-		var = (Expr*)malloc(sizeof *var);	\
-		*var = zero;				\
-	} while(0);
+#define ALLOC_EXPR(var, type)             \
+    Expr* var;                            \
+    do {                                  \
+        Expr zero = {type};               \
+        var = (Expr*)malloc(sizeof *var); \
+        *var = zero;                      \
+    } while (0);
 #undef ALLOC_EXPR
 
-
-} // namespace hsql
+}  // namespace hsql
 
 #endif

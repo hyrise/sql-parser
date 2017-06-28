@@ -198,14 +198,15 @@ extern int hsql_debug;
     SQL_ON = 375,
     SQL_OR = 376,
     SQL_TO = 377,
-    SQL_EQUALS = 378,
-    SQL_NOTEQUALS = 379,
-    SQL_LESS = 380,
-    SQL_GREATER = 381,
-    SQL_LESSEQ = 382,
-    SQL_GREATEREQ = 383,
-    SQL_NOTNULL = 384,
-    SQL_UMINUS = 385
+    SQL_ARRAY = 378,
+    SQL_EQUALS = 379,
+    SQL_NOTEQUALS = 380,
+    SQL_LESS = 381,
+    SQL_GREATER = 382,
+    SQL_LESSEQ = 383,
+    SQL_GREATEREQ = 384,
+    SQL_NOTNULL = 385,
+    SQL_UMINUS = 386
   };
 #endif
 
@@ -251,7 +252,7 @@ union HSQL_STYPE
 	std::vector<hsql::Expr*>* expr_vec;
 	std::vector<hsql::OrderDescription*>* order_vec;
 
-#line 255 "bison_parser.h" /* yacc.c:1909  */
+#line 256 "bison_parser.h" /* yacc.c:1909  */
 };
 
 typedef union HSQL_STYPE HSQL_STYPE;

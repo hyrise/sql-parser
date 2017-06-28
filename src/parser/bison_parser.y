@@ -165,6 +165,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 %token LEFT LIKE LOAD NULL PART PLAN SHOW TEXT THEN TIME
 %token VIEW WHEN WITH ADD ALL AND ASC CSV END FOR INT KEY
 %token NOT OFF SET TBL TOP AS BY IF IN IS OF ON OR TO
+%token ARRAY
 
 /*********************************
  ** Non-Terminal types (http://www.gnu.org/software/bison/manual/html_node/Type-Decl.html)
@@ -189,6 +190,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 %type <expr>		function_expr between_expr star_expr expr_alias param_expr
 %type <expr> 		column_name literal int_literal num_literal string_literal
 %type <expr> 		comp_expr opt_where join_condition opt_having case_expr in_expr hint
+%type <expr> 		array_expr array_index
 %type <limit>		opt_limit opt_top
 %type <order>		order_desc
 %type <order_type>	opt_order_type
@@ -669,10 +671,12 @@ expr:
 
 operand:
 		'(' expr ')' { $$ = $2; }
+	|	array_index
 	|	scalar_expr
 	|	unary_expr
 	|	binary_expr
 	|	function_expr
+	|	array_expr
 	|	'(' select_no_paren ')' { $$ = Expr::makeSelect($2); }
 	;
 
@@ -716,6 +720,8 @@ in_expr:
 
 // TODO: allow no else specified
 case_expr:
+		CASE WHEN expr THEN operand END { $$ = Expr::makeCase($3, $5, NULL); }
+	|
 		CASE WHEN expr THEN operand ELSE operand END { $$ = Expr::makeCase($3, $5, $7); }
 	;
 
@@ -736,6 +742,14 @@ comp_expr:
 function_expr:
 		IDENTIFIER '(' ')' { $$ = Expr::makeFunctionRef($1, new std::vector<Expr*>(), false); }
 	|	IDENTIFIER '(' opt_distinct expr_list ')' { $$ = Expr::makeFunctionRef($1, $4, $3); }
+	;
+
+array_expr:
+	  	ARRAY '[' expr_list ']' { $$ = Expr::makeArray($3); }
+	;
+
+array_index:
+	   	operand '[' int_literal ']' { $$ = Expr::makeArrayIndex($1, $3->ival); }
 	;
 
 between_expr:
