@@ -37,11 +37,18 @@ namespace hsql {
     kOpCase,
 
     // Binary operators.
-    // Simple operators are identified by the opChar field (e.g. +, -, =, >, <).
-    kOpSimple,
+    kOpPlus,
+    kOpMinus,
+    kOpAsterisk,
+    kOpSlash,
+    kOpPercentage,
+    kOpCaret,
 
+    kOpEquals,
     kOpNotEquals,
+    kOpLess,
     kOpLessEq,
+    kOpGreater,
     kOpGreaterEq,
     kOpLike,
     kOpNotLike,
@@ -51,7 +58,7 @@ namespace hsql {
 
     // Unary operators.
     kOpNot,
-    kOpMinus,
+    kOpUnaryMinus,
     kOpIsNull,
     kOpExists
   };
@@ -80,7 +87,6 @@ namespace hsql {
     int64_t ival2;
 
     OperatorType opType;
-    char opChar;
     bool distinct;
 
 
@@ -96,18 +102,11 @@ namespace hsql {
 
     const char* getName() const;
 
-    bool isSimpleOp() const;
-
-    bool isSimpleOp(char op) const;
-
-
     // Static constructors.
 
     static Expr* make(ExprType type);
 
     static Expr* makeOpUnary(OperatorType op, Expr* expr);
-
-    static Expr* makeOpBinary(Expr* expr1, char op, Expr* expr2);
 
     static Expr* makeOpBinary(Expr* expr1, OperatorType op, Expr* expr2);
 

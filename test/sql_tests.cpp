@@ -75,7 +75,7 @@ TEST(UpdateStatementTest) {
 
   ASSERT_NOTNULL(stmt->where);
   ASSERT(stmt->where->isType(kExprOperator));
-  ASSERT(stmt->where->isSimpleOp('='));
+  ASSERT_EQ(stmt->where->opType, kOpEquals);
   ASSERT_STREQ(stmt->where->expr->name, "name");
   ASSERT_STREQ(stmt->where->expr2->name, "Max Mustermann");
 }

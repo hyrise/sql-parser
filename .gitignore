@@ -32,6 +32,12 @@ lib-test/
 *.out
 *.app
 
+# IDE
+.idea/
+
+# CMAKE
+cmake-build-debug/
+
 *.cpp.orig
 *.h.orig
 
