@@ -545,7 +545,7 @@ select_no_paren:
 				$$->limit = $5;
 			}
 		}
-	|	select_clause set_operator select_with_paren opt_order opt_limit {
+	|	select_statement set_operator select_statement opt_order opt_limit {
 			$$ = $1;
 			$$->unionSelect = $3;
 			$$->order = $4;
@@ -559,9 +559,18 @@ select_no_paren:
 	;
 
 set_operator:
+		set_type opt_all
+	;
+
+set_type:
 		UNION
 	|	INTERSECT
 	|	EXCEPT
+	;
+
+opt_all:
+		ALL
+	|	/* empty */
 	;
 
 select_clause:
@@ -762,6 +771,7 @@ between_expr:
 column_name:
 		IDENTIFIER { $$ = Expr::makeColumnRef($1); }
 	|	IDENTIFIER '.' IDENTIFIER { $$ = Expr::makeColumnRef($1, $3); }
+	|	IDENTIFIER '.' '*' { $$ = Expr::makeColumnRef($1, strdup("*")); }
 	;
 
 literal:
@@ -873,7 +883,15 @@ opt_alias:
  ******************************/
 
 join_clause:
-		table_ref_atomic opt_join_type JOIN table_ref_atomic ON join_condition
+		table_ref_atomic NATURAL JOIN table_ref_atomic
+		{
+			$$ = new TableRef(kTableJoin);
+			$$->join = new JoinDefinition();
+			$$->join->type = kJoinNatural;
+			$$->join->left = $1;
+			$$->join->right = $4;
+		}
+	|	table_ref_atomic opt_join_type JOIN table_ref_atomic ON join_condition
 		{ 
 			$$ = new TableRef(kTableJoin);
 			$$->join = new JoinDefinition();
@@ -909,7 +927,6 @@ opt_join_type:
 	|	LEFT		{ $$ = kJoinLeft; }
 	|	RIGHT		{ $$ = kJoinRight; }
 	|	CROSS		{ $$ = kJoinCross; }
-	|	NATURAL		{ $$ = kJoinNatural; }
 	|	/* empty, default */	{ $$ = kJoinInner; }
 	;
 
