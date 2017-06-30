@@ -3,7 +3,7 @@
  * bison_parser.y
  * defines bison_parser.h
  * outputs bison_parser.c
- * 
+ *
  * Grammar File Spec: http://dinosaur.compilertools.net/bison/bison_6.html
  *
  */
@@ -33,7 +33,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 
 // Specify code that is included in the generated .h and .c files
 %code requires {
-// %code requires block	
+// %code requires block
 
 #include "../sql/statements.h"
 #include "../SQLParserResult.h"
@@ -651,7 +651,7 @@ opt_limit:
 	;
 
 /******************************
- * Expressions 
+ * Expressions
  ******************************/
 expr_list:
 		expr_alias { $$ = new std::vector<Expr*>(); $$->push_back($1); }
@@ -697,7 +697,7 @@ scalar_expr:
 	;
 
 unary_expr:
-		'-' operand { $$ = Expr::makeOpUnary(kOpMinus, $2); }
+		'-' operand { $$ = Expr::makeOpUnary(kOpUnaryMinus, $2); }
 	|	NOT operand { $$ = Expr::makeOpUnary(kOpNot, $2); }
 	|	operand ISNULL { $$ = Expr::makeOpUnary(kOpIsNull, $1); }
 	|	operand IS NULL { $$ = Expr::makeOpUnary(kOpIsNull, $1); }
@@ -706,12 +706,12 @@ unary_expr:
 
 binary_expr:
 		comp_expr
-	|	operand '-' operand			{ $$ = Expr::makeOpBinary($1, '-', $3); }
-	|	operand '+' operand			{ $$ = Expr::makeOpBinary($1, '+', $3); }
-	|	operand '/' operand			{ $$ = Expr::makeOpBinary($1, '/', $3); }
-	|	operand '*' operand			{ $$ = Expr::makeOpBinary($1, '*', $3); }
-	|	operand '%' operand			{ $$ = Expr::makeOpBinary($1, '%', $3); }
-	|	operand '^' operand			{ $$ = Expr::makeOpBinary($1, '^', $3); }
+	|	operand '-' operand			{ $$ = Expr::makeOpBinary($1, kOpMinus, $3); }
+	|	operand '+' operand			{ $$ = Expr::makeOpBinary($1, kOpPlus, $3); }
+	|	operand '/' operand			{ $$ = Expr::makeOpBinary($1, kOpSlash, $3); }
+	|	operand '*' operand			{ $$ = Expr::makeOpBinary($1, kOpAsterisk, $3); }
+	|	operand '%' operand			{ $$ = Expr::makeOpBinary($1, kOpPercentage, $3); }
+	|	operand '^' operand			{ $$ = Expr::makeOpBinary($1, kOpCaret, $3); }
 	|	operand LIKE operand		{ $$ = Expr::makeOpBinary($1, kOpLike, $3); }
 	|	operand NOT LIKE operand	{ $$ = Expr::makeOpBinary($1, kOpNotLike, $4); }
 	|	operand ILIKE operand		{ $$ = Expr::makeOpBinary($1, kOpILike, $3); }
@@ -743,10 +743,10 @@ exists_expr:
 	;
 
 comp_expr:
-		operand '=' operand			{ $$ = Expr::makeOpBinary($1, '=', $3); }
+		operand '=' operand			{ $$ = Expr::makeOpBinary($1, kOpEquals, $3); }
 	|	operand NOTEQUALS operand	{ $$ = Expr::makeOpBinary($1, kOpNotEquals, $3); }
-	|	operand '<' operand			{ $$ = Expr::makeOpBinary($1, '<', $3); }
-	|	operand '>' operand			{ $$ = Expr::makeOpBinary($1, '>', $3); }
+	|	operand '<' operand			{ $$ = Expr::makeOpBinary($1, kOpLess, $3); }
+	|	operand '>' operand			{ $$ = Expr::makeOpBinary($1, kOpGreater, $3); }
 	|	operand LESSEQ operand		{ $$ = Expr::makeOpBinary($1, kOpLessEq, $3); }
 	|	operand GREATEREQ operand	{ $$ = Expr::makeOpBinary($1, kOpGreaterEq, $3); }
 	;
@@ -813,7 +813,7 @@ param_expr:
 
 
 /******************************
- * Table 
+ * Table
  ******************************/
 table_ref:
 		table_ref_atomic
@@ -868,7 +868,7 @@ table_name:
 	;
 
 
-alias:	
+alias:
 		AS IDENTIFIER { $$ = $2; }
 	|	IDENTIFIER
 	;
@@ -914,7 +914,7 @@ join_clause:
 			auto right_col = Expr::makeColumnRef(strdup($7->name));
 			if ($7->alias != nullptr) right_col->alias = strdup($7->alias);
 			if ($4->getName() != nullptr) right_col->table = strdup($4->getName());
-			$$->join->condition = Expr::makeOpBinary(left_col, '=', right_col);
+			$$->join->condition = Expr::makeOpBinary(left_col, kOpEquals, right_col);
 			delete $7;
 		}
 	;
