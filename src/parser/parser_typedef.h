@@ -15,16 +15,16 @@ typedef void* yyscan_t;
 
 
 struct HSQL_CUST_LTYPE {
-	int first_line;
-	int first_column;
-	int last_line;
-	int last_column;
+  int first_line;
+  int first_column;
+  int last_line;
+  int last_column;
 
-	int total_column;
+  int total_column;
 
-	// Parameters.
-	// int param_id;
-	std::vector<void*> param_list;
+  // Parameters.
+  // int param_id;
+  std::vector<void*> param_list;
 };
 
 #define HSQL_LTYPE HSQL_CUST_LTYPE

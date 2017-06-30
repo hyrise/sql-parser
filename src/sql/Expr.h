@@ -6,13 +6,13 @@
 #include <vector>
 
 namespace hsql {
-struct SelectStatement;
+  struct SelectStatement;
 
 // Helper function used by the lexer.
 // TODO: move to more appropriate place.
-char* substr(const char* source, int from, int to);
+  char* substr(const char* source, int from, int to);
 
-enum ExprType {
+  enum ExprType {
     kExprLiteralFloat,
     kExprLiteralString,
     kExprLiteralInt,
@@ -26,13 +26,13 @@ enum ExprType {
     kExprHint,
     kExprArray,
     kExprArrayIndex
-};
+  };
 
 // Operator types. These are important for expressions of type kExprOperator.
 // Trivial types are those that can be described by a single character e.g:
 // + - * / < > = %
 // Non-trivial are: <> <= >= LIKE ISNULL NOT
-enum OperatorType {
+  enum OperatorType {
     kOpNone,
 
     // Ternary operators
@@ -59,14 +59,14 @@ enum OperatorType {
     kOpMinus,
     kOpIsNull,
     kOpExists
-};
+  };
 
-typedef struct Expr Expr;
+  typedef struct Expr Expr;
 
 // Represents SQL expressions (i.e. literals, operators, column_refs).
 // TODO: When destructing a placeholder expression, we might need to alter the
 // placeholder_list.
-struct Expr {
+  struct Expr {
     Expr(ExprType type);
     virtual ~Expr();
 
@@ -146,7 +146,7 @@ struct Expr {
     static Expr* makeInOperator(Expr* expr, std::vector<Expr*>* exprList);
 
     static Expr* makeInOperator(Expr* expr, SelectStatement* select);
-};
+  };
 
 // Zero initializes an Expr object and assigns it to a space in the heap
 // For Hyrise we still had to put in the explicit NULL constructor
