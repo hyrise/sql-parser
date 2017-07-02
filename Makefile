@@ -1,53 +1,59 @@
-# Directories.
+all: library
+
+#######################################
+############# Directories #############
+#######################################
 BIN        = bin
 SRC        = src
 SRCPARSER  = src/parser
 
-# Files.
-PARSERCPP   = $(SRCPARSER)/bison_parser.cpp $(SRCPARSER)/flex_lexer.cpp
-LIBCPP      = $(shell find $(SRC) -name '*.cpp' -not -path "$(SRCPARSER)/*") $(PARSERCPP)
-LIBOBJ      = $(LIBCPP:%.cpp=%.o)
-TESTCPP     = $(shell find test/ -name '*.cpp')
+INSTALL     = /usr/local
 
-ALLLIB      = $(shell find $(SRC) -name '*.cpp' -not -path "$(SRCPARSER)/*") $(shell find $(SRC) -name '*.h' -not -path "$(SRCPARSER)/*")
-ALLTEST     = $(shell find test/ -name '*.cpp') $(shell find test/ -name '*.h')
-EXAMPLESRC  = $(shell find example/ -name '*.cpp') $(shell find example/ -name '*.h')
-
-# Compiler & linker flags.
-CFLAGS     = -std=c++11 -Wall -Werror -fPIC
-LIBFLAGS   = -shared
-TARGET     = libsqlparser.so
-INSTALL    = /usr/local
-
-CTESTFLAGS = -Wall -Werror -Isrc/ -Itest/ -L./ -std=c++11 -lstdc++
-
+######################################
+############ Compile Mode ############
+######################################
 # Set compile mode to -g or -O3.
-MODE_LOG = ""
+# Debug mode: make mode=debug
+
 mode ?= release
+MODE_LOG = ""
+OPT_FLAG =
 ifeq ($(mode), debug)
-	CFLAGS += -g
-	CTESTFLAGS += -g
+	OPT_FLAG = -g
 	MODE_LOG = "Building in \033[1;31mdebug\033[0m mode"
 else
-	CFLAGS += -O3
-	CTESTFLAGS += -O3
+	OPT_FLAG = -O3
 	MODE_LOG = "Building in \033[0;32mrelease\033[0m mode ('make mode=debug' for debug mode)"
 endif
 
 GMAKE = make mode=$(mode)
 
-all: library
 
-library: $(TARGET)
 
-$(TARGET): $(LIBOBJ)
-	$(CXX) $(LIBFLAGS) -o $(TARGET) $(LIBOBJ)
+#######################################
+############### Library ###############
+#######################################
+PARSER_CPP = $(SRCPARSER)/bison_parser.cpp  $(SRCPARSER)/flex_lexer.cpp
+PARSER_H   = $(SRCPARSER)/bison_parser.h    $(SRCPARSER)/flex_lexer.h
+
+LIB_BUILD  = libsqlparser.so
+LIB_CFLAGS  = -std=c++11 -Wall -Werror -fPIC $(OPT_FLAG)
+LIB_LFLAGS = -shared $(OPT_FLAG)
+LIB_CPP    = $(shell find $(SRC) -name '*.cpp' -not -path "$(SRCPARSER)/*") $(PARSER_CPP)
+LIB_H      = $(shell find $(SRC) -name '*.h' -not -path "$(SRCPARSER)/*") $(PARSER_H)
+LIB_ALL    = $(shell find $(SRC) -name '*.cpp' -not -path "$(SRCPARSER)/*") $(shell find $(SRC) -name '*.h' -not -path "$(SRCPARSER)/*")
+LIB_OBJ    = $(LIB_CPP:%.cpp=%.o)
+
+library: $(LIB_BUILD)
+
+$(LIB_BUILD): $(LIB_OBJ)
+	$(CXX) $(LIB_LFLAGS) -o $(LIB_BUILD) $(LIB_OBJ)
 
 $(SRCPARSER)/flex_lexer.o: $(SRCPARSER)/flex_lexer.cpp $(SRCPARSER)/bison_parser.cpp
-	$(CXX) $(CFLAGS) -c -o $@ $< -Wno-sign-compare -Wno-unneeded-internal-declaration -Wno-deprecated-register
+	$(CXX) $(LIB_CFLAGS) -c -o $@ $< -Wno-sign-compare -Wno-unneeded-internal-declaration -Wno-deprecated-register
 
-%.o: %.cpp $(PARSERCPP)
-	$(CXX) $(CFLAGS) -c -o $@ $<
+%.o: %.cpp $(PARSER_CPP) $(LIB_H)
+	$(CXX) $(LIB_CFLAGS) -c -o $@ $<
 
 $(SRCPARSER)/bison_parser.cpp: $(SRCPARSER)/bison_parser.y
 	$(GMAKE) -C $(SRCPARSER)/ bison_parser.cpp
@@ -55,11 +61,13 @@ $(SRCPARSER)/bison_parser.cpp: $(SRCPARSER)/bison_parser.y
 $(SRCPARSER)/flex_lexer.cpp: $(SRCPARSER)/flex_lexer.l
 	$(GMAKE) -C $(SRCPARSER)/ flex_lexer.cpp
 
+$(SRCPARSER)/bison_parser.h: $(SRCPARSER)/bison_parser.cpp
+$(SRCPARSER)/flex_lexer.h: $(SRCPARSER)/flex_lexer.cpp
+
 clean:
-	rm -f $(TARGET)
+	rm -f $(LIB_BUILD)
 	rm -rf $(BIN)
 	find $(SRC) -type f -name '*.o' -delete
-	$(GMAKE) -C benchmark/ clean
 
 cleanparser:
 	$(GMAKE) -C $(SRCPARSER)/ clean
@@ -67,27 +75,52 @@ cleanparser:
 cleanall: clean cleanparser
 
 install:
-	cp $(TARGET) $(INSTALL)/lib/$(TARGET)
+	cp $(LIB_BUILD) $(INSTALL)/lib/$(LIB_BUILD)
 	rm -rf $(INSTALL)/include/hsql
 	cp -r src $(INSTALL)/include/hsql
 	find $(INSTALL)/include/hsql -not -name '*.h' -type f | xargs rm
 
-#################
-### Benchmark ###
-#################
 
-benchmark: library
-	$(GMAKE) -C benchmark/ clean run
 
-build_benchmark: library
-	$(GMAKE) -C benchmark/ parser_benchmark
+#######################################
+############## Benchmark ##############
+#######################################
+BM_BUILD  = $(BIN)/benchmark
+BM_CFLAGS = -std=c++17 -Wall -Isrc/ -L./ $(OPT_FLAG)
+BM_PATH   = benchmark
+BM_CPP    = $(shell find $(BM_PATH)/ -name '*.cpp')
+BM_ALL    = $(shell find $(BM_PATH)/ -name '*.cpp' -or -name '*.h')
 
-############
-### Test ###
-############
+benchmark: $(BM_BUILD)
 
-test: $(BIN)/sql_tests
+run_benchmarks: benchmark
+	./$(BM_BUILD) --benchmark_counters_tabular=true
+	# --benchmark_filter="abc
+
+save_benchmarks: benchmark
+	./$(BM_BUILD) --benchmark_format=csv > benchmarks.csv
+
+$(BM_BUILD): $(BM_ALL) $(LIB_BUILD)
+	@mkdir -p $(BIN)/
+	$(CXX) $(BM_CFLAGS) $(BM_CPP) -o $(BM_BUILD) -lbenchmark -lpthread -lsqlparser -lstdc++ -lstdc++fs
+
+
+
+########################################
+############ Test & Example ############
+########################################
+TEST_BUILD   = $(BIN)/tests
+TEST_CFLAGS   = -std=c++11 -Wall -Werror -Isrc/ -Itest/ -L./ $(OPT_FLAG)
+TEST_CPP     = $(shell find test/ -name '*.cpp')
+TEST_ALL     = $(shell find test/ -name '*.cpp') $(shell find test/ -name '*.h')
+EXAMPLE_SRC  = $(shell find example/ -name '*.cpp') $(shell find example/ -name '*.h')
+
+test: $(TEST_BUILD)
 	bash test/test.sh
+
+$(TEST_BUILD): $(TEST_ALL) $(LIB_BUILD)
+	@mkdir -p $(BIN)/
+	$(CXX) $(TEST_CFLAGS) $(TEST_CPP) -o $(TEST_BUILD) -lsqlparser -lstdc++
 
 test_example:
 	$(GMAKE) -C example/
@@ -95,22 +128,20 @@ test_example:
 	  ./example/example "SELECT * FROM students WHERE name = 'Max Mustermann';"
 
 test_format:
-	@! astyle --options=astyle.options $(ALLLIB) | grep -q "Formatted"
-	@! astyle --options=astyle.options $(ALLTEST) | grep -q "Formatted"
-
-$(BIN)/sql_tests: library
-	@mkdir -p $(BIN)/
-	$(CXX) $(CTESTFLAGS) $(TESTCPP) -o $(BIN)/sql_tests -lsqlparser
+	@! astyle --options=astyle.options $(LIB_ALL) | grep -q "Formatted"
+	@! astyle --options=astyle.options $(TEST_ALL) | grep -q "Formatted"
 
 
-############
-### Misc ###
-############
+
+########################################
+################# Misc #################
+########################################
 
 format:
-	astyle --options=astyle.options $(ALLLIB)
-	astyle --options=astyle.options $(ALLTEST)
-	astyle --options=astyle.options $(EXAMPLESRC)
+	astyle --options=astyle.options $(LIB_ALL)
+	astyle --options=astyle.options $(TEST_ALL)
+	astyle --options=astyle.options $(EXAMPLE_SRC)
 
 log_mode:
 	@echo $(MODE_LOG)
+

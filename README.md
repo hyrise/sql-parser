@@ -33,14 +33,14 @@ To use the SQL parser in your own projects you simply have to follow these few s
 
 {
     // Basic Usage Example
-    
+
     const std::string query = "...";
     hsql::SQLParserResult result;
-    hsql::SQLParser::parseSQLString(query, &result);
-    
+    hsql::SQLParser::parse(query, &result);
+
     if (result.isValid() && result.size() > 0) {
         const hsql::SQLStatement* statement = result.getStatement(0);
-        
+
         if (statement.isType(hsql::SelectStatement)) {
             const hsql::SelectStatement* select = (const hsql::SelectStatement*) statement;
             /* ... */

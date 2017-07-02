@@ -31,16 +31,30 @@ TEST(TPCHQueryGrammarTests) {
     "test/queries/tpc-h-08.sql",
     "test/queries/tpc-h-09.sql",
     "test/queries/tpc-h-10.sql",
-    "test/queries/tpc-h-11-15.sql",
-    "test/queries/tpc-h-16-22.sql"
+    "test/queries/tpc-h-11.sql",
+    "test/queries/tpc-h-12.sql",
+    "test/queries/tpc-h-13.sql",
+    "test/queries/tpc-h-14.sql",
+    "test/queries/tpc-h-15.sql",
+    "test/queries/tpc-h-16.sql",
+    "test/queries/tpc-h-17.sql",
+    "test/queries/tpc-h-18.sql",
+    "test/queries/tpc-h-19.sql",
+    "test/queries/tpc-h-20.sql",
+    "test/queries/tpc-h-21.sql",
+    "test/queries/tpc-h-22.sql",
   };
 
   int testsFailed = 0;
+  std::string concatenated = "";
   for (const std::string& file_path : files) {
     std::string query = readFileContents(file_path);
 
+    concatenated += query;
+    if (concatenated.back() != ';') concatenated += ';';
+
     SQLParserResult result;
-    SQLParser::parseSQLString(query.c_str(), &result);
+    SQLParser::parse(query.c_str(), &result);
     if (!result.isValid()) {
       mt::printFailed(file_path.c_str());
       printf("%s           %s (L%d:%d)%s\n", mt::red(), result.errorMsg(), result.errorLine(), result.errorColumn(), mt::def());
@@ -49,18 +63,29 @@ TEST(TPCHQueryGrammarTests) {
       mt::printOk(file_path.c_str());
     }
   }
+
+  SQLParserResult result;
+  SQLParser::parse(concatenated.c_str(), &result);
+  if (!result.isValid()) {
+    mt::printFailed("TPCHAllConcatenated");
+    printf("%s           %s (L%d:%d)%s\n", mt::red(), result.errorMsg(), result.errorLine(), result.errorColumn(), mt::def());
+    ++testsFailed;
+  } else {
+    mt::printOk("TPCHAllConcatenated");
+  }
+
   ASSERT_EQ(testsFailed, 0);
 }
 
 TEST(TPCHQueryDetailTest) {
-  std::string query = readFileContents("test/queries/tpc-h-16-22.sql");
+  std::string query = readFileContents("test/queries/tpc-h-20.sql");
 
   SQLParserResult result;
-  SQLParser::parseSQLString(query.c_str(), &result);
+  SQLParser::parse(query.c_str(), &result);
   ASSERT(result.isValid());
-  ASSERT_EQ(result.size(), 7);
+  ASSERT_EQ(result.size(), 1);
 
-  const SQLStatement* stmt20 = result.getStatement(4);
+  const SQLStatement* stmt20 = result.getStatement(0);
   ASSERT_EQ(stmt20->type(), kStmtSelect);
 
   const SelectStatement* select20 = (const SelectStatement*) stmt20;

@@ -80,7 +80,7 @@ TEST(AutoGrammarTest) {
 
     // Parsing
     SQLParserResult result;
-    SQLParser::parseSQLString(sql.c_str(), &result);
+    SQLParser::parse(sql.c_str(), &result);
 
     end = std::chrono::system_clock::now();
     std::chrono::duration<double> elapsed_seconds = end - start;
