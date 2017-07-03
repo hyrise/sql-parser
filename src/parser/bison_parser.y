@@ -732,7 +732,7 @@ in_expr:
 
 // TODO: allow no else specified
 case_expr:
-		CASE WHEN expr THEN operand END { $$ = Expr::makeCase($3, $5, NULL); }
+		CASE WHEN expr THEN operand END { $$ = Expr::makeCase($3, $5); }
 	|
 		CASE WHEN expr THEN operand ELSE operand END { $$ = Expr::makeCase($3, $5, $7); }
 	;

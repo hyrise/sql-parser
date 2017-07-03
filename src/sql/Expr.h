@@ -116,6 +116,8 @@ namespace hsql {
 
     static Expr* makeBetween(Expr* expr, Expr* left, Expr* right);
 
+    static Expr* makeCase(Expr* expr, Expr* then);
+
     static Expr* makeCase(Expr* expr, Expr* then, Expr* other);
 
     static Expr* makeLiteral(int64_t val);

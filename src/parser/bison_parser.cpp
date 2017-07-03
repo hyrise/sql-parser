@@ -3290,7 +3290,7 @@ yyreduce:
 
   case 135:
 #line 735 "bison_parser.y" /* yacc.c:1646  */
-    { (yyval.expr) = Expr::makeCase((yyvsp[-3].expr), (yyvsp[-1].expr), NULL); }
+    { (yyval.expr) = Expr::makeCase((yyvsp[-3].expr), (yyvsp[-1].expr)); }
 #line 3295 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 

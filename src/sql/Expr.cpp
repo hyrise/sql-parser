@@ -63,6 +63,15 @@ namespace hsql {
     return e;
   }
 
+  Expr* Expr::makeCase(Expr* expr, Expr* then) {
+    Expr* e = new Expr(kExprOperator);
+    e->expr = expr;
+    e->opType = kOpCase;
+    e->exprList = new std::vector<Expr*>();
+    e->exprList->push_back(then);
+    return e;
+  }
+
   Expr* Expr::makeCase(Expr* expr, Expr* then, Expr* other) {
     Expr* e = new Expr(kExprOperator);
     e->expr = expr;
