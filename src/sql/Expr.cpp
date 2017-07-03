@@ -185,7 +185,8 @@ namespace hsql {
 
   bool Expr::isLiteral() const {
     return isType(kExprLiteralInt) || isType(kExprLiteralFloat) ||
-           isType(kExprLiteralString) || isType(kExprParameter);
+           isType(kExprLiteralString) || isType(kExprParameter) ||
+           isType(kExprLiteralNull);
   }
 
   bool Expr::hasAlias() const {
