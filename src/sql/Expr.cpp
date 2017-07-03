@@ -109,6 +109,17 @@ namespace hsql {
     return e;
   }
 
+  Expr* Expr::makeStar(void) {
+    Expr* e = new Expr(kExprStar);
+    return e;
+  }
+
+  Expr* Expr::makeStar(char* table) {
+    Expr* e = new Expr(kExprStar);
+    e->table = table;
+    return e;
+  }
+
   Expr* Expr::makeFunctionRef(char* func_name, std::vector<Expr*>* exprList,
                               bool distinct) {
     Expr* e = new Expr(kExprFunctionRef);

@@ -130,6 +130,10 @@ namespace hsql {
 
     static Expr* makeColumnRef(char* table, char* name);
 
+    static Expr* makeStar(void);
+
+    static Expr* makeStar(char* table);
+
     static Expr* makeFunctionRef(char* func_name, std::vector<Expr*>* exprList,
                                  bool distinct);
 
