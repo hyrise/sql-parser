@@ -100,7 +100,7 @@ namespace hsql {
       break;
     case kExprFunctionRef:
       inprint(expr->name, numIndent);
-      inprint(expr->expr->name, numIndent + 1);
+      for (Expr* e : *expr->exprList) inprint(e->name, numIndent + 1);
       break;
     case kExprOperator:
       printOperatorExpression(expr, numIndent);
