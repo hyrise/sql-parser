@@ -100,7 +100,7 @@ namespace hsql {
       break;
     case kExprFunctionRef:
       inprint(expr->name, numIndent);
-      inprint(expr->expr->name, numIndent + 1);
+      for (Expr* e : *expr->exprList) inprint(e->name, numIndent + 1);
       break;
     case kExprOperator:
       printOperatorExpression(expr, numIndent);
@@ -128,6 +128,14 @@ namespace hsql {
       printExpression(stmt->whereClause, numIndent + 2);
     }
 
+    if (stmt->groupBy != nullptr) {
+      inprint("GroupBy:", numIndent + 1);
+      for (Expr* expr : *stmt->groupBy->columns) printExpression(expr, numIndent + 2);
+      if (stmt->groupBy->having != nullptr) {
+        inprint("Having:", numIndent + 1);
+        printExpression(stmt->groupBy->having, numIndent + 2);
+      }
+    }
 
     if (stmt->unionSelect != nullptr) {
       inprint("Union:", numIndent + 1);
