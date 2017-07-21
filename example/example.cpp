@@ -17,7 +17,7 @@ int main(int argc, char* argv[]) {
 
   // parse a given query
   hsql::SQLParserResult result;
-  hsql::SQLParser::parseSQLString(query, &result);
+  hsql::SQLParser::parse(query, &result);
 
   // check whether the parsing was successful
 

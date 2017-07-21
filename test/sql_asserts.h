@@ -4,7 +4,7 @@
 
 #define TEST_PARSE_SQL_QUERY(query, result, numStatements) \
 	hsql::SQLParserResult result; \
-  hsql::SQLParser::parseSQLString(query, &result); \
+  hsql::SQLParser::parse(query, &result); \
 	ASSERT(result.isValid()); \
 	ASSERT_EQ(result.size(), numStatements);
 

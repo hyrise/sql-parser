@@ -5,7 +5,6 @@
 #include <stdio.h>
 #include <string>
 
-
 namespace hsql {
 
   SQLParser::SQLParser() {
@@ -13,16 +12,16 @@ namespace hsql {
   }
 
   // static
-  bool SQLParser::parseSQLString(const char* text, SQLParserResult* result) {
+  bool SQLParser::parse(const std::string& sql, SQLParserResult* result) {
     yyscan_t scanner;
     YY_BUFFER_STATE state;
 
     if (hsql_lex_init(&scanner)) {
       // Couldn't initialize the lexer.
-      fprintf(stderr, "[Error] SQLParser: Error when initializing lexer!\n");
+      fprintf(stderr, "SQLParser: Error when initializing lexer!\n");
       return false;
     }
-
+    const char* text = sql.c_str();
     state = hsql__scan_string(text, scanner);
 
     // Parse the tokens.
@@ -38,25 +37,44 @@ namespace hsql {
   }
 
   // static
-  bool SQLParser::parseSQLString(const std::string& text, SQLParserResult* result) {
-    return parseSQLString(text.c_str(), result);
+  bool SQLParser::parseSQLString(const char* sql, SQLParserResult* result) {
+    return parse(sql, result);
+  }
+
+  bool SQLParser::parseSQLString(const std::string& sql, SQLParserResult* result) {
+    return parse(sql, result);
   }
 
   // static
-  SQLParserResult* SQLParser::parseSQLString(const char* text) {
-    SQLParserResult* result = new SQLParserResult();
-
-    if (!SQLParser::parseSQLString(text, result)) {
-      delete result;
-      return nullptr;
+  bool SQLParser::tokenize(const std::string& sql, std::vector<int16_t>* tokens) {
+    // Initialize the scanner.
+    yyscan_t scanner;
+    if (hsql_lex_init(&scanner)) {
+      fprintf(stderr, "SQLParser: Error when initializing lexer!\n");
+      return false;
     }
 
-    return result;
-  }
+    YY_BUFFER_STATE state;
+    state = hsql__scan_string(sql.c_str(), scanner);
 
-  // static
-  SQLParserResult* SQLParser::parseSQLString(const std::string& text) {
-    return parseSQLString(text.c_str());
+    YYSTYPE yylval;
+    YYLTYPE yylloc;
+
+    // Step through the string until EOF is read.
+    // Note: hsql_lex returns int, but we know that its range is within 16 bit.
+    int16_t token = hsql_lex(&yylval, &yylloc, scanner);
+    while (token != 0) {
+      tokens->push_back(token);
+      token = hsql_lex(&yylval, &yylloc, scanner);
+
+      if (token == SQL_IDENTIFIER || token == SQL_STRING) {
+        free(yylval.sval);
+      }
+    }
+
+    hsql__delete_buffer(state, scanner);
+    hsql_lex_destroy(scanner);
+    return true;
   }
 
 } // namespace hsql

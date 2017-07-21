@@ -14,7 +14,7 @@ using namespace hsql;
 
 TEST(DeleteStatementTest) {
   SQLParserResult result;
-  SQLParser::parseSQLString("DELETE FROM students WHERE grade > 2.0;", &result);
+  SQLParser::parse("DELETE FROM students WHERE grade > 2.0;", &result);
 
   ASSERT(result.isValid());
   ASSERT_EQ(result.size(), 1);
@@ -30,7 +30,7 @@ TEST(DeleteStatementTest) {
 
 TEST(CreateStatementTest) {
   SQLParserResult result;
-  SQLParser::parseSQLString("CREATE TABLE students (name TEXT, student_number INT, city INTEGER, grade DOUBLE)", &result);
+  SQLParser::parse("CREATE TABLE students (name TEXT, student_number INT, city INTEGER, grade DOUBLE)", &result);
 
   ASSERT(result.isValid());
   ASSERT_EQ(result.size(), 1);
@@ -54,7 +54,7 @@ TEST(CreateStatementTest) {
 
 TEST(UpdateStatementTest) {
   SQLParserResult result;
-  SQLParser::parseSQLString("UPDATE students SET grade = 5.0, name = 'test' WHERE name = 'Max Mustermann';", &result);
+  SQLParser::parse("UPDATE students SET grade = 5.0, name = 'test' WHERE name = 'Max Mustermann';", &result);
 
   ASSERT(result.isValid());
   ASSERT_EQ(result.size(), 1);
@@ -130,7 +130,7 @@ TEST(ReleaseStatementTest) {
 
 SQLParserResult parse_and_move(std::string query) {
   hsql::SQLParserResult result;
-  hsql::SQLParser::parseSQLString(query, &result);
+  hsql::SQLParser::parse(query, &result);
   // Moves on return.
   return result;
 }

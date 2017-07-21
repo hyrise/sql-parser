@@ -100,7 +100,9 @@ namespace hsql {
   void SQLParserResult::addParameter(Expr* parameter) {
     parameters_.push_back(parameter);
     std::sort(parameters_.begin(), parameters_.end(),
-      [](const Expr* a, const Expr* b) { return a->ival < b->ival; });
+    [](const Expr * a, const Expr * b) {
+      return a->ival < b->ival;
+    });
   }
 
   const std::vector<Expr*>& SQLParserResult::parameters() {

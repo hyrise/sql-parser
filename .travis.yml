@@ -8,7 +8,7 @@ install:
   - sudo apt-get install -y flex valgrind
   - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 90
   - sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.8 90
-  
+
   # Install bison 3.0.4.
   - wget http://ftp.gnu.org/gnu/bison/bison-3.0.4.tar.gz
   - tar -xvzf bison-3.0.4.tar.gz
@@ -32,8 +32,7 @@ script:
   - make -j4
 
   - make test
-  - make test_format
   - make test_example
 
   # Test if benchmark can be built.
-  # - make build_benchmark
+  # - make benchmark
