@@ -44,4 +44,4 @@ cmake-build-debug/
 # Vim Swap Files
 *.swp
 
-benchmark/parser_benchmark
+*.csv

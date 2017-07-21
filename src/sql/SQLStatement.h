@@ -1,8 +1,9 @@
 #ifndef __SQLPARSER__SQLSTATEMENT_H__
 #define __SQLPARSER__SQLSTATEMENT_H__
 
-#include "Expr.h"
 #include <vector>
+
+#include "Expr.h"
 
 namespace hsql {
   enum StatementType {
