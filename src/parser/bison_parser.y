@@ -175,7 +175,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 %type <statement> 	statement preparable_statement
 %type <exec_stmt>	execute_statement
 %type <prep_stmt>	prepare_statement
-%type <select_stmt> select_statement select_with_paren select_no_paren select_clause
+%type <select_stmt> select_statement select_with_paren select_no_paren select_clause select_paren_or_clause
 %type <import_stmt> import_statement
 %type <create_stmt> create_statement
 %type <insert_stmt> insert_statement
@@ -185,10 +185,10 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 %type <sval> 		table_name opt_alias alias file_path prepare_target_query
 %type <bval> 		opt_not_exists opt_distinct
 %type <uval>		import_file_type opt_join_type column_type
-%type <table> 		from_clause table_ref table_ref_atomic table_ref_name
+%type <table> 		from_clause table_ref table_ref_atomic table_ref_name nonjoin_table_ref_atomic
 %type <table>		join_clause table_ref_name_no_alias
 %type <expr> 		expr operand scalar_expr unary_expr binary_expr logic_expr exists_expr
-%type <expr>		function_expr between_expr star_expr expr_alias param_expr
+%type <expr>		function_expr between_expr expr_alias param_expr
 %type <expr> 		column_name literal int_literal num_literal string_literal
 %type <expr> 		comp_expr opt_where join_condition opt_having case_expr in_expr hint
 %type <expr> 		array_expr array_index null_literal
@@ -213,7 +213,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 %left		OR
 %left		AND
 %right		NOT
-%right		'=' EQUALS NOTEQUALS LIKE ILIKE
+%nonassoc	'=' EQUALS NOTEQUALS LIKE ILIKE
 %nonassoc	'<' '>' LESS GREATER LESSEQ GREATEREQ
 
 %nonassoc	NOTNULL
@@ -222,6 +222,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 %left		'+' '-'
 %left		'*' '/' '%'
 %left		'^'
+%left		CONCAT
 
 /* Unary Operators */
 %right  UMINUS
@@ -513,25 +514,7 @@ update_clause:
 select_statement:
 		select_with_paren
 	|	select_no_paren
-	;
-
-select_with_paren:
-		'(' select_no_paren ')' { $$ = $2; }
-	|	'(' select_with_paren ')' { $$ = $2; }
-	;
-
-select_no_paren:
-		select_clause opt_order opt_limit {
-			$$ = $1;
-			$$->order = $2;
-
-			// Limit could have been set by TOP.
-			if ($3 != nullptr) {
-				delete $$->limit;
-				$$->limit = $3;
-			}
-		}
-	|	select_clause set_operator select_clause opt_order opt_limit {
+	|	select_with_paren set_operator select_paren_or_clause opt_order opt_limit {
 			// TODO: allow multiple unions (through linked list)
 			// TODO: capture type of set_operator
 			// TODO: might overwrite order and limit of first select here
@@ -545,7 +528,33 @@ select_no_paren:
 				$$->limit = $5;
 			}
 		}
-	|	select_statement set_operator select_statement opt_order opt_limit {
+	;
+
+select_with_paren:
+		'(' select_no_paren ')' { $$ = $2; }
+	|	'(' select_with_paren ')' { $$ = $2; }
+	;
+
+select_paren_or_clause:
+		select_with_paren
+	|	select_clause
+	;
+
+select_no_paren:
+		select_clause opt_order opt_limit {
+			$$ = $1;
+			$$->order = $2;
+
+			// Limit could have been set by TOP.
+			if ($3 != nullptr) {
+				delete $$->limit;
+				$$->limit = $3;
+			}
+		}
+	|	select_clause set_operator select_paren_or_clause opt_order opt_limit {
+			// TODO: allow multiple unions (through linked list)
+			// TODO: capture type of set_operator
+			// TODO: might overwrite order and limit of first select here
 			$$ = $1;
 			$$->unionSelect = $3;
 			$$->order = $4;
@@ -692,7 +701,6 @@ operand:
 
 scalar_expr:
 		column_name
-	|	star_expr
 	|	literal
 	;
 
@@ -800,10 +808,6 @@ null_literal:
 	    	NULL { $$ = Expr::makeNullLiteral(); }
 	;
 
-star_expr:
-		'*' { $$ = Expr::make(kExprStar); }
-	;
-
 param_expr:
 		'?' {
 			$$ = Expr::makeParameter(yylloc.total_column);
@@ -828,6 +832,11 @@ table_ref:
 
 
 table_ref_atomic:
+		nonjoin_table_ref_atomic
+	|	join_clause
+	;
+
+nonjoin_table_ref_atomic: 
 		table_ref_name
 	|	'(' select_statement ')' opt_alias {
 			auto tbl = new TableRef(kTableSelect);
@@ -835,9 +844,7 @@ table_ref_atomic:
 			tbl->alias = $4;
 			$$ = tbl;
 		}
-	|	join_clause
 	;
-
 
 table_ref_commalist:
 		table_ref_atomic { $$ = new std::vector<TableRef*>(); $$->push_back($1); }
@@ -884,7 +891,7 @@ opt_alias:
  ******************************/
 
 join_clause:
-		table_ref_atomic NATURAL JOIN table_ref_atomic
+		table_ref_atomic NATURAL JOIN nonjoin_table_ref_atomic
 		{
 			$$ = new TableRef(kTableJoin);
 			$$->join = new JoinDefinition();
