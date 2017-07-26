@@ -41,4 +41,7 @@ cmake-build-debug/
 *.cpp.orig
 *.h.orig
 
+# Vim Swap Files
+*.swp
+
 *.csv

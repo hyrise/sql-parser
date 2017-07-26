@@ -15,6 +15,7 @@
 #include "flex_lexer.h"
 
 #include <stdio.h>
+#include <string.h>
 
 using namespace hsql;
 
@@ -165,6 +166,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 %token LEFT LIKE LOAD NULL PART PLAN SHOW TEXT THEN TIME
 %token VIEW WHEN WITH ADD ALL AND ASC CSV END FOR INT KEY
 %token NOT OFF SET TBL TOP AS BY IF IN IS OF ON OR TO
+%token ARRAY CONCAT ILIKE
 
 /*********************************
  ** Non-Terminal types (http://www.gnu.org/software/bison/manual/html_node/Type-Decl.html)
@@ -173,7 +175,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 %type <statement> 	statement preparable_statement
 %type <exec_stmt>	execute_statement
 %type <prep_stmt>	prepare_statement
-%type <select_stmt> select_statement select_with_paren select_no_paren select_clause
+%type <select_stmt> select_statement select_with_paren select_no_paren select_clause select_paren_or_clause
 %type <import_stmt> import_statement
 %type <create_stmt> create_statement
 %type <insert_stmt> insert_statement
@@ -183,12 +185,13 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 %type <sval> 		table_name opt_alias alias file_path prepare_target_query
 %type <bval> 		opt_not_exists opt_distinct
 %type <uval>		import_file_type opt_join_type column_type
-%type <table> 		from_clause table_ref table_ref_atomic table_ref_name
+%type <table> 		from_clause table_ref table_ref_atomic table_ref_name nonjoin_table_ref_atomic
 %type <table>		join_clause table_ref_name_no_alias
 %type <expr> 		expr operand scalar_expr unary_expr binary_expr logic_expr exists_expr
-%type <expr>		function_expr between_expr star_expr expr_alias param_expr
+%type <expr>		function_expr between_expr expr_alias param_expr
 %type <expr> 		column_name literal int_literal num_literal string_literal
 %type <expr> 		comp_expr opt_where join_condition opt_having case_expr in_expr hint
+%type <expr> 		array_expr array_index null_literal
 %type <limit>		opt_limit opt_top
 %type <order>		order_desc
 %type <order_type>	opt_order_type
@@ -210,7 +213,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 %left		OR
 %left		AND
 %right		NOT
-%right		'=' EQUALS NOTEQUALS LIKE
+%nonassoc	'=' EQUALS NOTEQUALS LIKE ILIKE
 %nonassoc	'<' '>' LESS GREATER LESSEQ GREATEREQ
 
 %nonassoc	NOTNULL
@@ -219,6 +222,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 %left		'+' '-'
 %left		'*' '/' '%'
 %left		'^'
+%left		CONCAT
 
 /* Unary Operators */
 %right  UMINUS
@@ -510,25 +514,7 @@ update_clause:
 select_statement:
 		select_with_paren
 	|	select_no_paren
-	;
-
-select_with_paren:
-		'(' select_no_paren ')' { $$ = $2; }
-	|	'(' select_with_paren ')' { $$ = $2; }
-	;
-
-select_no_paren:
-		select_clause opt_order opt_limit {
-			$$ = $1;
-			$$->order = $2;
-
-			// Limit could have been set by TOP.
-			if ($3 != nullptr) {
-				delete $$->limit;
-				$$->limit = $3;
-			}
-		}
-	|	select_clause set_operator select_clause opt_order opt_limit {
+	|	select_with_paren set_operator select_paren_or_clause opt_order opt_limit {
 			// TODO: allow multiple unions (through linked list)
 			// TODO: capture type of set_operator
 			// TODO: might overwrite order and limit of first select here
@@ -542,7 +528,33 @@ select_no_paren:
 				$$->limit = $5;
 			}
 		}
-	|	select_clause set_operator select_with_paren opt_order opt_limit {
+	;
+
+select_with_paren:
+		'(' select_no_paren ')' { $$ = $2; }
+	|	'(' select_with_paren ')' { $$ = $2; }
+	;
+
+select_paren_or_clause:
+		select_with_paren
+	|	select_clause
+	;
+
+select_no_paren:
+		select_clause opt_order opt_limit {
+			$$ = $1;
+			$$->order = $2;
+
+			// Limit could have been set by TOP.
+			if ($3 != nullptr) {
+				delete $$->limit;
+				$$->limit = $3;
+			}
+		}
+	|	select_clause set_operator select_paren_or_clause opt_order opt_limit {
+			// TODO: allow multiple unions (through linked list)
+			// TODO: capture type of set_operator
+			// TODO: might overwrite order and limit of first select here
 			$$ = $1;
 			$$->unionSelect = $3;
 			$$->order = $4;
@@ -556,9 +568,18 @@ select_no_paren:
 	;
 
 set_operator:
+		set_type opt_all
+	;
+
+set_type:
 		UNION
 	|	INTERSECT
 	|	EXCEPT
+	;
+
+opt_all:
+		ALL
+	|	/* empty */
 	;
 
 select_clause:
@@ -663,28 +684,32 @@ expr:
 	|	between_expr
 	|	logic_expr
 	|	exists_expr
-	|	case_expr
 	|	in_expr
 	;
 
 operand:
 		'(' expr ')' { $$ = $2; }
+	|	array_index
 	|	scalar_expr
 	|	unary_expr
 	|	binary_expr
+	|	case_expr
 	|	function_expr
+	|	array_expr
 	|	'(' select_no_paren ')' { $$ = Expr::makeSelect($2); }
 	;
 
 scalar_expr:
 		column_name
-	|	star_expr
 	|	literal
 	;
 
 unary_expr:
 		'-' operand { $$ = Expr::makeOpUnary(kOpUnaryMinus, $2); }
 	|	NOT operand { $$ = Expr::makeOpUnary(kOpNot, $2); }
+	|	operand ISNULL { $$ = Expr::makeOpUnary(kOpIsNull, $1); }
+	|	operand IS NULL { $$ = Expr::makeOpUnary(kOpIsNull, $1); }
+	|	operand IS NOT NULL { $$ = Expr::makeOpUnary(kOpNot, Expr::makeOpUnary(kOpIsNull, $1)); }
 	;
 
 binary_expr:
@@ -697,6 +722,8 @@ binary_expr:
 	|	operand '^' operand			{ $$ = Expr::makeOpBinary($1, kOpCaret, $3); }
 	|	operand LIKE operand		{ $$ = Expr::makeOpBinary($1, kOpLike, $3); }
 	|	operand NOT LIKE operand	{ $$ = Expr::makeOpBinary($1, kOpNotLike, $4); }
+	|	operand ILIKE operand		{ $$ = Expr::makeOpBinary($1, kOpILike, $3); }
+	|	operand CONCAT operand	{ $$ = Expr::makeOpBinary($1, kOpConcat, $3); }
 	;
 
 logic_expr:
@@ -713,6 +740,8 @@ in_expr:
 
 // TODO: allow no else specified
 case_expr:
+		CASE WHEN expr THEN operand END { $$ = Expr::makeCase($3, $5); }
+	|
 		CASE WHEN expr THEN operand ELSE operand END { $$ = Expr::makeCase($3, $5, $7); }
 	;
 
@@ -731,7 +760,16 @@ comp_expr:
 	;
 
 function_expr:
-		IDENTIFIER '(' opt_distinct expr_list ')' { $$ = Expr::makeFunctionRef($1, $4, $3); }
+		IDENTIFIER '(' ')' { $$ = Expr::makeFunctionRef($1, new std::vector<Expr*>(), false); }
+	|	IDENTIFIER '(' opt_distinct expr_list ')' { $$ = Expr::makeFunctionRef($1, $4, $3); }
+	;
+
+array_expr:
+	  	ARRAY '[' expr_list ']' { $$ = Expr::makeArray($3); }
+	;
+
+array_index:
+	   	operand '[' int_literal ']' { $$ = Expr::makeArrayIndex($1, $3->ival); }
 	;
 
 between_expr:
@@ -741,11 +779,14 @@ between_expr:
 column_name:
 		IDENTIFIER { $$ = Expr::makeColumnRef($1); }
 	|	IDENTIFIER '.' IDENTIFIER { $$ = Expr::makeColumnRef($1, $3); }
+	|	'*' { $$ = Expr::makeStar(); }
+	|	IDENTIFIER '.' '*' { $$ = Expr::makeStar($1); }
 	;
 
 literal:
 		string_literal
 	|	num_literal
+	|	null_literal
 	|	param_expr
 	;
 
@@ -763,8 +804,8 @@ int_literal:
 		INTVAL { $$ = Expr::makeLiteral($1); }
 	;
 
-star_expr:
-		'*' { $$ = Expr::make(kExprStar); }
+null_literal:
+	    	NULL { $$ = Expr::makeNullLiteral(); }
 	;
 
 param_expr:
@@ -791,6 +832,11 @@ table_ref:
 
 
 table_ref_atomic:
+		nonjoin_table_ref_atomic
+	|	join_clause
+	;
+
+nonjoin_table_ref_atomic: 
 		table_ref_name
 	|	'(' select_statement ')' opt_alias {
 			auto tbl = new TableRef(kTableSelect);
@@ -798,9 +844,7 @@ table_ref_atomic:
 			tbl->alias = $4;
 			$$ = tbl;
 		}
-	|	join_clause
 	;
-
 
 table_ref_commalist:
 		table_ref_atomic { $$ = new std::vector<TableRef*>(); $$->push_back($1); }
@@ -847,8 +891,16 @@ opt_alias:
  ******************************/
 
 join_clause:
-		table_ref_atomic opt_join_type JOIN table_ref_atomic ON join_condition
+		table_ref_atomic NATURAL JOIN nonjoin_table_ref_atomic
 		{
+			$$ = new TableRef(kTableJoin);
+			$$->join = new JoinDefinition();
+			$$->join->type = kJoinNatural;
+			$$->join->left = $1;
+			$$->join->right = $4;
+		}
+	|	table_ref_atomic opt_join_type JOIN table_ref_atomic ON join_condition
+		{ 
 			$$ = new TableRef(kTableJoin);
 			$$->join = new JoinDefinition();
 			$$->join->type = (JoinType) $2;
@@ -856,7 +908,24 @@ join_clause:
 			$$->join->right = $4;
 			$$->join->condition = $6;
 		}
-		;
+	|
+		table_ref_atomic opt_join_type JOIN table_ref_atomic USING '(' column_name ')'
+		{ 
+			$$ = new TableRef(kTableJoin);
+			$$->join = new JoinDefinition();
+			$$->join->type = (JoinType) $2;
+			$$->join->left = $1;
+			$$->join->right = $4;
+			auto left_col = Expr::makeColumnRef(strdup($7->name));
+			if ($7->alias != nullptr) left_col->alias = strdup($7->alias);
+			if ($1->getName() != nullptr) left_col->table = strdup($1->getName());
+			auto right_col = Expr::makeColumnRef(strdup($7->name));
+			if ($7->alias != nullptr) right_col->alias = strdup($7->alias);
+			if ($4->getName() != nullptr) right_col->table = strdup($4->getName());
+			$$->join->condition = Expr::makeOpBinary(left_col, kOpEquals, right_col);
+			delete $7;
+		}
+	;
 
 opt_join_type:
 		INNER		{ $$ = kJoinInner; }
@@ -866,7 +935,6 @@ opt_join_type:
 	|	LEFT		{ $$ = kJoinLeft; }
 	|	RIGHT		{ $$ = kJoinRight; }
 	|	CROSS		{ $$ = kJoinCross; }
-	|	NATURAL		{ $$ = kJoinNatural; }
 	|	/* empty, default */	{ $$ = kJoinInner; }
 	;
 
