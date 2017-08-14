@@ -4,7 +4,8 @@ Documentation
 Internal Links:
 
  * [Developer Documentation](dev-docs.md)
- * [Working SQL Syntax Examples](syntax-examples.md)
+ * [Supported SQL Queries](syntax-support.md)
+ * [Known Limitations & Missing Features](known-limitations.md)
 
 
 External Resources:
