@@ -127,6 +127,31 @@ TEST(ReleaseStatementTest) {
   }
 }
 
+TEST(ShowTableStatementTest) {
+  TEST_PARSE_SINGLE_SQL(
+    "SHOW TABLES;",
+    kStmtShow,
+    ShowStatement,
+    result,
+    stmt);
+
+  ASSERT_EQ(stmt->type, kShowTables);
+  ASSERT_NULL(stmt->name);
+}
+
+TEST(ShowColumnsStatementTest) {
+  TEST_PARSE_SINGLE_SQL(
+    "SHOW COLUMNS students;",
+    kStmtShow,
+    ShowStatement,
+    result,
+    stmt);
+
+  ASSERT_EQ(stmt->type, kShowColumns);
+  ASSERT_NOTNULL(stmt->name);
+  ASSERT_STREQ(stmt->name, "students");
+}
+
 
 SQLParserResult parse_and_move(std::string query) {
   hsql::SQLParserResult result;
