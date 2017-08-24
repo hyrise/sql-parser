@@ -121,6 +121,16 @@ namespace hsql {
     }
   }
 
+  // ShowStatament
+  ShowStatement::ShowStatement(ShowType type) :
+    SQLStatement(kStmtShow),
+    type(type),
+    name(nullptr) {}
+
+  ShowStatement::~ShowStatement() {
+    free(name);
+  }
+
   // SelectStatement.h
 
   // OrderDescription

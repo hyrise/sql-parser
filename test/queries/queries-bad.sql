@@ -9,3 +9,4 @@
 !CREATE TABLE "table" FROM TBL FILE 'students.tbl';1
 !INSERT INTO test_table VALUESd (1, 2, 'test');
 !SELECT * FROM t WHERE a = ? AND b = ?;SELECT 1;
+!SHOW COLUMNS;
