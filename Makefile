@@ -33,12 +33,22 @@ GMAKE = make mode=$(mode)
 #######################################
 ############### Library ###############
 #######################################
+NAME := sqlparser
 PARSER_CPP = $(SRCPARSER)/bison_parser.cpp  $(SRCPARSER)/flex_lexer.cpp
 PARSER_H   = $(SRCPARSER)/bison_parser.h    $(SRCPARSER)/flex_lexer.h
 
-LIB_BUILD  = libsqlparser.so
-LIB_CFLAGS  = -std=c++11 -Wall -Werror -fPIC $(OPT_FLAG)
-LIB_LFLAGS = -shared $(OPT_FLAG)
+static ?= no
+ifeq ($(static), yes)
+	LIB_BUILD  = lib$(NAME).a
+	LIBLINKER = $(AR)
+	LIB_CFLAGS  = -std=c++11 -Wall -Werror $(OPT_FLAG)
+	LIB_LFLAGS = rs
+else
+	LIB_BUILD  = lib$(NAME).so
+	LIBLINKER = $(CXX)
+	LIB_CFLAGS  = -std=c++11 -Wall -Werror -fPIC $(OPT_FLAG)
+	LIB_LFLAGS = -shared -o
+endif
 LIB_CPP    = $(shell find $(SRC) -name '*.cpp' -not -path "$(SRCPARSER)/*") $(PARSER_CPP)
 LIB_H      = $(shell find $(SRC) -name '*.h' -not -path "$(SRCPARSER)/*") $(PARSER_H)
 LIB_ALL    = $(shell find $(SRC) -name '*.cpp' -not -path "$(SRCPARSER)/*") $(shell find $(SRC) -name '*.h' -not -path "$(SRCPARSER)/*")
@@ -47,7 +57,7 @@ LIB_OBJ    = $(LIB_CPP:%.cpp=%.o)
 library: $(LIB_BUILD)
 
 $(LIB_BUILD): $(LIB_OBJ)
-	$(CXX) $(LIB_LFLAGS) -o $(LIB_BUILD) $(LIB_OBJ)
+	$(LIBLINKER) $(LIB_LFLAGS) $(LIB_BUILD) $(LIB_OBJ)
 
 $(SRCPARSER)/flex_lexer.o: $(SRCPARSER)/flex_lexer.cpp $(SRCPARSER)/bison_parser.cpp
 	$(CXX) $(LIB_CFLAGS) -c -o $@ $< -Wno-sign-compare -Wno-unneeded-internal-declaration -Wno-deprecated-register
@@ -65,7 +75,7 @@ $(SRCPARSER)/bison_parser.h: $(SRCPARSER)/bison_parser.cpp
 $(SRCPARSER)/flex_lexer.h: $(SRCPARSER)/flex_lexer.cpp
 
 clean:
-	rm -f $(LIB_BUILD)
+	rm -f lib$(NAME).a lib$(NAME).so
 	rm -rf $(BIN)
 	find $(SRC) -type f -name '*.o' -delete
 
