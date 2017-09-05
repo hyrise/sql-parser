@@ -50,7 +50,7 @@ $(LIB_BUILD): $(LIB_OBJ)
 	$(CXX) $(LIB_LFLAGS) -o $(LIB_BUILD) $(LIB_OBJ)
 
 $(SRCPARSER)/flex_lexer.o: $(SRCPARSER)/flex_lexer.cpp $(SRCPARSER)/bison_parser.cpp
-	$(CXX) $(LIB_CFLAGS) -c -o $@ $< -Wno-sign-compare -Wno-unneeded-internal-declaration -Wno-deprecated-register
+	$(CXX) $(LIB_CFLAGS) -c -o $@ $< -Wno-sign-compare -Wno-unneeded-internal-declaration
 
 %.o: %.cpp $(PARSER_CPP) $(LIB_H)
 	$(CXX) $(LIB_CFLAGS) -c -o $@ $<
