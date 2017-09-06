@@ -37,7 +37,7 @@ PARSER_CPP = $(SRCPARSER)/bison_parser.cpp  $(SRCPARSER)/flex_lexer.cpp
 PARSER_H   = $(SRCPARSER)/bison_parser.h    $(SRCPARSER)/flex_lexer.h
 
 LIB_BUILD  = libsqlparser.so
-LIB_CFLAGS  = -std=c++11 -Wall -Werror -fPIC $(OPT_FLAG)
+LIB_CFLAGS  = -std=c++1z -Wall -Werror -fPIC $(OPT_FLAG)
 LIB_LFLAGS = -shared $(OPT_FLAG)
 LIB_CPP    = $(shell find $(SRC) -name '*.cpp' -not -path "$(SRCPARSER)/*") $(PARSER_CPP)
 LIB_H      = $(shell find $(SRC) -name '*.h' -not -path "$(SRCPARSER)/*") $(PARSER_H)
@@ -50,7 +50,7 @@ $(LIB_BUILD): $(LIB_OBJ)
 	$(CXX) $(LIB_LFLAGS) -o $(LIB_BUILD) $(LIB_OBJ)
 
 $(SRCPARSER)/flex_lexer.o: $(SRCPARSER)/flex_lexer.cpp $(SRCPARSER)/bison_parser.cpp
-	$(CXX) $(LIB_CFLAGS) -c -o $@ $< -Wno-sign-compare -Wno-unneeded-internal-declaration -Wno-deprecated-register
+	$(CXX) $(LIB_CFLAGS) -c -o $@ $< -Wno-sign-compare -Wno-unneeded-internal-declaration
 
 %.o: %.cpp $(PARSER_CPP) $(LIB_H)
 	$(CXX) $(LIB_CFLAGS) -c -o $@ $<
@@ -110,7 +110,7 @@ $(BM_BUILD): $(BM_ALL) $(LIB_BUILD)
 ############ Test & Example ############
 ########################################
 TEST_BUILD   = $(BIN)/tests
-TEST_CFLAGS   = -std=c++11 -Wall -Werror -Isrc/ -Itest/ -L./ $(OPT_FLAG)
+TEST_CFLAGS   = -std=c++1z -Wall -Werror -Isrc/ -Itest/ -L./ $(OPT_FLAG)
 TEST_CPP     = $(shell find test/ -name '*.cpp')
 TEST_ALL     = $(shell find test/ -name '*.cpp') $(shell find test/ -name '*.h')
 EXAMPLE_SRC  = $(shell find example/ -name '*.cpp') $(shell find example/ -name '*.h')
