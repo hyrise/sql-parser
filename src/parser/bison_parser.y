@@ -521,7 +521,7 @@ update_clause_commalist:
 	;
 
 update_clause:
-		IDENTIFIER '=' literal {
+		IDENTIFIER '=' expr {
 			$$ = new UpdateClause();
 			$$->column = $1;
 			$$->value = $3;
