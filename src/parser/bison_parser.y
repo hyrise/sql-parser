@@ -647,7 +647,6 @@ select_list:
 
 from_clause:
 		FROM table_ref { $$ = $2; }
-        |       /* empty */ { $$ = nullptr; }
 	;
 
 
