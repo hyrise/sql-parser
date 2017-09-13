@@ -19,6 +19,11 @@ namespace hsql {
     kTableCrossProduct
   };
 
+  struct TableName {
+    char* schema;
+    char* name;
+  };
+
   // Holds reference to tables. Can be either table names or a select statement.
   struct TableRef {
     TableRef(TableRefType type);

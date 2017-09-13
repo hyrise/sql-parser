@@ -22,6 +22,8 @@ namespace hsql {
     virtual ~DropStatement();
 
     DropType type;
+    bool ifExists;
+    char* schema;
     char* name;
   };
 

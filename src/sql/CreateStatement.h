@@ -37,8 +37,9 @@ namespace hsql {
 
     CreateType type;
     bool ifNotExists; // default: false
-    char* filePath; // default: nullptr
-    char* tableName; // default: nullptr
+    char* filePath;   // default: nullptr
+    char* schema;     // default: nullptr
+    char* tableName;  // default: nullptr
     std::vector<ColumnDefinition*>* columns; // default: nullptr
     std::vector<char*>* viewColumns;
     SelectStatement* select;

@@ -17,6 +17,7 @@ namespace hsql {
     virtual ~InsertStatement();
 
     InsertType type;
+    char* schema;
     char* tableName;
     std::vector<char*>* columns;
     std::vector<Expr*>* values;
