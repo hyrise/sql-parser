@@ -133,7 +133,8 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 /*********************************
  ** Descrutor symbols
  *********************************/
-%destructor { } <fval> <ival> <uval> <bval> <order_type> <table_n>
+%destructor { } <fval> <ival> <uval> <bval> <order_type> 
+%destructor { free( ($$.name) ); free( ($$.schema) ); } <table_n>
 %destructor { free( ($$) ); } <sval>
 %destructor {
 	if (($$) != nullptr) {
