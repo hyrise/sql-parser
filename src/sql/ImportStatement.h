@@ -15,8 +15,9 @@ namespace hsql {
     virtual ~ImportStatement();
 
     ImportType type;
-    const char* filePath;
-    const char* tableName;
+    char* filePath;
+    char* schema;
+    char* tableName;
   };
 
 } // namespace hsql

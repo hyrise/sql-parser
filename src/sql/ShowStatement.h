@@ -19,6 +19,7 @@ namespace hsql {
     virtual ~ShowStatement();
 
     ShowType type;
+    char* schema;
     char* name;
   };
 

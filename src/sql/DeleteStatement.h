@@ -13,6 +13,7 @@ namespace hsql {
     DeleteStatement();
     virtual ~DeleteStatement();
 
+    char* schema;
     char* tableName;
     Expr* expr;
   };
