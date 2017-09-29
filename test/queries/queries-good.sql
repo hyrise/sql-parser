@@ -39,6 +39,8 @@ UPDATE students SET grade = 1.3, name='Felix Fürstenberg' WHERE name = 'Max Mus
 UPDATE students SET grade = 1.0;
 # DROP
 DROP TABLE students;
+DROP TABLE IF EXISTS students;
+DROP VIEW IF EXISTS students;
 # PREPARE
 PREPARE prep_inst FROM 'INSERT INTO test VALUES (?, ?, ?)';
 PREPARE prep2 FROM 'INSERT INTO test VALUES (?, 0, 0); INSERT INTO test VALUES (0, ?, 0); INSERT INTO test VALUES (0, 0, ?);';
