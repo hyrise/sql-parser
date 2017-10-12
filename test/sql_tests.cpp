@@ -102,6 +102,21 @@ TEST(DropTableStatementTest) {
     result,
     stmt);
 
+  ASSERT_FALSE(stmt->ifExists);
+  ASSERT_EQ(stmt->type, kDropTable);
+  ASSERT_NOTNULL(stmt->name);
+  ASSERT_STREQ(stmt->name, "students");
+}
+
+TEST(DropTableIfExistsStatementTest) {
+  TEST_PARSE_SINGLE_SQL(
+    "DROP TABLE IF EXISTS students",
+    kStmtDrop,
+    DropStatement,
+    result,
+    stmt);
+
+  ASSERT_TRUE(stmt->ifExists);
   ASSERT_EQ(stmt->type, kDropTable);
   ASSERT_NOTNULL(stmt->name);
   ASSERT_STREQ(stmt->name, "students");
