@@ -186,7 +186,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 %type <update_stmt> update_statement
 %type <drop_stmt>	drop_statement
 %type <show_stmt>	show_statement  
-%type <table_name>      table_name
+%type <table_name>  table_name
 %type <sval> 		opt_alias alias file_path prepare_target_query
 %type <bval> 		opt_not_exists opt_exists opt_distinct
 %type <uval>		import_file_type opt_join_type column_type
