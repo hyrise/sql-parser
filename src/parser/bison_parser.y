@@ -107,6 +107,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 	hsql::DropStatement*   	drop_stmt;
 	hsql::PrepareStatement* prep_stmt;
 	hsql::ExecuteStatement* exec_stmt;
+	hsql::ShowStatement*    show_stmt;
 
 	hsql::TableRef* table;
 	hsql::Expr* expr;
@@ -182,6 +183,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 %type <delete_stmt> delete_statement truncate_statement
 %type <update_stmt> update_statement
 %type <drop_stmt>	drop_statement
+%type <show_stmt>	show_statement
 %type <sval> 		table_name opt_alias alias file_path prepare_target_query
 %type <bval> 		opt_not_exists opt_distinct
 %type <uval>		import_file_type opt_join_type column_type
@@ -271,6 +273,9 @@ statement:
 			$$ = $1;
 			$$->hints = $2;
 		}
+	|	show_statement {
+			$$ = $1;
+		}
 	;
 
 
@@ -358,6 +363,22 @@ import_file_type:
 
 file_path:
 		string_literal { $$ = strdup($1->name); delete $1; }
+	;
+
+
+/******************************
+ * Show Statement
+ * SHOW TABLES;
+ ******************************/
+
+show_statement:
+		SHOW TABLES {
+			$$ = new ShowStatement(kShowTables);
+		}
+	|	SHOW COLUMNS table_name {
+			$$ = new ShowStatement(kShowColumns);
+			$$->name = $3;
+		}
 	;
 
 
@@ -500,7 +521,7 @@ update_clause_commalist:
 	;
 
 update_clause:
-		IDENTIFIER '=' literal {
+		IDENTIFIER '=' expr {
 			$$ = new UpdateClause();
 			$$->column = $1;
 			$$->value = $3;
@@ -836,7 +857,7 @@ table_ref_atomic:
 	|	join_clause
 	;
 
-nonjoin_table_ref_atomic: 
+nonjoin_table_ref_atomic:
 		table_ref_name
 	|	'(' select_statement ')' opt_alias {
 			auto tbl = new TableRef(kTableSelect);
@@ -900,7 +921,7 @@ join_clause:
 			$$->join->right = $4;
 		}
 	|	table_ref_atomic opt_join_type JOIN table_ref_atomic ON join_condition
-		{ 
+		{
 			$$ = new TableRef(kTableJoin);
 			$$->join = new JoinDefinition();
 			$$->join->type = (JoinType) $2;
@@ -910,7 +931,7 @@ join_clause:
 		}
 	|
 		table_ref_atomic opt_join_type JOIN table_ref_atomic USING '(' column_name ')'
-		{ 
+		{
 			$$ = new TableRef(kTableJoin);
 			$$->join = new JoinDefinition();
 			$$->join->type = (JoinType) $2;

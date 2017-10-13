@@ -45,3 +45,6 @@ cmake-build-debug/
 *.swp
 
 *.csv
+
+# macOS compilation dirs
+*.dSYM

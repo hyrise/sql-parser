@@ -29,9 +29,6 @@ namespace hsql {
   };
 
 // Operator types. These are important for expressions of type kExprOperator.
-// Trivial types are those that can be described by a single character e.g:
-// + - * / < > = %
-// Non-trivial are: <> <= >= LIKE ISNULL NOT
   enum OperatorType {
     kOpNone,
 
