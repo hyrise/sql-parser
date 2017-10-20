@@ -14,7 +14,12 @@ namespace hsql {
       select(nullptr),
       name(nullptr),
       table(nullptr),
-      alias(nullptr) {};
+      alias(nullptr),
+      fval(0),
+      ival(0),
+      ival2(0),
+      opType(kOpNone),
+      distinct(false) {};
 
   Expr::~Expr() {
     delete expr;
