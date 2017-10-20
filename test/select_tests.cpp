@@ -88,6 +88,18 @@ TEST(SelectDistinctTest) {
   ASSERT_NULL(stmt->whereClause);
 }
 
+TEST(SelectSchemaTest) {
+  TEST_PARSE_SINGLE_SQL(
+    "SELECT grade FROM some_schema.students;",
+    kStmtSelect,
+    SelectStatement,
+    result,
+    stmt);
+
+  ASSERT(stmt->fromTable);
+  ASSERT_EQ(std::string(stmt->fromTable->schema), "some_schema");
+}
+
 TEST(SelectGroupDistinctTest) {
   TEST_PARSE_SINGLE_SQL(
     "SELECT city, COUNT(name), COUNT(DISTINCT grade) FROM students GROUP BY city;",

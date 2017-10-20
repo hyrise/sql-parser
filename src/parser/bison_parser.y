@@ -108,7 +108,8 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 	hsql::PrepareStatement* prep_stmt;
 	hsql::ExecuteStatement* exec_stmt;
 	hsql::ShowStatement*    show_stmt;
-
+	
+	hsql::TableName table_name;
 	hsql::TableRef* table;
 	hsql::Expr* expr;
 	hsql::OrderDescription* order;
@@ -132,7 +133,8 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 /*********************************
  ** Descrutor symbols
  *********************************/
-%destructor { } <fval> <ival> <uval> <bval> <order_type>
+%destructor { } <fval> <ival> <uval> <bval> <order_type> 
+%destructor { free( ($$.name) ); free( ($$.schema) ); } <table_name>
 %destructor { free( ($$) ); } <sval>
 %destructor {
 	if (($$) != nullptr) {
@@ -183,9 +185,10 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 %type <delete_stmt> delete_statement truncate_statement
 %type <update_stmt> update_statement
 %type <drop_stmt>	drop_statement
-%type <show_stmt>	show_statement
-%type <sval> 		table_name opt_alias alias file_path prepare_target_query
-%type <bval> 		opt_not_exists opt_distinct
+%type <show_stmt>	show_statement  
+%type <table_name>  table_name
+%type <sval> 		opt_alias alias file_path prepare_target_query
+%type <bval> 		opt_not_exists opt_exists opt_distinct
 %type <uval>		import_file_type opt_join_type column_type
 %type <table> 		from_clause table_ref table_ref_atomic table_ref_name nonjoin_table_ref_atomic
 %type <table>		join_clause table_ref_name_no_alias
@@ -353,7 +356,8 @@ import_statement:
 		IMPORT FROM import_file_type FILE file_path INTO table_name {
 			$$ = new ImportStatement((ImportType) $3);
 			$$->filePath = $5;
-			$$->tableName = $7;
+			$$->schema = $7.schema;
+			$$->tableName = $7.name;
 		}
 	;
 
@@ -377,7 +381,8 @@ show_statement:
 		}
 	|	SHOW COLUMNS table_name {
 			$$ = new ShowStatement(kShowColumns);
-			$$->name = $3;
+			$$->schema = $3.schema;
+			$$->name = $3.name;
 		}
 	;
 
@@ -391,19 +396,22 @@ create_statement:
 		CREATE TABLE opt_not_exists table_name FROM TBL FILE file_path {
 			$$ = new CreateStatement(kCreateTableFromTbl);
 			$$->ifNotExists = $3;
-			$$->tableName = $4;
+			$$->schema = $4.schema;
+			$$->tableName = $4.name;
 			$$->filePath = $8;
 		}
 	|	CREATE TABLE opt_not_exists table_name '(' column_def_commalist ')' {
 			$$ = new CreateStatement(kCreateTable);
 			$$->ifNotExists = $3;
-			$$->tableName = $4;
+			$$->schema = $4.schema;
+			$$->tableName = $4.name;
 			$$->columns = $6;
 		}
 	|	CREATE VIEW opt_not_exists table_name opt_column_list AS select_statement {
 			$$ = new CreateStatement(kCreateView);
 			$$->ifNotExists = $3;
-			$$->tableName = $4;
+			$$->schema = $4.schema;
+			$$->tableName = $4.name;
 			$$->viewColumns = $5;
 			$$->select = $7;
 		}
@@ -440,20 +448,30 @@ column_type:
  ******************************/
 
 drop_statement:
-		DROP TABLE table_name {
+		DROP TABLE opt_exists table_name {
 			$$ = new DropStatement(kDropTable);
-			$$->name = $3;
+			$$->ifExists = $3;
+			$$->schema = $4.schema;
+			$$->name = $4.name;
 		}
-	|	DROP VIEW table_name {
+	|	DROP VIEW opt_exists table_name {
 			$$ = new DropStatement(kDropView);
-			$$->name = $3;
+			$$->ifExists = $3;
+			$$->schema = $4.schema;
+			$$->name = $4.name;
 		}
 	|	DEALLOCATE PREPARE IDENTIFIER {
 			$$ = new DropStatement(kDropPreparedStatement);
+			$$->ifExists = false;
 			$$->name = $3;
 		}
 	;
 
+opt_exists:
+		IF EXISTS   { $$ = true; }
+	|	/* empty */ { $$ = false; }
+	;
+    
 /******************************
  * Delete Statement / Truncate statement
  * DELETE FROM students WHERE grade > 3.0
@@ -462,7 +480,8 @@ drop_statement:
 delete_statement:
 		DELETE FROM table_name opt_where {
 			$$ = new DeleteStatement();
-			$$->tableName = $3;
+			$$->schema = $3.schema;
+			$$->tableName = $3.name;
 			$$->expr = $4;
 		}
 	;
@@ -470,7 +489,8 @@ delete_statement:
 truncate_statement:
 		TRUNCATE table_name {
 			$$ = new DeleteStatement();
-			$$->tableName = $2;
+			$$->schema = $2.schema;
+			$$->tableName = $2.name;
 		}
 	;
 
@@ -482,13 +502,15 @@ truncate_statement:
 insert_statement:
 		INSERT INTO table_name opt_column_list VALUES '(' literal_list ')' {
 			$$ = new InsertStatement(kInsertValues);
-			$$->tableName = $3;
+			$$->schema = $3.schema;
+			$$->tableName = $3.name;
 			$$->columns = $4;
 			$$->values = $7;
 		}
 	|	INSERT INTO table_name opt_column_list select_no_paren {
 			$$ = new InsertStatement(kInsertSelect);
-			$$->tableName = $3;
+			$$->schema = $3.schema;
+			$$->tableName = $3.name;
 			$$->columns = $4;
 			$$->select = $5;
 		}
@@ -876,7 +898,8 @@ table_ref_commalist:
 table_ref_name:
 		table_name opt_alias {
 			auto tbl = new TableRef(kTableName);
-			tbl->name = $1;
+			tbl->schema = $1.schema;
+			tbl->name = $1.name;
 			tbl->alias = $2;
 			$$ = tbl;
 		}
@@ -886,14 +909,15 @@ table_ref_name:
 table_ref_name_no_alias:
 		table_name {
 			$$ = new TableRef(kTableName);
-			$$->name = $1;
+			$$->schema = $1.schema;
+			$$->name = $1.name;
 		}
 	;
 
 
 table_name:
-		IDENTIFIER
-	|	IDENTIFIER '.' IDENTIFIER { $$ = $3; }
+		IDENTIFIER                { $$.schema = nullptr; $$.name = $1;}
+	|	IDENTIFIER '.' IDENTIFIER { $$.schema = $1; $$.name = $3; }
 	;
 
 

@@ -3,6 +3,7 @@
 # SELECT statement
 SELECT * FROM orders;
 SELECT a FROM foo WHERE a > 12 OR b > 3 AND NOT c LIMIT 10
+SELECT a FROM some_schema.foo WHERE a > 12 OR b > 3 AND NOT c LIMIT 10
 SELECT col1 AS myname, col2, 'test' FROM "table", foo AS t WHERE age > 12 AND zipcode = 12345 GROUP BY col1;
 SELECT * from "table" JOIN table2 ON a = b WHERE (b OR NOT a) AND a = 12.5
 (SELECT a FROM foo WHERE a > 12 OR b > 3 AND c NOT LIKE 's%' LIMIT 10);
@@ -29,6 +30,7 @@ CREATE TABLE "table" FROM TBL FILE 'students.tbl'; SELECT * FROM "table";
 INSERT INTO test_table VALUES (1, 2, 'test');
 INSERT INTO test_table (id, value, name) VALUES (1, 2, 'test');
 INSERT INTO test_table SELECT * FROM students;
+INSERT INTO some_schema.test_table SELECT * FROM another_schema.students;
 # DELETE
 DELETE FROM students WHERE grade > 3.0
 DELETE FROM students
@@ -37,8 +39,11 @@ TRUNCATE students
 UPDATE students SET grade = 1.3 WHERE name = 'Max Mustermann';
 UPDATE students SET grade = 1.3, name='Felix Fürstenberg' WHERE name = 'Max Mustermann';
 UPDATE students SET grade = 1.0;
+UPDATE some_schema.students SET grade = 1.0;
 # DROP
 DROP TABLE students;
+DROP TABLE IF EXISTS students;
+DROP VIEW IF EXISTS students;
 # PREPARE
 PREPARE prep_inst FROM 'INSERT INTO test VALUES (?, ?, ?)';
 PREPARE prep2 FROM 'INSERT INTO test VALUES (?, 0, 0); INSERT INTO test VALUES (0, ?, 0); INSERT INTO test VALUES (0, 0, ?);';
