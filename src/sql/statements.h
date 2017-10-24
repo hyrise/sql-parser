@@ -10,5 +10,6 @@
 #include "DropStatement.h"
 #include "PrepareStatement.h"
 #include "ExecuteStatement.h"
+#include "ShowStatement.h"
 
-#endif // __SQLPARSER__STATEMENTS_H__ 
+#endif // __SQLPARSER__STATEMENTS_H__

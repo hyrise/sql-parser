@@ -18,6 +18,7 @@ namespace hsql {
     type(type),
     ifNotExists(false),
     filePath(nullptr),
+    schema(nullptr),
     tableName(nullptr),
     columns(nullptr),
     viewColumns(nullptr),
@@ -25,6 +26,7 @@ namespace hsql {
 
   CreateStatement::~CreateStatement() {
     free(filePath);
+    free(schema);
     free(tableName);
     delete select;
 
@@ -46,10 +48,12 @@ namespace hsql {
   // DeleteStatement
   DeleteStatement::DeleteStatement() :
     SQLStatement(kStmtDelete),
+    schema(nullptr),
     tableName(nullptr),
     expr(nullptr) {};
 
   DeleteStatement::~DeleteStatement() {
+    free(schema);
     free(tableName);
     delete expr;
   }
@@ -58,9 +62,11 @@ namespace hsql {
   DropStatement::DropStatement(DropType type) :
     SQLStatement(kStmtDrop),
     type(type),
+    schema(nullptr),
     name(nullptr) {}
 
   DropStatement::~DropStatement() {
+    free(schema);
     free(name);
   }
 
@@ -86,23 +92,27 @@ namespace hsql {
     SQLStatement(kStmtImport),
     type(type),
     filePath(nullptr),
+    schema(nullptr),
     tableName(nullptr) {};
 
   ImportStatement::~ImportStatement() {
-    delete filePath;
-    delete tableName;
+    free(filePath);
+    free(schema);
+    free(tableName);
   }
 
   // InsertStatement
   InsertStatement::InsertStatement(InsertType type) :
     SQLStatement(kStmtInsert),
     type(type),
+    schema(nullptr),
     tableName(nullptr),
     columns(nullptr),
     values(nullptr),
     select(nullptr) {}
 
   InsertStatement::~InsertStatement() {
+    free(schema);
     free(tableName);
     delete select;
 
@@ -119,6 +129,18 @@ namespace hsql {
       }
       delete values;
     }
+  }
+
+  // ShowStatament
+  ShowStatement::ShowStatement(ShowType type) :
+    SQLStatement(kStmtShow),
+    type(type),
+    schema(nullptr),
+    name(nullptr) {}
+
+  ShowStatement::~ShowStatement() {
+    free(schema);
+    free(name);
   }
 
   // SelectStatement.h
