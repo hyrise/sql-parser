@@ -6,6 +6,7 @@
 namespace hsql {
 
   void printOperatorExpression(Expr* expr, uintmax_t numIndent);
+  void printAlias(Alias* alias, uintmax_t numIndent);
 
   std::string indent(uintmax_t numIndent) {
     return std::string(numIndent, '\t');
@@ -54,9 +55,20 @@ namespace hsql {
       for (TableRef* tbl : *table->list) printTableRefInfo(tbl, numIndent);
       break;
     }
-    if (table->alias != nullptr) {
-      inprint("Alias", numIndent + 1);
-      inprint(table->alias, numIndent + 2);
+
+    if (table->alias) {
+      printAlias(table->alias, numIndent);
+    }
+  }
+
+  void printAlias(Alias* alias, uintmax_t numIndent) {
+    inprint("Alias", numIndent + 1);
+    inprint(alias->name, numIndent + 2);
+
+    if (alias->columns) {
+      for (char* column : *(alias->columns)) {
+        inprint(column, numIndent + 3);
+      }
     }
   }
 

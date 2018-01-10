@@ -343,9 +343,55 @@ TEST(SelectColumnOrder) {
 
   // Make sure the order of the table list is corrects
   ASSERT_STREQ(stmt->fromTable->list->at(0)->name, "a");
-  ASSERT_STREQ(stmt->fromTable->list->at(1)->alias, "b");
-  ASSERT_STREQ(stmt->fromTable->list->at(2)->alias, "c");
-  ASSERT_STREQ(stmt->fromTable->list->at(3)->alias, "d");
+  ASSERT_STREQ(stmt->fromTable->list->at(1)->alias->name, "b");
+  ASSERT_STREQ(stmt->fromTable->list->at(2)->alias->name, "c");
+  ASSERT_STREQ(stmt->fromTable->list->at(3)->alias->name, "d");
+}
+
+
+TEST(SelectAliasAbsent) {
+  TEST_PARSE_SINGLE_SQL(
+    "SELECT * FROM students;",
+    kStmtSelect,
+    SelectStatement,
+    result,
+    stmt);
+
+    ASSERT_NULL(stmt->fromTable->alias);
+}
+
+TEST(SelectAliasSimple) {
+  TEST_PARSE_SINGLE_SQL(
+    "SELECT * FROM students AS s1;",
+    kStmtSelect,
+    SelectStatement,
+    result,
+    stmt);
+
+    Alias* alias = stmt->fromTable->alias;
+    ASSERT_NOTNULL(alias);
+    ASSERT_STREQ(alias->name, "s1");
+    ASSERT_NULL(alias->columns);
+}
+
+TEST(SelectAliasWithColumns) {
+  TEST_PARSE_SINGLE_SQL(
+    "SELECT * FROM students AS s1(id, city);",
+    kStmtSelect,
+    SelectStatement,
+    result,
+    stmt);
+
+    Alias* alias = stmt->fromTable->alias;
+    ASSERT_NOTNULL(alias);
+
+    ASSERT_NOTNULL(alias->name);
+    ASSERT_STREQ(alias->name, "s1");
+
+    ASSERT_NOTNULL(alias->columns);
+    ASSERT_EQ(alias->columns->size(), 2);
+    ASSERT_STREQ(alias->columns->at(0), "id");
+    ASSERT_STREQ(alias->columns->at(1), "city");
 }
 
 TEST(Operators) {
