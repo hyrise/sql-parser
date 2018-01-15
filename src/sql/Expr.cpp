@@ -68,22 +68,53 @@ namespace hsql {
     return e;
   }
 
-  Expr* Expr::makeCase(Expr* expr, Expr* then) {
-    Expr* e = new Expr(kExprOperator);
+  Expr* Expr::makeCaseCondition(Expr* expr, Expr* then) {
+    Expr* e = new Expr(kExprWhenCondition);
     e->expr = expr;
-    e->opType = kOpCase;
-    e->exprList = new std::vector<Expr*>();
-    e->exprList->push_back(then);
+    e->expr2 = then;
     return e;
   }
 
-  Expr* Expr::makeCase(Expr* expr, Expr* then, Expr* other) {
+  Expr* Expr::joinCaseCondition(Expr* expr1, Expr* expr2) {
     Expr* e = new Expr(kExprOperator);
-    e->expr = expr;
+    e->opType = kOpPlus;
+    if (expr1->exprList != nullptr) {
+      e->exprList = expr1->exprList;
+    } else {
+      e->exprList = new std::vector<Expr*>();
+      e->exprList->push_back(expr1);
+    }
+    e->exprList->push_back(expr2);
+    return e;
+  }
+
+  Expr* Expr::makeCase(Expr* when) {
+    Expr* e = new Expr(kExprOperator);
     e->opType = kOpCase;
-    e->exprList = new std::vector<Expr*>();
-    e->exprList->push_back(then);
-    e->exprList->push_back(other);
+    if (when->exprList != nullptr) {
+      e->exprList = when->exprList;
+    } else {
+      e->exprList = new std::vector<Expr*>();
+      e->exprList->push_back(when);
+    }
+    return e;
+  }
+
+  Expr* Expr::makeCase(Expr* when, Expr* other) {
+    Expr* e = Expr::makeCase(when);
+    e->expr2 = other;
+    return e;
+  }
+
+  Expr* Expr::makeCaseExpr(Expr* expr, Expr* when) {
+    Expr* e = Expr::makeCase(when);
+    e->expr = expr;
+    return e;
+  }
+
+  Expr* Expr::makeCaseExpr(Expr* expr, Expr* when, Expr* other) {
+    Expr* e = Expr::makeCase(when, other);
+    e->expr = expr;
     return e;
   }
 

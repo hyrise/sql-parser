@@ -25,7 +25,8 @@ namespace hsql {
     kExprSelect,
     kExprHint,
     kExprArray,
-    kExprArrayIndex
+    kExprArrayIndex,
+    kExprWhenCondition
   };
 
 // Operator types. These are important for expressions of type kExprOperator.
@@ -113,9 +114,17 @@ namespace hsql {
 
     static Expr* makeBetween(Expr* expr, Expr* left, Expr* right);
 
-    static Expr* makeCase(Expr* expr, Expr* then);
+    static Expr* makeCaseCondition(Expr* expr, Expr* then);
 
-    static Expr* makeCase(Expr* expr, Expr* then, Expr* other);
+    static Expr* joinCaseCondition(Expr* expr, Expr* then);
+
+    static Expr* makeCase(Expr* when);
+
+    static Expr* makeCase(Expr* when, Expr* other);
+
+    static Expr* makeCaseExpr(Expr* expr, Expr* when);
+
+    static Expr* makeCaseExpr(Expr* expr, Expr* when, Expr* other);
 
     static Expr* makeLiteral(int64_t val);
 
