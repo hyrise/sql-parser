@@ -195,7 +195,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 %type <expr> 		expr operand scalar_expr unary_expr binary_expr logic_expr exists_expr
 %type <expr>		function_expr between_expr expr_alias param_expr
 %type <expr> 		column_name literal int_literal num_literal string_literal
-%type <expr> 		comp_expr opt_where join_condition opt_having case_expr in_expr hint
+%type <expr> 		comp_expr opt_where join_condition opt_having case_expr case_list in_expr hint
 %type <expr> 		array_expr array_index null_literal
 %type <limit>		opt_limit opt_top
 %type <order>		order_desc
@@ -781,11 +781,18 @@ in_expr:
 	|	operand NOT IN '(' select_no_paren ')'	{ $$ = Expr::makeOpUnary(kOpNot, Expr::makeInOperator($1, $5)); }
 	;
 
-// TODO: allow no else specified
+// CASE grammar based on: flex & bison by John Levine 
+// https://www.safaribooksonline.com/library/view/flex-bison/9780596805418/ch04.html#id352665
 case_expr:
-		CASE WHEN expr THEN operand END { $$ = Expr::makeCase($3, $5); }
-	|
-		CASE WHEN expr THEN operand ELSE operand END { $$ = Expr::makeCase($3, $5, $7); }
+		CASE expr case_list END         	{ $$ = Expr::makeCase($2, $3, nullptr); }
+	|	CASE expr case_list ELSE expr END	{ $$ = Expr::makeCase($2, $3, $5); }
+	|	CASE case_list END			        { $$ = Expr::makeCase(nullptr, $2, nullptr); }
+	|	CASE case_list ELSE expr END		{ $$ = Expr::makeCase(nullptr, $2, $4); }
+	;
+
+case_list:
+		WHEN expr THEN expr              { $$ = Expr::makeCaseList(Expr::makeCaseListElement($2, $4)); }
+	|	case_list WHEN expr THEN expr    { $$ = Expr::caseListAppend($1, Expr::makeCaseListElement($3, $5)); }
 	;
 
 exists_expr:

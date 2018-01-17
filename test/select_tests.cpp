@@ -214,9 +214,74 @@ TEST(SelectCaseWhen) {
   ASSERT_NOTNULL(caseExpr);
   ASSERT(caseExpr->isType(kExprOperator));
   ASSERT_EQ(caseExpr->opType, kOpCase);
-  ASSERT(caseExpr->expr->isType(kExprOperator));
-  ASSERT_EQ(caseExpr->expr->opType, kOpEquals);
+  ASSERT_NULL(caseExpr->expr);
+  ASSERT_NOTNULL(caseExpr->exprList);
+  ASSERT_NOTNULL(caseExpr->expr2);
+  ASSERT_EQ(caseExpr->exprList->size(), 1);
+  ASSERT(caseExpr->expr2->isType(kExprLiteralInt));
+
+  Expr* whenExpr = caseExpr->exprList->at(0);
+  ASSERT(whenExpr->expr->isType(kExprOperator));
+  ASSERT_EQ(whenExpr->expr->opType, kOpEquals);
+  ASSERT(whenExpr->expr->expr->isType(kExprColumnRef));
+  ASSERT(whenExpr->expr->expr2->isType(kExprLiteralString));
+}
+
+TEST(SelectCaseWhenWhen) {
+  TEST_PARSE_SINGLE_SQL(
+    "SELECT CASE WHEN x = 1 THEN 1 WHEN 1.25 < x THEN 2 END FROM test;",
+    kStmtSelect,
+    SelectStatement,
+    result,
+    stmt);
+
+  ASSERT_EQ(stmt->selectList->size(), 1);
+  Expr* caseExpr = stmt->selectList->at(0);
+  ASSERT_NOTNULL(caseExpr);
+  ASSERT(caseExpr->isType(kExprOperator));
+  ASSERT_EQ(caseExpr->opType, kOpCase);
+  // CASE [expr] [exprList]                                    [expr2]
+  //             [expr]                  [expr]
+  //             [expr]     [expr2]      [expr]        [expr2]
+  // CASE (null) WHEN X = 1 THEN 1       WHEN 1.25 < x THEN 2  (null)
+  ASSERT_NULL(caseExpr->expr);
+  ASSERT_NOTNULL(caseExpr->exprList);
+  ASSERT_NULL(caseExpr->expr2);
   ASSERT_EQ(caseExpr->exprList->size(), 2);
+
+  Expr* whenExpr = caseExpr->exprList->at(0);
+  ASSERT_EQ(whenExpr->expr->opType, kOpEquals);
+  ASSERT(whenExpr->expr->expr->isType(kExprColumnRef));
+  ASSERT(whenExpr->expr->expr2->isType(kExprLiteralInt));
+
+  Expr* whenExpr2 = caseExpr->exprList->at(1);
+  ASSERT_EQ(whenExpr2->expr->opType, kOpLess);
+  ASSERT(whenExpr2->expr->expr->isType(kExprLiteralFloat));
+  ASSERT(whenExpr2->expr->expr2->isType(kExprColumnRef));
+}
+
+TEST(SelectCaseValueWhenWhenElse) {
+  TEST_PARSE_SINGLE_SQL(
+    "SELECT CASE x WHEN 1 THEN 0 WHEN 2 THEN 3 WHEN 8 THEN 7 ELSE 4 END FROM test;",
+    kStmtSelect,
+    SelectStatement,
+    result,
+    stmt);
+
+  ASSERT_EQ(stmt->selectList->size(), 1);
+  Expr* caseExpr = stmt->selectList->at(0);
+  ASSERT_NOTNULL(caseExpr);
+  ASSERT(caseExpr->isType(kExprOperator));
+  ASSERT_EQ(caseExpr->opType, kOpCase);
+  ASSERT_NOTNULL(caseExpr->expr);
+  ASSERT_NOTNULL(caseExpr->exprList);
+  ASSERT_NOTNULL(caseExpr->expr2);
+  ASSERT_EQ(caseExpr->exprList->size(), 3);
+  ASSERT(caseExpr->expr->isType(kExprColumnRef));
+
+  Expr* whenExpr = caseExpr->exprList->at(2);
+  ASSERT(whenExpr->expr->isType(kExprLiteralInt));
+  ASSERT_EQ(whenExpr->expr2->ival, 7);
 }
 
 TEST(SelectJoin) {
