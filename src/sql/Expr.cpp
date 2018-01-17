@@ -68,22 +68,35 @@ namespace hsql {
     return e;
   }
 
-  Expr* Expr::makeCase(Expr* expr, Expr* then) {
+  Expr* Expr::makeCaseList(Expr* caseListElement) {
     Expr* e = new Expr(kExprOperator);
-    e->expr = expr;
-    e->opType = kOpCase;
+    e->opType = kOpCaseList;
     e->exprList = new std::vector<Expr*>();
-    e->exprList->push_back(then);
+    e->exprList->push_back(caseListElement);
     return e;
   }
 
-  Expr* Expr::makeCase(Expr* expr, Expr* then, Expr* other) {
+  Expr* Expr::makeCaseListElement(Expr* when, Expr* then) {
     Expr* e = new Expr(kExprOperator);
-    e->expr = expr;
+    e->opType = kOpCaseListElement;
+    e->expr = when;
+    e->expr2 = then;
+    return e;
+  }
+
+  Expr* Expr::caseListAppend(Expr* caseList, Expr* caseListElement) {
+    caseList->exprList->push_back(caseListElement);
+    return caseList;
+  }
+
+  Expr* Expr::makeCase(Expr* expr, Expr* caseList, Expr* elseExpr) {
+    Expr* e = new Expr(kExprOperator);
     e->opType = kOpCase;
-    e->exprList = new std::vector<Expr*>();
-    e->exprList->push_back(then);
-    e->exprList->push_back(other);
+    e->expr = expr;
+    e->expr2 = elseExpr;
+    e->exprList = caseList->exprList;
+    caseList->exprList = nullptr;
+    delete caseList;
     return e;
   }
 
