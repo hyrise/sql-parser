@@ -1,4 +1,4 @@
-# bison's version is too old OSX, allow user to pass in custom path
+# bison's version is too old on OSX, allow user to pass in custom path
 BISON?=bison
 
 all: bison_parser.cpp flex_lexer.cpp
