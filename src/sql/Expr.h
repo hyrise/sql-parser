@@ -26,16 +26,21 @@ namespace hsql {
     kExprHint,
     kExprArray,
     kExprArrayIndex,
-    kExprWhenCondition
+    kExprCaseList,
+    kExprCaseListElement
   };
 
 // Operator types. These are important for expressions of type kExprOperator.
   enum OperatorType {
     kOpNone,
 
-    // Ternary operators
+    // Ternary operator
     kOpBetween,
+
+    // n-nary special case
     kOpCase,
+    kOpCaseList, // Contains n >= 1 kExprCaseListElement in its exprList
+    kOpCaseListElement, // `WHEN expr THEN expr`
 
     // Binary operators.
     kOpPlus,
@@ -114,17 +119,13 @@ namespace hsql {
 
     static Expr* makeBetween(Expr* expr, Expr* left, Expr* right);
 
-    static Expr* makeCaseCondition(Expr* expr, Expr* then);
+    static Expr* makeCaseList(Expr* caseListElement);
 
-    static Expr* joinCaseCondition(Expr* expr, Expr* then);
+    static Expr* makeCaseListElement(Expr* when, Expr* then);
 
-    static Expr* makeCase(Expr* when);
+    static Expr* caseListAppend(Expr* caseList, Expr* caseListElement);
 
-    static Expr* makeCase(Expr* when, Expr* other);
-
-    static Expr* makeCaseExpr(Expr* expr, Expr* when);
-
-    static Expr* makeCaseExpr(Expr* expr, Expr* when, Expr* other);
+    static Expr* makeCase(Expr* expr, Expr* when, Expr* elseExpr);
 
     static Expr* makeLiteral(int64_t val);
 

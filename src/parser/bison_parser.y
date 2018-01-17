@@ -784,15 +784,15 @@ in_expr:
 // CASE grammar based on: flex & bison by John Levine 
 // https://www.safaribooksonline.com/library/view/flex-bison/9780596805418/ch04.html#id352665
 case_expr:
-		CASE expr case_list END         	{ $$ = Expr::makeCaseExpr($2, $3); }
-	|	CASE expr case_list ELSE expr END	{ $$ = Expr::makeCaseExpr($2, $3, $5); }
-	|	CASE case_list END			{ $$ = Expr::makeCase($2); }
-	|	CASE case_list ELSE expr END		{ $$ = Expr::makeCase($2, $4); }
+		CASE expr case_list END         	{ $$ = Expr::makeCase($2, $3, nullptr); }
+	|	CASE expr case_list ELSE expr END	{ $$ = Expr::makeCase($2, $3, $5); }
+	|	CASE case_list END			        { $$ = Expr::makeCase(nullptr, $2, nullptr); }
+	|	CASE case_list ELSE expr END		{ $$ = Expr::makeCase(nullptr, $2, $4); }
 	;
 
 case_list:
-		WHEN expr THEN expr              { $$ = Expr::makeCaseCondition($2, $4); }
-	|	case_list WHEN expr THEN expr    { $$ = Expr::joinCaseCondition($1, Expr::makeCaseCondition($3, $5)); }
+		WHEN expr THEN expr              { $$ = Expr::makeCaseList(Expr::makeCaseListElement($2, $4)); }
+	|	case_list WHEN expr THEN expr    { $$ = Expr::caseListAppend($1, Expr::makeCaseListElement($3, $5)); }
 	;
 
 exists_expr:
