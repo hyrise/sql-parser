@@ -213,4 +213,15 @@ TEST(HintTest) {
   ASSERT_EQ(10, stmt->hints->at(1)->exprList->at(0)->ival);
 }
 
+TEST(StringLengthTest) {
+  TEST_PARSE_SQL_QUERY(
+    "SELECT * FROM bar; INSERT INTO foo VALUES (4);\t\n SELECT * FROM foo;",
+    result,
+    3);
+
+  ASSERT_EQ(result.getStatement(0)->stringLength, 18);
+  ASSERT_EQ(result.getStatement(1)->stringLength, 28);
+  ASSERT_EQ(result.getStatement(2)->stringLength, 21);
+}
+
 TEST_MAIN();

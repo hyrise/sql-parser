@@ -45,6 +45,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 		yylloc->first_column = yylloc->last_column; \
 		for(int i = 0; yytext[i] != '\0'; i++) { \
 			yylloc->total_column++; \
+			yylloc->string_length++; \
 				if(yytext[i] == '\n') { \
 						yylloc->last_line++; \
 						yylloc->last_column = 0; \
@@ -76,6 +77,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 	@$.first_line = 0;
 	@$.last_line = 0;
 	@$.total_column = 0;
+	@$.string_length = 0;
 };
 
 
@@ -108,7 +110,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 	hsql::PrepareStatement* prep_stmt;
 	hsql::ExecuteStatement* exec_stmt;
 	hsql::ShowStatement*    show_stmt;
-	
+
 	hsql::TableName table_name;
 	hsql::TableRef* table;
 	hsql::Expr* expr;
@@ -133,7 +135,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 /*********************************
  ** Descrutor symbols
  *********************************/
-%destructor { } <fval> <ival> <uval> <bval> <order_type> 
+%destructor { } <fval> <ival> <uval> <bval> <order_type>
 %destructor { free( ($$.name) ); free( ($$.schema) ); } <table_name>
 %destructor { free( ($$) ); } <sval>
 %destructor {
@@ -185,7 +187,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 %type <delete_stmt> delete_statement truncate_statement
 %type <update_stmt> update_statement
 %type <drop_stmt>	drop_statement
-%type <show_stmt>	show_statement  
+%type <show_stmt>	show_statement
 %type <table_name>  table_name
 %type <sval> 		opt_alias alias file_path prepare_target_query
 %type <bval> 		opt_not_exists opt_exists opt_distinct
@@ -263,8 +265,18 @@ input:
 
 
 statement_list:
-		statement { $$ = new std::vector<SQLStatement*>(); $$->push_back($1); }
-	|	statement_list ';' statement { $1->push_back($3); $$ = $1; }
+		statement {
+			$1->stringLength = yylloc.string_length;
+			yylloc.string_length = 0;
+			$$ = new std::vector<SQLStatement*>();
+			$$->push_back($1);
+		}
+	|	statement_list ';' statement {
+			$3->stringLength = yylloc.string_length;
+			yylloc.string_length = 0;
+			$1->push_back($3);
+			$$ = $1;
+		}
 	;
 
 statement:
@@ -471,7 +483,7 @@ opt_exists:
 		IF EXISTS   { $$ = true; }
 	|	/* empty */ { $$ = false; }
 	;
-    
+
 /******************************
  * Delete Statement / Truncate statement
  * DELETE FROM students WHERE grade > 3.0
