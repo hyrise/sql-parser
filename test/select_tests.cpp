@@ -325,3 +325,25 @@ TEST(SelectJoin) {
   ASSERT_STREQ(inner_join->condition->expr2->table, "City");
   ASSERT_STREQ(inner_join->condition->expr2->name, "id");
 }
+
+
+TEST(SelectColumnOrder) {
+  TEST_PARSE_SINGLE_SQL(
+    "SELECT *\
+    FROM a,\
+         (SELECT a AS b FROM a) b,\
+         (SELECT a AS c FROM a) c,\
+         (SELECT a AS d FROM a) d;",
+    kStmtSelect,
+    SelectStatement,
+    result,
+    stmt);
+
+  ASSERT_EQ(stmt->fromTable->list->size(), 4);
+
+  // Make sure the order of the table list is corrects
+  ASSERT_STREQ(stmt->fromTable->list->at(0)->name, "a");
+  ASSERT_STREQ(stmt->fromTable->list->at(1)->alias, "b");
+  ASSERT_STREQ(stmt->fromTable->list->at(2)->alias, "c");
+  ASSERT_STREQ(stmt->fromTable->list->at(3)->alias, "d");
+}

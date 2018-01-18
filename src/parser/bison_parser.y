@@ -793,7 +793,7 @@ in_expr:
 	|	operand NOT IN '(' select_no_paren ')'	{ $$ = Expr::makeOpUnary(kOpNot, Expr::makeInOperator($1, $5)); }
 	;
 
-// CASE grammar based on: flex & bison by John Levine 
+// CASE grammar based on: flex & bison by John Levine
 // https://www.safaribooksonline.com/library/view/flex-bison/9780596805418/ch04.html#id352665
 case_expr:
 		CASE expr case_list END         	{ $$ = Expr::makeCase($2, $3, nullptr); }
@@ -884,10 +884,10 @@ param_expr:
  ******************************/
 table_ref:
 		table_ref_atomic
-	|	table_ref_atomic ',' table_ref_commalist {
-			$3->push_back($1);
+	|	table_ref_commalist ',' table_ref_atomic {
+			$1->push_back($3);
 			auto tbl = new TableRef(kTableCrossProduct);
-			tbl->list = $3;
+			tbl->list = $1;
 			$$ = tbl;
 		}
 	;
