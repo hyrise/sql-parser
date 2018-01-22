@@ -60,7 +60,7 @@ $(LIB_BUILD): $(LIB_OBJ)
 	$(LIBLINKER) $(LIB_LFLAGS) $(LIB_BUILD) $(LIB_OBJ)
 
 $(SRCPARSER)/flex_lexer.o: $(SRCPARSER)/flex_lexer.cpp $(SRCPARSER)/bison_parser.cpp
-	$(CXX) $(LIB_CFLAGS) -c -o $@ $< -Wno-sign-compare -Wno-unneeded-internal-declaration
+	$(CXX) $(LIB_CFLAGS) -c -o $@ $< -Wno-sign-compare -Wno-unneeded-internal-declaration -Wno-register
 
 %.o: %.cpp $(PARSER_CPP) $(LIB_H)
 	$(CXX) $(LIB_CFLAGS) -c -o $@ $<
