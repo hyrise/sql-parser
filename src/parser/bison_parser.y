@@ -993,13 +993,13 @@ join_clause:
 
 opt_join_type:
 		INNER		{ $$ = kJoinInner; }
-	|	FULL OUTER	{ $$ = kJoinFull; }
 	|	LEFT OUTER	{ $$ = kJoinLeft; }
+	|	LEFT		{ $$ = kJoinLeft; }
 	|	RIGHT OUTER	{ $$ = kJoinRight; }
+	|	RIGHT		{ $$ = kJoinRight; }
+	|	FULL OUTER	{ $$ = kJoinFull; }
 	|	OUTER		{ $$ = kJoinFull; }
 	|	FULL		{ $$ = kJoinFull; }
-	|	LEFT		{ $$ = kJoinLeft; }
-	|	RIGHT		{ $$ = kJoinRight; }
 	|	CROSS		{ $$ = kJoinCross; }
 	|	/* empty, default */	{ $$ = kJoinInner; }
 	;
