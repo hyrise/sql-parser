@@ -49,11 +49,9 @@ namespace hsql {
   // Possible types of joins.
   enum JoinType {
     kJoinInner,
-    kJoinOuter,
+    kJoinFull,
     kJoinLeft,
     kJoinRight,
-    kJoinLeftOuter,
-    kJoinRightOuter,
     kJoinCross,
     kJoinNatural
   };
