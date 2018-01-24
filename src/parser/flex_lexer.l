@@ -175,7 +175,9 @@ ON			TOKEN(ON)
 OR			TOKEN(OR)
 TO			TOKEN(TO)
 
-"!="		TOKEN(NOTEQUALS)
+                /* Allow =/== see https://sqlite.org/lang_expr.html#collateop */
+"=="		TOKEN(EQUALS)             
+"!=" 		TOKEN(NOTEQUALS)
 "<>" 		TOKEN(NOTEQUALS)
 "<="		TOKEN(LESSEQ)
 ">="		TOKEN(GREATEREQ)

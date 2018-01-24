@@ -814,6 +814,7 @@ exists_expr:
 
 comp_expr:
 		operand '=' operand			{ $$ = Expr::makeOpBinary($1, kOpEquals, $3); }
+	|	operand EQUALS operand			{ $$ = Expr::makeOpBinary($1, kOpEquals, $3); }
 	|	operand NOTEQUALS operand	{ $$ = Expr::makeOpBinary($1, kOpNotEquals, $3); }
 	|	operand '<' operand			{ $$ = Expr::makeOpBinary($1, kOpLess, $3); }
 	|	operand '>' operand			{ $$ = Expr::makeOpBinary($1, kOpGreater, $3); }
