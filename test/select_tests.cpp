@@ -348,7 +348,6 @@ TEST(SelectColumnOrder) {
   ASSERT_STREQ(stmt->fromTable->list->at(3)->alias, "d");
 }
 
-
 TEST(JoinTypes) {
   SelectStatement* stmt;
   SQLParserResult result;
@@ -401,4 +400,42 @@ TEST(JoinTypes) {
 
   stmt = (SelectStatement*) result.getStatement(11);
   ASSERT_NULL(stmt->fromTable->join);
+}
+
+TEST(Operators) {
+  SelectStatement* stmt;
+  SQLParserResult result;
+
+  SQLParser::parse("SELECT * FROM foo where a =  1; \
+		    SELECT * FROM foo where a == 1; \
+		    SELECT * FROM foo where a != 1; \
+		    SELECT * FROM foo where a <> 1; \
+		    SELECT * FROM foo where a >  1; \
+		    SELECT * FROM foo where a <  1; \
+		    SELECT * FROM foo where a >= 1; \
+		    SELECT * FROM foo where a <= 1;", &result);
+
+  stmt = (SelectStatement*) result.getStatement(0);
+  ASSERT_EQ(stmt->whereClause->opType, kOpEquals);
+
+  stmt = (SelectStatement*) result.getStatement(1);
+  ASSERT_EQ(stmt->whereClause->opType, kOpEquals);
+
+  stmt = (SelectStatement*) result.getStatement(2);
+  ASSERT_EQ(stmt->whereClause->opType, kOpNotEquals);
+
+  stmt = (SelectStatement*) result.getStatement(3);
+  ASSERT_EQ(stmt->whereClause->opType, kOpNotEquals);
+
+  stmt = (SelectStatement*) result.getStatement(4);
+  ASSERT_EQ(stmt->whereClause->opType, kOpGreater);
+
+  stmt = (SelectStatement*) result.getStatement(5);
+  ASSERT_EQ(stmt->whereClause->opType, kOpLess);
+
+  stmt = (SelectStatement*) result.getStatement(6);
+  ASSERT_EQ(stmt->whereClause->opType, kOpGreaterEq);
+
+  stmt = (SelectStatement*) result.getStatement(7);
+  ASSERT_EQ(stmt->whereClause->opType, kOpLessEq);
 }
