@@ -298,7 +298,7 @@ TEST(SelectJoin) {
   const TableRef* table = stmt->fromTable;
   const JoinDefinition* outer_join = table->join;
   ASSERT_EQ(table->type, kTableJoin);
-  ASSERT_EQ(outer_join->type, kJoinOuter);
+  ASSERT_EQ(outer_join->type, kJoinFull);
 
   ASSERT_EQ(outer_join->right->type, kTableName);
   ASSERT_STREQ(outer_join->right->name, "Product");
@@ -386,3 +386,56 @@ TEST(Operators) {
   ASSERT_EQ(stmt->whereClause->opType, kOpLessEq);
 }
 
+TEST(JoinTypes) {
+  SelectStatement* stmt;
+  SQLParserResult result;
+
+  SQLParser::parse("SELECT * FROM x join y on a=b; \
+		    SELECT * FROM x inner join y on a=b; \
+		    SELECT * FROM x left join y on a=b; \
+		    SELECT * FROM x left outer join y on a=b; \
+		    SELECT * FROM x right join y on a=b; \
+		    SELECT * FROM x right outer join y on a=b; \
+		    SELECT * FROM x full join y on a=b; \
+		    SELECT * FROM x outer join y on a=b; \
+		    SELECT * FROM x full outer join y on a=b; \
+		    SELECT * FROM x natural join y; \
+		    SELECT * FROM x cross join y on a=b; \
+		    SELECT * FROM x, y where a = b;", &result);
+
+  stmt = (SelectStatement*) result.getStatement(0);
+  ASSERT_EQ(stmt->fromTable->join->type, kJoinInner);
+
+  stmt = (SelectStatement*) result.getStatement(1);
+  ASSERT_EQ(stmt->fromTable->join->type, kJoinInner);
+
+  stmt = (SelectStatement*) result.getStatement(2);
+  ASSERT_EQ(stmt->fromTable->join->type, kJoinLeft);
+
+  stmt = (SelectStatement*) result.getStatement(3);
+  ASSERT_EQ(stmt->fromTable->join->type, kJoinLeft);
+
+  stmt = (SelectStatement*) result.getStatement(4);
+  ASSERT_EQ(stmt->fromTable->join->type, kJoinRight);
+
+  stmt = (SelectStatement*) result.getStatement(5);
+  ASSERT_EQ(stmt->fromTable->join->type, kJoinRight);
+
+  stmt = (SelectStatement*) result.getStatement(6);
+  ASSERT_EQ(stmt->fromTable->join->type, kJoinFull);
+
+  stmt = (SelectStatement*) result.getStatement(7);
+  ASSERT_EQ(stmt->fromTable->join->type, kJoinFull);
+ 
+  stmt = (SelectStatement*) result.getStatement(8);
+  ASSERT_EQ(stmt->fromTable->join->type, kJoinFull);
+
+  stmt = (SelectStatement*) result.getStatement(9);
+  ASSERT_EQ(stmt->fromTable->join->type, kJoinNatural);
+
+  stmt = (SelectStatement*) result.getStatement(10);
+  ASSERT_EQ(stmt->fromTable->join->type, kJoinCross);
+
+  stmt = (SelectStatement*) result.getStatement(11);
+  ASSERT_NULL(stmt->fromTable->join);
+}
