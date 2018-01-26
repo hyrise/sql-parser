@@ -114,6 +114,8 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 	hsql::TableName table_name;
 	hsql::TableRef* table;
 	hsql::Expr* expr;
+	hsql::SelectStatement* setStatement;
+	hsql::SetDescription* setType;
 	hsql::OrderDescription* order;
 	hsql::OrderType order_type;
 	hsql::LimitDescription* limit;
@@ -180,7 +182,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 %type <statement> 	statement preparable_statement
 %type <exec_stmt>	execute_statement
 %type <prep_stmt>	prepare_statement
-%type <select_stmt> select_statement select_with_paren select_no_paren select_clause select_paren_or_clause
+%type <select_stmt> select_statement select_with_paren select_no_paren select_clause select_paren_or_clause select_set
 %type <import_stmt> import_statement
 %type <create_stmt> create_statement
 %type <insert_stmt> insert_statement
@@ -200,6 +202,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 %type <expr> 		comp_expr opt_where join_condition opt_having case_expr case_list in_expr hint
 %type <expr> 		array_expr array_index null_literal
 %type <limit>		opt_limit opt_top
+%type <setType>	set_operator
 %type <order>		order_desc
 %type <order_type>	opt_order_type
 %type <column_t>	column_def
@@ -569,14 +572,11 @@ update_clause:
 select_statement:
 		select_with_paren
 	|	select_no_paren
-	|	select_with_paren set_operator select_paren_or_clause opt_order opt_limit {
-			// TODO: allow multiple unions (through linked list)
-			// TODO: capture type of set_operator
+	|	select_set set_operator select_paren_or_clause opt_order opt_limit {
 			// TODO: might overwrite order and limit of first select here
-			$$ = $1;
-			$$->unionSelect = $3;
-			$$->order = $4;
-
+                        $$ = MakeOrAppendUnionList($1, $2, $3);
+ 			$$->order = $4;
+ 
 			// Limit could have been set by TOP.
 			if ($5 != nullptr) {
 				delete $$->limit;
@@ -585,9 +585,20 @@ select_statement:
 		}
 	;
 
+select_set: 
+                select_paren_or_clause
+        |       select_set set_operator select_paren_or_clause      {
+                        $$ = MakeOrAppendUnionList($1, $2, $3);
+                 }
+                        
+        ;
+
 select_with_paren:
 		'(' select_no_paren ')' { $$ = $2; }
 	|	'(' select_with_paren ')' { $$ = $2; }
+	|	'(' select_set set_operator select_paren_or_clause ')' { 
+                        $$ = MakeOrAppendUnionList($2, $3, $4);
+                 } 
 	;
 
 select_paren_or_clause:
@@ -606,36 +617,17 @@ select_no_paren:
 				$$->limit = $3;
 			}
 		}
-	|	select_clause set_operator select_paren_or_clause opt_order opt_limit {
-			// TODO: allow multiple unions (through linked list)
-			// TODO: capture type of set_operator
-			// TODO: might overwrite order and limit of first select here
-			$$ = $1;
-			$$->unionSelect = $3;
-			$$->order = $4;
-
-			// Limit could have been set by TOP.
-			if ($5 != nullptr) {
-				delete $$->limit;
-				$$->limit = $5;
-			}
-		}
 	;
 
 set_operator:
-		set_type opt_all
+		UNION ALL            {  $$ = new SetDescription(kSetUnion, true); }
+	|	INTERSECT ALL        {  $$ = new SetDescription(kSetIntersect, true); }
+	|	EXCEPT ALL           {  $$ = new SetDescription(kSetExcept, true); }
+        |       UNION                {  $$ = new SetDescription(kSetUnion, false); }
+        |       INTERSECT            {  $$ = new SetDescription(kSetIntersect, false); }
+        |       EXCEPT               {  $$ = new SetDescription(kSetExcept, false); }
 	;
 
-set_type:
-		UNION
-	|	INTERSECT
-	|	EXCEPT
-	;
-
-opt_all:
-		ALL
-	|	/* empty */
-	;
 
 select_clause:
 		SELECT opt_top opt_distinct select_list from_clause opt_where opt_group {

@@ -439,3 +439,75 @@ TEST(JoinTypes) {
   stmt = (SelectStatement*) result.getStatement(11);
   ASSERT_NULL(stmt->fromTable->join);
 }
+
+TEST(SetOperations) {
+  SelectStatement* stmt;
+
+  TEST_PARSE_SQL_QUERY("select a from t1 union select b from t2; \
+		    select a from t1 intersect select b from t2; \
+		    select a from t1 except select b from t2; \
+		    select a from t1 union all select b from t2; \
+		    select a from t1 intersect all select b from t2; \
+		    select a from t1 except all select b from t2; \
+		    select a from t1 intersect all select b from t2 union select c from t3; \
+		    (select a from t1 union all select b from t2) except select c from t3; \
+		    select a from t1 union all (select b from t2 union select c from t3);",
+        result, 9);
+
+
+
+  stmt = (SelectStatement*) result.getStatement(0);
+  ASSERT_STREQ(stmt->fromTable->name, "t1");
+  ASSERT_STREQ(stmt->setStatement->at(0)->fromTable->name, "t2");
+  ASSERT_EQ(stmt->setType->at(0)->type, kSetUnion);
+  ASSERT_FALSE(stmt->setType->at(0)->all);
+
+  stmt = (SelectStatement*) result.getStatement(1);
+  ASSERT_STREQ(stmt->fromTable->name, "t1");
+  ASSERT_STREQ(stmt->setStatement->at(0)->fromTable->name, "t2");
+  ASSERT_EQ(stmt->setType->at(0)->type, kSetIntersect);
+  ASSERT_FALSE(stmt->setType->at(0)->all);
+
+  stmt = (SelectStatement*) result.getStatement(2);
+  ASSERT_STREQ(stmt->fromTable->name, "t1");
+  ASSERT_STREQ(stmt->setStatement->at(0)->fromTable->name, "t2");
+  ASSERT_EQ(stmt->setType->at(0)->type, kSetExcept);
+  ASSERT_FALSE(stmt->setType->at(0)->all);
+
+  stmt = (SelectStatement*) result.getStatement(3);
+  ASSERT_EQ(stmt->setType->at(0)->type, kSetUnion);
+  ASSERT_TRUE(stmt->setType->at(0)->all);
+
+  stmt = (SelectStatement*) result.getStatement(4);
+  ASSERT_EQ(stmt->setType->at(0)->type, kSetIntersect);
+  ASSERT_TRUE(stmt->setType->at(0)->all);
+
+  stmt = (SelectStatement*) result.getStatement(5);
+  ASSERT_EQ(stmt->setType->at(0)->type, kSetExcept);
+  ASSERT_TRUE(stmt->setType->at(0)->all);
+
+  stmt = (SelectStatement*) result.getStatement(6);
+  ASSERT_EQ(stmt->setType->at(0)->type, kSetIntersect);
+  ASSERT_TRUE(stmt->setType->at(0)->all);
+  ASSERT_EQ(stmt->setType->at(1)->type, kSetUnion);
+  ASSERT_FALSE(stmt->setType->at(1)->all);
+
+  stmt = (SelectStatement*) result.getStatement(7);
+  ASSERT_EQ(stmt->setType->at(0)->type, kSetUnion);
+  ASSERT_TRUE(stmt->setType->at(0)->all);
+  ASSERT_EQ(stmt->setType->at(1)->type, kSetExcept);
+  ASSERT_FALSE(stmt->setType->at(1)->all);
+
+  stmt = (SelectStatement*) result.getStatement(8);
+  ASSERT_EQ(stmt->setType->at(0)->type, kSetUnion);
+  ASSERT_TRUE(stmt->setType->at(0)->all);
+  ASSERT_STREQ(stmt->setStatement->at(0)->fromTable->name, "t2");
+  ASSERT_EQ(stmt->setStatement->at(0)->setType->at(0)->type, kSetUnion);
+  ASSERT_STREQ(stmt->setStatement->at(0)->setStatement->at(0)->fromTable->name, "t3");
+  ASSERT_FALSE(stmt->setStatement->at(0)->setType->at(0)->all);
+  ASSERT_EQ(stmt->setStatement->at(0)->setType->at(0)->type, kSetUnion);
+
+  SQLParser::parse("select a from x limit 10 union all \
+                    select b from y order by z", &result);
+  ASSERT_FALSE(result.isValid());
+}

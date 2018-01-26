@@ -1,4 +1,3 @@
-
 #include "statements.h"
 
 namespace hsql {
@@ -159,7 +158,7 @@ namespace hsql {
     limit(limit),
     offset(offset) {}
 
-  // GroypByDescription
+  // GroupByDescription
   GroupByDescription::GroupByDescription() :
     columns(nullptr),
     having(nullptr) {}
@@ -175,6 +174,15 @@ namespace hsql {
     }
   }
 
+  // SetDescription
+  SetDescription::SetDescription(SetType type, bool all) :
+    type(type),
+    all(all) {}
+
+  SetDescription::~SetDescription() {
+  }
+
+
   // SelectStatement
   SelectStatement::SelectStatement() :
     SQLStatement(kStmtSelect),
@@ -183,7 +191,8 @@ namespace hsql {
     selectList(nullptr),
     whereClause(nullptr),
     groupBy(nullptr),
-    unionSelect(nullptr),
+    setStatement(nullptr),
+    setType(nullptr),
     order(nullptr),
     limit(nullptr) {};
 
@@ -191,9 +200,7 @@ namespace hsql {
     delete fromTable;
     delete whereClause;
     delete groupBy;
-    delete unionSelect;
     delete limit;
-
     // Delete each element in the select list.
     if (selectList != nullptr) {
       for (Expr* expr : *selectList) {
@@ -208,6 +215,34 @@ namespace hsql {
       }
       delete order;
     }
+
+    if (setStatement != nullptr) {
+      for (SelectStatement* stmt : *setStatement) {
+        delete stmt;
+      }
+      delete setStatement;
+    }
+
+    if (setType != nullptr) {
+      for (SetDescription* desc : *setType) {
+        delete desc;
+      }
+      delete setType;
+    }
+  }
+
+  SelectStatement* MakeOrAppendUnionList(SelectStatement* stmt,
+                                         SetDescription* desc,
+                                         SelectStatement* stmt2) {
+     if (stmt->setType == nullptr) {
+       stmt->setType = new std::vector<SetDescription*>();
+     }
+     if (stmt->setStatement == nullptr) {
+       stmt->setStatement = new std::vector<SelectStatement*>();
+     }
+     stmt->setType->push_back(desc);
+     stmt->setStatement->push_back(stmt2);
+     return stmt;
   }
 
   // UpdateStatement

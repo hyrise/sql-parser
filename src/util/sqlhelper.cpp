@@ -10,6 +10,9 @@ namespace hsql {
   std::string indent(uintmax_t numIndent) {
     return std::string(numIndent, '\t');
   }
+  void inprint(int64_t val, int64_t val2, uintmax_t numIndent) {
+    std::cout << indent(numIndent).c_str() << val << "  " << val2 << "  " << std::endl;
+  }
   void inprint(int64_t val, uintmax_t numIndent) {
     std::cout << indent(numIndent).c_str() << val << "  " << std::endl;
   }
@@ -164,9 +167,16 @@ namespace hsql {
       }
     }
 
-    if (stmt->unionSelect != nullptr) {
+    if (stmt->setType != nullptr) {
+      int i = 0;
       inprint("Union:", numIndent + 1);
-      printSelectStatementInfo(stmt->unionSelect, numIndent + 2);
+      for (SelectStatement* stmt2 : *stmt->setStatement) {
+        int all = stmt->setType->at(i)->all;
+        int type = stmt->setType->at(i)->type;
+        inprint(type, all, numIndent + 2);
+        printSelectStatementInfo(stmt2, numIndent + 3);
+        i++;
+      }
     }
 
     if (stmt->order != nullptr) {

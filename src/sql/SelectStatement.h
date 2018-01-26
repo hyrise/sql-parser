@@ -11,6 +11,11 @@ namespace hsql {
     kOrderDesc
   };
 
+  enum SetType {
+    kSetUnion,
+    kSetIntersect,
+    kSetExcept
+  };
 
   // Description of the order by clause within a select statement.
   struct OrderDescription {
@@ -41,8 +46,16 @@ namespace hsql {
     Expr* having;
   };
 
+  // Description of the union/intersect/except clause within a select statement
+  struct SetDescription {
+    SetDescription(SetType type, bool all);
+    virtual ~SetDescription();
+
+    SetType type;
+    bool all;
+  };
+
   // Representation of a full SQL select statement.
-  // TODO: add union_order and union_limit.
   struct SelectStatement : SQLStatement {
     SelectStatement();
     virtual ~SelectStatement();
@@ -53,10 +66,15 @@ namespace hsql {
     Expr* whereClause;
     GroupByDescription* groupBy;
 
-    SelectStatement* unionSelect;
+    std::vector<SelectStatement*>* setStatement;
+    std::vector<SetDescription*>* setType;
     std::vector<OrderDescription*>* order;
     LimitDescription* limit;
   };
+
+  SelectStatement* MakeOrAppendUnionList(SelectStatement* stmt, 
+                                         SetDescription* desc, 
+                                         SelectStatement* stmt2);
 
 } // namespace hsql
 
