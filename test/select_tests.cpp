@@ -439,3 +439,60 @@ TEST(JoinTypes) {
   stmt = (SelectStatement*) result.getStatement(11);
   ASSERT_NULL(stmt->fromTable->join);
 }
+
+TEST(SetLimitOffset) {
+  SelectStatement* stmt;
+
+  TEST_PARSE_SQL_QUERY("select a from t1 limit 1; \
+                    select a from t1 limit 1 offset 1; \
+                    select a from t1 limit 0; \
+                    select a from t1 limit 0 offset 1; \
+                    select a from t1 limit 1 offset 0; \
+                    select a from t1 limit ALL offset 1; \
+                    select a from t1 limit NULL offset 1; \
+                    select a from t1 offset 1; \
+                    select top 10 a from t1; \
+                    select top 20 a from t1 limit 10;",
+        result, 10);
+
+  stmt = (SelectStatement*) result.getStatement(0);
+  ASSERT_EQ(stmt->limit->limit, 1);
+  ASSERT_EQ(stmt->limit->offset, kNoOffset);
+
+  stmt = (SelectStatement*) result.getStatement(1);
+  ASSERT_EQ(stmt->limit->limit, 1);
+  ASSERT_EQ(stmt->limit->offset, 1);
+
+  stmt = (SelectStatement*) result.getStatement(2);
+  ASSERT_EQ(stmt->limit->limit, 0);
+  ASSERT_EQ(stmt->limit->offset, kNoOffset);
+
+  stmt = (SelectStatement*) result.getStatement(3);
+  ASSERT_EQ(stmt->limit->limit, 0);
+  ASSERT_EQ(stmt->limit->offset, 1);
+
+  stmt = (SelectStatement*) result.getStatement(4);
+  ASSERT_EQ(stmt->limit->limit, 1);
+  ASSERT_EQ(stmt->limit->offset, kNoOffset);
+
+  stmt = (SelectStatement*) result.getStatement(5);
+  ASSERT_EQ(stmt->limit->limit, kNoLimit);
+    ASSERT_EQ(stmt->limit->offset, 1);
+
+  stmt = (SelectStatement*) result.getStatement(6);
+  ASSERT_EQ(stmt->limit->limit, kNoLimit);
+  ASSERT_EQ(stmt->limit->offset, 1);
+
+  stmt = (SelectStatement*) result.getStatement(7);
+  ASSERT_EQ(stmt->limit->limit, kNoLimit);
+  ASSERT_EQ(stmt->limit->offset, 1);
+
+  stmt = (SelectStatement*) result.getStatement(8);
+  ASSERT_EQ(stmt->limit->limit, 10);
+  ASSERT_EQ(stmt->limit->offset, kNoOffset);
+
+  stmt = (SelectStatement*) result.getStatement(9);
+  ASSERT_EQ(stmt->limit->limit, 10);
+  ASSERT_EQ(stmt->limit->offset, kNoOffset);
+}
+
