@@ -715,7 +715,7 @@ opt_limit:
 	|	LIMIT ALL { $$ = nullptr; }
 	|	LIMIT NULL { $$ = nullptr;  }
 	|	LIMIT ALL OFFSET int_literal { $$ = new LimitDescription(kNoLimit, $4->ival); delete $4; }
-	|	LIMIT NULL OFFSET int_literal { $$ = new LimitDescription(kNoLimit, $4->ival);; delete $4; }
+	|	LIMIT NULL OFFSET int_literal { $$ = new LimitDescription(kNoLimit, $4->ival); delete $4; }
 	|	/* empty */ { $$ = nullptr; }
 	;
 
