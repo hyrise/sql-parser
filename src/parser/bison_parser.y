@@ -711,6 +711,11 @@ opt_top:
 opt_limit:
 		LIMIT int_literal { $$ = new LimitDescription($2->ival, kNoOffset); delete $2; }
 	|	LIMIT int_literal OFFSET int_literal { $$ = new LimitDescription($2->ival, $4->ival); delete $2; delete $4; }
+	|	OFFSET int_literal { $$ = new LimitDescription(kNoLimit, $2->ival); delete $2; }
+	|	LIMIT ALL { $$ = nullptr; }
+	|	LIMIT NULL { $$ = nullptr;  }
+	|	LIMIT ALL OFFSET int_literal { $$ = new LimitDescription(kNoLimit, $4->ival); delete $4; }
+	|	LIMIT NULL OFFSET int_literal { $$ = new LimitDescription(kNoLimit, $4->ival); delete $4; }
 	|	/* empty */ { $$ = nullptr; }
 	;
 
