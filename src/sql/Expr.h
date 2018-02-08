@@ -25,9 +25,7 @@ namespace hsql {
     kExprSelect,
     kExprHint,
     kExprArray,
-    kExprArrayIndex,
-    kExprCaseList,
-    kExprCaseListElement
+    kExprArrayIndex
   };
 
 // Operator types. These are important for expressions of type kExprOperator.
@@ -39,7 +37,6 @@ namespace hsql {
 
     // n-nary special case
     kOpCase,
-    kOpCaseList, // Contains n >= 1 kExprCaseListElement in its exprList
     kOpCaseListElement, // `WHEN expr THEN expr`
 
     // Binary operators.
