@@ -156,8 +156,8 @@ namespace hsql {
 
   // LimitDescription
   LimitDescription::LimitDescription(int64_t limit, int64_t offset) :
-    limit(limit),
-    offset(offset) {}
+    limit(limit >= 0 ? limit : kNoLimit),
+    offset(offset > 0 ? offset : kNoOffset) {}
 
   // GroypByDescription
   GroupByDescription::GroupByDescription() :
