@@ -70,7 +70,9 @@ namespace hsql {
 
   Expr* Expr::makeCaseList(Expr* caseListElement) {
     Expr* e = new Expr(kExprOperator);
-    e->opType = kOpCaseList;
+    // Case list expressions are temporary and will be integrated into the case expressions exprList - thus assign
+    // operator type kOpNone
+    e->opType = kOpNone;
     e->exprList = new std::vector<Expr*>();
     e->exprList->push_back(caseListElement);
     return e;
