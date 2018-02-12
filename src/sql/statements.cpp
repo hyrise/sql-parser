@@ -231,6 +231,21 @@ namespace hsql {
     }
   }
 
+  // Alias
+  Alias::Alias(char* name, std::vector<char*>* columns) :
+    name(name),
+    columns(columns) {}
+
+  Alias::~Alias() {
+    free(name);
+    if (columns) {
+      for (char* column : *columns) {
+        free(column);
+      }
+      delete columns;
+    }
+  }
+
   // TableRef
   TableRef::TableRef(TableRefType type) :
     type(type),
@@ -244,10 +259,10 @@ namespace hsql {
   TableRef::~TableRef() {
     free(schema);
     free(name);
-    free(alias);
 
     delete select;
     delete join;
+    delete alias;
 
     if (list != nullptr) {
       for (TableRef* table : *list) {
@@ -262,7 +277,7 @@ namespace hsql {
   }
 
   const char* TableRef::getName() const {
-    if (alias != nullptr) return alias;
+    if (alias) return alias->name;
     else return name;
   }
 

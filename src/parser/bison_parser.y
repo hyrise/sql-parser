@@ -120,6 +120,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 	hsql::ColumnDefinition* column_t;
 	hsql::GroupByDescription* group_t;
 	hsql::UpdateClause* update_t;
+	hsql::Alias* alias_t;
 
 	std::vector<hsql::SQLStatement*>* stmt_vec;
 
@@ -133,7 +134,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 
 
 /*********************************
- ** Descrutor symbols
+ ** Destructor symbols
  *********************************/
 %destructor { } <fval> <ival> <uval> <bval> <order_type>
 %destructor { free( ($$.name) ); free( ($$.schema) ); } <table_name>
@@ -189,7 +190,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 %type <drop_stmt>	drop_statement
 %type <show_stmt>	show_statement
 %type <table_name>  table_name
-%type <sval> 		opt_alias alias file_path prepare_target_query
+%type <sval> 		file_path prepare_target_query
 %type <bval> 		opt_not_exists opt_exists opt_distinct
 %type <uval>		import_file_type opt_join_type column_type
 %type <table> 		from_clause table_ref table_ref_atomic table_ref_name nonjoin_table_ref_atomic
@@ -205,6 +206,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 %type <column_t>	column_def
 %type <update_t>	update_clause
 %type <group_t>		opt_group
+%type <alias_t>		opt_table_alias table_alias opt_alias alias
 
 %type <str_vec>		ident_commalist opt_column_list
 %type <expr_vec> 	expr_list select_list literal_list hint_list opt_hints
@@ -735,7 +737,10 @@ literal_list:
 expr_alias:
 		expr opt_alias {
 			$$ = $1;
-			$$->alias = $2;
+			if ($2) {
+				$$->alias = strdup($2->name);
+				delete $2;
+			}
 		}
 	;
 
@@ -906,7 +911,7 @@ table_ref_atomic:
 
 nonjoin_table_ref_atomic:
 		table_ref_name
-	|	'(' select_statement ')' opt_alias {
+	|	'(' select_statement ')' opt_table_alias {
 			auto tbl = new TableRef(kTableSelect);
 			tbl->select = $2;
 			tbl->alias = $4;
@@ -921,7 +926,7 @@ table_ref_commalist:
 
 
 table_ref_name:
-		table_name opt_alias {
+		table_name opt_table_alias {
 			auto tbl = new TableRef(kTableName);
 			tbl->schema = $1.schema;
 			tbl->name = $1.name;
@@ -946,16 +951,28 @@ table_name:
 	;
 
 
-alias:
-		AS IDENTIFIER { $$ = $2; }
-	|	IDENTIFIER
+table_alias:
+		alias
+	|	AS IDENTIFIER '(' ident_commalist ')' { $$ = new Alias($2, $4); }
 	;
+
+
+opt_table_alias:
+		table_alias
+	|	/* empty */ { $$ = nullptr; }
+
+
+alias:
+		AS IDENTIFIER { $$ = new Alias($2); }
+	|	IDENTIFIER { $$ = new Alias($1); }
+	;
+
 
 opt_alias:
 		alias
 	|	/* empty */ { $$ = nullptr; }
 
-
+ 
 /******************************
  * Join Statements
  ******************************/
@@ -1037,4 +1054,3 @@ ident_commalist:
  *********************************/
 
 /* empty */
-
