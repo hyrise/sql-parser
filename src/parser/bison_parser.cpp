@@ -3020,7 +3020,7 @@ yyreduce:
 #line 575 "bison_parser.y" /* yacc.c:1646  */
     {
 			// TODO: might overwrite order and limit of first select here
-                        (yyval.select_stmt) = MakeOrAppendUnionList((yyvsp[-4].select_stmt), (yyvsp[-3].setType), (yyvsp[-2].select_stmt));
+                        (yyval.select_stmt) = MakeOrAppendSetList((yyvsp[-4].select_stmt), (yyvsp[-3].setType), (yyvsp[-2].select_stmt));
  			(yyval.select_stmt)->order = (yyvsp[-1].order_vec);
  
 			// Limit could have been set by TOP.
@@ -3035,7 +3035,7 @@ yyreduce:
   case 63:
 #line 590 "bison_parser.y" /* yacc.c:1646  */
     {
-                        (yyval.select_stmt) = MakeOrAppendUnionList((yyvsp[-2].select_stmt), (yyvsp[-1].setType), (yyvsp[0].select_stmt));
+                        (yyval.select_stmt) = MakeOrAppendSetList((yyvsp[-2].select_stmt), (yyvsp[-1].setType), (yyvsp[0].select_stmt));
                  }
 #line 3041 "bison_parser.cpp" /* yacc.c:1646  */
     break;
@@ -3055,7 +3055,7 @@ yyreduce:
   case 66:
 #line 599 "bison_parser.y" /* yacc.c:1646  */
     { 
-                        (yyval.select_stmt) = MakeOrAppendUnionList((yyvsp[-3].select_stmt), (yyvsp[-2].setType), (yyvsp[-1].select_stmt));
+                        (yyval.select_stmt) = MakeOrAppendSetList((yyvsp[-3].select_stmt), (yyvsp[-2].setType), (yyvsp[-1].select_stmt));
                  }
 #line 3061 "bison_parser.cpp" /* yacc.c:1646  */
     break;

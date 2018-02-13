@@ -72,9 +72,9 @@ namespace hsql {
     LimitDescription* limit;
   };
 
-  SelectStatement* MakeOrAppendUnionList(SelectStatement* stmt, 
-                                         SetDescription* desc, 
-                                         SelectStatement* stmt2);
+  SelectStatement* MakeOrAppendSetList(SelectStatement* stmt, 
+                                       SetDescription* desc, 
+                                       SelectStatement* stmt2);
 
 } // namespace hsql
 

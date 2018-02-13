@@ -231,7 +231,7 @@ namespace hsql {
     }
   }
 
-  SelectStatement* MakeOrAppendUnionList(SelectStatement* stmt,
+  SelectStatement* MakeOrAppendSetList(SelectStatement* stmt,
                                          SetDescription* desc,
                                          SelectStatement* stmt2) {
      if (stmt->setType == nullptr) {

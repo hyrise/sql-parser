@@ -574,7 +574,7 @@ select_statement:
 	|	select_no_paren
 	|	select_set set_operator select_paren_or_clause opt_order opt_limit {
 			// TODO: might overwrite order and limit of first select here
-                        $$ = MakeOrAppendUnionList($1, $2, $3);
+                        $$ = MakeOrAppendSetList($1, $2, $3);
  			$$->order = $4;
  
 			// Limit could have been set by TOP.
@@ -588,7 +588,7 @@ select_statement:
 select_set: 
                 select_paren_or_clause
         |       select_set set_operator select_paren_or_clause      {
-                        $$ = MakeOrAppendUnionList($1, $2, $3);
+                        $$ = MakeOrAppendSetList($1, $2, $3);
                  }
                         
         ;
@@ -597,7 +597,7 @@ select_with_paren:
 		'(' select_no_paren ')' { $$ = $2; }
 	|	'(' select_with_paren ')' { $$ = $2; }
 	|	'(' select_set set_operator select_paren_or_clause ')' { 
-                        $$ = MakeOrAppendUnionList($2, $3, $4);
+                        $$ = MakeOrAppendSetList($2, $3, $4);
                  } 
 	;
 
