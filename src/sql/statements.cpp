@@ -232,8 +232,8 @@ namespace hsql {
   }
 
   SelectStatement* MakeOrAppendSetList(SelectStatement* stmt,
-                                         SetDescription* desc,
-                                         SelectStatement* stmt2) {
+                                       SetDescription* desc,
+                                       SelectStatement* stmt2) {
      if (stmt->setType == nullptr) {
        stmt->setType = new std::vector<SetDescription*>();
      }
