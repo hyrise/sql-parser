@@ -451,8 +451,12 @@ TEST(SetOperations) {
 		    select a from t1 except all select b from t2; \
 		    select a from t1 intersect all select b from t2 union select c from t3; \
 		    (select a from t1 union all select b from t2) except select c from t3; \
-		    select a from t1 union all (select b from t2 union select c from t3);",
-        result, 9);
+		    select a from t1 union all (select b from t2 union select c from t3); \
+		    select a from t1 union select b from t2 order by a; \
+		    select a from t1 union select b from t2 limit 10 ; \
+		    select a from t1 intersect all select b from t2 union select c from t3 order by b limit 10; \
+		    select a from t1 intersect select b from t2 where c = 3 limit 10;",
+        result, 13);
 
 
 
@@ -507,6 +511,37 @@ TEST(SetOperations) {
   ASSERT_FALSE(stmt->setStatement->at(0)->setType->at(0)->all);
   ASSERT_EQ(stmt->setStatement->at(0)->setType->at(0)->type, kSetUnion);
 
+  stmt = (SelectStatement*) result.getStatement(9);
+  ASSERT_STREQ(stmt->fromTable->name, "t1");
+  ASSERT_STREQ(stmt->setStatement->at(0)->fromTable->name, "t2");
+  ASSERT_EQ(stmt->setType->at(0)->type, kSetUnion);
+  ASSERT_STREQ(stmt->order->at(0)->expr->name, "a");
+
+  stmt = (SelectStatement*) result.getStatement(10);
+  ASSERT_STREQ(stmt->fromTable->name, "t1");
+  ASSERT_STREQ(stmt->setStatement->at(0)->fromTable->name, "t2");
+  ASSERT_EQ(stmt->setType->at(0)->type, kSetUnion);
+  ASSERT_EQ(stmt->limit->limit, 10);
+  ASSERT_EQ(stmt->limit->offset, kNoOffset);
+  
+  stmt = (SelectStatement*) result.getStatement(11);
+  ASSERT_EQ(stmt->setType->at(0)->type, kSetIntersect);
+  ASSERT_TRUE(stmt->setType->at(0)->all);
+  ASSERT_EQ(stmt->setType->at(1)->type, kSetUnion);
+  ASSERT_FALSE(stmt->setType->at(1)->all);
+  ASSERT_STREQ(stmt->order->at(0)->expr->name, "b");
+  ASSERT_EQ(stmt->limit->limit, 10);
+  ASSERT_EQ(stmt->limit->offset, kNoOffset);
+  
+  // check 'where' statement belongs to table t2, but limit to overall set operation
+  stmt = (SelectStatement*) result.getStatement(12);
+  ASSERT_STREQ(stmt->fromTable->name, "t1");
+  ASSERT_STREQ(stmt->setStatement->at(0)->fromTable->name, "t2");
+  ASSERT_EQ(stmt->setType->at(0)->type, kSetIntersect);
+  ASSERT_EQ(stmt->setStatement->at(0)->whereClause->opType, kOpEquals);
+  ASSERT_STREQ(stmt->setStatement->at(0)->whereClause->expr->getName(), "c");
+  ASSERT_EQ(stmt->limit->limit, 10);
+  
   SQLParser::parse("select a from x limit 10 union all \
                     select b from y order by z", &result);
   ASSERT_FALSE(result.isValid());
