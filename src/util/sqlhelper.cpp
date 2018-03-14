@@ -197,19 +197,19 @@ namespace hsql {
 
 
   void printImportStatementInfo(const ImportStatement* stmt, uintmax_t numIndent) {
-    inprint("ImportStatment", numIndent);
+    inprint("ImportStatement", numIndent);
     inprint(stmt->filePath, numIndent + 1);
     inprint(stmt->tableName, numIndent + 1);
   }
 
   void printCreateStatementInfo(const CreateStatement* stmt, uintmax_t numIndent) {
-    inprint("CreateStatment", numIndent);
+    inprint("CreateStatement", numIndent);
     inprint(stmt->tableName, numIndent + 1);
     inprint(stmt->filePath, numIndent + 1);
   }
 
   void printInsertStatementInfo(const InsertStatement* stmt, uintmax_t numIndent) {
-    inprint("InsertStatment", numIndent);
+    inprint("InsertStatement", numIndent);
     inprint(stmt->tableName, numIndent + 1);
     if (stmt->columns != nullptr) {
       inprint("Columns", numIndent + 1);

@@ -37,6 +37,11 @@ namespace hsql {
     // Shorthand for isType(type).
     bool is(StatementType type) const;
 
+    // Check is statement is DDL, DML or DQL
+    bool isDataDefinitionStatement() const;
+    bool isDataManipulationStatement() const;
+    bool isDataQueryStatement() const;
+
     // Length of the string in the SQL query string
     size_t stringLength;
 

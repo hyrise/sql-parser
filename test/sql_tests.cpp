@@ -224,4 +224,35 @@ TEST(StringLengthTest) {
   ASSERT_EQ(result.getStatement(2)->stringLength, 21);
 }
 
+TEST(StatementTypeTest) {
+  // DQL
+  TEST_PARSE_SQL_QUERY("SELECT * FROM foo", resultSelect, 1);
+  ASSERT_TRUE(resultSelect.getStatement(0)->isDataQueryStatement());
+
+  TEST_PARSE_SQL_QUERY("SHOW TABLES", resultShow, 1);
+  ASSERT_TRUE(resultShow.getStatement(0)->isDataQueryStatement());
+
+  // DDL
+  TEST_PARSE_SQL_QUERY("IMPORT FROM CSV FILE 'foo.csv' INTO foo", resultImport, 1);
+  ASSERT_TRUE(resultImport.getStatement(0)->isDataDefinitionStatement());
+
+  TEST_PARSE_SQL_QUERY("CREATE TABLE foo (bar INT)", resultCreate, 1);
+  ASSERT_TRUE(resultCreate.getStatement(0)->isDataDefinitionStatement());
+
+  TEST_PARSE_SQL_QUERY("DROP TABLE foo", resultDrop, 1);
+  ASSERT_TRUE(resultDrop.getStatement(0)->isDataDefinitionStatement());
+
+  // ALTER, RENAME, EXPORT not supported yet
+
+  // DML
+  TEST_PARSE_SQL_QUERY("INSERT INTO foo VALUES (1)", resultInsert, 1);
+  ASSERT_TRUE(resultInsert.getStatement(0)->isDataManipulationStatement());
+
+  TEST_PARSE_SQL_QUERY("DELETE FROM foo WHERE bar = 1", resultDelete, 1);
+  ASSERT_TRUE(resultDelete.getStatement(0)->isDataManipulationStatement());
+
+  TEST_PARSE_SQL_QUERY("UPDATE foo SET a = 2 WHERE a = 1", resultUpdate, 1);
+  ASSERT_TRUE(resultUpdate.getStatement(0)->isDataManipulationStatement());
+}
+
 TEST_MAIN();
