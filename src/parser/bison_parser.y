@@ -765,7 +765,7 @@ operand:
 	|	unary_expr
 	|	binary_expr
 	|	case_expr
-	|   function_expr
+	|	function_expr
 	|	extract_expr
 	|	array_expr
 	|	'(' select_no_paren ')' { $$ = Expr::makeSelect($2); }
