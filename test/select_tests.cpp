@@ -577,3 +577,22 @@ TEST(Extract) {
   ASSERT_EQ(stmt->whereClause->expr->name, std::string("EXTRACT"));
   ASSERT_EQ(stmt->whereClause->expr->datetimeField, kDatetimeMinute);
 }
+
+TEST(NoFromClause) {
+  TEST_PARSE_SINGLE_SQL(
+    "SELECT 1 + 2;",
+    kStmtSelect,
+    SelectStatement,
+    result,
+    stmt);
+
+  ASSERT_TRUE(stmt->selectList);
+  ASSERT_FALSE(stmt->fromTable);
+  ASSERT_FALSE(stmt->whereClause);
+  ASSERT_FALSE(stmt->groupBy);
+
+  ASSERT_EQ(stmt->selectList->size(), 1u);
+  ASSERT_EQ(stmt->selectList->at(0)->type, kExprOperator);
+  ASSERT_EQ(stmt->selectList->at(0)->expr->type, kExprLiteralInt);
+  ASSERT_EQ(stmt->selectList->at(0)->expr2->type, kExprLiteralInt);
+}
