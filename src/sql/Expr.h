@@ -25,7 +25,8 @@ namespace hsql {
     kExprSelect,
     kExprHint,
     kExprArray,
-    kExprArrayIndex
+    kExprArrayIndex,
+    kExprDatetimeField
   };
 
 // Operator types. These are important for expressions of type kExprOperator.
@@ -68,6 +69,16 @@ namespace hsql {
     kOpExists
   };
 
+  enum DatetimeField {
+    kDatetimeNone,
+    kDatetimeSecond,
+    kDatetimeMinute,
+    kDatetimeHour,
+    kDatetimeDay,
+    kDatetimeMonth,
+    kDatetimeYear,
+  };
+
   typedef struct Expr Expr;
 
 // Represents SQL expressions (i.e. literals, operators, column_refs).
@@ -90,6 +101,7 @@ namespace hsql {
     float fval;
     int64_t ival;
     int64_t ival2;
+    DatetimeField datetimeField;
 
     OperatorType opType;
     bool distinct;
@@ -156,6 +168,8 @@ namespace hsql {
     static Expr* makeInOperator(Expr* expr, std::vector<Expr*>* exprList);
 
     static Expr* makeInOperator(Expr* expr, SelectStatement* select);
+
+    static Expr* makeExtract(DatetimeField datetimeField1, Expr* expr);
   };
 
 // Zero initializes an Expr object and assigns it to a space in the heap

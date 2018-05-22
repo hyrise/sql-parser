@@ -18,6 +18,7 @@ namespace hsql {
       fval(0),
       ival(0),
       ival2(0),
+      datetimeField(kDatetimeNone),
       opType(kOpNone),
       distinct(false) {};
 
@@ -205,6 +206,14 @@ namespace hsql {
     e->expr = expr;
     e->select = select;
 
+    return e;
+  }
+
+  Expr* Expr::makeExtract(DatetimeField datetimeField, Expr* expr) {
+    Expr* e = new Expr(kExprFunctionRef);
+    e->name = strdup("EXTRACT");
+    e->datetimeField = datetimeField;
+    e->expr = expr;
     return e;
   }
 
