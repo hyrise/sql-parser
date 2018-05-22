@@ -193,7 +193,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 %type <sval> 		file_path prepare_target_query
 %type <bval> 		opt_not_exists opt_exists opt_distinct
 %type <uval>		import_file_type opt_join_type column_type
-%type <table> 		from_clause table_ref table_ref_atomic table_ref_name nonjoin_table_ref_atomic
+%type <table> 		opt_from_clause from_clause table_ref table_ref_atomic table_ref_name nonjoin_table_ref_atomic
 %type <table>		join_clause table_ref_name_no_alias
 %type <expr> 		expr operand scalar_expr unary_expr binary_expr logic_expr exists_expr
 %type <expr>		function_expr between_expr expr_alias param_expr
@@ -640,7 +640,7 @@ opt_all:
 	;
 
 select_clause:
-		SELECT opt_top opt_distinct select_list from_clause opt_where opt_group {
+		SELECT opt_top opt_distinct select_list opt_from_clause opt_where opt_group {
 			$$ = new SelectStatement();
 			$$->limit = $2;
 			$$->selectDistinct = $3;
@@ -659,6 +659,10 @@ opt_distinct:
 select_list:
 		expr_list
 	;
+
+opt_from_clause:
+        from_clause  { $$ = $1; }
+    |   /* empty */  { $$ = nullptr; }
 
 from_clause:
 		FROM table_ref { $$ = $2; }
