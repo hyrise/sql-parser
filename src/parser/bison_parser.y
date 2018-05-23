@@ -116,6 +116,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 	hsql::Expr* expr;
 	hsql::OrderDescription* order;
 	hsql::OrderType order_type;
+	hsql::DatetimeField datetime_field;
 	hsql::LimitDescription* limit;
 	hsql::ColumnDefinition* column_t;
 	hsql::GroupByDescription* group_t;
@@ -136,7 +137,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 /*********************************
  ** Destructor symbols
  *********************************/
-%destructor { } <fval> <ival> <uval> <bval> <order_type>
+%destructor { } <fval> <ival> <uval> <bval> <order_type> <datetime_field>
 %destructor { free( ($$.name) ); free( ($$.schema) ); } <table_name>
 %destructor { free( ($$) ); } <sval>
 %destructor {
@@ -163,7 +164,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 %token CASCADE COLUMNS CONTROL DEFAULT EXECUTE EXPLAIN
 %token HISTORY INTEGER NATURAL PREPARE PRIMARY SCHEMAS
 %token SPATIAL VIRTUAL BEFORE COLUMN CREATE DELETE DIRECT
-%token DOUBLE ESCAPE EXCEPT EXISTS GLOBAL HAVING IMPORT
+%token DOUBLE ESCAPE EXCEPT EXISTS EXTRACT GLOBAL HAVING IMPORT
 %token INSERT ISNULL OFFSET RENAME SCHEMA SELECT SORTED
 %token TABLES UNIQUE UNLOAD UPDATE VALUES AFTER ALTER CROSS
 %token DELTA GROUP INDEX INNER LIMIT LOCAL MERGE MINUS ORDER
@@ -172,7 +173,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 %token LEFT LIKE LOAD NULL PART PLAN SHOW TEXT THEN TIME
 %token VIEW WHEN WITH ADD ALL AND ASC CSV END FOR INT KEY
 %token NOT OFF SET TBL TOP AS BY IF IN IS OF ON OR TO
-%token ARRAY CONCAT ILIKE
+%token ARRAY CONCAT ILIKE SECOND MINUTE HOUR DAY MONTH YEAR
 
 /*********************************
  ** Non-Terminal types (http://www.gnu.org/software/bison/manual/html_node/Type-Decl.html)
@@ -195,7 +196,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 %type <uval>		import_file_type opt_join_type column_type
 %type <table> 		opt_from_clause from_clause table_ref table_ref_atomic table_ref_name nonjoin_table_ref_atomic
 %type <table>		join_clause table_ref_name_no_alias
-%type <expr> 		expr operand scalar_expr unary_expr binary_expr logic_expr exists_expr
+%type <expr> 		expr operand scalar_expr unary_expr binary_expr logic_expr exists_expr extract_expr
 %type <expr>		function_expr between_expr expr_alias param_expr
 %type <expr> 		column_name literal int_literal num_literal string_literal
 %type <expr> 		comp_expr opt_where join_condition opt_having case_expr case_list in_expr hint
@@ -203,6 +204,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 %type <limit>		opt_limit opt_top
 %type <order>		order_desc
 %type <order_type>	opt_order_type
+%type <datetime_field>	datetime_field
 %type <column_t>	column_def
 %type <update_t>	update_clause
 %type <group_t>		opt_group
@@ -764,6 +766,7 @@ operand:
 	|	binary_expr
 	|	case_expr
 	|	function_expr
+	|	extract_expr
 	|	array_expr
 	|	'(' select_no_paren ')' { $$ = Expr::makeSelect($2); }
 	;
@@ -837,9 +840,21 @@ comp_expr:
 	;
 
 function_expr:
-		IDENTIFIER '(' ')' { $$ = Expr::makeFunctionRef($1, new std::vector<Expr*>(), false); }
-	|	IDENTIFIER '(' opt_distinct expr_list ')' { $$ = Expr::makeFunctionRef($1, $4, $3); }
-	;
+               IDENTIFIER '(' ')' { $$ = Expr::makeFunctionRef($1, new std::vector<Expr*>(), false); }
+       |       IDENTIFIER '(' opt_distinct expr_list ')' { $$ = Expr::makeFunctionRef($1, $4, $3); }
+       ;
+
+extract_expr:
+         EXTRACT '(' datetime_field FROM expr ')'    { $$ = Expr::makeExtract($3, $5); }
+    ;
+
+datetime_field:
+        SECOND { $$ = kDatetimeSecond; }
+    |   MINUTE { $$ = kDatetimeMinute; }
+    |   HOUR { $$ = kDatetimeHour; }
+    |   DAY { $$ = kDatetimeDay; }
+    |   MONTH { $$ = kDatetimeMonth; }
+    |   YEAR { $$ = kDatetimeYear; }
 
 array_expr:
 	  	ARRAY '[' expr_list ']' { $$ = Expr::makeArray($3); }

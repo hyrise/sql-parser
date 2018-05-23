@@ -542,6 +542,42 @@ TEST(SetLimitOffset) {
   ASSERT_EQ(stmt->limit->offset, kNoOffset);
 }
 
+TEST(Extract) {
+  SelectStatement* stmt;
+
+  TEST_PARSE_SQL_QUERY("select extract(year from dc) FROM t;"
+                       "select x, extract(month from dc) AS t FROM t;"
+                       "select x FROM t WHERE extract(minute from dc) > 2011;",
+                       result, 3);
+
+  stmt = (SelectStatement*) result.getStatement(0);
+  ASSERT_TRUE(stmt->selectList);
+  ASSERT_EQ(stmt->selectList->size(), 1u);
+  ASSERT_EQ(stmt->selectList->at(0)->type, kExprFunctionRef);
+  ASSERT_EQ(stmt->selectList->at(0)->name, std::string("EXTRACT"));
+  ASSERT_EQ(stmt->selectList->at(0)->datetimeField, kDatetimeYear);
+  ASSERT_TRUE(stmt->selectList->at(0)->expr);
+  ASSERT_EQ(stmt->selectList->at(0)->expr->type, kExprColumnRef);
+
+  stmt = (SelectStatement*) result.getStatement(1);
+  ASSERT_TRUE(stmt->selectList);
+  ASSERT_EQ(stmt->selectList->size(), 2u);
+  ASSERT_EQ(stmt->selectList->at(1)->type, kExprFunctionRef);
+  ASSERT_EQ(stmt->selectList->at(1)->name, std::string("EXTRACT"));
+  ASSERT_EQ(stmt->selectList->at(1)->datetimeField, kDatetimeMonth);
+  ASSERT_TRUE(stmt->selectList->at(1)->expr);
+  ASSERT_EQ(stmt->selectList->at(1)->expr->type, kExprColumnRef);
+  ASSERT_TRUE(stmt->selectList->at(1)->alias);
+  ASSERT_EQ(stmt->selectList->at(1)->alias, std::string("t"));
+
+  stmt = (SelectStatement*) result.getStatement(2);
+  ASSERT_TRUE(stmt->whereClause);
+  ASSERT_TRUE(stmt->whereClause->expr);
+  ASSERT_EQ(stmt->whereClause->expr->type, kExprFunctionRef);
+  ASSERT_EQ(stmt->whereClause->expr->name, std::string("EXTRACT"));
+  ASSERT_EQ(stmt->whereClause->expr->datetimeField, kDatetimeMinute);
+}
+
 TEST(NoFromClause) {
   TEST_PARSE_SINGLE_SQL(
     "SELECT 1 + 2;",
@@ -560,4 +596,3 @@ TEST(NoFromClause) {
   ASSERT_EQ(stmt->selectList->at(0)->expr->type, kExprLiteralInt);
   ASSERT_EQ(stmt->selectList->at(0)->expr2->type, kExprLiteralInt);
 }
-
