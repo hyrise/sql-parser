@@ -55,6 +55,35 @@ TEST(SelectExprTest) {
   ASSERT_STREQ(stmt->selectList->at(2)->exprList->at(1)->exprList->at(0)->getName(), "un");
 }
 
+TEST(SelectSubstrTest) {
+  TEST_PARSE_SINGLE_SQL(
+          "SELECT SUBSTR(a, 3, 5) FROM students;",
+          kStmtSelect,
+          SelectStatement,
+          result,
+          stmt);
+
+  ASSERT_NULL(stmt->whereClause);
+  ASSERT_NULL(stmt->groupBy);
+
+  ASSERT_EQ(stmt->selectList->size(), 1);
+
+  ASSERT(stmt->selectList->at(0)->isType(kExprFunctionRef));
+  ASSERT_STREQ(stmt->selectList->at(0)->getName(), "SUBSTR");
+
+  ASSERT_NOTNULL(stmt->selectList->at(0)->exprList);
+  ASSERT_EQ(stmt->selectList->at(0)->exprList->size(), 3);
+
+  ASSERT(stmt->selectList->at(0)->exprList->at(0)->isType(kExprColumnRef));
+  ASSERT_STREQ(stmt->selectList->at(0)->exprList->at(0)->getName(), "a");
+
+  ASSERT(stmt->selectList->at(0)->exprList->at(1)->isType(kExprLiteralInt));
+  ASSERT_EQ(stmt->selectList->at(0)->exprList->at(1)->ival, 3);
+
+  ASSERT(stmt->selectList->at(0)->exprList->at(2)->isType(kExprLiteralInt));
+  ASSERT_EQ(stmt->selectList->at(0)->exprList->at(2)->ival, 5);
+}
+
 
 TEST(SelectHavingTest) {
   TEST_PARSE_SINGLE_SQL(
@@ -472,7 +501,7 @@ TEST(JoinTypes) {
 
   stmt = (SelectStatement*) result.getStatement(7);
   ASSERT_EQ(stmt->fromTable->join->type, kJoinFull);
- 
+
   stmt = (SelectStatement*) result.getStatement(8);
   ASSERT_EQ(stmt->fromTable->join->type, kJoinFull);
 
