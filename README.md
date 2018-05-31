@@ -64,7 +64,7 @@ We strongly encourage you to contribute to this project! If you want to contribu
 
 ## License
 
-HYRISE sql-parser is licensed as open source after the OpenSource "Licence of the Hasso-Plattner Institute" declared in the LICENSE file of this project.
+HYRISE sql-parser is licensed as open source after the MIT License which is declared in the LICENSE file of this project.
 
 
 ## Contributers
