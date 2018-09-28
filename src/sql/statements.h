@@ -1,5 +1,5 @@
-#ifndef __SQLPARSER__STATEMENTS_H__
-#define __SQLPARSER__STATEMENTS_H__
+#ifndef SQLPARSER_STATEMENTS_H
+#define SQLPARSER_STATEMENTS_H
 
 #include "SelectStatement.h"
 #include "ImportStatement.h"
@@ -12,4 +12,4 @@
 #include "ExecuteStatement.h"
 #include "ShowStatement.h"
 
-#endif // __SQLPARSER__STATEMENTS_H__
+#endif // SQLPARSER_STATEMENTS_H

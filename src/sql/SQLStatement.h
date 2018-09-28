@@ -1,5 +1,5 @@
-#ifndef __SQLPARSER__SQLSTATEMENT_H__
-#define __SQLPARSER__SQLSTATEMENT_H__
+#ifndef SQLPARSER_SQLSTATEMENT_H
+#define SQLPARSER_SQLSTATEMENT_H
 
 #include <vector>
 
@@ -49,4 +49,4 @@ namespace hsql {
 
 } // namespace hsql
 
-#endif // __SQLPARSER__SQLSTATEMENT_H__
+#endif // SQLPARSER_SQLSTATEMENT_H

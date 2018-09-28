@@ -1,5 +1,5 @@
-#ifndef __SQLPARSER__EXPR_H__
-#define __SQLPARSER__EXPR_H__
+#ifndef SQLPARSER_EXPR_H
+#define SQLPARSER_EXPR_H
 
 #include <stdlib.h>
 #include <memory>

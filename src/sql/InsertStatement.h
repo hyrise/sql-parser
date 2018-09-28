@@ -1,5 +1,5 @@
-#ifndef __SQLPARSER__INSERT_STATEMENT_H__
-#define __SQLPARSER__INSERT_STATEMENT_H__
+#ifndef SQLPARSER_INSERT_STATEMENT_H
+#define SQLPARSER_INSERT_STATEMENT_H
 
 #include "SQLStatement.h"
 #include "SelectStatement.h"
