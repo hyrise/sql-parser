@@ -1,16 +1,63 @@
-
 #include "statements.h"
 
 namespace hsql {
 
   // ColumnDefinition
-  ColumnDefinition::ColumnDefinition(char* name, DataType type) :
+  ColumnDefinition::ColumnDefinition(char* name, ColumnType type, bool nullable) :
     name(name),
-    type(type) {};
+    type(type),
+    nullable(nullable) {};
 
   ColumnDefinition::~ColumnDefinition() {
     free(name);
   }
+
+  ColumnType::ColumnType(DataType data_type, int64_t length) :
+    data_type(data_type),
+    length(length) {};
+
+  bool operator==(const ColumnType& lhs, const ColumnType& rhs) {
+    if (lhs.data_type != rhs.data_type) return false;
+    if (lhs.data_type == DataType::VARCHAR || lhs.data_type == DataType::CHAR) {
+      return lhs.length == rhs.length;
+    }
+    return true;
+  }
+
+  bool operator!=(const ColumnType& lhs, const ColumnType& rhs) {
+    return !(lhs == rhs);
+  }
+
+  std::ostream& operator<<(std::ostream& stream, const ColumnType& column_type) {
+    switch (column_type.data_type) {
+      case DataType::UNKNOWN:
+        stream << "UNKNOWN";
+        break;
+      case DataType::INT:
+        stream << "INT";
+        break;
+      case DataType::LONG:
+        stream << "LONG";
+        break;
+      case DataType::FLOAT:
+        stream << "FLOAT";
+        break;
+      case DataType::DOUBLE:
+        stream << "DOUBLE";
+        break;
+      case DataType::CHAR:
+        stream << "CHAR(" << column_type.length << ")";
+        break;
+      case DataType::VARCHAR:
+        stream << "VARCHAR(" << column_type.length << ")";
+        break;
+      case DataType::TEXT:
+        stream << "TEXT";
+        break;
+    }
+    return stream;
+  }
+
 
   // CreateStatemnet
   CreateStatement::CreateStatement(CreateType type) :

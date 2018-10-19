@@ -119,6 +119,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 	hsql::DatetimeField datetime_field;
 	hsql::LimitDescription* limit;
 	hsql::ColumnDefinition* column_t;
+	hsql::ColumnType column_type_t;
 	hsql::GroupByDescription* group_t;
 	hsql::UpdateClause* update_t;
 	hsql::Alias* alias_t;
@@ -137,7 +138,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 /*********************************
  ** Destructor symbols
  *********************************/
-%destructor { } <fval> <ival> <uval> <bval> <order_type> <datetime_field>
+%destructor { } <fval> <ival> <uval> <bval> <order_type> <datetime_field> <column_type_t>
 %destructor { free( ($$.name) ); free( ($$.schema) ); } <table_name>
 %destructor { free( ($$) ); } <sval>
 %destructor {
@@ -163,14 +164,14 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 %token DISTINCT NVARCHAR RESTRICT TRUNCATE ANALYZE BETWEEN
 %token CASCADE COLUMNS CONTROL DEFAULT EXECUTE EXPLAIN
 %token HISTORY INTEGER NATURAL PREPARE PRIMARY SCHEMAS
-%token SPATIAL VIRTUAL BEFORE COLUMN CREATE DELETE DIRECT
+%token SPATIAL VARCHAR VIRTUAL BEFORE COLUMN CREATE DELETE DIRECT
 %token DOUBLE ESCAPE EXCEPT EXISTS EXTRACT GLOBAL HAVING IMPORT
 %token INSERT ISNULL OFFSET RENAME SCHEMA SELECT SORTED
 %token TABLES UNIQUE UNLOAD UPDATE VALUES AFTER ALTER CROSS
-%token DELTA GROUP INDEX INNER LIMIT LOCAL MERGE MINUS ORDER
-%token OUTER RIGHT TABLE UNION USING WHERE CALL CASE DATE
+%token DELTA FLOAT GROUP INDEX INNER LIMIT LOCAL MERGE MINUS ORDER
+%token OUTER RIGHT TABLE UNION USING WHERE CALL CASE CHAR DATE
 %token DESC DROP ELSE FILE FROM FULL HASH HINT INTO JOIN
-%token LEFT LIKE LOAD NULL PLAN SHOW TEXT THEN TIME
+%token LEFT LIKE LOAD LONG NULL PLAN SHOW TEXT THEN TIME
 %token VIEW WHEN WITH ADD ALL AND ASC CSV END FOR INT KEY
 %token NOT OFF SET TBL TOP AS BY IF IN IS OF ON OR TO
 %token ARRAY CONCAT ILIKE SECOND MINUTE HOUR DAY MONTH YEAR
@@ -178,37 +179,38 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 /*********************************
  ** Non-Terminal types (http://www.gnu.org/software/bison/manual/html_node/Type-Decl.html)
  *********************************/
-%type <stmt_vec>	statement_list
-%type <statement> 	statement preparable_statement
-%type <exec_stmt>	execute_statement
-%type <prep_stmt>	prepare_statement
-%type <select_stmt> select_statement select_with_paren select_no_paren select_clause select_paren_or_clause
-%type <import_stmt> import_statement
-%type <create_stmt> create_statement
-%type <insert_stmt> insert_statement
-%type <delete_stmt> delete_statement truncate_statement
-%type <update_stmt> update_statement
-%type <drop_stmt>	drop_statement
-%type <show_stmt>	show_statement
-%type <table_name>  table_name
-%type <sval> 		file_path prepare_target_query
-%type <bval> 		opt_not_exists opt_exists opt_distinct
-%type <uval>		import_file_type opt_join_type column_type
-%type <table> 		opt_from_clause from_clause table_ref table_ref_atomic table_ref_name nonjoin_table_ref_atomic
-%type <table>		join_clause table_ref_name_no_alias
-%type <expr> 		expr operand scalar_expr unary_expr binary_expr logic_expr exists_expr extract_expr
-%type <expr>		function_expr between_expr expr_alias param_expr
-%type <expr> 		column_name literal int_literal num_literal string_literal
-%type <expr> 		comp_expr opt_where join_condition opt_having case_expr case_list in_expr hint
-%type <expr> 		array_expr array_index null_literal
-%type <limit>		opt_limit opt_top
-%type <order>		order_desc
-%type <order_type>	opt_order_type
+%type <stmt_vec>	    statement_list
+%type <statement> 	    statement preparable_statement
+%type <exec_stmt>	    execute_statement
+%type <prep_stmt>	    prepare_statement
+%type <select_stmt>     select_statement select_with_paren select_no_paren select_clause select_paren_or_clause
+%type <import_stmt>     import_statement
+%type <create_stmt>     create_statement
+%type <insert_stmt>     insert_statement
+%type <delete_stmt>     delete_statement truncate_statement
+%type <update_stmt>     update_statement
+%type <drop_stmt>	    drop_statement
+%type <show_stmt>	    show_statement
+%type <table_name>      table_name
+%type <sval> 		    file_path prepare_target_query
+%type <bval> 		    opt_not_exists opt_exists opt_distinct opt_column_nullable
+%type <uval>		    import_file_type opt_join_type
+%type <table> 		    opt_from_clause from_clause table_ref table_ref_atomic table_ref_name nonjoin_table_ref_atomic
+%type <table>		    join_clause table_ref_name_no_alias
+%type <expr> 		    expr operand scalar_expr unary_expr binary_expr logic_expr exists_expr extract_expr
+%type <expr>		    function_expr between_expr expr_alias param_expr
+%type <expr> 		    column_name literal int_literal num_literal string_literal
+%type <expr> 		    comp_expr opt_where join_condition opt_having case_expr case_list in_expr hint
+%type <expr> 		    array_expr array_index null_literal
+%type <limit>		    opt_limit opt_top
+%type <order>		    order_desc
+%type <order_type>	    opt_order_type
 %type <datetime_field>	datetime_field
-%type <column_t>	column_def
-%type <update_t>	update_clause
-%type <group_t>		opt_group
-%type <alias_t>		opt_table_alias table_alias opt_alias alias
+%type <column_t>	    column_def
+%type <column_type_t>   column_type
+%type <update_t>	    update_clause
+%type <group_t>		    opt_group
+%type <alias_t>		    opt_table_alias table_alias opt_alias alias
 
 %type <str_vec>		ident_commalist opt_column_list
 %type <expr_vec> 	expr_list select_list literal_list hint_list opt_hints
@@ -444,17 +446,26 @@ column_def_commalist:
 	;
 
 column_def:
-		IDENTIFIER column_type {
-			$$ = new ColumnDefinition($1, (ColumnDefinition::DataType) $2);
+		IDENTIFIER column_type opt_column_nullable {
+			$$ = new ColumnDefinition($1, $2, $3);
 		}
 	;
 
-
 column_type:
-		INT { $$ = ColumnDefinition::INT; }
-	|	INTEGER { $$ = ColumnDefinition::INT; }
-	|	DOUBLE { $$ = ColumnDefinition::DOUBLE; }
-	|	TEXT { $$ = ColumnDefinition::TEXT; }
+		INT { $$ = ColumnType{DataType::INT}; }
+	|	INTEGER { $$ = ColumnType{DataType::INT}; }
+	|	LONG { $$ = ColumnType{DataType::LONG}; }
+	|	FLOAT { $$ = ColumnType{DataType::FLOAT}; }
+	|	DOUBLE { $$ = ColumnType{DataType::DOUBLE}; }
+	|	VARCHAR '(' INTVAL ')' { $$ = ColumnType{DataType::VARCHAR, $3}; }
+	|	CHAR '(' INTVAL ')' { $$ = ColumnType{DataType::CHAR, $3}; }
+	|	TEXT { $$ = ColumnType{DataType::TEXT}; }
+	;
+
+opt_column_nullable:
+		NULL { $$ = true; }
+	|	NOT NULL { $$ = false; }
+	|	/* empty */ { $$ = false; }
 	;
 
 /******************************

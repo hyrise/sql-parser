@@ -1,8 +1,8 @@
-/* A Bison parser, made by GNU Bison 3.0.4.  */
+/* A Bison parser, made by GNU Bison 3.1.  */
 
 /* Bison interface for Yacc-like parsers in C
 
-   Copyright (C) 1984, 1989-1990, 2000-2015 Free Software Foundation, Inc.
+   Copyright (C) 1984, 1989-1990, 2000-2015, 2018 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -48,7 +48,7 @@
 extern int hsql_debug;
 #endif
 /* "%code requires" blocks.  */
-#line 35 "bison_parser.y" /* yacc.c:1909  */
+#line 35 "bison_parser.y" /* yacc.c:1919  */
 
 // %code requires block
 
@@ -72,7 +72,7 @@ extern int hsql_debug;
 				} \
 		}
 
-#line 76 "bison_parser.h" /* yacc.c:1909  */
+#line 76 "bison_parser.h" /* yacc.c:1919  */
 
 /* Token type.  */
 #ifndef HSQL_TOKENTYPE
@@ -107,115 +107,119 @@ extern int hsql_debug;
     SQL_PRIMARY = 283,
     SQL_SCHEMAS = 284,
     SQL_SPATIAL = 285,
-    SQL_VIRTUAL = 286,
-    SQL_BEFORE = 287,
-    SQL_COLUMN = 288,
-    SQL_CREATE = 289,
-    SQL_DELETE = 290,
-    SQL_DIRECT = 291,
-    SQL_DOUBLE = 292,
-    SQL_ESCAPE = 293,
-    SQL_EXCEPT = 294,
-    SQL_EXISTS = 295,
-    SQL_EXTRACT = 296,
-    SQL_GLOBAL = 297,
-    SQL_HAVING = 298,
-    SQL_IMPORT = 299,
-    SQL_INSERT = 300,
-    SQL_ISNULL = 301,
-    SQL_OFFSET = 302,
-    SQL_RENAME = 303,
-    SQL_SCHEMA = 304,
-    SQL_SELECT = 305,
-    SQL_SORTED = 306,
-    SQL_TABLES = 307,
-    SQL_UNIQUE = 308,
-    SQL_UNLOAD = 309,
-    SQL_UPDATE = 310,
-    SQL_VALUES = 311,
-    SQL_AFTER = 312,
-    SQL_ALTER = 313,
-    SQL_CROSS = 314,
-    SQL_DELTA = 315,
-    SQL_GROUP = 316,
-    SQL_INDEX = 317,
-    SQL_INNER = 318,
-    SQL_LIMIT = 319,
-    SQL_LOCAL = 320,
-    SQL_MERGE = 321,
-    SQL_MINUS = 322,
-    SQL_ORDER = 323,
-    SQL_OUTER = 324,
-    SQL_RIGHT = 325,
-    SQL_TABLE = 326,
-    SQL_UNION = 327,
-    SQL_USING = 328,
-    SQL_WHERE = 329,
-    SQL_CALL = 330,
-    SQL_CASE = 331,
-    SQL_DATE = 332,
-    SQL_DESC = 333,
-    SQL_DROP = 334,
-    SQL_ELSE = 335,
-    SQL_FILE = 336,
-    SQL_FROM = 337,
-    SQL_FULL = 338,
-    SQL_HASH = 339,
-    SQL_HINT = 340,
-    SQL_INTO = 341,
-    SQL_JOIN = 342,
-    SQL_LEFT = 343,
-    SQL_LIKE = 344,
-    SQL_LOAD = 345,
-    SQL_NULL = 346,
-    SQL_PLAN = 347,
-    SQL_SHOW = 348,
-    SQL_TEXT = 349,
-    SQL_THEN = 350,
-    SQL_TIME = 351,
-    SQL_VIEW = 352,
-    SQL_WHEN = 353,
-    SQL_WITH = 354,
-    SQL_ADD = 355,
-    SQL_ALL = 356,
-    SQL_AND = 357,
-    SQL_ASC = 358,
-    SQL_CSV = 359,
-    SQL_END = 360,
-    SQL_FOR = 361,
-    SQL_INT = 362,
-    SQL_KEY = 363,
-    SQL_NOT = 364,
-    SQL_OFF = 365,
-    SQL_SET = 366,
-    SQL_TBL = 367,
-    SQL_TOP = 368,
-    SQL_AS = 369,
-    SQL_BY = 370,
-    SQL_IF = 371,
-    SQL_IN = 372,
-    SQL_IS = 373,
-    SQL_OF = 374,
-    SQL_ON = 375,
-    SQL_OR = 376,
-    SQL_TO = 377,
-    SQL_ARRAY = 378,
-    SQL_CONCAT = 379,
-    SQL_ILIKE = 380,
-    SQL_SECOND = 381,
-    SQL_MINUTE = 382,
-    SQL_HOUR = 383,
-    SQL_DAY = 384,
-    SQL_MONTH = 385,
-    SQL_YEAR = 386,
-    SQL_EQUALS = 387,
-    SQL_NOTEQUALS = 388,
-    SQL_LESS = 389,
-    SQL_GREATER = 390,
-    SQL_LESSEQ = 391,
-    SQL_GREATEREQ = 392,
-    SQL_NOTNULL = 393,
-    SQL_UMINUS = 394
+    SQL_VARCHAR = 286,
+    SQL_VIRTUAL = 287,
+    SQL_BEFORE = 288,
+    SQL_COLUMN = 289,
+    SQL_CREATE = 290,
+    SQL_DELETE = 291,
+    SQL_DIRECT = 292,
+    SQL_DOUBLE = 293,
+    SQL_ESCAPE = 294,
+    SQL_EXCEPT = 295,
+    SQL_EXISTS = 296,
+    SQL_EXTRACT = 297,
+    SQL_GLOBAL = 298,
+    SQL_HAVING = 299,
+    SQL_IMPORT = 300,
+    SQL_INSERT = 301,
+    SQL_ISNULL = 302,
+    SQL_OFFSET = 303,
+    SQL_RENAME = 304,
+    SQL_SCHEMA = 305,
+    SQL_SELECT = 306,
+    SQL_SORTED = 307,
+    SQL_TABLES = 308,
+    SQL_UNIQUE = 309,
+    SQL_UNLOAD = 310,
+    SQL_UPDATE = 311,
+    SQL_VALUES = 312,
+    SQL_AFTER = 313,
+    SQL_ALTER = 314,
+    SQL_CROSS = 315,
+    SQL_DELTA = 316,
+    SQL_FLOAT = 317,
+    SQL_GROUP = 318,
+    SQL_INDEX = 319,
+    SQL_INNER = 320,
+    SQL_LIMIT = 321,
+    SQL_LOCAL = 322,
+    SQL_MERGE = 323,
+    SQL_MINUS = 324,
+    SQL_ORDER = 325,
+    SQL_OUTER = 326,
+    SQL_RIGHT = 327,
+    SQL_TABLE = 328,
+    SQL_UNION = 329,
+    SQL_USING = 330,
+    SQL_WHERE = 331,
+    SQL_CALL = 332,
+    SQL_CASE = 333,
+    SQL_CHAR = 334,
+    SQL_DATE = 335,
+    SQL_DESC = 336,
+    SQL_DROP = 337,
+    SQL_ELSE = 338,
+    SQL_FILE = 339,
+    SQL_FROM = 340,
+    SQL_FULL = 341,
+    SQL_HASH = 342,
+    SQL_HINT = 343,
+    SQL_INTO = 344,
+    SQL_JOIN = 345,
+    SQL_LEFT = 346,
+    SQL_LIKE = 347,
+    SQL_LOAD = 348,
+    SQL_LONG = 349,
+    SQL_NULL = 350,
+    SQL_PLAN = 351,
+    SQL_SHOW = 352,
+    SQL_TEXT = 353,
+    SQL_THEN = 354,
+    SQL_TIME = 355,
+    SQL_VIEW = 356,
+    SQL_WHEN = 357,
+    SQL_WITH = 358,
+    SQL_ADD = 359,
+    SQL_ALL = 360,
+    SQL_AND = 361,
+    SQL_ASC = 362,
+    SQL_CSV = 363,
+    SQL_END = 364,
+    SQL_FOR = 365,
+    SQL_INT = 366,
+    SQL_KEY = 367,
+    SQL_NOT = 368,
+    SQL_OFF = 369,
+    SQL_SET = 370,
+    SQL_TBL = 371,
+    SQL_TOP = 372,
+    SQL_AS = 373,
+    SQL_BY = 374,
+    SQL_IF = 375,
+    SQL_IN = 376,
+    SQL_IS = 377,
+    SQL_OF = 378,
+    SQL_ON = 379,
+    SQL_OR = 380,
+    SQL_TO = 381,
+    SQL_ARRAY = 382,
+    SQL_CONCAT = 383,
+    SQL_ILIKE = 384,
+    SQL_SECOND = 385,
+    SQL_MINUTE = 386,
+    SQL_HOUR = 387,
+    SQL_DAY = 388,
+    SQL_MONTH = 389,
+    SQL_YEAR = 390,
+    SQL_EQUALS = 391,
+    SQL_NOTEQUALS = 392,
+    SQL_LESS = 393,
+    SQL_GREATER = 394,
+    SQL_LESSEQ = 395,
+    SQL_GREATEREQ = 396,
+    SQL_NOTNULL = 397,
+    SQL_UMINUS = 398
   };
 #endif
 
@@ -224,7 +228,7 @@ extern int hsql_debug;
 
 union HSQL_STYPE
 {
-#line 95 "bison_parser.y" /* yacc.c:1909  */
+#line 95 "bison_parser.y" /* yacc.c:1919  */
 
 	double fval;
 	int64_t ival;
@@ -252,6 +256,7 @@ union HSQL_STYPE
 	hsql::DatetimeField datetime_field;
 	hsql::LimitDescription* limit;
 	hsql::ColumnDefinition* column_t;
+	hsql::ColumnType column_type_t;
 	hsql::GroupByDescription* group_t;
 	hsql::UpdateClause* update_t;
 	hsql::Alias* alias_t;
@@ -265,7 +270,7 @@ union HSQL_STYPE
 	std::vector<hsql::Expr*>* expr_vec;
 	std::vector<hsql::OrderDescription*>* order_vec;
 
-#line 269 "bison_parser.h" /* yacc.c:1909  */
+#line 274 "bison_parser.h" /* yacc.c:1919  */
 };
 
 typedef union HSQL_STYPE HSQL_STYPE;
