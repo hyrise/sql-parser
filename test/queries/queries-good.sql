@@ -25,6 +25,7 @@ SELECT a, SUM(b) FROM t2 GROUP BY a HAVING SUM(b) > 100;
 CREATE TABLE "table" FROM TBL FILE 'students.tbl'
 CREATE TABLE IF NOT EXISTS "table" FROM TBL FILE 'students.tbl'
 CREATE TABLE students (name TEXT, student_number INTEGER, city TEXT, grade DOUBLE)
+CREATE TABLE teachers (name VARCHAR(30), student_number LONG, city CHAR(10), grade FLOAT)
 # Multiple statements
 CREATE TABLE "table" FROM TBL FILE 'students.tbl'; SELECT * FROM "table";
 # INSERT
