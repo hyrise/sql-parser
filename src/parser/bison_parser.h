@@ -48,7 +48,7 @@
 extern int hsql_debug;
 #endif
 /* "%code requires" blocks.  */
-#line 35 "bison_parser.y" /* yacc.c:1919  */
+#line 35 "bison_parser.y" /* yacc.c:1913  */
 
 // %code requires block
 
@@ -72,7 +72,7 @@ extern int hsql_debug;
 				} \
 		}
 
-#line 76 "bison_parser.h" /* yacc.c:1919  */
+#line 76 "bison_parser.h" /* yacc.c:1913  */
 
 /* Token type.  */
 #ifndef HSQL_TOKENTYPE
@@ -212,14 +212,16 @@ extern int hsql_debug;
     SQL_DAY = 388,
     SQL_MONTH = 389,
     SQL_YEAR = 390,
-    SQL_EQUALS = 391,
-    SQL_NOTEQUALS = 392,
-    SQL_LESS = 393,
-    SQL_GREATER = 394,
-    SQL_LESSEQ = 395,
-    SQL_GREATEREQ = 396,
-    SQL_NOTNULL = 397,
-    SQL_UMINUS = 398
+    SQL_TRUE = 391,
+    SQL_FALSE = 392,
+    SQL_EQUALS = 393,
+    SQL_NOTEQUALS = 394,
+    SQL_LESS = 395,
+    SQL_GREATER = 396,
+    SQL_LESSEQ = 397,
+    SQL_GREATEREQ = 398,
+    SQL_NOTNULL = 399,
+    SQL_UMINUS = 400
   };
 #endif
 
@@ -228,7 +230,7 @@ extern int hsql_debug;
 
 union HSQL_STYPE
 {
-#line 95 "bison_parser.y" /* yacc.c:1919  */
+#line 95 "bison_parser.y" /* yacc.c:1913  */
 
 	double fval;
 	int64_t ival;
@@ -270,7 +272,7 @@ union HSQL_STYPE
 	std::vector<hsql::Expr*>* expr_vec;
 	std::vector<hsql::OrderDescription*>* order_vec;
 
-#line 274 "bison_parser.h" /* yacc.c:1919  */
+#line 276 "bison_parser.h" /* yacc.c:1913  */
 };
 
 typedef union HSQL_STYPE HSQL_STYPE;
