@@ -18,6 +18,7 @@ Expr::Expr(ExprType type)
       ival(0),
       ival2(0),
       datetimeField(kDatetimeNone),
+      isBoolLiteral(false),
       opType(kOpNone),
       distinct(false){};
 
@@ -120,9 +121,10 @@ Expr* Expr::makeLiteral(char* string) {
     return e;
 }
 
-Expr* Expr::makeLiteral(bool val) {
-    Expr* e = new Expr(kExprLiteralBool);
-    e->bval = val;
+Expr* Expr::makeLiteral(int64_t val, bool isBoolLiteral) {
+    Expr* e = new Expr(kExprLiteralInt);
+    e->ival = val;
+    e->isBoolLiteral = isBoolLiteral;
     return e;
 }
 

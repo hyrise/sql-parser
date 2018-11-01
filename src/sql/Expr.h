@@ -16,7 +16,6 @@ enum ExprType {
     kExprLiteralFloat,
     kExprLiteralString,
     kExprLiteralInt,
-    kExprLiteralBool,
     kExprLiteralNull,
     kExprStar,
     kExprParameter,
@@ -102,8 +101,8 @@ struct Expr {
     float fval;
     int64_t ival;
     int64_t ival2;
-    bool bval;
     DatetimeField datetimeField;
+    bool isBoolLiteral;
 
     OperatorType opType;
     bool distinct;
@@ -144,7 +143,7 @@ struct Expr {
 
     static Expr* makeLiteral(char* val);
 
-    static Expr* makeLiteral(bool val);
+    static Expr* makeLiteral(int64_t val, bool isBoolLiteral);
 
     static Expr* makeNullLiteral();
 

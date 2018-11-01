@@ -900,8 +900,8 @@ string_literal:
 	;
 
 bool_literal:
-	    	TRUE { $$ = Expr::makeLiteral(true); }
-	|	FALSE { $$ = Expr::makeLiteral(false); }
+		TRUE { $$ = Expr::makeLiteral(1, true); }
+	|	FALSE { $$ = Expr::makeLiteral(0 ,true); }
 	;
 
 num_literal:

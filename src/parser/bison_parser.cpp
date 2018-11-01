@@ -3772,13 +3772,13 @@ yyreduce:
 
   case 193:
 #line 903 "bison_parser.y" /* yacc.c:1651  */
-    { (yyval.expr) = Expr::makeLiteral(true); }
+    { (yyval.expr) = Expr::makeLiteral(1, true); }
 #line 3777 "bison_parser.cpp" /* yacc.c:1651  */
     break;
 
   case 194:
 #line 904 "bison_parser.y" /* yacc.c:1651  */
-    { (yyval.expr) = Expr::makeLiteral(false); }
+    { (yyval.expr) = Expr::makeLiteral(0 ,true); }
 #line 3783 "bison_parser.cpp" /* yacc.c:1651  */
     break;
 
