@@ -184,6 +184,8 @@ HOUR        TOKEN(HOUR)
 DAY         TOKEN(DAY)
 MONTH       TOKEN(MONTH)
 YEAR        TOKEN(YEAR)
+TRUE		TOKEN(TRUE)
+FALSE		TOKEN(FALSE)
 
                 /* Allow =/== see https://sqlite.org/lang_expr.html#collateop */
 "=="		TOKEN(EQUALS)             

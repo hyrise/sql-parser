@@ -428,19 +428,24 @@ TEST(Operators) {
   SQLParserResult result;
 
   SQLParser::parse("SELECT * FROM foo where a =  1; \
-		    SELECT * FROM foo where a == 1; \
+		    SELECT * FROM foo where a == 2; \
 		    SELECT * FROM foo where a != 1; \
 		    SELECT * FROM foo where a <> 1; \
 		    SELECT * FROM foo where a >  1; \
 		    SELECT * FROM foo where a <  1; \
 		    SELECT * FROM foo where a >= 1; \
-		    SELECT * FROM foo where a <= 1;", &result);
+		    SELECT * FROM foo where a <= 1; \
+        SELECT * FROM foo where a = TRUE; \
+        SELECT * FROM foo where a = false;", &result);
 
   stmt = (SelectStatement*) result.getStatement(0);
   ASSERT_EQ(stmt->whereClause->opType, kOpEquals);
+  ASSERT_EQ(stmt->whereClause->expr2->ival, 1);
+  ASSERT_EQ(stmt->whereClause->expr2->isBoolLiteral, false);
 
   stmt = (SelectStatement*) result.getStatement(1);
   ASSERT_EQ(stmt->whereClause->opType, kOpEquals);
+  ASSERT_EQ(stmt->whereClause->expr2->ival, 2);
 
   stmt = (SelectStatement*) result.getStatement(2);
   ASSERT_EQ(stmt->whereClause->opType, kOpNotEquals);
@@ -459,6 +464,16 @@ TEST(Operators) {
 
   stmt = (SelectStatement*) result.getStatement(7);
   ASSERT_EQ(stmt->whereClause->opType, kOpLessEq);
+
+  stmt = (SelectStatement*) result.getStatement(8);
+  ASSERT_EQ(stmt->whereClause->opType, kOpEquals);
+  ASSERT_EQ(stmt->whereClause->expr2->ival, 1);
+  ASSERT_EQ(stmt->whereClause->expr2->isBoolLiteral, true);
+
+  stmt = (SelectStatement*) result.getStatement(9);
+  ASSERT_EQ(stmt->whereClause->opType, kOpEquals);
+  ASSERT_EQ(stmt->whereClause->expr2->ival, 0);
+  ASSERT_EQ(stmt->whereClause->expr2->isBoolLiteral, true);
 }
 
 TEST(JoinTypes) {
