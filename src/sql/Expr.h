@@ -143,7 +143,7 @@ struct Expr {
 
     static Expr* makeLiteral(char* val);
 
-    static Expr* makeLiteral(int64_t val, bool isBoolLiteral);
+    static Expr* makeLiteral(bool val);
 
     static Expr* makeNullLiteral();
 

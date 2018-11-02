@@ -121,10 +121,10 @@ Expr* Expr::makeLiteral(char* string) {
     return e;
 }
 
-Expr* Expr::makeLiteral(int64_t val, bool isBoolLiteral) {
+Expr* Expr::makeLiteral(bool val) {
     Expr* e = new Expr(kExprLiteralInt);
-    e->ival = val;
-    e->isBoolLiteral = isBoolLiteral;
+    e->ival = (int)val;
+    e->isBoolLiteral = true;
     return e;
 }
 
