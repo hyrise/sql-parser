@@ -61,7 +61,7 @@ TEST(CreateStatementTest) {
 
 TEST(UpdateStatementTest) {
   SQLParserResult result;
-  SQLParser::parse("UPDATE students SET grade = 5.0, name = 'test' WHERE name = 'Max Mustermann';", &result);
+  SQLParser::parse("UPDATE students SET grade = 5.0, name = 'test' WHERE name = 'Max O''Mustermann';", &result);
 
   ASSERT(result.isValid());
   ASSERT_EQ(result.size(), 1);
@@ -84,7 +84,7 @@ TEST(UpdateStatementTest) {
   ASSERT(stmt->where->isType(kExprOperator));
   ASSERT_EQ(stmt->where->opType, kOpEquals);
   ASSERT_STREQ(stmt->where->expr->name, "name");
-  ASSERT_STREQ(stmt->where->expr2->name, "Max Mustermann");
+  ASSERT_STREQ(stmt->where->expr2->name, "Max O'Mustermann");
 }
 
 
