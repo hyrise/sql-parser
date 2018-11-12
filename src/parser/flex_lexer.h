@@ -457,7 +457,8 @@ void yyfree ( void * , yyscan_t yyscanner );
 
 #ifdef YY_HEADER_EXPORT_START_CONDITIONS
 #define INITIAL 0
-#define COMMENT 1
+#define singlequotedstring 1
+#define COMMENT 2
 
 #endif
 
@@ -729,9 +730,9 @@ extern int yylex \
 #undef yyTABLES_NAME
 #endif
 
-#line 231 "flex_lexer.l"
+#line 236 "flex_lexer.l"
 
 
-#line 735 "flex_lexer.h"
+#line 736 "flex_lexer.h"
 #undef hsql_IN_HEADER
 #endif /* hsql_HEADER_H */
