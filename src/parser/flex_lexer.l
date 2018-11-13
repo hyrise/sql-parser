@@ -13,10 +13,15 @@
 #include "../sql/Expr.h"
 #include "bison_parser.h"
 #include <stdio.h>
+#include <sstream>
 
 #define TOKEN(name) { return SQL_##name; }
 
+static std::stringstream strbuf;
+
 %}
+%x singlequotedstring
+
 /***************************
  ** Section 2: Rules
  ***************************/
@@ -184,6 +189,8 @@ HOUR        TOKEN(HOUR)
 DAY         TOKEN(DAY)
 MONTH       TOKEN(MONTH)
 YEAR        TOKEN(YEAR)
+TRUE		TOKEN(TRUE)
+FALSE		TOKEN(FALSE)
 
                 /* Allow =/== see https://sqlite.org/lang_expr.html#collateop */
 "=="		TOKEN(EQUALS)             
@@ -217,11 +224,11 @@ YEAR        TOKEN(YEAR)
 	return SQL_IDENTIFIER;
 }
 
-'[^'\n]*' {
-	// Crop the leading and trailing quote char
-	yylval->sval = hsql::substr(yytext, 1, strlen(yytext)-1);
-	return SQL_STRING;
-}
+\'                          { BEGIN singlequotedstring; strbuf = std::stringstream{}; }
+<singlequotedstring>\'\'    { strbuf << '\''; }
+<singlequotedstring>[^']*   { strbuf << yytext; }
+<singlequotedstring>\'      { BEGIN 0; yylval->sval = strdup(strbuf.str().c_str()); return SQL_STRING; }
+<singlequotedstring><<EOF>> { fprintf(stderr, "[SQL-Lexer-Error] Unterminated string\n"); return 0; }
 
 . { fprintf(stderr, "[SQL-Lexer-Error] Unknown Character: %c\n", yytext[0]); return 0; }
 

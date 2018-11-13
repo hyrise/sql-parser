@@ -175,6 +175,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 %token VIEW WHEN WITH ADD ALL AND ASC CSV END FOR INT KEY
 %token NOT OFF SET TBL TOP AS BY IF IN IS OF ON OR TO
 %token ARRAY CONCAT ILIKE SECOND MINUTE HOUR DAY MONTH YEAR
+%token TRUE FALSE
 
 /*********************************
  ** Non-Terminal types (http://www.gnu.org/software/bison/manual/html_node/Type-Decl.html)
@@ -199,7 +200,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 %type <table>		    join_clause table_ref_name_no_alias
 %type <expr> 		    expr operand scalar_expr unary_expr binary_expr logic_expr exists_expr extract_expr
 %type <expr>		    function_expr between_expr expr_alias param_expr
-%type <expr> 		    column_name literal int_literal num_literal string_literal
+%type <expr> 		    column_name literal int_literal num_literal string_literal bool_literal
 %type <expr> 		    comp_expr opt_where join_condition opt_having case_expr case_list in_expr hint
 %type <expr> 		    array_expr array_index null_literal
 %type <limit>		    opt_limit opt_top
@@ -888,6 +889,7 @@ column_name:
 
 literal:
 		string_literal
+	|	bool_literal
 	|	num_literal
 	|	null_literal
 	|	param_expr
@@ -897,6 +899,10 @@ string_literal:
 		STRING { $$ = Expr::makeLiteral($1); }
 	;
 
+bool_literal:
+		TRUE { $$ = Expr::makeLiteral(true); }
+	|	FALSE { $$ = Expr::makeLiteral(false); }
+	;
 
 num_literal:
 		FLOATVAL { $$ = Expr::makeLiteral($1); }
