@@ -48,10 +48,10 @@ namespace hsql {
     void addStatement(SQLStatement* stmt);
 
     // Gets the SQL statement with the given index.
-    const SQLStatement* getStatement(int index) const;
+    const SQLStatement* getStatement(size_t index) const;
 
     // Gets the non const SQL statement with the given index.
-    SQLStatement* getMutableStatement(int index);
+    SQLStatement* getMutableStatement(size_t index);
 
     // Get the list of all statements.
     const std::vector<SQLStatement*>& getStatements() const;

@@ -32,11 +32,11 @@ namespace hsql {
     statements_.push_back(stmt);
   }
 
-  const SQLStatement* SQLParserResult::getStatement(int index) const {
+  const SQLStatement* SQLParserResult::getStatement(size_t index) const {
     return statements_[index];
   }
 
-  SQLStatement* SQLParserResult::getMutableStatement(int index) {
+  SQLStatement* SQLParserResult::getMutableStatement(size_t index) {
     return statements_[index];
   }
 
