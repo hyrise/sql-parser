@@ -98,7 +98,7 @@ struct Expr {
     char* name;
     char* table;
     char* alias;
-    float fval;
+    double fval;
     int64_t ival;
     int64_t ival2;
     DatetimeField datetimeField;
