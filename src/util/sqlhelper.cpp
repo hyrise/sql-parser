@@ -14,7 +14,7 @@ namespace hsql {
   void inprint(int64_t val, uintmax_t numIndent) {
     std::cout << indent(numIndent).c_str() << val << "  " << std::endl;
   }
-  void inprint(float val, uintmax_t numIndent) {
+  void inprint(double val, uintmax_t numIndent) {
     std::cout << indent(numIndent).c_str() << val << std::endl;
   }
   void inprint(const char* val, uintmax_t numIndent) {
