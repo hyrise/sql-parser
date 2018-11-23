@@ -96,3 +96,27 @@ TEST(ExecuteStatementTest) {
   ASSERT_STREQ(stmt->name, "test");
   ASSERT_EQ(stmt->parameters->size(), 2);
 }
+
+TEST(ExecuteStatementTestNoParam) {
+  TEST_PARSE_SINGLE_SQL(
+    "EXECUTE test();",
+    kStmtExecute,
+    ExecuteStatement,
+    result,
+    stmt);
+
+  ASSERT_STREQ(stmt->name, "test");
+  ASSERT_EQ(stmt->parameters, 0);
+}
+
+TEST(ExecuteStatementTestNoParamList) {
+  TEST_PARSE_SINGLE_SQL(
+    "EXECUTE test;",
+    kStmtExecute,
+    ExecuteStatement,
+    result,
+    stmt);
+
+  ASSERT_STREQ(stmt->name, "test");
+  ASSERT_EQ(stmt->parameters, 0);
+}
