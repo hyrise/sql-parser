@@ -1,6 +1,6 @@
-#line 1 "flex_lexer.cpp"
+#line 2 "flex_lexer.cpp"
 
-#line 3 "flex_lexer.cpp"
+#line 4 "flex_lexer.cpp"
 
 #define  YY_INT_ALIGNED short int
 
@@ -1923,9 +1923,9 @@ static const flex_int16_t yy_chk[4142] =
 
 #define TOKEN(name) { return SQL_##name; }
 
-static std::stringstream strbuf;
+static thread_local std::stringstream strbuf;
 
-#line 1928 "flex_lexer.cpp"
+#line 1929 "flex_lexer.cpp"
 
 /***************************
  ** Section 2: Rules
@@ -1939,7 +1939,7 @@ static std::stringstream strbuf;
 /***************************
  ** Section 3: Rules
  ***************************/
-#line 1942 "flex_lexer.cpp"
+#line 1943 "flex_lexer.cpp"
 
 #define INITIAL 0
 #define singlequotedstring 1
@@ -2226,7 +2226,7 @@ YY_DECL
 #line 56 "flex_lexer.l"
 
 
-#line 2229 "flex_lexer.cpp"
+#line 2230 "flex_lexer.cpp"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -3045,7 +3045,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case YY_STATE_EOF(singlequotedstring):
 #line 231 "flex_lexer.l"
-{ fprintf(stderr, "unterminated string\n"); return 0; }
+{ fprintf(stderr, "[SQL-Lexer-Error] Unterminated string\n"); return 0; }
 	YY_BREAK
 case 151:
 YY_RULE_SETUP
@@ -3057,7 +3057,7 @@ YY_RULE_SETUP
 #line 236 "flex_lexer.l"
 ECHO;
 	YY_BREAK
-#line 3060 "flex_lexer.cpp"
+#line 3061 "flex_lexer.cpp"
 case YY_STATE_EOF(INITIAL):
 case YY_STATE_EOF(COMMENT):
 	yyterminate();

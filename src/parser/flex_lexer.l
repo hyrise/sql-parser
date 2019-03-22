@@ -17,7 +17,7 @@
 
 #define TOKEN(name) { return SQL_##name; }
 
-static std::stringstream strbuf;
+static thread_local std::stringstream strbuf;
 
 %}
 %x singlequotedstring
