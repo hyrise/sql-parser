@@ -891,7 +891,7 @@ static const yytype_uint8 yydefact[] =
        0,     0,     0,   185,     0,    86,    84,   110,   219,   117,
      124,   125,   126,   119,   121,   127,   120,   139,   128,   129,
      130,   123,   118,   132,   133,     0,    89,    63,    54,    51,
-      52,     0,   109,    94,    96,   101,   109,   106,   107,   104,
+      52,     0,   109,    94,    96,   101,   109,   105,   107,   104,
       26,     0,    35,     0,     0,     0,    88,     0,    29,   236,
        0,     0,    59,    83,     0,     0,     0,     0,     0,     0,
        0,     0,   135,     0,   134,     0,     0,     0,    89,    85,
@@ -906,7 +906,7 @@ static const yytype_uint8 yydefact[] =
      204,   215,   203,    91,   111,   150,   216,   151,     0,   146,
        0,     0,     0,   137,     0,   149,   148,   164,   165,   166,
      167,   168,   169,   170,   141,   140,   143,   142,   144,   145,
-       0,    65,    64,     0,    17,     0,    97,   108,   105,     0,
+       0,    65,    64,     0,    17,     0,    97,   108,   106,     0,
       41,     0,    44,    43,     0,    42,    47,    40,    50,    33,
        0,    34,    27,   237,     0,     0,   162,     0,     0,     0,
      156,     0,     0,     0,   180,     0,     0,   231,   223,   229,
@@ -1184,7 +1184,7 @@ static const yytype_uint8 yyr2[] =
        3,     1,     1,     3,     5,     2,     1,     1,     1,     1,
        0,     7,     1,     0,     1,     1,     0,     2,     2,     0,
        4,     0,     2,     0,     3,     0,     1,     3,     2,     1,
-       1,     0,     2,     0,     2,     4,     2,     2,     4,     0,
+       1,     0,     2,     0,     2,     2,     4,     2,     4,     0,
        1,     3,     1,     0,     1,     3,     2,     1,     1,     1,
        1,     1,     3,     1,     1,     1,     1,     1,     1,     1,
        1,     3,     1,     1,     2,     2,     2,     3,     4,     1,
@@ -3362,7 +3362,7 @@ yyreduce:
 
   case 102:
 #line 727 "bison_parser.y" /* yacc.c:1646  */
-    { (yyval.limit) = new LimitDescription((yyvsp[0].expr), Expr::makeNullLiteral()); }
+    { (yyval.limit) = new LimitDescription((yyvsp[0].expr), nullptr); }
 #line 3367 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
@@ -3374,31 +3374,31 @@ yyreduce:
 
   case 104:
 #line 732 "bison_parser.y" /* yacc.c:1646  */
-    { (yyval.limit) = new LimitDescription((yyvsp[0].expr), Expr::makeNullLiteral()); }
+    { (yyval.limit) = new LimitDescription((yyvsp[0].expr), nullptr); }
 #line 3379 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 105:
 #line 733 "bison_parser.y" /* yacc.c:1646  */
-    { (yyval.limit) = new LimitDescription((yyvsp[-2].expr), (yyvsp[0].expr)); }
+    { (yyval.limit) = new LimitDescription(nullptr, (yyvsp[0].expr)); }
 #line 3385 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 106:
 #line 734 "bison_parser.y" /* yacc.c:1646  */
-    { (yyval.limit) = new LimitDescription(Expr::makeNullLiteral(), (yyvsp[0].expr)); }
+    { (yyval.limit) = new LimitDescription((yyvsp[-2].expr), (yyvsp[0].expr)); }
 #line 3391 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 107:
 #line 735 "bison_parser.y" /* yacc.c:1646  */
-    { (yyval.limit) = new LimitDescription(Expr::makeNullLiteral(), Expr::makeNullLiteral()); }
+    { (yyval.limit) = new LimitDescription(nullptr, nullptr); }
 #line 3397 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 108:
 #line 736 "bison_parser.y" /* yacc.c:1646  */
-    { (yyval.limit) = new LimitDescription(Expr::makeNullLiteral(), (yyvsp[0].expr)); }
+    { (yyval.limit) = new LimitDescription(nullptr, (yyvsp[0].expr)); }
 #line 3403 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 

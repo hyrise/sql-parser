@@ -724,16 +724,16 @@ opt_order_type:
 // TODO: TOP and LIMIT can take more than just int literals.
 
 opt_top:
-		TOP int_literal { $$ = new LimitDescription($2, Expr::makeNullLiteral()); }
+		TOP int_literal { $$ = new LimitDescription($2, nullptr); }
 	|	/* empty */ { $$ = nullptr; }
 	;
 
 opt_limit:
-		LIMIT expr { $$ = new LimitDescription($2, Expr::makeNullLiteral()); }
+		LIMIT expr { $$ = new LimitDescription($2, nullptr); }
+	|	OFFSET expr { $$ = new LimitDescription(nullptr, $2); }
 	|	LIMIT expr OFFSET expr { $$ = new LimitDescription($2, $4); }
-	|	OFFSET expr { $$ = new LimitDescription(Expr::makeNullLiteral(), $2); }
-	|	LIMIT ALL { $$ = new LimitDescription(Expr::makeNullLiteral(), Expr::makeNullLiteral()); }
-	|	LIMIT ALL OFFSET expr { $$ = new LimitDescription(Expr::makeNullLiteral(), $4); }
+	|	LIMIT ALL { $$ = new LimitDescription(nullptr, nullptr); }
+	|	LIMIT ALL OFFSET expr { $$ = new LimitDescription(nullptr, $4); }
 	|	/* empty */ { $$ = nullptr; }
 	;
 
