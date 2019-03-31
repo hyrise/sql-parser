@@ -190,7 +190,9 @@ namespace hsql {
 
     if (stmt->limit != nullptr) {
       inprint("Limit:", numIndent + 1);
-      inprint(stmt->limit->limit, numIndent + 2);
+      printExpression(stmt->limit->limit, numIndent + 2);
+      inprint("Offset:", numIndent + 1);
+      printExpression(stmt->limit->offset, numIndent + 2);
     }
   }
 
