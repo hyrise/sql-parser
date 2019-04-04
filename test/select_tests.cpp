@@ -534,56 +534,97 @@ TEST(SetLimitOffset) {
   SelectStatement* stmt;
 
   TEST_PARSE_SQL_QUERY("select a from t1 limit 1; \
+                    select a from t1 limit 1 + 2; \
+                    select a from t1 offset 1; \
+                    select a from t1 offset 1 + 2; \
                     select a from t1 limit 1 offset 1; \
-                    select a from t1 limit 0; \
-                    select a from t1 limit 0 offset 1; \
-                    select a from t1 limit 1 offset 0; \
+                    select a from t1 limit 1 + 2 offset 1 + 2; \
+                    select a from t1 limit 1 offset NULL; \
+                    select a from t1 limit ALL; \
+                    select a from t1 limit NULL; \
                     select a from t1 limit ALL offset 1; \
                     select a from t1 limit NULL offset 1; \
-                    select a from t1 offset 1; \
                     select top 10 a from t1; \
-                    select top 20 a from t1 limit 10;",
-        result, 10);
+                    select top 20 a from t1 limit 10; \
+                    select a from t1 limit (SELECT MAX(b) FROM t1) offset (SELECT MIN(b) FROM t1);",
+        result, 14);
 
   stmt = (SelectStatement*) result.getStatement(0);
-  ASSERT_EQ(stmt->limit->limit, 1);
-  ASSERT_EQ(stmt->limit->offset, kNoOffset);
+  ASSERT_EQ(stmt->limit->limit->type, kExprLiteralInt);
+  ASSERT_EQ(stmt->limit->limit->ival, 1);
+  ASSERT_NULL(stmt->limit->offset);
 
   stmt = (SelectStatement*) result.getStatement(1);
-  ASSERT_EQ(stmt->limit->limit, 1);
-  ASSERT_EQ(stmt->limit->offset, 1);
+  ASSERT_EQ(stmt->limit->limit->type, kExprOperator);
+  ASSERT_EQ(stmt->limit->limit->opType, kOpPlus);
+  ASSERT_EQ(stmt->limit->limit->expr->ival, 1);
+  ASSERT_EQ(stmt->limit->limit->expr2->ival, 2);
+  ASSERT_NULL(stmt->limit->offset);
 
   stmt = (SelectStatement*) result.getStatement(2);
-  ASSERT_EQ(stmt->limit->limit, 0);
-  ASSERT_EQ(stmt->limit->offset, kNoOffset);
+  ASSERT_NULL(stmt->limit->limit);
+  ASSERT_EQ(stmt->limit->offset->type, kExprLiteralInt);
+  ASSERT_EQ(stmt->limit->offset->ival, 1);
 
   stmt = (SelectStatement*) result.getStatement(3);
-  ASSERT_EQ(stmt->limit->limit, 0);
-  ASSERT_EQ(stmt->limit->offset, 1);
+  ASSERT_NULL(stmt->limit->limit);
+  ASSERT_EQ(stmt->limit->offset->type, kExprOperator);
+  ASSERT_EQ(stmt->limit->offset->opType, kOpPlus);
+  ASSERT_EQ(stmt->limit->offset->expr->ival, 1);
+  ASSERT_EQ(stmt->limit->offset->expr2->ival, 2);
 
   stmt = (SelectStatement*) result.getStatement(4);
-  ASSERT_EQ(stmt->limit->limit, 1);
-  ASSERT_EQ(stmt->limit->offset, kNoOffset);
+  ASSERT_EQ(stmt->limit->limit->type, kExprLiteralInt);
+  ASSERT_EQ(stmt->limit->limit->ival, 1);
+  ASSERT_EQ(stmt->limit->offset->type, kExprLiteralInt);
+  ASSERT_EQ(stmt->limit->offset->ival, 1);
 
   stmt = (SelectStatement*) result.getStatement(5);
-  ASSERT_EQ(stmt->limit->limit, kNoLimit);
-    ASSERT_EQ(stmt->limit->offset, 1);
+  ASSERT_EQ(stmt->limit->limit->type, kExprOperator);
+  ASSERT_EQ(stmt->limit->limit->opType, kOpPlus);
+  ASSERT_EQ(stmt->limit->limit->expr->ival, 1);
+  ASSERT_EQ(stmt->limit->limit->expr2->ival, 2);
+  ASSERT_EQ(stmt->limit->offset->type, kExprOperator);
+  ASSERT_EQ(stmt->limit->offset->opType, kOpPlus);
+  ASSERT_EQ(stmt->limit->offset->expr->ival, 1);
+  ASSERT_EQ(stmt->limit->offset->expr2->ival, 2);
 
   stmt = (SelectStatement*) result.getStatement(6);
-  ASSERT_EQ(stmt->limit->limit, kNoLimit);
-  ASSERT_EQ(stmt->limit->offset, 1);
+  ASSERT_EQ(stmt->limit->limit->type, kExprLiteralInt);
+  ASSERT_EQ(stmt->limit->limit->ival, 1);
+  ASSERT_EQ(stmt->limit->offset->type, kExprLiteralNull);
 
   stmt = (SelectStatement*) result.getStatement(7);
-  ASSERT_EQ(stmt->limit->limit, kNoLimit);
-  ASSERT_EQ(stmt->limit->offset, 1);
+  ASSERT_NULL(stmt->limit->limit);
+  ASSERT_NULL(stmt->limit->offset);
 
   stmt = (SelectStatement*) result.getStatement(8);
-  ASSERT_EQ(stmt->limit->limit, 10);
-  ASSERT_EQ(stmt->limit->offset, kNoOffset);
+  ASSERT_EQ(stmt->limit->limit->type, kExprLiteralNull);
+  ASSERT_NULL(stmt->limit->offset);
 
   stmt = (SelectStatement*) result.getStatement(9);
-  ASSERT_EQ(stmt->limit->limit, 10);
-  ASSERT_EQ(stmt->limit->offset, kNoOffset);
+  ASSERT_NULL(stmt->limit->limit);
+  ASSERT_EQ(stmt->limit->offset->type, kExprLiteralInt);
+  ASSERT_EQ(stmt->limit->offset->ival, 1);
+
+  stmt = (SelectStatement*) result.getStatement(10);
+  ASSERT_EQ(stmt->limit->limit->type, kExprLiteralNull);
+  ASSERT_EQ(stmt->limit->offset->type, kExprLiteralInt);
+  ASSERT_EQ(stmt->limit->offset->ival, 1);
+
+  stmt = (SelectStatement*) result.getStatement(11);
+  ASSERT_EQ(stmt->limit->limit->type, kExprLiteralInt);
+  ASSERT_EQ(stmt->limit->limit->ival, 10);
+  ASSERT_NULL(stmt->limit->offset);
+
+  stmt = (SelectStatement*) result.getStatement(12);
+  ASSERT_EQ(stmt->limit->limit->type, kExprLiteralInt);
+  ASSERT_EQ(stmt->limit->limit->ival, 10);
+  ASSERT_NULL(stmt->limit->offset);
+
+  stmt = (SelectStatement*) result.getStatement(13);
+  ASSERT_EQ(stmt->limit->limit->type, kExprSelect);
+  ASSERT_EQ(stmt->limit->offset->type, kExprSelect);
 }
 
 TEST(Extract) {
