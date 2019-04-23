@@ -202,9 +202,14 @@ namespace hsql {
   }
 
   // LimitDescription
-  LimitDescription::LimitDescription(int64_t limit, int64_t offset) :
-    limit(limit >= 0 ? limit : kNoLimit),
-    offset(offset > 0 ? offset : kNoOffset) {}
+  LimitDescription::LimitDescription(Expr* limit, Expr* offset) :
+    limit(limit),
+    offset(offset) {}
+
+  LimitDescription::~LimitDescription() {
+    delete limit;
+    delete offset;
+  }
 
   // GroypByDescription
   GroupByDescription::GroupByDescription() :

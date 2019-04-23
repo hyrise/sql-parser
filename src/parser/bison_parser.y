@@ -214,7 +214,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 %type <alias_t>		    opt_table_alias table_alias opt_alias alias
 
 %type <str_vec>		ident_commalist opt_column_list
-%type <expr_vec> 	expr_list select_list literal_list hint_list opt_hints
+%type <expr_vec> 	expr_list select_list opt_literal_list literal_list hint_list opt_hints
 %type <table_vec> 	table_ref_commalist
 %type <order_vec>	opt_order order_list
 %type <update_vec>	update_clause_commalist
@@ -360,7 +360,7 @@ execute_statement:
 			$$ = new ExecuteStatement();
 			$$->name = $2;
 		}
-	|	EXECUTE IDENTIFIER '(' literal_list ')' {
+	|	EXECUTE IDENTIFIER '(' opt_literal_list ')' {
 			$$ = new ExecuteStatement();
 			$$->name = $2;
 			$$->parameters = $4;
@@ -724,18 +724,16 @@ opt_order_type:
 // TODO: TOP and LIMIT can take more than just int literals.
 
 opt_top:
-		TOP int_literal { $$ = new LimitDescription($2->ival, kNoOffset); delete $2; }
+		TOP int_literal { $$ = new LimitDescription($2, nullptr); }
 	|	/* empty */ { $$ = nullptr; }
 	;
 
 opt_limit:
-		LIMIT int_literal { $$ = new LimitDescription($2->ival, kNoOffset); delete $2; }
-	|	LIMIT int_literal OFFSET int_literal { $$ = new LimitDescription($2->ival, $4->ival); delete $2; delete $4; }
-	|	OFFSET int_literal { $$ = new LimitDescription(kNoLimit, $2->ival); delete $2; }
-	|	LIMIT ALL { $$ = nullptr; }
-	|	LIMIT NULL { $$ = nullptr;  }
-	|	LIMIT ALL OFFSET int_literal { $$ = new LimitDescription(kNoLimit, $4->ival); delete $4; }
-	|	LIMIT NULL OFFSET int_literal { $$ = new LimitDescription(kNoLimit, $4->ival); delete $4; }
+		LIMIT expr { $$ = new LimitDescription($2, nullptr); }
+	|	OFFSET expr { $$ = new LimitDescription(nullptr, $2); }
+	|	LIMIT expr OFFSET expr { $$ = new LimitDescription($2, $4); }
+	|	LIMIT ALL { $$ = new LimitDescription(nullptr, nullptr); }
+	|	LIMIT ALL OFFSET expr { $$ = new LimitDescription(nullptr, $4); }
 	|	/* empty */ { $$ = nullptr; }
 	;
 
@@ -745,6 +743,11 @@ opt_limit:
 expr_list:
 		expr_alias { $$ = new std::vector<Expr*>(); $$->push_back($1); }
 	|	expr_list ',' expr_alias { $1->push_back($3); $$ = $1; }
+	;
+
+opt_literal_list:
+		literal_list { $$ = $1; }
+	|	/* empty */ { $$ = nullptr; }
 	;
 
 literal_list:
