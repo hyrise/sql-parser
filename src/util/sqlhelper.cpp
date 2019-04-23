@@ -88,19 +88,28 @@ namespace hsql {
     case kOpNot:
       inprint("NOT", numIndent);
       break;
+    case kOpExists:
+      inprint("EXISTS", numIndent);
+      break;
     default:
       inprintU(expr->opType, numIndent);
       break;
     }
-    printExpression(expr->expr, numIndent + 1);
-    if (expr->expr2 != nullptr) {
-        printExpression(expr->expr2, numIndent + 1);
-    } else if (expr->exprList != nullptr) {
-        for (Expr* e : *expr->exprList) printExpression(e, numIndent + 1);
+
+    if (expr->select) {
+      printSelectStatementInfo(expr->select, numIndent + 1);
+    } else {
+      printExpression(expr->expr, numIndent + 1);
+      if (expr->expr2 != nullptr) {
+          printExpression(expr->expr2, numIndent + 1);
+      } else if (expr->exprList != nullptr) {
+          for (Expr* e : *expr->exprList) printExpression(e, numIndent + 1);
+      }
     }
   }
 
   void printExpression(Expr* expr, uintmax_t numIndent) {
+    if (!expr) return;
     switch (expr->type) {
     case kExprStar:
       inprint("*", numIndent);
