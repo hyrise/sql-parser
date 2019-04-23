@@ -109,7 +109,7 @@ namespace hsql {
   }
 
   void printExpression(Expr* expr, uintmax_t numIndent) {
-    if (!expr) return
+    if (!expr) return;
     switch (expr->type) {
     case kExprStar:
       inprint("*", numIndent);
