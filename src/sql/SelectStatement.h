@@ -60,7 +60,7 @@ namespace hsql {
 
     SelectStatement* unionSelect;
     std::vector<OrderDescription*>* order;
-    std::vector<WithDescription>* withDescriptions;
+    std::vector<WithDescription*>* withDescriptions;
     LimitDescription* limit;
   };
 

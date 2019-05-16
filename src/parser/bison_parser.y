@@ -220,7 +220,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 %type <expr_vec> 	expr_list select_list opt_literal_list literal_list hint_list opt_hints
 %type <table_vec> 	table_ref_commalist
 %type <order_vec>	opt_order order_list
-%type <with_vec>	opt_with with_list
+%type <with_vec>	opt_with with_list with
 %type <update_vec>	update_clause_commalist
 %type <column_vec>	column_def_commalist
 
@@ -1021,10 +1021,12 @@ opt_alias:
  * With Descriptions
  ******************************/
 
+with:
+	WITH with_list { $$ = $2; }
+
 opt_with:
-		WITH with_list {
-			$$ = $2;
-		}
+		with
+	| 	/* empty */ { $$ = nullptr; }
 	;
 
 with_list:

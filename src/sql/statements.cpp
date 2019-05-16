@@ -227,6 +227,11 @@ namespace hsql {
     }
   }
 
+  WithDescription::~WithDescription() {
+    delete alias;
+    delete select;
+  }
+
   // SelectStatement
   SelectStatement::SelectStatement() :
     SQLStatement(kStmtSelect),
