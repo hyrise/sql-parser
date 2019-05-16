@@ -681,3 +681,14 @@ TEST(NoFromClause) {
   ASSERT_EQ(stmt->selectList->at(0)->expr->type, kExprLiteralInt);
   ASSERT_EQ(stmt->selectList->at(0)->expr2->type, kExprLiteralInt);
 }
+
+
+TEST(WithTest) {
+  TEST_PARSE_SINGLE_SQL("WITH students AS (SELECT * FROM people) SELECT *;",
+                        kStmtSelect,
+                        SelectStatement,
+                        result,
+                        stmt)
+
+  ASSERT_EQ(stmt->withDescriptions->size(), 1);
+}
