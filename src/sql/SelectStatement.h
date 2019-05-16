@@ -51,7 +51,7 @@ namespace hsql {
   struct SelectStatement : SQLStatement {
     SelectStatement();
     virtual ~SelectStatement();
-    
+
     TableRef* fromTable;
     bool selectDistinct;
     std::vector<Expr*>* selectList;
