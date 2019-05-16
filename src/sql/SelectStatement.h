@@ -39,12 +39,19 @@ namespace hsql {
     Expr* having;
   };
 
+  struct WithDescription {
+      ~WithDescription();
+
+      char* alias;
+      SelectStatement* select;
+  };
+
   // Representation of a full SQL select statement.
   // TODO: add union_order and union_limit.
   struct SelectStatement : SQLStatement {
     SelectStatement();
     virtual ~SelectStatement();
-
+    
     TableRef* fromTable;
     bool selectDistinct;
     std::vector<Expr*>* selectList;
@@ -53,8 +60,10 @@ namespace hsql {
 
     SelectStatement* unionSelect;
     std::vector<OrderDescription*>* order;
+    std::vector<WithDescription>* withDescriptions;
     LimitDescription* limit;
   };
+
 
 } // namespace hsql
 
