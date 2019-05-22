@@ -587,8 +587,14 @@ update_clause:
  ******************************/
 
 select_statement:
-		opt_with_clause select_with_paren
-	|	opt_with_clause select_no_paren
+		opt_with_clause select_with_paren {
+			$$ = $2;
+			$$->withDescriptions = $1;
+		}
+	|	opt_with_clause select_no_paren {
+			$$ = $2;
+			$$->withDescriptions = $1;
+		}
 	|	opt_with_clause select_with_paren set_operator select_paren_or_clause opt_order opt_limit {
 			// TODO: allow multiple unions (through linked list)
 			// TODO: capture type of set_operator
