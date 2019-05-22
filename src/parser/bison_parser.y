@@ -594,7 +594,9 @@ select_statement:
 			// TODO: capture type of set_operator
 			// TODO: might overwrite order and limit of first select here
 			$$ = $2;
-			$$->withDescriptions = $1;
+//			if($1 != nullptr) {
+//				$$->withDescriptions = $1;
+//			}
 			$$->unionSelect = $4;
 			$$->order = $5;
 
@@ -1021,12 +1023,13 @@ opt_alias:
  * With Descriptions
  ******************************/
 
-with:
-	WITH with_list { $$ = $2; }
-
 opt_with:
 		with
 	| 	/* empty */ { $$ = nullptr; }
+	;
+
+with:
+		WITH with_list { $$ = $2; }
 	;
 
 with_list:
@@ -1041,7 +1044,7 @@ with_list:
 	;
 
 with_description:
-		IDENTIFIER AS select_statement {
+		IDENTIFIER AS select_with_paren {
 			$$ = new WithDescription();
 			$$->alias = $1;
 			$$->select = $3;
