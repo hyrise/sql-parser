@@ -228,7 +228,7 @@ namespace hsql {
   }
 
   WithDescription::~WithDescription() {
-    delete alias;
+    free(alias);
     delete select;
   }
 
@@ -242,6 +242,7 @@ namespace hsql {
     groupBy(nullptr),
     unionSelect(nullptr),
     order(nullptr),
+    withDescriptions(nullptr),
     limit(nullptr) {};
 
   SelectStatement::~SelectStatement() {
@@ -264,6 +265,13 @@ namespace hsql {
         delete desc;
       }
       delete order;
+    }
+
+    if (withDescriptions != nullptr) {
+      for (WithDescription* desc : *withDescriptions) {
+        delete desc;
+      }
+      delete withDescriptions;
     }
   }
 

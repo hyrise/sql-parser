@@ -10,3 +10,4 @@
 !SELECT * FROM t WHERE a = ? AND b = ?;gibberish;
 !SHOW COLUMNS;
 !select a + 2 as b(spam, eggs) from B;
+!WITH a AS (SELECT ) SELECT 1;
