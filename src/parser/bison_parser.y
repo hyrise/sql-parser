@@ -116,7 +116,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 	hsql::Expr* expr;
 	hsql::OrderDescription* order;
 	hsql::OrderType order_type;
-	hsql::WithDescription* with;
+	hsql::WithDescription* with_description_t;
 	hsql::DatetimeField datetime_field;
 	hsql::LimitDescription* limit;
 	hsql::ColumnDefinition* column_t;
@@ -133,7 +133,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 	std::vector<hsql::UpdateClause*>* update_vec;
 	std::vector<hsql::Expr*>* expr_vec;
 	std::vector<hsql::OrderDescription*>* order_vec;
-	std::vector<hsql::WithDescription*>* with_vec;
+	std::vector<hsql::WithDescription*>* with_description_vec;
 }
 
 
@@ -214,15 +214,15 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 %type <update_t>	    update_clause
 %type <group_t>		    opt_group
 %type <alias_t>		    opt_table_alias table_alias opt_alias alias
-%type <with>		    with_description
+%type <with_description_t>  with_description
 
-%type <str_vec>		ident_commalist opt_column_list
-%type <expr_vec> 	expr_list select_list opt_literal_list literal_list hint_list opt_hints
-%type <table_vec> 	table_ref_commalist
-%type <order_vec>	opt_order order_list
-%type <with_vec>	opt_with with_list with
-%type <update_vec>	update_clause_commalist
-%type <column_vec>	column_def_commalist
+%type <str_vec>			ident_commalist opt_column_list
+%type <expr_vec> 		expr_list select_list opt_literal_list literal_list hint_list opt_hints
+%type <table_vec> 		table_ref_commalist
+%type <order_vec>		opt_order order_list
+%type <with_description_vec> 	opt_with_clause with_clause with_description_list
+%type <update_vec>		update_clause_commalist
+%type <column_vec>		column_def_commalist
 
 /******************************
  ** Token Precedence and Associativity
@@ -587,16 +587,14 @@ update_clause:
  ******************************/
 
 select_statement:
-		opt_with select_with_paren
-	|	opt_with select_no_paren
-	|	opt_with select_with_paren set_operator select_paren_or_clause opt_order opt_limit {
+		opt_with_clause select_with_paren
+	|	opt_with_clause select_no_paren
+	|	opt_with_clause select_with_paren set_operator select_paren_or_clause opt_order opt_limit {
 			// TODO: allow multiple unions (through linked list)
 			// TODO: capture type of set_operator
 			// TODO: might overwrite order and limit of first select here
 			$$ = $2;
-			if($1 != nullptr) {
-				$$->withDescriptions = $1;
-			}
+			$$->withDescriptions = $1;
 			$$->unionSelect = $4;
 			$$->order = $5;
 
@@ -1023,21 +1021,21 @@ opt_alias:
  * With Descriptions
  ******************************/
 
-opt_with:
-		with
+opt_with_clause:
+		with_clause
 	| 	/* empty */ { $$ = nullptr; }
 	;
 
-with:
-		WITH with_list { $$ = $2; }
+with_clause:
+		WITH with_description_list { $$ = $2; }
 	;
 
-with_list:
+with_description_list:
 		with_description {
 			$$ = new std::vector<WithDescription*>();
 			$$->push_back($1);
 		}
-	|	with_list ',' with_description {
+	|	with_description_list ',' with_description {
 			$1->push_back($3);
                         $$ = $1;
 		}
