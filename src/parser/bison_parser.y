@@ -594,9 +594,9 @@ select_statement:
 			// TODO: capture type of set_operator
 			// TODO: might overwrite order and limit of first select here
 			$$ = $2;
-//			if($1 != nullptr) {
-//				$$->withDescriptions = $1;
-//			}
+			if($1 != nullptr) {
+				$$->withDescriptions = $1;
+			}
 			$$->unionSelect = $4;
 			$$->order = $5;
 

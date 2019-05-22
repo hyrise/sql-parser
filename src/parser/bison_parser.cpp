@@ -725,9 +725,9 @@ static const yytype_uint16 yyrline[] =
      904,   905,   909,   913,   914,   918,   919,   923,   927,   931,
      943,   944,   954,   955,   959,   960,   969,   970,   975,   986,
      995,   996,  1001,  1002,  1007,  1008,  1012,  1013,  1018,  1019,
-    1027,  1028,  1032,  1037,  1041,  1048,  1061,  1069,  1079,  1098,
-    1099,  1100,  1101,  1102,  1103,  1104,  1105,  1106,  1107,  1112,
-    1121,  1122,  1127,  1128
+    1027,  1028,  1032,  1036,  1040,  1047,  1060,  1068,  1078,  1097,
+    1098,  1099,  1100,  1101,  1102,  1103,  1104,  1105,  1106,  1111,
+    1120,  1121,  1126,  1127
 };
 #endif
 
@@ -3216,9 +3216,9 @@ yyreduce:
 			// TODO: capture type of set_operator
 			// TODO: might overwrite order and limit of first select here
 			(yyval.select_stmt) = (yyvsp[-4].select_stmt);
-//			if($1 != nullptr) {
-//				$$->withDescriptions = $1;
-//			}
+			if((yyvsp[-5].with_vec) != nullptr) {
+				(yyval.select_stmt)->withDescriptions = (yyvsp[-5].with_vec);
+			}
 			(yyval.select_stmt)->unionSelect = (yyvsp[-2].select_stmt);
 			(yyval.select_stmt)->order = (yyvsp[-1].order_vec);
 
@@ -3986,7 +3986,7 @@ yyreduce:
     break;
 
   case 223:
-#line 1037 "bison_parser.y" /* yacc.c:1667  */
+#line 1036 "bison_parser.y" /* yacc.c:1667  */
     {
 			(yyval.with_vec) = new std::vector<WithDescription*>();
 			(yyval.with_vec)->push_back((yyvsp[0].with));
@@ -3995,7 +3995,7 @@ yyreduce:
     break;
 
   case 224:
-#line 1041 "bison_parser.y" /* yacc.c:1667  */
+#line 1040 "bison_parser.y" /* yacc.c:1667  */
     {
 			(yyvsp[-2].with_vec)->push_back((yyvsp[0].with));
                         (yyval.with_vec) = (yyvsp[-2].with_vec);
@@ -4004,7 +4004,7 @@ yyreduce:
     break;
 
   case 225:
-#line 1048 "bison_parser.y" /* yacc.c:1667  */
+#line 1047 "bison_parser.y" /* yacc.c:1667  */
     {
 			(yyval.with) = new WithDescription();
 			(yyval.with)->alias = (yyvsp[-2].sval);
@@ -4014,7 +4014,7 @@ yyreduce:
     break;
 
   case 226:
-#line 1062 "bison_parser.y" /* yacc.c:1667  */
+#line 1061 "bison_parser.y" /* yacc.c:1667  */
     {
 			(yyval.table) = new TableRef(kTableJoin);
 			(yyval.table)->join = new JoinDefinition();
@@ -4026,7 +4026,7 @@ yyreduce:
     break;
 
   case 227:
-#line 1070 "bison_parser.y" /* yacc.c:1667  */
+#line 1069 "bison_parser.y" /* yacc.c:1667  */
     {
 			(yyval.table) = new TableRef(kTableJoin);
 			(yyval.table)->join = new JoinDefinition();
@@ -4039,7 +4039,7 @@ yyreduce:
     break;
 
   case 228:
-#line 1080 "bison_parser.y" /* yacc.c:1667  */
+#line 1079 "bison_parser.y" /* yacc.c:1667  */
     {
 			(yyval.table) = new TableRef(kTableJoin);
 			(yyval.table)->join = new JoinDefinition();
@@ -4059,73 +4059,73 @@ yyreduce:
     break;
 
   case 229:
-#line 1098 "bison_parser.y" /* yacc.c:1667  */
+#line 1097 "bison_parser.y" /* yacc.c:1667  */
     { (yyval.uval) = kJoinInner; }
 #line 4065 "bison_parser.cpp" /* yacc.c:1667  */
     break;
 
   case 230:
-#line 1099 "bison_parser.y" /* yacc.c:1667  */
+#line 1098 "bison_parser.y" /* yacc.c:1667  */
     { (yyval.uval) = kJoinLeft; }
 #line 4071 "bison_parser.cpp" /* yacc.c:1667  */
     break;
 
   case 231:
-#line 1100 "bison_parser.y" /* yacc.c:1667  */
+#line 1099 "bison_parser.y" /* yacc.c:1667  */
     { (yyval.uval) = kJoinLeft; }
 #line 4077 "bison_parser.cpp" /* yacc.c:1667  */
     break;
 
   case 232:
-#line 1101 "bison_parser.y" /* yacc.c:1667  */
+#line 1100 "bison_parser.y" /* yacc.c:1667  */
     { (yyval.uval) = kJoinRight; }
 #line 4083 "bison_parser.cpp" /* yacc.c:1667  */
     break;
 
   case 233:
-#line 1102 "bison_parser.y" /* yacc.c:1667  */
+#line 1101 "bison_parser.y" /* yacc.c:1667  */
     { (yyval.uval) = kJoinRight; }
 #line 4089 "bison_parser.cpp" /* yacc.c:1667  */
     break;
 
   case 234:
-#line 1103 "bison_parser.y" /* yacc.c:1667  */
+#line 1102 "bison_parser.y" /* yacc.c:1667  */
     { (yyval.uval) = kJoinFull; }
 #line 4095 "bison_parser.cpp" /* yacc.c:1667  */
     break;
 
   case 235:
-#line 1104 "bison_parser.y" /* yacc.c:1667  */
+#line 1103 "bison_parser.y" /* yacc.c:1667  */
     { (yyval.uval) = kJoinFull; }
 #line 4101 "bison_parser.cpp" /* yacc.c:1667  */
     break;
 
   case 236:
-#line 1105 "bison_parser.y" /* yacc.c:1667  */
+#line 1104 "bison_parser.y" /* yacc.c:1667  */
     { (yyval.uval) = kJoinFull; }
 #line 4107 "bison_parser.cpp" /* yacc.c:1667  */
     break;
 
   case 237:
-#line 1106 "bison_parser.y" /* yacc.c:1667  */
+#line 1105 "bison_parser.y" /* yacc.c:1667  */
     { (yyval.uval) = kJoinCross; }
 #line 4113 "bison_parser.cpp" /* yacc.c:1667  */
     break;
 
   case 238:
-#line 1107 "bison_parser.y" /* yacc.c:1667  */
+#line 1106 "bison_parser.y" /* yacc.c:1667  */
     { (yyval.uval) = kJoinInner; }
 #line 4119 "bison_parser.cpp" /* yacc.c:1667  */
     break;
 
   case 242:
-#line 1127 "bison_parser.y" /* yacc.c:1667  */
+#line 1126 "bison_parser.y" /* yacc.c:1667  */
     { (yyval.str_vec) = new std::vector<char*>(); (yyval.str_vec)->push_back((yyvsp[0].sval)); }
 #line 4125 "bison_parser.cpp" /* yacc.c:1667  */
     break;
 
   case 243:
-#line 1128 "bison_parser.y" /* yacc.c:1667  */
+#line 1127 "bison_parser.y" /* yacc.c:1667  */
     { (yyvsp[-2].str_vec)->push_back((yyvsp[0].sval)); (yyval.str_vec) = (yyvsp[-2].str_vec); }
 #line 4131 "bison_parser.cpp" /* yacc.c:1667  */
     break;
@@ -4368,7 +4368,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 1131 "bison_parser.y" /* yacc.c:1918  */
+#line 1130 "bison_parser.y" /* yacc.c:1918  */
 
 /*********************************
  ** Section 4: Additional C code
