@@ -227,6 +227,11 @@ namespace hsql {
     }
   }
 
+  WithDescription::~WithDescription() {
+    free(alias);
+    delete select;
+  }
+
   // SelectStatement
   SelectStatement::SelectStatement() :
     SQLStatement(kStmtSelect),
@@ -237,6 +242,7 @@ namespace hsql {
     groupBy(nullptr),
     unionSelect(nullptr),
     order(nullptr),
+    withDescriptions(nullptr),
     limit(nullptr) {};
 
   SelectStatement::~SelectStatement() {
@@ -259,6 +265,13 @@ namespace hsql {
         delete desc;
       }
       delete order;
+    }
+
+    if (withDescriptions != nullptr) {
+      for (WithDescription* desc : *withDescriptions) {
+        delete desc;
+      }
+      delete withDescriptions;
     }
   }
 

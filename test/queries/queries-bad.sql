@@ -10,3 +10,7 @@
 !SELECT * FROM t WHERE a = ? AND b = ?;gibberish;
 !SHOW COLUMNS;
 !select a + 2 as b(spam, eggs) from B;
+!WITH a AS SELECT 1 SELECT 1;
+!WITH a AS (SELECT ) SELECT 1;
+!WITH a AS (WITH b AS (SELECT 1) SELECT 1) SELECT 1; # We do not support nested WITH clauses
+!WITH a AS (SELECT ) b AS (SELECT ) SELECT 1; # Missing comma between WITH descriptions

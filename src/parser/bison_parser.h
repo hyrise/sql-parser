@@ -255,6 +255,7 @@ union HSQL_STYPE
 	hsql::Expr* expr;
 	hsql::OrderDescription* order;
 	hsql::OrderType order_type;
+	hsql::WithDescription* with_description_t;
 	hsql::DatetimeField datetime_field;
 	hsql::LimitDescription* limit;
 	hsql::ColumnDefinition* column_t;
@@ -271,8 +272,9 @@ union HSQL_STYPE
 	std::vector<hsql::UpdateClause*>* update_vec;
 	std::vector<hsql::Expr*>* expr_vec;
 	std::vector<hsql::OrderDescription*>* order_vec;
+	std::vector<hsql::WithDescription*>* with_description_vec;
 
-#line 276 "bison_parser.h" /* yacc.c:1909  */
+#line 278 "bison_parser.h" /* yacc.c:1909  */
 };
 
 typedef union HSQL_STYPE HSQL_STYPE;

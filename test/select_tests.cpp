@@ -681,3 +681,60 @@ TEST(NoFromClause) {
   ASSERT_EQ(stmt->selectList->at(0)->expr->type, kExprLiteralInt);
   ASSERT_EQ(stmt->selectList->at(0)->expr2->type, kExprLiteralInt);
 }
+
+
+TEST(WithClauseSingle) {
+  TEST_PARSE_SINGLE_SQL("WITH "
+                        "a AS (SELECT name FROM peopleA)"
+                        "SELECT name FROM a;",
+                        kStmtSelect,
+                        SelectStatement,
+                        result,
+                        stmt)
+
+  // with_description_list – count
+  ASSERT_EQ(stmt->withDescriptions->size(), 1);
+
+  // with_description – alias
+  ASSERT_STREQ(stmt->withDescriptions->at(0)->alias, "a");
+
+  // with_description – select stmt
+  ASSERT_EQ(stmt->withDescriptions->at(0)->select->selectList->size(), 1)
+  ASSERT_STREQ(stmt->withDescriptions->at(0)->select->selectList->at(0)->name,  std::string("name"));
+  ASSERT_STREQ(stmt->withDescriptions->at(0)->select->fromTable->name,  std::string("peopleA"));
+
+  // main select
+  ASSERT_EQ(stmt->selectList->size(), 1);
+  ASSERT_STREQ(stmt->selectList->at(0)->name, "name");
+  ASSERT_STREQ(stmt->fromTable->name, "a");
+
+}
+
+TEST(WithClauseDouble) {
+  TEST_PARSE_SINGLE_SQL("WITH "
+                        "a AS (SELECT nameA FROM peopleA), "
+                        "b AS (SELECT nameB, cityB FROM peopleB) "
+                        "SELECT nameA FROM a;",
+                        kStmtSelect,
+                        SelectStatement,
+                        result,
+                        stmt)
+
+  // with_description_list – count
+  ASSERT_EQ(stmt->withDescriptions->size(), 2);
+
+  // with_description – aliases
+  ASSERT_STREQ(stmt->withDescriptions->at(0)->alias, "a");
+  ASSERT_STREQ(stmt->withDescriptions->at(1)->alias, "b");
+
+  // with_description – select stmts
+  ASSERT_EQ(stmt->withDescriptions->at(0)->select->selectList->size(), 1)
+  ASSERT_STREQ(stmt->withDescriptions->at(0)->select->fromTable->name, "peopleA");
+  ASSERT_EQ(stmt->withDescriptions->at(1)->select->selectList->size(), 2)
+  ASSERT_STREQ(stmt->withDescriptions->at(1)->select->fromTable->name, "peopleB");
+
+  // main select
+  ASSERT_EQ(stmt->selectList->size(), 1);
+  ASSERT_STREQ(stmt->selectList->at(0)->name, "nameA");
+  ASSERT_STREQ(stmt->fromTable->name, "a");
+}
