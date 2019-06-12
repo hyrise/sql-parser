@@ -58,6 +58,24 @@ TEST(CreateStatementTest) {
   ASSERT_EQ(stmt->columns->at(3)->nullable, false);
 }
 
+TEST(CreateAsSelectStatementTest) {
+  SQLParserResult result;
+  SQLParser::parse("CREATE TABLE students_2 AS SELECT student_number, grade FROM students", &result);
+
+  ASSERT(result.isValid());
+  ASSERT_EQ(result.size(), 1);
+  ASSERT_EQ(result.getStatement(0)->type(), kStmtCreate);
+
+  const CreateStatement* stmt = (const CreateStatement*) result.getStatement(0);
+  ASSERT_EQ(stmt->type, kCreateTable);
+  ASSERT_STREQ(stmt->tableName, "students_2");
+  ASSERT_NULL(stmt->columns);
+  ASSERT_NOTNULL(stmt->select);
+  ASSERT(stmt->select->selectList->at(0)->isType(kExprColumnRef));
+  ASSERT_STREQ(stmt->select->selectList->at(0)->getName(), "student_number");
+  ASSERT(stmt->select->selectList->at(1)->isType(kExprColumnRef));
+  ASSERT_STREQ(stmt->select->selectList->at(1)->getName(), "grade");
+}
 
 TEST(UpdateStatementTest) {
   SQLParserResult result;

@@ -430,6 +430,13 @@ create_statement:
 			$$->tableName = $4.name;
 			$$->columns = $6;
 		}
+	|	CREATE TABLE opt_not_exists table_name AS select_statement {
+			$$ = new CreateStatement(kCreateTable);
+			$$->ifNotExists = $3;
+			$$->schema = $4.schema;
+			$$->tableName = $4.name;
+			$$->select = $6;
+		}
 	|	CREATE VIEW opt_not_exists table_name opt_column_list AS select_statement {
 			$$ = new CreateStatement(kCreateView);
 			$$->ifNotExists = $3;
