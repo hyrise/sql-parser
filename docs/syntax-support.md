@@ -1,7 +1,7 @@
 Supported SQL Queries
 =====================
 
-This page contains a short list of queries that can be correctly parsed with our parser. If you are interested in finding out if a certain feature is supported, it is probably the easiest to checkout the repository and try the example project or check our [list of known limitations](known-limitations.md). Also the file [queries-good.sql](../test/queries/queries-good.sql) shows a list of queries which are parsable with the current version.
+This page contains a short list of queries that can be correctly parsed with our parser. If you are interested in finding out if a certain feature is supported, it is probably the easiest to checkout the repository and try the example project or check our [list of known limitations](known-limitations.md). Also the file [queries-good.sql](../test/queries-batch/queries-good.sql) shows a list of queries which are parsable with the current version.
 
 
 ## Select Statements

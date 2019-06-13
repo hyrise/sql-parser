@@ -17,7 +17,7 @@ CONFLICT_RET=0
 #################################################
 # Running SQL parser tests.
 printf "\n${GREEN}Running SQL parser tests...${NC}\n"
-bin/tests -f "test/queries/queries-good.sql" -f "test/queries/queries-bad.sql"
+bin/tests -f "test/queries-batch/queries-good.sql" -f "test/queries-batch/queries-bad.sql"
 SQL_TEST_RET=$?
 
 if [ $SQL_TEST_RET -eq 0 ]; then
