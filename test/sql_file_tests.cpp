@@ -59,7 +59,48 @@ TEST(SQLFileGrammarTests) {
   sort(filePaths.begin(), filePaths.end());
 
   std::cout << filePaths.size() << std::endl;
+TEST(QueryDetailTestTPCH20) {
+  std::string query = readFileContents("test/queries/tpc-h-20.sql");
 
-  ASSERT_EQ(1, 1);
-  //ASSERT_EQ(testsFailed, 46);
+  SQLParserResult result;
+  SQLParser::parse(query.c_str(), &result);
+  ASSERT(result.isValid());
+  ASSERT_EQ(result.size(), 1);
+
+  const SQLStatement* stmt20 = result.getStatement(0);
+  ASSERT_EQ(stmt20->type(), kStmtSelect);
+
+  const SelectStatement* select20 = (const SelectStatement*) stmt20;
+  ASSERT_EQ(select20->selectList->size(), 2);
+  ASSERT_STREQ(select20->selectList->at(0)->getName(), "S_NAME");
+  ASSERT_STREQ(select20->selectList->at(1)->getName(), "S_ADDRESS");
+
+  // Test WHERE Clause.
+  Expr* where = select20->whereClause;
+  ASSERT_NOTNULL(where);
+  ASSERT(where->isType(kExprOperator));
+  ASSERT_EQ(where->opType, kOpAnd);
+
+  Expr* andExpr2 = where->expr;
+  ASSERT_NOTNULL(andExpr2);
+  ASSERT(andExpr2->isType(kExprOperator));
+  ASSERT_EQ(andExpr2->opType, kOpAnd);
+
+  // Test IN expression.
+  Expr* inExpr = andExpr2->expr;
+  ASSERT_NOTNULL(inExpr);
+  ASSERT(inExpr->isType(kExprOperator));
+  ASSERT_EQ(inExpr->opType, kOpIn);
+
+  ASSERT_STREQ(inExpr->expr->getName(), "S_SUPPKEY");
+  ASSERT_NOTNULL(inExpr->select);
+  ASSERT_EQ(inExpr->select->selectList->size(), 1);
+  ASSERT(inExpr->select->selectList->at(0)->isType(kExprColumnRef));
+  ASSERT_STREQ(inExpr->select->selectList->at(0)->getName(), "PS_SUPPKEY");
+
+  // Test ORDER BY clause.
+  ASSERT_NOTNULL(select20->order);
+  ASSERT_EQ(select20->order->size(), 1);
+  ASSERT(select20->order->at(0)->expr->isType(kExprColumnRef));
+  ASSERT_STREQ(select20->order->at(0)->expr->getName(), "S_NAME");
 }
