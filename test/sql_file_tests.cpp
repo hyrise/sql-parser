@@ -59,7 +59,7 @@ TEST(FileBasedSQLGrammarTests) {
     queryRuns++;
   }
 
-  ASSERT_EQ(queryFails, 45)
+  ASSERT_EQ(queryFails, 46)
 }
 
 TEST(QueryDetailTestTPCH20) {

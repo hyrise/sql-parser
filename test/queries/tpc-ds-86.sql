@@ -1,25 +1,32 @@
-select * from (
- select
-     sum(ws_net_paid) as total_sum
-    ,i_category
-    ,i_class
-    ,grouping(i_category)+grouping(i_class) as lochierarchy
-    ,rank() over (
- 	 partition by grouping(i_category)+grouping(i_class),
- 	 case when grouping(i_class) = 0 then i_category end
- 	 order by sum(ws_net_paid) desc) as rank_within_parent
-  from
-     web_sales
-    ,date_dim       d1
-    ,item
-  where
-     d1.d_month_seq between 1186 and 1186+11
-  and d1.d_date_sk = ws_sold_date_sk
-  and i_item_sk  = ws_item_sk
-  group by rollup(i_category,i_class)
- ) x
+ with results as
+( select sum(ws_net_paid) as total_sum, i_category, i_class, 0 as g_category, 0 as g_class 
+ from
+    web_sales
+   ,date_dim       d1
+   ,item
+ where
+    d1.d_month_seq between 1200 and 1200+11
+ and d1.d_date_sk = ws_sold_date_sk
+ and i_item_sk  = ws_item_sk
+ group by i_category,i_class
+ ) ,
+
+ results_rollup as
+( select total_sum ,i_category ,i_class, g_category, g_class, 0 as lochierarchy from results
+  union
+  select sum(total_sum) as total_sum, i_category, NULL as i_class, 0 as g_category, 1 as g_class, 1 as lochierarchy from results group by i_category
+  union
+  select sum(total_sum) as total_sum, NULL as i_category, NULL as i_class, 1 as g_category, 1 as g_class, 2 as lochierarchy from results)
+select 
+ total_sum ,i_category ,i_class, lochierarchy 
+   ,rank() over (
+  partition by lochierarchy,
+  case when g_class = 0 then i_category end 
+  order by total_sum desc) as rank_within_parent
+ from
+ results_rollup
  order by
    lochierarchy desc,
    case when lochierarchy = 0 then i_category end,
-   rank_within_parent
- limit 100;
+   rank_within_parent 
+LIMIT 100;

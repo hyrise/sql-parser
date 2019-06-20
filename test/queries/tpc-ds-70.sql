@@ -1,37 +1,68 @@
-select * from (
- select
-     sum(ss_net_profit) as total_sum
-    ,s_state
-    ,s_county
-    ,grouping(s_state)+grouping(s_county) as lochierarchy
-    ,rank() over (
- 	 partition by grouping(s_state)+grouping(s_county),
- 	 case when grouping(s_county) = 0 then s_state end
- 	 order by sum(ss_net_profit) desc) as rank_within_parent
-  from
-     store_sales
-    ,date_dim       d1
-    ,store
-  where
-     d1.d_month_seq between 1220 and 1220+11
-  and d1.d_date_sk = ss_sold_date_sk
-  and s_store_sk  = ss_store_sk
-  and s_state in
-              ( select s_state
-                from  (select s_state as s_state,
- 			     rank() over ( partition by s_state order by sum(ss_net_profit) desc) as ranking
-                       from   store_sales, store, date_dim
-                       where  d_month_seq between 1220 and 1220+11
- 			     and d_date_sk = ss_sold_date_sk
-  			     and s_store_sk  = ss_store_sk
-                       group by s_state
-                      ) tmp1
-                where ranking <= 5
-              )
-  group by rollup(s_state,s_county)
- ) x
- order by
-   lochierarchy desc
-  ,case when lochierarchy = 0 then s_state end
-  ,rank_within_parent
- limit 100;
+WITH results AS
+  (SELECT sum(ss_net_profit) AS total_sum,
+          s_state,
+          s_county,
+          0 AS gstate,
+          0 AS g_county
+   FROM store_sales ,
+        date_dim d1 ,
+        store
+   WHERE d1.d_month_seq BETWEEN 1200 AND 1200 + 11
+     AND d1.d_date_sk = ss_sold_date_sk
+     AND s_store_sk = ss_store_sk
+     AND s_state IN
+       (SELECT s_state
+        FROM
+          (SELECT s_state AS s_state,
+                  rank() OVER (PARTITION BY s_state
+                               ORDER BY sum(ss_net_profit) DESC) AS ranking
+           FROM store_sales,
+                store,
+                date_dim
+           WHERE d_month_seq BETWEEN 1200 AND 1200 + 11
+             AND d_date_sk = ss_sold_date_sk
+             AND s_store_sk = ss_store_sk
+           GROUP BY s_state ) tmp1
+        WHERE ranking <= 5)
+   GROUP BY s_state,
+            s_county),
+     results_rollup AS
+  (SELECT total_sum,
+          s_state,
+          s_county,
+          0 AS g_state,
+          0 AS g_county,
+          0 AS lochierarchy
+   FROM results
+   UNION SELECT sum(total_sum) AS total_sum,
+                s_state,
+                NULL AS s_county,
+                0 AS g_state,
+                1 AS g_county,
+                1 AS lochierarchy
+   FROM results
+   GROUP BY s_state
+   UNION SELECT sum(total_sum) AS total_sum,
+                NULL AS s_state,
+                NULL AS s_county,
+                1 AS g_state,
+                1 AS g_county,
+                2 AS lochierarchy
+   FROM results)
+SELECT total_sum,
+       s_state,
+       s_county,
+       lochierarchy,
+       rank() OVER ( PARTITION BY lochierarchy,
+                                  CASE
+                                      WHEN g_county = 0 THEN s_state
+                                  END
+                    ORDER BY total_sum DESC) AS rank_within_parent
+FROM results_rollup
+ORDER BY lochierarchy DESC ,
+         CASE
+             WHEN lochierarchy = 0 THEN s_state
+         END ,
+         rank_within_parent
+LIMIT 100;
+

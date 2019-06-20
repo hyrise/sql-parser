@@ -1,25 +1,21 @@
-select  *
-from(
-select i_category, i_class, i_brand,
-       s_store_name, s_company_name,
-       d_moy,
-       sum(ss_sales_price) sum_sales,
-       avg(sum(ss_sales_price)) over
-         (partition by i_category, i_brand, s_store_name, s_company_name)
-         avg_monthly_sales
-from item, store_sales, date_dim, store
-where ss_item_sk = i_item_sk and
-      ss_sold_date_sk = d_date_sk and
-      ss_store_sk = s_store_sk and
-      d_year in (2001) and
-        ((i_category in ('Books','Children','Electronics') and
-          i_class in ('history','school-uniforms','audio')
-         )
-      or (i_category in ('Men','Sports','Shoes') and
-          i_class in ('pants','tennis','womens') 
-        ))
-group by i_category, i_class, i_brand,
-         s_store_name, s_company_name, d_moy) tmp1
-where case when (avg_monthly_sales <> 0) then (abs(sum_sales - avg_monthly_sales) / avg_monthly_sales) else null end > 0.1
-order by sum_sales - avg_monthly_sales, s_store_name
-limit 100;
+
+SELECT * from
+  (SELECT i_category, i_class, i_brand, s_store_name, s_company_name, d_moy, sum(ss_sales_price) sum_sales, avg(sum(ss_sales_price)) OVER (PARTITION BY i_category, i_brand, s_store_name, s_company_name) avg_monthly_sales
+   FROM item, store_sales, date_dim, store
+   WHERE ss_item_sk = i_item_sk
+     AND ss_sold_date_sk = d_date_sk
+     AND ss_store_sk = s_store_sk
+     AND d_year = 1999
+     AND ((i_category IN ('Books','Electronics','Sports')
+           AND i_class IN ('computers','stereo','football') )
+          OR (i_category IN ('Men','Jewelry','Women')
+              AND i_class IN ('shirts','birdal','dresses')))
+   GROUP BY i_category, i_class, i_brand, s_store_name, s_company_name, d_moy) tmp1
+WHERE CASE
+          WHEN (avg_monthly_sales <> 0) THEN (abs(sum_sales - avg_monthly_sales) / avg_monthly_sales)
+          ELSE NULL
+      END > 0.1
+ORDER BY sum_sales - avg_monthly_sales,
+         s_store_name
+LIMIT 100;
+
