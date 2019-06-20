@@ -42,3 +42,13 @@ TEST(SQLParserTokenizeStringifyTest) {
   ASSERT(&query != &cache[token_string]);
 }
 
+TEST(SQLParserConcatenatedQueriesTest) {
+  SQLParserResult result;
+  std::string concatenated_query = "SELECT * FROM orders1; "
+                                   "SELECT * FROM orders2; "
+                                   "SELECT * FROM orders3;";
+  hsql::SQLParser::parse(concatenated_query, &result);
+
+  ASSERT(result.isValid());
+  ASSERT_EQ(result.size(), 3);
+}
