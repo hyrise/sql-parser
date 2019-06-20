@@ -28,15 +28,11 @@ endif
 
 GMAKE = make mode=$(mode)
 
-
-# The stdlib <filesystem> is available in Linux, but not yet in macOS 10.14.
-# Very likely, libstdc++fs will be included with macOS 10.15 coming in September 2019.
-FSLIB =
-UNAME_S := $(shell uname -s)
-ifeq ($(UNAME_S), Linux)
-	FSLIB = -lstdc++fs
-endif
-ifeq ($(UNAME_S), Darwin) # Apple
+# Filesystem library
+## GNU implementation requires linking with -lstdc++fs and
+## LLVM implementation requires linking with -lc++fs
+FSLIB = -lstdc++fs
+ifneq (,$(findstring clang,$(CXX)))
 	FSLIB = -lc++fs
 endif
 
