@@ -7,6 +7,7 @@
 namespace hsql {
 
   void printOperatorExpression(Expr* expr, uintmax_t numIndent);
+  void printAlias(Alias* alias, uintmax_t numIndent);
 
   std::ostream& operator<<(std::ostream& os, const OperatorType& op);
 
@@ -16,7 +17,7 @@ namespace hsql {
   void inprint(int64_t val, uintmax_t numIndent) {
     std::cout << indent(numIndent).c_str() << val << "  " << std::endl;
   }
-  void inprint(float val, uintmax_t numIndent) {
+  void inprint(double val, uintmax_t numIndent) {
     std::cout << indent(numIndent).c_str() << val << std::endl;
   }
   void inprint(const char* val, uintmax_t numIndent) {
@@ -57,9 +58,20 @@ namespace hsql {
       for (TableRef* tbl : *table->list) printTableRefInfo(tbl, numIndent);
       break;
     }
-    if (table->alias != nullptr) {
-      inprint("Alias", numIndent + 1);
-      inprint(table->alias, numIndent + 2);
+
+    if (table->alias) {
+      printAlias(table->alias, numIndent);
+    }
+  }
+
+  void printAlias(Alias* alias, uintmax_t numIndent) {
+    inprint("Alias", numIndent + 1);
+    inprint(alias->name, numIndent + 2);
+
+    if (alias->columns) {
+      for (char* column : *(alias->columns)) {
+        inprint(column, numIndent + 3);
+      }
     }
   }
 
@@ -80,6 +92,7 @@ namespace hsql {
   }
 
   void printExpression(Expr* expr, uintmax_t numIndent) {
+    if (!expr) return;
     switch (expr->type) {
     case kExprStar:
       inprint("*", numIndent);
@@ -167,28 +180,33 @@ namespace hsql {
       else inprint("descending", numIndent + 2);
     }
 
-    if (stmt->limit != nullptr) {
+    if (stmt->limit != nullptr && stmt->limit->limit != nullptr) {
       inprint("Limit:", numIndent + 1);
-      inprint(stmt->limit->limit, numIndent + 2);
+      printExpression(stmt->limit->limit, numIndent + 2);
+    }
+
+    if (stmt->limit != nullptr && stmt->limit->offset != nullptr) {
+      inprint("Offset:", numIndent + 1);
+      printExpression(stmt->limit->offset, numIndent + 2);
     }
   }
 
 
 
   void printImportStatementInfo(const ImportStatement* stmt, uintmax_t numIndent) {
-    inprint("ImportStatment", numIndent);
+    inprint("ImportStatement", numIndent);
     inprint(stmt->filePath, numIndent + 1);
     inprint(stmt->tableName, numIndent + 1);
   }
 
   void printCreateStatementInfo(const CreateStatement* stmt, uintmax_t numIndent) {
-    inprint("CreateStatment", numIndent);
+    inprint("CreateStatement", numIndent);
     inprint(stmt->tableName, numIndent + 1);
-    inprint(stmt->filePath, numIndent + 1);
+    if (stmt->filePath) inprint(stmt->filePath, numIndent + 1);
   }
 
   void printInsertStatementInfo(const InsertStatement* stmt, uintmax_t numIndent) {
-    inprint("InsertStatment", numIndent);
+    inprint("InsertStatement", numIndent);
     inprint(stmt->tableName, numIndent + 1);
     if (stmt->columns != nullptr) {
       inprint("Columns", numIndent + 1);
