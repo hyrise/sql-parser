@@ -1,12 +1,15 @@
 
 #include "sqlhelper.h"
 #include <iostream>
+#include <map>
 #include <string>
 
 namespace hsql {
 
   void printOperatorExpression(Expr* expr, uintmax_t numIndent);
   void printAlias(Alias* alias, uintmax_t numIndent);
+
+  std::ostream& operator<<(std::ostream& os, const OperatorType& op);
 
   std::string indent(uintmax_t numIndent) {
     return std::string(numIndent, '\t');
@@ -26,8 +29,8 @@ namespace hsql {
   void inprintC(char val, uintmax_t numIndent) {
     std::cout << indent(numIndent).c_str() << val << std::endl;
   }
-  void inprintU(uint64_t val, uintmax_t numIndent) {
-    std::cout << indent(numIndent).c_str() << val << std::endl;
+  void inprint(const OperatorType& op, uintmax_t numIndent) {
+    std::cout << indent(numIndent) << op << std::endl;
   }
 
   void printTableRefInfo(TableRef* table, uintmax_t numIndent) {
@@ -78,33 +81,13 @@ namespace hsql {
       return;
     }
 
-    switch (expr->opType) {
-    case kOpAnd:
-      inprint("AND", numIndent);
-      break;
-    case kOpOr:
-      inprint("OR", numIndent);
-      break;
-    case kOpNot:
-      inprint("NOT", numIndent);
-      break;
-    case kOpExists:
-      inprint("EXISTS", numIndent);
-      break;
-    default:
-      inprintU(expr->opType, numIndent);
-      break;
-    }
+    inprint(expr->opType, numIndent);
 
-    if (expr->select) {
-      printSelectStatementInfo(expr->select, numIndent + 1);
-    } else {
-      printExpression(expr->expr, numIndent + 1);
-      if (expr->expr2 != nullptr) {
-          printExpression(expr->expr2, numIndent + 1);
-      } else if (expr->exprList != nullptr) {
-          for (Expr* e : *expr->exprList) printExpression(e, numIndent + 1);
-      }
+    printExpression(expr->expr, numIndent + 1);
+    if (expr->expr2 != nullptr) {
+        printExpression(expr->expr2, numIndent + 1);
+    } else if (expr->exprList != nullptr) {
+        for (Expr* e : *expr->exprList) printExpression(e, numIndent + 1);
     }
   }
 
@@ -260,6 +243,45 @@ namespace hsql {
       break;
     default:
       break;
+    }
+  }
+
+  std::ostream& operator<<(std::ostream& os, const OperatorType& op) {
+    static const std::map<const OperatorType, const std::string> operatorToToken = {
+      {kOpNone, "None"},
+      {kOpBetween, "BETWEEN"},
+      {kOpCase, "CASE"},
+      {kOpCaseListElement, "CASE LIST ELEMENT"},
+      {kOpPlus, "+"},
+      {kOpMinus, "-"},
+      {kOpAsterisk, "*"},
+      {kOpSlash, "/"},
+      {kOpPercentage, "%"},
+      {kOpCaret, "^"},
+      {kOpEquals, "="},
+      {kOpNotEquals, "!="},
+      {kOpLess, "<"},
+      {kOpLessEq, "<="},
+      {kOpGreater, ">"},
+      {kOpGreaterEq, ">="},
+      {kOpLike, "LIKE"},
+      {kOpNotLike, "NOT LIKE"},
+      {kOpILike, "ILIKE"},
+      {kOpAnd, "AND"},
+      {kOpOr, "OR"},
+      {kOpIn, "IN"},
+      {kOpConcat, "CONCAT"},
+      {kOpNot, "NOT"},
+      {kOpUnaryMinus, "-"},
+      {kOpIsNull, "IS NULL"},
+      {kOpExists, "EXISTS"}
+    };
+
+    const auto found = operatorToToken.find(op);
+    if (found == operatorToToken.cend()) {
+      return os << static_cast<uint64_t>(op);
+    } else {
+      return os << (*found).second;
     }
   }
 
