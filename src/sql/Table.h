@@ -1,5 +1,5 @@
-#ifndef __SQLPARSER__TABLEREF_H__
-#define __SQLPARSER__TABLEREF_H__
+#ifndef SQLPARSER_TABLEREF_H
+#define SQLPARSER_TABLEREF_H
 
 #include "Expr.h"
 #include <stdio.h>
@@ -24,6 +24,14 @@ namespace hsql {
     char* name;
   };
 
+  struct Alias {
+    Alias(char* name, std::vector<char*>* columns = nullptr);
+    ~Alias();
+
+    char* name;
+    std::vector<char*>* columns;
+  };
+
   // Holds reference to tables. Can be either table names or a select statement.
   struct TableRef {
     TableRef(TableRefType type);
@@ -33,7 +41,7 @@ namespace hsql {
 
     char* schema;
     char* name;
-    char* alias;
+    Alias* alias;
 
     SelectStatement* select;
     std::vector<TableRef*>* list;

@@ -1,18 +1,18 @@
-#ifndef __SQLPARSER__EXPR_H__
-#define __SQLPARSER__EXPR_H__
+#ifndef SQLPARSER_EXPR_H
+#define SQLPARSER_EXPR_H
 
 #include <stdlib.h>
 #include <memory>
 #include <vector>
 
 namespace hsql {
-  struct SelectStatement;
+struct SelectStatement;
 
 // Helper function used by the lexer.
 // TODO: move to more appropriate place.
-  char* substr(const char* source, int from, int to);
+char* substr(const char* source, int from, int to);
 
-  enum ExprType {
+enum ExprType {
     kExprLiteralFloat,
     kExprLiteralString,
     kExprLiteralInt,
@@ -25,11 +25,12 @@ namespace hsql {
     kExprSelect,
     kExprHint,
     kExprArray,
-    kExprArrayIndex
-  };
+    kExprArrayIndex,
+    kExprDatetimeField
+};
 
 // Operator types. These are important for expressions of type kExprOperator.
-  enum OperatorType {
+enum OperatorType {
     kOpNone,
 
     // Ternary operator
@@ -37,7 +38,7 @@ namespace hsql {
 
     // n-nary special case
     kOpCase,
-    kOpCaseListElement, // `WHEN expr THEN expr`
+    kOpCaseListElement,  // `WHEN expr THEN expr`
 
     // Binary operators.
     kOpPlus,
@@ -66,14 +67,24 @@ namespace hsql {
     kOpUnaryMinus,
     kOpIsNull,
     kOpExists
-  };
+};
 
-  typedef struct Expr Expr;
+enum DatetimeField {
+    kDatetimeNone,
+    kDatetimeSecond,
+    kDatetimeMinute,
+    kDatetimeHour,
+    kDatetimeDay,
+    kDatetimeMonth,
+    kDatetimeYear,
+};
+
+typedef struct Expr Expr;
 
 // Represents SQL expressions (i.e. literals, operators, column_refs).
 // TODO: When destructing a placeholder expression, we might need to alter the
 // placeholder_list.
-  struct Expr {
+struct Expr {
     Expr(ExprType type);
     virtual ~Expr();
 
@@ -87,9 +98,11 @@ namespace hsql {
     char* name;
     char* table;
     char* alias;
-    float fval;
+    double fval;
     int64_t ival;
     int64_t ival2;
+    DatetimeField datetimeField;
+    bool isBoolLiteral;
 
     OperatorType opType;
     bool distinct;
@@ -130,6 +143,8 @@ namespace hsql {
 
     static Expr* makeLiteral(char* val);
 
+    static Expr* makeLiteral(bool val);
+
     static Expr* makeNullLiteral();
 
     static Expr* makeColumnRef(char* name);
@@ -156,7 +171,9 @@ namespace hsql {
     static Expr* makeInOperator(Expr* expr, std::vector<Expr*>* exprList);
 
     static Expr* makeInOperator(Expr* expr, SelectStatement* select);
-  };
+
+    static Expr* makeExtract(DatetimeField datetimeField1, Expr* expr);
+};
 
 // Zero initializes an Expr object and assigns it to a space in the heap
 // For Hyrise we still had to put in the explicit NULL constructor

@@ -1,16 +1,63 @@
-
 #include "statements.h"
 
 namespace hsql {
 
   // ColumnDefinition
-  ColumnDefinition::ColumnDefinition(char* name, DataType type) :
+  ColumnDefinition::ColumnDefinition(char* name, ColumnType type, bool nullable) :
     name(name),
-    type(type) {};
+    type(type),
+    nullable(nullable) {};
 
   ColumnDefinition::~ColumnDefinition() {
     free(name);
   }
+
+  ColumnType::ColumnType(DataType data_type, int64_t length) :
+    data_type(data_type),
+    length(length) {};
+
+  bool operator==(const ColumnType& lhs, const ColumnType& rhs) {
+    if (lhs.data_type != rhs.data_type) return false;
+    if (lhs.data_type == DataType::VARCHAR || lhs.data_type == DataType::CHAR) {
+      return lhs.length == rhs.length;
+    }
+    return true;
+  }
+
+  bool operator!=(const ColumnType& lhs, const ColumnType& rhs) {
+    return !(lhs == rhs);
+  }
+
+  std::ostream& operator<<(std::ostream& stream, const ColumnType& column_type) {
+    switch (column_type.data_type) {
+      case DataType::UNKNOWN:
+        stream << "UNKNOWN";
+        break;
+      case DataType::INT:
+        stream << "INT";
+        break;
+      case DataType::LONG:
+        stream << "LONG";
+        break;
+      case DataType::FLOAT:
+        stream << "FLOAT";
+        break;
+      case DataType::DOUBLE:
+        stream << "DOUBLE";
+        break;
+      case DataType::CHAR:
+        stream << "CHAR(" << column_type.length << ")";
+        break;
+      case DataType::VARCHAR:
+        stream << "VARCHAR(" << column_type.length << ")";
+        break;
+      case DataType::TEXT:
+        stream << "TEXT";
+        break;
+    }
+    return stream;
+  }
+
 
   // CreateStatemnet
   CreateStatement::CreateStatement(CreateType type) :
@@ -155,9 +202,14 @@ namespace hsql {
   }
 
   // LimitDescription
-  LimitDescription::LimitDescription(int64_t limit, int64_t offset) :
-    limit(limit >= 0 ? limit : kNoLimit),
-    offset(offset > 0 ? offset : kNoOffset) {}
+  LimitDescription::LimitDescription(Expr* limit, Expr* offset) :
+    limit(limit),
+    offset(offset) {}
+
+  LimitDescription::~LimitDescription() {
+    delete limit;
+    delete offset;
+  }
 
   // GroypByDescription
   GroupByDescription::GroupByDescription() :
@@ -175,6 +227,11 @@ namespace hsql {
     }
   }
 
+  WithDescription::~WithDescription() {
+    free(alias);
+    delete select;
+  }
+
   // SelectStatement
   SelectStatement::SelectStatement() :
     SQLStatement(kStmtSelect),
@@ -185,6 +242,7 @@ namespace hsql {
     groupBy(nullptr),
     unionSelect(nullptr),
     order(nullptr),
+    withDescriptions(nullptr),
     limit(nullptr) {};
 
   SelectStatement::~SelectStatement() {
@@ -207,6 +265,13 @@ namespace hsql {
         delete desc;
       }
       delete order;
+    }
+
+    if (withDescriptions != nullptr) {
+      for (WithDescription* desc : *withDescriptions) {
+        delete desc;
+      }
+      delete withDescriptions;
     }
   }
 
@@ -231,6 +296,21 @@ namespace hsql {
     }
   }
 
+  // Alias
+  Alias::Alias(char* name, std::vector<char*>* columns) :
+    name(name),
+    columns(columns) {}
+
+  Alias::~Alias() {
+    free(name);
+    if (columns) {
+      for (char* column : *columns) {
+        free(column);
+      }
+      delete columns;
+    }
+  }
+
   // TableRef
   TableRef::TableRef(TableRefType type) :
     type(type),
@@ -244,10 +324,10 @@ namespace hsql {
   TableRef::~TableRef() {
     free(schema);
     free(name);
-    free(alias);
 
     delete select;
     delete join;
+    delete alias;
 
     if (list != nullptr) {
       for (TableRef* table : *list) {
@@ -262,7 +342,7 @@ namespace hsql {
   }
 
   const char* TableRef::getName() const {
-    if (alias != nullptr) return alias;
+    if (alias) return alias->name;
     else return name;
   }
 

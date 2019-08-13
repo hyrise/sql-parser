@@ -30,7 +30,7 @@ TEST(DeleteStatementTest) {
 
 TEST(CreateStatementTest) {
   SQLParserResult result;
-  SQLParser::parse("CREATE TABLE students (name TEXT, student_number INT, city INTEGER, grade DOUBLE)", &result);
+  SQLParser::parse("CREATE TABLE students (name VARCHAR(50), student_number INT, city INTEGER NULL, grade DOUBLE NOT NULL, comment TEXT)", &result);
 
   ASSERT(result.isValid());
   ASSERT_EQ(result.size(), 1);
@@ -40,21 +40,46 @@ TEST(CreateStatementTest) {
   ASSERT_EQ(stmt->type, kCreateTable);
   ASSERT_STREQ(stmt->tableName, "students");
   ASSERT_NOTNULL(stmt->columns);
-  ASSERT_EQ(stmt->columns->size(), 4);
+  ASSERT_EQ(stmt->columns->size(), 5);
   ASSERT_STREQ(stmt->columns->at(0)->name, "name");
   ASSERT_STREQ(stmt->columns->at(1)->name, "student_number");
   ASSERT_STREQ(stmt->columns->at(2)->name, "city");
   ASSERT_STREQ(stmt->columns->at(3)->name, "grade");
-  ASSERT_EQ(stmt->columns->at(0)->type, ColumnDefinition::TEXT);
-  ASSERT_EQ(stmt->columns->at(1)->type, ColumnDefinition::INT);
-  ASSERT_EQ(stmt->columns->at(2)->type, ColumnDefinition::INT);
-  ASSERT_EQ(stmt->columns->at(3)->type, ColumnDefinition::DOUBLE);
+  ASSERT_STREQ(stmt->columns->at(4)->name, "comment");
+  ASSERT_EQ(stmt->columns->at(0)->type, (ColumnType{DataType::VARCHAR, 50}));
+  ASSERT_EQ(stmt->columns->at(1)->type, ColumnType{DataType::INT});
+  ASSERT_EQ(stmt->columns->at(2)->type, ColumnType{DataType::INT});
+  ASSERT_EQ(stmt->columns->at(3)->type, ColumnType{DataType::DOUBLE});
+  ASSERT_EQ(stmt->columns->at(4)->type, ColumnType{DataType::TEXT});
+  ASSERT_EQ(stmt->columns->at(0)->nullable, false);
+  ASSERT_EQ(stmt->columns->at(1)->nullable, false);
+  ASSERT_EQ(stmt->columns->at(2)->nullable, true);
+  ASSERT_EQ(stmt->columns->at(3)->nullable, false);
+  ASSERT_EQ(stmt->columns->at(3)->nullable, false);
 }
 
+TEST(CreateAsSelectStatementTest) {
+  SQLParserResult result;
+  SQLParser::parse("CREATE TABLE students_2 AS SELECT student_number, grade FROM students", &result);
+
+  ASSERT(result.isValid());
+  ASSERT_EQ(result.size(), 1);
+  ASSERT_EQ(result.getStatement(0)->type(), kStmtCreate);
+
+  const CreateStatement* stmt = (const CreateStatement*) result.getStatement(0);
+  ASSERT_EQ(stmt->type, kCreateTable);
+  ASSERT_STREQ(stmt->tableName, "students_2");
+  ASSERT_NULL(stmt->columns);
+  ASSERT_NOTNULL(stmt->select);
+  ASSERT(stmt->select->selectList->at(0)->isType(kExprColumnRef));
+  ASSERT_STREQ(stmt->select->selectList->at(0)->getName(), "student_number");
+  ASSERT(stmt->select->selectList->at(1)->isType(kExprColumnRef));
+  ASSERT_STREQ(stmt->select->selectList->at(1)->getName(), "grade");
+}
 
 TEST(UpdateStatementTest) {
   SQLParserResult result;
-  SQLParser::parse("UPDATE students SET grade = 5.0, name = 'test' WHERE name = 'Max Mustermann';", &result);
+  SQLParser::parse("UPDATE students SET grade = 5.0, name = 'test' WHERE name = 'Max O''Mustermann';", &result);
 
   ASSERT(result.isValid());
   ASSERT_EQ(result.size(), 1);
@@ -77,7 +102,7 @@ TEST(UpdateStatementTest) {
   ASSERT(stmt->where->isType(kExprOperator));
   ASSERT_EQ(stmt->where->opType, kOpEquals);
   ASSERT_STREQ(stmt->where->expr->name, "name");
-  ASSERT_STREQ(stmt->where->expr2->name, "Max Mustermann");
+  ASSERT_STREQ(stmt->where->expr2->name, "Max O'Mustermann");
 }
 
 

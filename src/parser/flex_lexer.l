@@ -13,10 +13,15 @@
 #include "../sql/Expr.h"
 #include "bison_parser.h"
 #include <stdio.h>
+#include <sstream>
 
 #define TOKEN(name) { return SQL_##name; }
 
+static thread_local std::stringstream strbuf;
+
 %}
+%x singlequotedstring
+
 /***************************
  ** Section 2: Rules
  ***************************/
@@ -73,13 +78,13 @@ CONTROL		TOKEN(CONTROL)
 DEFAULT		TOKEN(DEFAULT)
 EXECUTE		TOKEN(EXECUTE)
 EXPLAIN		TOKEN(EXPLAIN)
-HISTORY		TOKEN(HISTORY)
 INTEGER		TOKEN(INTEGER)
 NATURAL		TOKEN(NATURAL)
 PREPARE		TOKEN(PREPARE)
 PRIMARY		TOKEN(PRIMARY)
 SCHEMAS		TOKEN(SCHEMAS)
 SPATIAL		TOKEN(SPATIAL)
+VARCHAR		TOKEN(VARCHAR)
 VIRTUAL		TOKEN(VIRTUAL)
 BEFORE		TOKEN(BEFORE)
 COLUMN		TOKEN(COLUMN)
@@ -90,6 +95,7 @@ DOUBLE		TOKEN(DOUBLE)
 ESCAPE		TOKEN(ESCAPE)
 EXCEPT		TOKEN(EXCEPT)
 EXISTS		TOKEN(EXISTS)
+EXTRACT 	TOKEN(EXTRACT)
 GLOBAL		TOKEN(GLOBAL)
 HAVING		TOKEN(HAVING)
 IMPORT		TOKEN(IMPORT)
@@ -110,6 +116,7 @@ ALTER		TOKEN(ALTER)
 ARRAY		TOKEN(ARRAY)
 CROSS		TOKEN(CROSS)
 DELTA		TOKEN(DELTA)
+FLOAT		TOKEN(FLOAT)
 GROUP		TOKEN(GROUP)
 INDEX		TOKEN(INDEX)
 INNER		TOKEN(INNER)
@@ -126,6 +133,7 @@ USING		TOKEN(USING)
 WHERE		TOKEN(WHERE)
 CALL		TOKEN(CALL)
 CASE		TOKEN(CASE)
+CHAR		TOKEN(CHAR)
 DATE		TOKEN(DATE)
 DESC		TOKEN(DESC)
 DROP		TOKEN(DROP)
@@ -141,8 +149,8 @@ LEFT		TOKEN(LEFT)
 LIKE		TOKEN(LIKE)
 ILIKE		TOKEN(ILIKE)
 LOAD		TOKEN(LOAD)
+LONG		TOKEN(LONG)
 NULL		TOKEN(NULL)
-PART		TOKEN(PART)
 PLAN		TOKEN(PLAN)
 SHOW		TOKEN(SHOW)
 TEXT		TOKEN(TEXT)
@@ -174,6 +182,14 @@ OF			TOKEN(OF)
 ON			TOKEN(ON)
 OR			TOKEN(OR)
 TO			TOKEN(TO)
+SECOND      TOKEN(SECOND)
+MINUTE      TOKEN(MINUTE)
+HOUR        TOKEN(HOUR)
+DAY         TOKEN(DAY)
+MONTH       TOKEN(MONTH)
+YEAR        TOKEN(YEAR)
+TRUE		TOKEN(TRUE)
+FALSE		TOKEN(FALSE)
 
                 /* Allow =/== see https://sqlite.org/lang_expr.html#collateop */
 "=="		TOKEN(EQUALS)             
@@ -207,11 +223,11 @@ TO			TOKEN(TO)
 	return SQL_IDENTIFIER;
 }
 
-'[^'\n]*' {
-	// Crop the leading and trailing quote char
-	yylval->sval = hsql::substr(yytext, 1, strlen(yytext)-1);
-	return SQL_STRING;
-}
+\'                          { BEGIN singlequotedstring; strbuf = std::stringstream{}; }
+<singlequotedstring>\'\'    { strbuf << '\''; }
+<singlequotedstring>[^']*   { strbuf << yytext; }
+<singlequotedstring>\'      { BEGIN 0; yylval->sval = strdup(strbuf.str().c_str()); return SQL_STRING; }
+<singlequotedstring><<EOF>> { fprintf(stderr, "[SQL-Lexer-Error] Unterminated string\n"); return 0; }
 
 . { fprintf(stderr, "[SQL-Lexer-Error] Unknown Character: %c\n", yytext[0]); return 0; }
 

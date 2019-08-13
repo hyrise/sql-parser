@@ -1,5 +1,5 @@
-#ifndef __SQLPARSER__DROP_STATEMENT_H__
-#define __SQLPARSER__DROP_STATEMENT_H__
+#ifndef SQLPARSER_DROP_STATEMENT_H
+#define SQLPARSER_DROP_STATEMENT_H
 
 #include "SQLStatement.h"
 

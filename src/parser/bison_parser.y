@@ -116,10 +116,14 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 	hsql::Expr* expr;
 	hsql::OrderDescription* order;
 	hsql::OrderType order_type;
+	hsql::WithDescription* with_description_t;
+	hsql::DatetimeField datetime_field;
 	hsql::LimitDescription* limit;
 	hsql::ColumnDefinition* column_t;
+	hsql::ColumnType column_type_t;
 	hsql::GroupByDescription* group_t;
 	hsql::UpdateClause* update_t;
+	hsql::Alias* alias_t;
 
 	std::vector<hsql::SQLStatement*>* stmt_vec;
 
@@ -129,13 +133,14 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 	std::vector<hsql::UpdateClause*>* update_vec;
 	std::vector<hsql::Expr*>* expr_vec;
 	std::vector<hsql::OrderDescription*>* order_vec;
+	std::vector<hsql::WithDescription*>* with_description_vec;
 }
 
 
 /*********************************
- ** Descrutor symbols
+ ** Destructor symbols
  *********************************/
-%destructor { } <fval> <ival> <uval> <bval> <order_type>
+%destructor { } <fval> <ival> <uval> <bval> <order_type> <datetime_field> <column_type_t>
 %destructor { free( ($$.name) ); free( ($$.schema) ); } <table_name>
 %destructor { free( ($$) ); } <sval>
 %destructor {
@@ -160,58 +165,64 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 %token DEALLOCATE PARAMETERS INTERSECT TEMPORARY TIMESTAMP
 %token DISTINCT NVARCHAR RESTRICT TRUNCATE ANALYZE BETWEEN
 %token CASCADE COLUMNS CONTROL DEFAULT EXECUTE EXPLAIN
-%token HISTORY INTEGER NATURAL PREPARE PRIMARY SCHEMAS
-%token SPATIAL VIRTUAL BEFORE COLUMN CREATE DELETE DIRECT
-%token DOUBLE ESCAPE EXCEPT EXISTS GLOBAL HAVING IMPORT
+%token INTEGER NATURAL PREPARE PRIMARY SCHEMAS
+%token SPATIAL VARCHAR VIRTUAL BEFORE COLUMN CREATE DELETE DIRECT
+%token DOUBLE ESCAPE EXCEPT EXISTS EXTRACT GLOBAL HAVING IMPORT
 %token INSERT ISNULL OFFSET RENAME SCHEMA SELECT SORTED
 %token TABLES UNIQUE UNLOAD UPDATE VALUES AFTER ALTER CROSS
-%token DELTA GROUP INDEX INNER LIMIT LOCAL MERGE MINUS ORDER
-%token OUTER RIGHT TABLE UNION USING WHERE CALL CASE DATE
+%token DELTA FLOAT GROUP INDEX INNER LIMIT LOCAL MERGE MINUS ORDER
+%token OUTER RIGHT TABLE UNION USING WHERE CALL CASE CHAR DATE
 %token DESC DROP ELSE FILE FROM FULL HASH HINT INTO JOIN
-%token LEFT LIKE LOAD NULL PART PLAN SHOW TEXT THEN TIME
+%token LEFT LIKE LOAD LONG NULL PLAN SHOW TEXT THEN TIME
 %token VIEW WHEN WITH ADD ALL AND ASC CSV END FOR INT KEY
 %token NOT OFF SET TBL TOP AS BY IF IN IS OF ON OR TO
-%token ARRAY CONCAT ILIKE
+%token ARRAY CONCAT ILIKE SECOND MINUTE HOUR DAY MONTH YEAR
+%token TRUE FALSE
 
 /*********************************
  ** Non-Terminal types (http://www.gnu.org/software/bison/manual/html_node/Type-Decl.html)
  *********************************/
-%type <stmt_vec>	statement_list
-%type <statement> 	statement preparable_statement
-%type <exec_stmt>	execute_statement
-%type <prep_stmt>	prepare_statement
-%type <select_stmt> select_statement select_with_paren select_no_paren select_clause select_paren_or_clause
-%type <import_stmt> import_statement
-%type <create_stmt> create_statement
-%type <insert_stmt> insert_statement
-%type <delete_stmt> delete_statement truncate_statement
-%type <update_stmt> update_statement
-%type <drop_stmt>	drop_statement
-%type <show_stmt>	show_statement
-%type <table_name>  table_name
-%type <sval> 		opt_alias alias file_path prepare_target_query
-%type <bval> 		opt_not_exists opt_exists opt_distinct
-%type <uval>		import_file_type opt_join_type column_type
-%type <table> 		from_clause table_ref table_ref_atomic table_ref_name nonjoin_table_ref_atomic
-%type <table>		join_clause table_ref_name_no_alias
-%type <expr> 		expr operand scalar_expr unary_expr binary_expr logic_expr exists_expr
-%type <expr>		function_expr between_expr expr_alias param_expr
-%type <expr> 		column_name literal int_literal num_literal string_literal
-%type <expr> 		comp_expr opt_where join_condition opt_having case_expr case_list in_expr hint
-%type <expr> 		array_expr array_index null_literal
-%type <limit>		opt_limit opt_top
-%type <order>		order_desc
-%type <order_type>	opt_order_type
-%type <column_t>	column_def
-%type <update_t>	update_clause
-%type <group_t>		opt_group
+%type <stmt_vec>	    statement_list
+%type <statement> 	    statement preparable_statement
+%type <exec_stmt>	    execute_statement
+%type <prep_stmt>	    prepare_statement
+%type <select_stmt>     select_statement select_with_paren select_no_paren select_clause select_paren_or_clause
+%type <import_stmt>     import_statement
+%type <create_stmt>     create_statement
+%type <insert_stmt>     insert_statement
+%type <delete_stmt>     delete_statement truncate_statement
+%type <update_stmt>     update_statement
+%type <drop_stmt>	    drop_statement
+%type <show_stmt>	    show_statement
+%type <table_name>      table_name
+%type <sval> 		    file_path prepare_target_query
+%type <bval> 		    opt_not_exists opt_exists opt_distinct opt_column_nullable
+%type <uval>		    import_file_type opt_join_type
+%type <table> 		    opt_from_clause from_clause table_ref table_ref_atomic table_ref_name nonjoin_table_ref_atomic
+%type <table>		    join_clause table_ref_name_no_alias
+%type <expr> 		    expr operand scalar_expr unary_expr binary_expr logic_expr exists_expr extract_expr
+%type <expr>		    function_expr between_expr expr_alias param_expr
+%type <expr> 		    column_name literal int_literal num_literal string_literal bool_literal
+%type <expr> 		    comp_expr opt_where join_condition opt_having case_expr case_list in_expr hint
+%type <expr> 		    array_expr array_index null_literal
+%type <limit>		    opt_limit opt_top
+%type <order>		    order_desc
+%type <order_type>	    opt_order_type
+%type <datetime_field>	datetime_field
+%type <column_t>	    column_def
+%type <column_type_t>   column_type
+%type <update_t>	    update_clause
+%type <group_t>		    opt_group
+%type <alias_t>		    opt_table_alias table_alias opt_alias alias
+%type <with_description_t>  with_description
 
-%type <str_vec>		ident_commalist opt_column_list
-%type <expr_vec> 	expr_list select_list literal_list hint_list opt_hints
-%type <table_vec> 	table_ref_commalist
-%type <order_vec>	opt_order order_list
-%type <update_vec>	update_clause_commalist
-%type <column_vec>	column_def_commalist
+%type <str_vec>			ident_commalist opt_column_list
+%type <expr_vec> 		expr_list select_list opt_literal_list literal_list hint_list opt_hints
+%type <table_vec> 		table_ref_commalist
+%type <order_vec>		opt_order order_list
+%type <with_description_vec> 	opt_with_clause with_clause with_description_list
+%type <update_vec>		update_clause_commalist
+%type <column_vec>		column_def_commalist
 
 /******************************
  ** Token Precedence and Associativity
@@ -353,7 +364,7 @@ execute_statement:
 			$$ = new ExecuteStatement();
 			$$->name = $2;
 		}
-	|	EXECUTE IDENTIFIER '(' literal_list ')' {
+	|	EXECUTE IDENTIFIER '(' opt_literal_list ')' {
 			$$ = new ExecuteStatement();
 			$$->name = $2;
 			$$->parameters = $4;
@@ -419,6 +430,13 @@ create_statement:
 			$$->tableName = $4.name;
 			$$->columns = $6;
 		}
+	|	CREATE TABLE opt_not_exists table_name AS select_statement {
+			$$ = new CreateStatement(kCreateTable);
+			$$->ifNotExists = $3;
+			$$->schema = $4.schema;
+			$$->tableName = $4.name;
+			$$->select = $6;
+		}
 	|	CREATE VIEW opt_not_exists table_name opt_column_list AS select_statement {
 			$$ = new CreateStatement(kCreateView);
 			$$->ifNotExists = $3;
@@ -440,17 +458,26 @@ column_def_commalist:
 	;
 
 column_def:
-		IDENTIFIER column_type {
-			$$ = new ColumnDefinition($1, (ColumnDefinition::DataType) $2);
+		IDENTIFIER column_type opt_column_nullable {
+			$$ = new ColumnDefinition($1, $2, $3);
 		}
 	;
 
-
 column_type:
-		INT { $$ = ColumnDefinition::INT; }
-	|	INTEGER { $$ = ColumnDefinition::INT; }
-	|	DOUBLE { $$ = ColumnDefinition::DOUBLE; }
-	|	TEXT { $$ = ColumnDefinition::TEXT; }
+		INT { $$ = ColumnType{DataType::INT}; }
+	|	INTEGER { $$ = ColumnType{DataType::INT}; }
+	|	LONG { $$ = ColumnType{DataType::LONG}; }
+	|	FLOAT { $$ = ColumnType{DataType::FLOAT}; }
+	|	DOUBLE { $$ = ColumnType{DataType::DOUBLE}; }
+	|	VARCHAR '(' INTVAL ')' { $$ = ColumnType{DataType::VARCHAR, $3}; }
+	|	CHAR '(' INTVAL ')' { $$ = ColumnType{DataType::CHAR, $3}; }
+	|	TEXT { $$ = ColumnType{DataType::TEXT}; }
+	;
+
+opt_column_nullable:
+		NULL { $$ = true; }
+	|	NOT NULL { $$ = false; }
+	|	/* empty */ { $$ = false; }
 	;
 
 /******************************
@@ -567,20 +594,27 @@ update_clause:
  ******************************/
 
 select_statement:
-		select_with_paren
-	|	select_no_paren
-	|	select_with_paren set_operator select_paren_or_clause opt_order opt_limit {
+		opt_with_clause select_with_paren {
+			$$ = $2;
+			$$->withDescriptions = $1;
+		}
+	|	opt_with_clause select_no_paren {
+			$$ = $2;
+			$$->withDescriptions = $1;
+		}
+	|	opt_with_clause select_with_paren set_operator select_paren_or_clause opt_order opt_limit {
 			// TODO: allow multiple unions (through linked list)
 			// TODO: capture type of set_operator
 			// TODO: might overwrite order and limit of first select here
-			$$ = $1;
-			$$->unionSelect = $3;
-			$$->order = $4;
+			$$ = $2;
+			$$->withDescriptions = $1;
+			$$->unionSelect = $4;
+			$$->order = $5;
 
 			// Limit could have been set by TOP.
-			if ($5 != nullptr) {
+			if ($6 != nullptr) {
 				delete $$->limit;
-				$$->limit = $5;
+				$$->limit = $6;
 			}
 		}
 	;
@@ -638,7 +672,7 @@ opt_all:
 	;
 
 select_clause:
-		SELECT opt_top opt_distinct select_list from_clause opt_where opt_group {
+		SELECT opt_top opt_distinct select_list opt_from_clause opt_where opt_group {
 			$$ = new SelectStatement();
 			$$->limit = $2;
 			$$->selectDistinct = $3;
@@ -657,6 +691,10 @@ opt_distinct:
 select_list:
 		expr_list
 	;
+
+opt_from_clause:
+        from_clause  { $$ = $1; }
+    |   /* empty */  { $$ = nullptr; }
 
 from_clause:
 		FROM table_ref { $$ = $2; }
@@ -704,18 +742,16 @@ opt_order_type:
 // TODO: TOP and LIMIT can take more than just int literals.
 
 opt_top:
-		TOP int_literal { $$ = new LimitDescription($2->ival, kNoOffset); delete $2; }
+		TOP int_literal { $$ = new LimitDescription($2, nullptr); }
 	|	/* empty */ { $$ = nullptr; }
 	;
 
 opt_limit:
-		LIMIT int_literal { $$ = new LimitDescription($2->ival, kNoOffset); delete $2; }
-	|	LIMIT int_literal OFFSET int_literal { $$ = new LimitDescription($2->ival, $4->ival); delete $2; delete $4; }
-	|	OFFSET int_literal { $$ = new LimitDescription(kNoLimit, $2->ival); delete $2; }
-	|	LIMIT ALL { $$ = nullptr; }
-	|	LIMIT NULL { $$ = nullptr;  }
-	|	LIMIT ALL OFFSET int_literal { $$ = new LimitDescription(kNoLimit, $4->ival); delete $4; }
-	|	LIMIT NULL OFFSET int_literal { $$ = new LimitDescription(kNoLimit, $4->ival); delete $4; }
+		LIMIT expr { $$ = new LimitDescription($2, nullptr); }
+	|	OFFSET expr { $$ = new LimitDescription(nullptr, $2); }
+	|	LIMIT expr OFFSET expr { $$ = new LimitDescription($2, $4); }
+	|	LIMIT ALL { $$ = new LimitDescription(nullptr, nullptr); }
+	|	LIMIT ALL OFFSET expr { $$ = new LimitDescription(nullptr, $4); }
 	|	/* empty */ { $$ = nullptr; }
 	;
 
@@ -727,6 +763,11 @@ expr_list:
 	|	expr_list ',' expr_alias { $1->push_back($3); $$ = $1; }
 	;
 
+opt_literal_list:
+		literal_list { $$ = $1; }
+	|	/* empty */ { $$ = nullptr; }
+	;
+
 literal_list:
 		literal { $$ = new std::vector<Expr*>(); $$->push_back($1); }
 	|	literal_list ',' literal { $1->push_back($3); $$ = $1; }
@@ -735,7 +776,10 @@ literal_list:
 expr_alias:
 		expr opt_alias {
 			$$ = $1;
-			$$->alias = $2;
+			if ($2) {
+				$$->alias = strdup($2->name);
+				delete $2;
+			}
 		}
 	;
 
@@ -755,6 +799,7 @@ operand:
 	|	binary_expr
 	|	case_expr
 	|	function_expr
+	|	extract_expr
 	|	array_expr
 	|	'(' select_no_paren ')' { $$ = Expr::makeSelect($2); }
 	;
@@ -828,9 +873,21 @@ comp_expr:
 	;
 
 function_expr:
-		IDENTIFIER '(' ')' { $$ = Expr::makeFunctionRef($1, new std::vector<Expr*>(), false); }
-	|	IDENTIFIER '(' opt_distinct expr_list ')' { $$ = Expr::makeFunctionRef($1, $4, $3); }
-	;
+               IDENTIFIER '(' ')' { $$ = Expr::makeFunctionRef($1, new std::vector<Expr*>(), false); }
+       |       IDENTIFIER '(' opt_distinct expr_list ')' { $$ = Expr::makeFunctionRef($1, $4, $3); }
+       ;
+
+extract_expr:
+         EXTRACT '(' datetime_field FROM expr ')'    { $$ = Expr::makeExtract($3, $5); }
+    ;
+
+datetime_field:
+        SECOND { $$ = kDatetimeSecond; }
+    |   MINUTE { $$ = kDatetimeMinute; }
+    |   HOUR { $$ = kDatetimeHour; }
+    |   DAY { $$ = kDatetimeDay; }
+    |   MONTH { $$ = kDatetimeMonth; }
+    |   YEAR { $$ = kDatetimeYear; }
 
 array_expr:
 	  	ARRAY '[' expr_list ']' { $$ = Expr::makeArray($3); }
@@ -853,6 +910,7 @@ column_name:
 
 literal:
 		string_literal
+	|	bool_literal
 	|	num_literal
 	|	null_literal
 	|	param_expr
@@ -862,6 +920,10 @@ string_literal:
 		STRING { $$ = Expr::makeLiteral($1); }
 	;
 
+bool_literal:
+		TRUE { $$ = Expr::makeLiteral(true); }
+	|	FALSE { $$ = Expr::makeLiteral(false); }
+	;
 
 num_literal:
 		FLOATVAL { $$ = Expr::makeLiteral($1); }
@@ -906,7 +968,7 @@ table_ref_atomic:
 
 nonjoin_table_ref_atomic:
 		table_ref_name
-	|	'(' select_statement ')' opt_alias {
+	|	'(' select_statement ')' opt_table_alias {
 			auto tbl = new TableRef(kTableSelect);
 			tbl->select = $2;
 			tbl->alias = $4;
@@ -921,7 +983,7 @@ table_ref_commalist:
 
 
 table_ref_name:
-		table_name opt_alias {
+		table_name opt_table_alias {
 			auto tbl = new TableRef(kTableName);
 			tbl->schema = $1.schema;
 			tbl->name = $1.name;
@@ -946,14 +1008,59 @@ table_name:
 	;
 
 
-alias:
-		AS IDENTIFIER { $$ = $2; }
-	|	IDENTIFIER
+table_alias:
+		alias
+	|	AS IDENTIFIER '(' ident_commalist ')' { $$ = new Alias($2, $4); }
 	;
+
+
+opt_table_alias:
+		table_alias
+	|	/* empty */ { $$ = nullptr; }
+
+
+alias:
+		AS IDENTIFIER { $$ = new Alias($2); }
+	|	IDENTIFIER { $$ = new Alias($1); }
+	;
+
 
 opt_alias:
 		alias
 	|	/* empty */ { $$ = nullptr; }
+
+
+/******************************
+ * With Descriptions
+ ******************************/
+
+opt_with_clause:
+		with_clause
+	| 	/* empty */ { $$ = nullptr; }
+	;
+
+with_clause:
+		WITH with_description_list { $$ = $2; }
+	;
+
+with_description_list:
+		with_description {
+			$$ = new std::vector<WithDescription*>();
+			$$->push_back($1);
+		}
+	|	with_description_list ',' with_description {
+			$1->push_back($3);
+                        $$ = $1;
+		}
+	;
+
+with_description:
+		IDENTIFIER AS select_with_paren {
+			$$ = new WithDescription();
+			$$->alias = $1;
+			$$->select = $3;
+		}
+	;
 
 
 /******************************
@@ -1037,4 +1144,3 @@ ident_commalist:
  *********************************/
 
 /* empty */
-

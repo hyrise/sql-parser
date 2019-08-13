@@ -1,5 +1,5 @@
-#ifndef __SQLPARSER__SELECT_STATEMENT_H__
-#define __SQLPARSER__SELECT_STATEMENT_H__
+#ifndef SQLPARSER_SELECT_STATEMENT_H
+#define SQLPARSER_SELECT_STATEMENT_H
 
 #include "SQLStatement.h"
 #include "Expr.h"
@@ -21,15 +21,13 @@ namespace hsql {
     Expr* expr;
   };
 
-  const int64_t kNoLimit = -1;
-  const int64_t kNoOffset = -1;
-
   // Description of the limit clause within a select statement.
   struct LimitDescription {
-    LimitDescription(int64_t limit, int64_t offset);
+    LimitDescription(Expr* limit, Expr* offset);
+    virtual ~LimitDescription();
 
-    int64_t limit;
-    int64_t offset;
+    Expr* limit;
+    Expr* offset;
   };
 
   // Description of the group-by clause within a select statement.
@@ -39,6 +37,13 @@ namespace hsql {
 
     std::vector<Expr*>* columns;
     Expr* having;
+  };
+
+  struct WithDescription {
+      ~WithDescription();
+
+      char* alias;
+      SelectStatement* select;
   };
 
   // Representation of a full SQL select statement.
@@ -55,8 +60,10 @@ namespace hsql {
 
     SelectStatement* unionSelect;
     std::vector<OrderDescription*>* order;
+    std::vector<WithDescription*>* withDescriptions;
     LimitDescription* limit;
   };
+
 
 } // namespace hsql
 
