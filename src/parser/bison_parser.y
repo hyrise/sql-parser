@@ -166,7 +166,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 %token DISTINCT NVARCHAR RESTRICT TRUNCATE ANALYZE BETWEEN
 %token CASCADE COLUMNS CONTROL DEFAULT EXECUTE EXPLAIN
 %token INTEGER NATURAL PREPARE PRIMARY SCHEMAS
-%token SPATIAL VARCHAR VIRTUAL BEFORE COLUMN CREATE DELETE DIRECT
+%token SPATIAL VARCHAR VIRTUAL DESCRIBE BEFORE COLUMN CREATE DELETE DIRECT
 %token DOUBLE ESCAPE EXCEPT EXISTS EXTRACT GLOBAL HAVING IMPORT
 %token INSERT ISNULL OFFSET RENAME SCHEMA SELECT SORTED
 %token TABLES UNIQUE UNLOAD UPDATE VALUES AFTER ALTER CROSS
@@ -406,6 +406,11 @@ show_statement:
 			$$ = new ShowStatement(kShowColumns);
 			$$->schema = $3.schema;
 			$$->name = $3.name;
+		}
+	|	DESCRIBE table_name {
+			$$ = new ShowStatement(kShowColumns);
+			$$->schema = $2.schema;
+			$$->name = $2.name;
 		}
 	;
 
