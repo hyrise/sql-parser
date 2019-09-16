@@ -9,6 +9,7 @@
 !INSERT INTO test_table VALUESd (1, 2, 'test');
 !SELECT * FROM t WHERE a = ? AND b = ?;gibberish;
 !SHOW COLUMNS;
+!DESCRIBE;
 !select a + 2 as b(spam, eggs) from B;
 !WITH a AS SELECT 1 SELECT 1;
 !WITH a AS (SELECT ) SELECT 1;

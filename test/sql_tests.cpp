@@ -192,6 +192,19 @@ TEST(ShowColumnsStatementTest) {
   ASSERT_STREQ(stmt->name, "students");
 }
 
+TEST(DescribeStatementTest) {
+  TEST_PARSE_SINGLE_SQL(
+    "DESCRIBE students;",
+    kStmtShow,
+    ShowStatement,
+    result,
+    stmt);
+
+  ASSERT_EQ(stmt->type, kShowColumns);
+  ASSERT_NOTNULL(stmt->name);
+  ASSERT_STREQ(stmt->name, "students");
+}
+
 
 SQLParserResult parse_and_move(std::string query) {
   hsql::SQLParserResult result;
