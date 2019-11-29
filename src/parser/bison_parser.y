@@ -174,8 +174,8 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 %token OUTER RIGHT TABLE UNION USING WHERE CALL CASE CHAR DATE
 %token DESC DROP ELSE FILE FROM FULL HASH HINT INTO JOIN
 %token LEFT LIKE LOAD LONG NULL PLAN SHOW TEXT THEN TIME
-%token VIEW WHEN WITH ADD ALL AND ASC CSV END FOR INT KEY
-%token NOT OFF SET TBL TOP AS BY IF IN IS OF ON OR TO
+%token VIEW WHEN WITH ADD ALL AND ASC END FOR INT KEY
+%token NOT OFF SET TOP AS BY IF IN IS OF ON OR TO
 %token ARRAY CONCAT ILIKE SECOND MINUTE HOUR DAY MONTH YEAR
 %token TRUE FALSE
 
@@ -385,7 +385,15 @@ import_statement:
 	;
 
 import_file_type:
-		CSV { $$ = kImportCSV; }
+		IDENTIFIER {
+			if (strcasecmp($1, "csv") == 0) {
+			  $$ = kImportCSV;
+			} else if (strcasecmp($1, "tbl") == 0) {
+			  $$ = kImportTbl;
+			} else {
+			  throw std::runtime_error("unknown type"); // TODO type
+			}
+		}
 	;
 
 file_path:
@@ -421,11 +429,14 @@ show_statement:
  * CREATE TABLE students FROM TBL FILE 'test/students.tbl'
  ******************************/
 create_statement:
-		CREATE TABLE opt_not_exists table_name FROM TBL FILE file_path {
+		CREATE TABLE opt_not_exists table_name FROM IDENTIFIER FILE file_path {
 			$$ = new CreateStatement(kCreateTableFromTbl);
 			$$->ifNotExists = $3;
 			$$->schema = $4.schema;
 			$$->tableName = $4.name;
+			if (strcasecmp($6, "tbl") != 0) {
+				throw std::runtime_error("Unknown file type");  // TODO exception type
+			}
 			$$->filePath = $8;
 		}
 	|	CREATE TABLE opt_not_exists table_name '(' column_def_commalist ')' {

@@ -196,6 +196,14 @@ namespace hsql {
   void printImportStatementInfo(const ImportStatement* stmt, uintmax_t numIndent) {
     inprint("ImportStatement", numIndent);
     inprint(stmt->filePath, numIndent + 1);
+    switch(stmt->type) {
+      case ImportType::kImportCSV:
+        inprint("CSV", numIndent + 1);
+        break;
+      case ImportType::kImportTbl:
+        inprint("TBL", numIndent + 1);
+        break;
+    }
     inprint(stmt->tableName, numIndent + 1);
   }
 
