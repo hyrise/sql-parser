@@ -3312,9 +3312,9 @@ yyreduce:
 #line 612 "bison_parser.y"
     {
 			(yyval.select_stmt) = (yyvsp[-4].select_stmt);
-			(yyval.select_stmt)->set_operator = (yyvsp[-3].set_operator_t);
+			(yyval.select_stmt)->setOperator = (yyvsp[-3].set_operator_t);
 			(yyval.select_stmt)->withDescriptions = (yyvsp[-5].with_description_vec);
-			(yyval.select_stmt)->unionSelect = (yyvsp[-2].select_stmt);
+			(yyval.select_stmt)->nestedSetSelectStatement = (yyvsp[-2].select_stmt);
 			(yyval.select_stmt)->order = (yyvsp[-1].order_vec);
 			// Limit could have been set by TOP.
 			if ((yyvsp[0].limit) != nullptr) {
@@ -3335,8 +3335,8 @@ yyreduce:
 #line 632 "bison_parser.y"
     {
 		(yyval.select_stmt) = (yyvsp[-2].select_stmt);
-		(yyval.select_stmt)->set_operator = (yyvsp[-1].set_operator_t);
-		(yyval.select_stmt)-> unionSelect = (yyvsp[0].select_stmt);
+		(yyval.select_stmt)->setOperator = (yyvsp[-1].set_operator_t);
+		(yyval.select_stmt)-> nestedSetSelectStatement = (yyvsp[0].select_stmt);
 	}
 #line 3342 "bison_parser.cpp"
     break;
@@ -3372,8 +3372,8 @@ yyreduce:
 #line 655 "bison_parser.y"
     {
 			(yyval.select_stmt) = (yyvsp[-4].select_stmt);
-			(yyval.select_stmt)->set_operator = (yyvsp[-3].set_operator_t);
-			(yyval.select_stmt)->unionSelect = (yyvsp[-2].select_stmt);
+			(yyval.select_stmt)->setOperator = (yyvsp[-3].set_operator_t);
+			(yyval.select_stmt)->nestedSetSelectStatement = (yyvsp[-2].select_stmt);
 			(yyval.select_stmt)->order = (yyvsp[-1].order_vec);
 			// Limit could have been set by TOP.
 			if ((yyvsp[0].limit) != nullptr) {
@@ -3388,7 +3388,7 @@ yyreduce:
 #line 669 "bison_parser.y"
     {
 		(yyval.set_operator_t) = (yyvsp[-1].set_operator_t);
-		(yyval.set_operator_t)->is_all = (yyvsp[0].bval);
+		(yyval.set_operator_t)->isAll = (yyvsp[0].bval);
 		}
 #line 3394 "bison_parser.cpp"
     break;
@@ -3397,7 +3397,7 @@ yyreduce:
 #line 676 "bison_parser.y"
     {
 		(yyval.set_operator_t) = new SetOperator();
-		(yyval.set_operator_t)->set_type = UnionType::Union;
+		(yyval.set_operator_t)->setType = UnionType::Union;
 		}
 #line 3403 "bison_parser.cpp"
     break;
@@ -3406,7 +3406,7 @@ yyreduce:
 #line 680 "bison_parser.y"
     {
 		(yyval.set_operator_t) = new SetOperator();
-		(yyval.set_operator_t)->set_type = UnionType::Intersect;
+		(yyval.set_operator_t)->setType = UnionType::Intersect;
 	}
 #line 3412 "bison_parser.cpp"
     break;
@@ -3415,7 +3415,7 @@ yyreduce:
 #line 684 "bison_parser.y"
     {
 		(yyval.set_operator_t) = new SetOperator();
-		(yyval.set_operator_t)->set_type = UnionType::Except;
+		(yyval.set_operator_t)->setType = UnionType::Except;
 	}
 #line 3421 "bison_parser.cpp"
     break;

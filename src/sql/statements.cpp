@@ -240,8 +240,8 @@ namespace hsql {
     selectList(nullptr),
     whereClause(nullptr),
     groupBy(nullptr),
-    set_operator(nullptr),
-    unionSelect(nullptr),
+    setOperator(nullptr),
+    nestedSetSelectStatement(nullptr),
     order(nullptr),
     withDescriptions(nullptr),
     limit(nullptr) {};
@@ -250,9 +250,9 @@ namespace hsql {
     delete fromTable;
     delete whereClause;
     delete groupBy;
-    delete unionSelect;
+    delete nestedSetSelectStatement;
     delete limit;
-    delete set_operator;
+    delete setOperator;
 
     // Delete each element in the select list.
     if (selectList != nullptr) {

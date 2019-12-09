@@ -611,9 +611,9 @@ select_statement:
 		}
 	|	opt_with_clause select_with_paren set_operator select_statement_in_set_operation opt_order opt_limit {
 			$$ = $2;
-			$$->set_operator = $3;
+			$$->setOperator = $3;
 			$$->withDescriptions = $1;
-			$$->unionSelect = $4;
+			$$->nestedSetSelectStatement = $4;
 			$$->order = $5;
 			// Limit could have been set by TOP.
 			if ($6 != nullptr) {
@@ -631,8 +631,8 @@ select_part_of_set_operation:
 		select_clause { $$ = $1; }
 	|	select_clause set_operator select_statement_in_set_operation {
 		$$ = $1;
-		$$->set_operator = $2;
-		$$-> unionSelect = $3;
+		$$->setOperator = $2;
+		$$-> nestedSetSelectStatement = $3;
 	}
 	;
 
@@ -654,8 +654,8 @@ select_no_paren:
 		}
 	|	select_clause set_operator select_statement_in_set_operation opt_order opt_limit {
 			$$ = $1;
-			$$->set_operator = $2;
-			$$->unionSelect = $3;
+			$$->setOperator = $2;
+			$$->nestedSetSelectStatement = $3;
 			$$->order = $4;
 			// Limit could have been set by TOP.
 			if ($5 != nullptr) {
@@ -668,22 +668,22 @@ select_no_paren:
 set_operator:
 		set_type opt_all {
 		$$ = $1;
-		$$->is_all = $2;
+		$$->isAll = $2;
 		}
 	;
 
 set_type:
 		UNION {
 		$$ = new SetOperator();
-		$$->set_type = UnionType::Union;
+		$$->setType = UnionType::Union;
 		}
 	|	INTERSECT {
 		$$ = new SetOperator();
-		$$->set_type = UnionType::Intersect;
+		$$->setType = UnionType::Intersect;
 	}
 	|	EXCEPT {
 		$$ = new SetOperator();
-		$$->set_type = UnionType::Except;
+		$$->setType = UnionType::Except;
 	}
 	;
 

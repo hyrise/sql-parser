@@ -21,8 +21,8 @@ namespace hsql {
     SetOperator();
     virtual ~SetOperator();
 
-    UnionType set_type;
-    bool is_all;
+    UnionType setType;
+    bool isAll;
   };
 
   // Description of the order by clause within a select statement.
@@ -70,9 +70,9 @@ namespace hsql {
     std::vector<Expr*>* selectList;
     Expr* whereClause;
     GroupByDescription* groupBy;
-    SetOperator* set_operator;
+    SetOperator* setOperator;
 
-    SelectStatement* unionSelect;
+    SelectStatement* nestedSetSelectStatement;
     std::vector<OrderDescription*>* order;
     std::vector<WithDescription*>* withDescriptions;
     LimitDescription* limit;

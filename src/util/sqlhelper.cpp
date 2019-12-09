@@ -168,15 +168,15 @@ namespace hsql {
       }
     }
 
-    if (stmt->unionSelect != nullptr) {
-      if (stmt->set_operator->set_type == UnionType::Union) {
+    if (stmt->nestedSetSelectStatement != nullptr) {
+      if (stmt->setOperator->setType == UnionType::Union) {
         inprint("Union:", numIndent + 1);
-      } else if (stmt->set_operator->set_type == UnionType::Intersect) {
+      } else if (stmt->setOperator->setType == UnionType::Intersect) {
         inprint("Intersect:", numIndent + 1);
       } else {
         inprint("Except:", numIndent + 1);
       }
-      printSelectStatementInfo(stmt->unionSelect, numIndent + 2);
+      printSelectStatementInfo(stmt->nestedSetSelectStatement, numIndent + 2);
     }
 
     if (stmt->order != nullptr) {
