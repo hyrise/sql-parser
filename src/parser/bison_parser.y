@@ -124,7 +124,6 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 	hsql::GroupByDescription* group_t;
 	hsql::UpdateClause* update_t;
 	hsql::Alias* alias_t;
-	hsql::SetType* set_type_t;
 	hsql::SetOperator* set_operator_t;
 
 	std::vector<hsql::SQLStatement*>* stmt_vec;
@@ -188,7 +187,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 %type <statement> 	    statement preparable_statement
 %type <exec_stmt>	    execute_statement
 %type <prep_stmt>	    prepare_statement
-%type <select_stmt>     select_statement select_with_paren select_no_paren select_clause select_statement_in_set_operation select_part_set
+%type <select_stmt>     select_statement select_with_paren select_no_paren select_clause select_statement_in_set_operation select_part_of_set_operation
 %type <import_stmt>     import_statement
 %type <create_stmt>     create_statement
 %type <insert_stmt>     insert_statement
@@ -217,8 +216,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 %type <group_t>		    opt_group
 %type <alias_t>		    opt_table_alias table_alias opt_alias alias
 %type <with_description_t>  with_description
-%type <set_type_t> 		set_type
-%type <set_operator_t>  set_operator
+%type <set_operator_t>  set_operator set_type
 
 %type <str_vec>			ident_commalist opt_column_list
 %type <expr_vec> 		expr_list select_list opt_literal_list literal_list hint_list opt_hints
@@ -612,9 +610,6 @@ select_statement:
 			$$->withDescriptions = $1;
 		}
 	|	opt_with_clause select_with_paren set_operator select_statement_in_set_operation opt_order opt_limit {
-			// TODO: allow multiple unions (through linked list)
-			// TODO: capture type of set_operator
-			// TODO: might overwrite order and limit of first select here
 			$$ = $2;
 			$$->set_operator = $3;
 			$$->withDescriptions = $1;
@@ -630,10 +625,10 @@ select_statement:
 
 select_statement_in_set_operation:
 		select_with_paren
-	|	select_part_set;
+	|	select_part_of_set_operation;
 
-select_part_set:
-		select_clause 
+select_part_of_set_operation:
+		select_clause { $$ = $1; }
 	|	select_clause set_operator select_statement_in_set_operation {
 		$$ = $1;
 		$$->set_operator = $2;
@@ -658,9 +653,6 @@ select_no_paren:
 			}
 		}
 	|	select_clause set_operator select_statement_in_set_operation opt_order opt_limit {
-			// TODO: allow multiple unions (through linked list)
-			// TODO: capture type of set_operator
-			// TODO: might overwrite order and limit of first select here
 			$$ = $1;
 			$$->set_operator = $2;
 			$$->unionSelect = $3;
@@ -675,24 +667,23 @@ select_no_paren:
 
 set_operator:
 		set_type opt_all {
-		$$ = new SetOperator();
-		$$->set_type = $1;
+		$$ = $1;
 		$$->is_all = $2;
 		}
 	;
 
 set_type:
 		UNION {
-		$$ = new SetType();
-		$$->internal_type = UnionType::Union;
+		$$ = new SetOperator();
+		$$->set_type = UnionType::Union;
 		}
 	|	INTERSECT {
-		$$ = new SetType();
-		$$->internal_type = UnionType::Intersect;
+		$$ = new SetOperator();
+		$$->set_type = UnionType::Intersect;
 	}
 	|	EXCEPT {
-		$$ = new SetType();
-		$$->internal_type = UnionType::Except;
+		$$ = new SetOperator();
+		$$->set_type = UnionType::Except;
 	}
 	;
 

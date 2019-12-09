@@ -361,15 +361,8 @@ namespace hsql {
     delete condition;
   }
 
-  SetType::SetType() {}
+  SetOperator::SetOperator() {}
 
-  SetType::~SetType() {}
-
-  SetOperator::SetOperator() :
-  set_type(nullptr) {}
-
-  SetOperator::~SetOperator() {
-    delete set_type;
-  }
+  SetOperator::~SetOperator() {}
 
 } // namespace hsql

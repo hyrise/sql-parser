@@ -169,9 +169,9 @@ namespace hsql {
     }
 
     if (stmt->unionSelect != nullptr) {
-      if (stmt->set_operator->set_type->internal_type == UnionType::Union) {
+      if (stmt->set_operator->set_type == UnionType::Union) {
         inprint("Union:", numIndent + 1);
-      } else if (stmt->set_operator->set_type->internal_type == UnionType::Intersect) {
+      } else if (stmt->set_operator->set_type == UnionType::Intersect) {
         inprint("Intersect:", numIndent + 1);
       } else {
         inprint("Except:", numIndent + 1);

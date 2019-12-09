@@ -266,7 +266,6 @@ union HSQL_STYPE
 	hsql::GroupByDescription* group_t;
 	hsql::UpdateClause* update_t;
 	hsql::Alias* alias_t;
-	hsql::SetType* set_type_t;
 	hsql::SetOperator* set_operator_t;
 
 	std::vector<hsql::SQLStatement*>* stmt_vec;
@@ -279,7 +278,7 @@ union HSQL_STYPE
 	std::vector<hsql::OrderDescription*>* order_vec;
 	std::vector<hsql::WithDescription*>* with_description_vec;
 
-#line 283 "bison_parser.h"
+#line 282 "bison_parser.h"
 
 };
 typedef union HSQL_STYPE HSQL_STYPE;

@@ -17,18 +17,11 @@ namespace hsql {
     Except
   };
 
-  struct SetType {
-    SetType();
-    virtual ~SetType();
-
-    UnionType internal_type;
-  };
-
   struct SetOperator {
     SetOperator();
     virtual ~SetOperator();
 
-    SetType* set_type;
+    UnionType set_type;
     bool is_all;
   };
 
