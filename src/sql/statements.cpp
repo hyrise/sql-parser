@@ -365,8 +365,11 @@ namespace hsql {
 
   SetType::~SetType() {}
 
-  SetOperator::SetOperator() {}
+  SetOperator::SetOperator() :
+  set_type(nullptr) {}
 
-  SetOperator::~SetOperator() {}
+  SetOperator::~SetOperator() {
+    delete set_type;
+  }
 
 } // namespace hsql
