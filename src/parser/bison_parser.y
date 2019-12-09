@@ -124,6 +124,8 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 	hsql::GroupByDescription* group_t;
 	hsql::UpdateClause* update_t;
 	hsql::Alias* alias_t;
+	hsql::SetType* set_type_t;
+	hsql::SetOperator* set_operator_t;
 
 	std::vector<hsql::SQLStatement*>* stmt_vec;
 
@@ -186,7 +188,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 %type <statement> 	    statement preparable_statement
 %type <exec_stmt>	    execute_statement
 %type <prep_stmt>	    prepare_statement
-%type <select_stmt>     select_statement select_with_paren select_no_paren select_clause select_paren_or_clause
+%type <select_stmt>     select_statement select_with_paren select_no_paren select_clause select_statement_in_set_operation select_part_set
 %type <import_stmt>     import_statement
 %type <create_stmt>     create_statement
 %type <insert_stmt>     insert_statement
@@ -196,7 +198,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 %type <show_stmt>	    show_statement
 %type <table_name>      table_name
 %type <sval> 		    file_path prepare_target_query
-%type <bval> 		    opt_not_exists opt_exists opt_distinct opt_column_nullable
+%type <bval> 		    opt_not_exists opt_exists opt_distinct opt_column_nullable opt_all
 %type <uval>		    import_file_type opt_join_type
 %type <table> 		    opt_from_clause from_clause table_ref table_ref_atomic table_ref_name nonjoin_table_ref_atomic
 %type <table>		    join_clause table_ref_name_no_alias
@@ -205,7 +207,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 %type <expr> 		    column_name literal int_literal num_literal string_literal bool_literal
 %type <expr> 		    comp_expr opt_where join_condition opt_having case_expr case_list in_expr hint
 %type <expr> 		    array_expr array_index null_literal
-%type <limit>		    opt_limit opt_top
+%type <limit>		    opt_limit opt_top limit
 %type <order>		    order_desc
 %type <order_type>	    opt_order_type
 %type <datetime_field>	datetime_field
@@ -215,11 +217,13 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 %type <group_t>		    opt_group
 %type <alias_t>		    opt_table_alias table_alias opt_alias alias
 %type <with_description_t>  with_description
+%type <set_type_t> 		set_type
+%type <set_operator_t>  set_operator
 
 %type <str_vec>			ident_commalist opt_column_list
 %type <expr_vec> 		expr_list select_list opt_literal_list literal_list hint_list opt_hints
 %type <table_vec> 		table_ref_commalist
-%type <order_vec>		opt_order order_list
+%type <order_vec>		opt_order order_list order
 %type <with_description_vec> 	opt_with_clause with_clause with_description_list
 %type <update_vec>		update_clause_commalist
 %type <column_vec>		column_def_commalist
@@ -607,15 +611,15 @@ select_statement:
 			$$ = $2;
 			$$->withDescriptions = $1;
 		}
-	|	opt_with_clause select_with_paren set_operator select_paren_or_clause opt_order opt_limit {
+	|	opt_with_clause select_with_paren set_operator select_statement_in_set_operation opt_order opt_limit {
 			// TODO: allow multiple unions (through linked list)
 			// TODO: capture type of set_operator
 			// TODO: might overwrite order and limit of first select here
 			$$ = $2;
+			$$->set_operator = $3;
 			$$->withDescriptions = $1;
 			$$->unionSelect = $4;
 			$$->order = $5;
-
 			// Limit could have been set by TOP.
 			if ($6 != nullptr) {
 				delete $$->limit;
@@ -624,14 +628,22 @@ select_statement:
 		}
 	;
 
+select_statement_in_set_operation:
+		select_with_paren
+	|	select_part_set;
+
+select_part_set:
+		select_clause 
+	|	select_clause set_operator select_statement_in_set_operation {
+		$$ = $1;
+		$$->set_operator = $2;
+		$$-> unionSelect = $3;
+	}
+	;
+
 select_with_paren:
 		'(' select_no_paren ')' { $$ = $2; }
 	|	'(' select_with_paren ')' { $$ = $2; }
-	;
-
-select_paren_or_clause:
-		select_with_paren
-	|	select_clause
 	;
 
 select_no_paren:
@@ -645,14 +657,14 @@ select_no_paren:
 				$$->limit = $3;
 			}
 		}
-	|	select_clause set_operator select_paren_or_clause opt_order opt_limit {
+	|	select_clause set_operator select_statement_in_set_operation opt_order opt_limit {
 			// TODO: allow multiple unions (through linked list)
 			// TODO: capture type of set_operator
 			// TODO: might overwrite order and limit of first select here
 			$$ = $1;
+			$$->set_operator = $2;
 			$$->unionSelect = $3;
 			$$->order = $4;
-
 			// Limit could have been set by TOP.
 			if ($5 != nullptr) {
 				delete $$->limit;
@@ -662,18 +674,35 @@ select_no_paren:
 	;
 
 set_operator:
-		set_type opt_all
+		set_type opt_all {
+		$$ = new SetOperator();
+		$$->set_type = $1;
+		$$->is_all = $2;
+		}
 	;
 
 set_type:
-		UNION
-	|	INTERSECT
-	|	EXCEPT
+		UNION {
+		$$ = new SetType();
+		$$->internal_type = UnionType::Union;
+		}
+	|	INTERSECT {
+		$$ = new SetType();
+		$$->internal_type = UnionType::Intersect;
+	}
+	|	EXCEPT {
+		$$ = new SetType();
+		$$->internal_type = UnionType::Except;
+	}
 	;
 
 opt_all:
-		ALL
-	|	/* empty */
+		ALL {
+			$$ = true;
+		}
+	|	/* empty */ {
+		$$ = false;
+	}
 	;
 
 select_clause:
@@ -725,9 +754,12 @@ opt_having:
 	|	/* empty */ { $$ = nullptr; }
 
 opt_order:
-		ORDER BY order_list { $$ = $3; }
+		order { $$ = $1; }
 	|	/* empty */ { $$ = nullptr; }
 	;
+
+order:
+	ORDER BY order_list { $$ = $3; };
 
 order_list:
 		order_desc { $$ = new std::vector<OrderDescription*>(); $$->push_back($1); }
@@ -752,13 +784,16 @@ opt_top:
 	;
 
 opt_limit:
-		LIMIT expr { $$ = new LimitDescription($2, nullptr); }
+	limit { $$ = $1; }
+	|	/* empty */ { $$ = nullptr; }
+	;
+
+limit:
+	LIMIT expr { $$ = new LimitDescription($2, nullptr); }
 	|	OFFSET expr { $$ = new LimitDescription(nullptr, $2); }
 	|	LIMIT expr OFFSET expr { $$ = new LimitDescription($2, $4); }
 	|	LIMIT ALL { $$ = new LimitDescription(nullptr, nullptr); }
-	|	LIMIT ALL OFFSET expr { $$ = new LimitDescription(nullptr, $4); }
-	|	/* empty */ { $$ = nullptr; }
-	;
+	|	LIMIT ALL OFFSET expr { $$ = new LimitDescription(nullptr, $4); };
 
 /******************************
  * Expressions

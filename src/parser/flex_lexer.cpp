@@ -573,8 +573,8 @@ static void yynoreturn yy_fatal_error ( const char* msg , yyscan_t yyscanner );
 	yyg->yy_hold_char = *yy_cp; \
 	*yy_cp = '\0'; \
 	yyg->yy_c_buf_p = yy_cp;
-#define YY_NUM_RULES 152
-#define YY_END_OF_BUFFER 153
+#define YY_NUM_RULES 154
+#define YY_END_OF_BUFFER 155
 /* This struct is not used in this scanner,
    but its presence is necessary. */
 struct yy_trans_info
@@ -584,25 +584,25 @@ struct yy_trans_info
 	};
 static const flex_int16_t yy_accept[1024] =
     {   0,
-        0,    0,  149,  149,    2,    2,  153,  151,    4,    4,
-      151,  151,  141,  147,  141,  141,  144,  141,  141,  141,
-      146,  146,  146,  146,  146,  146,  146,  146,  146,  146,
-      146,  146,  146,  146,  146,  146,  146,  146,  146,  146,
-      146,  146,  146,  146,  141,  149,  150,    2,    2,    3,
+        0,    0,  151,  151,    2,    2,  155,  153,    4,    4,
+      153,  153,  143,  149,  143,  143,  146,  143,  143,  143,
+      148,  148,  148,  148,  148,  148,  148,  148,  148,  148,
+      148,  148,  148,  148,  148,  148,  148,  148,  148,  148,
+      148,  148,  148,  148,  143,  151,  152,    2,    2,    3,
         2,    2,    2,    2,    2,    2,    2,    2,    2,    2,
         2,    2,    2,    2,    2,    2,    2,    2,    2,    2,
         2,    2,    2,    2,    2,    2,    2,    2,    2,    2,
-        2,    2,    2,    2,    2,    4,  136,    0,    1,  144,
-      143,  142,  138,  137,  135,  139,  146,  146,  146,  146,
+        2,    2,    2,    2,    2,    4,  138,    0,    1,  146,
+      145,  144,  140,  139,  137,  141,  148,  148,  148,  148,
 
-      146,  146,  118,  146,  119,  146,  146,  146,  146,  146,
-      146,  146,  146,  146,  146,  146,  146,  146,  146,  146,
-      146,  146,  146,  146,  146,  146,  146,  146,  146,  146,
-      120,  146,  146,  121,  122,  146,  146,  146,  146,  146,
-      146,  146,  146,  146,  146,  146,  146,  123,  124,  125,
-      146,  146,  146,  146,  146,  146,  146,  146,  146,  146,
-      146,  146,  146,  146,  146,  146,  126,  146,  146,  146,
-      146,  146,  146,  146,  146,  146,  140,  149,  148,    2,
+      148,  148,  120,  148,  121,  148,  148,  148,  148,  148,
+      148,  148,  148,  148,  148,  148,  148,  148,  148,  148,
+      148,  148,  148,  148,  148,  148,  148,  148,  148,  148,
+      122,  148,  148,  123,  124,  148,  148,  148,  148,  148,
+      148,  148,  148,  148,  148,  148,  148,  125,  126,  127,
+      148,  148,  148,  148,  148,  148,  148,  148,  148,  148,
+      148,  148,  148,  148,  148,  148,  128,  148,  148,  148,
+      148,  148,  148,  148,  148,  148,  142,  151,  150,    2,
         2,    2,    2,    1,    2,    2,    2,    2,    2,    2,
         2,    2,    2,    2,    2,    2,    2,    2,    2,    2,
 
@@ -613,41 +613,19 @@ static const flex_int16_t yy_accept[1024] =
         2,    2,    2,    2,    2,    2,    2,    2,    2,    2,
         2,    2,    2,    2,    2,    2,    2,    2,    2,    2,
         2,    2,    2,    2,    2,    2,    2,    2,    2,    2,
-        2,    2,  145,  142,  104,  146,  105,  146,  146,  106,
-      146,  107,  146,  146,  146,  146,  146,  146,  146,  146,
-      146,  108,  146,  130,  146,  146,  146,  146,  146,  146,
+        2,    2,  147,  144,  106,  148,  107,  148,  148,  108,
+      148,  109,  148,  148,  148,  148,  148,  148,  148,  148,
+      148,  110,  148,  132,  148,  148,  148,  148,  148,  148,
 
-      146,  146,  146,  109,  146,  146,  146,  146,  146,  146,
-      146,  146,  146,  110,  146,  146,  146,  146,  146,  146,
-      146,  146,  146,  146,  146,  146,  146,  111,  146,  146,
-      112,  146,  146,  146,  146,  146,  146,  146,  146,  146,
-      146,  113,  146,  146,  114,  146,  146,  146,  146,  146,
-      146,  146,  146,  146,  146,  146,  146,  115,  146,  146,
-      146,  146,  116,  146,  146,  146,  146,  117,  146,  146,
-      146,  146,  146,  146,  146,  146,  146,  146,  146,  146,
+      148,  148,  148,  111,  148,  148,  148,  148,  148,  148,
+      148,  148,  148,  112,  148,  148,  148,  148,  148,  148,
+      148,  148,  148,  148,  148,  148,  148,  113,  148,  148,
+      114,  148,  148,  148,  148,  148,  148,  148,  148,  148,
+      148,  115,  148,  148,  116,  148,  148,  148,  148,  148,
+      148,  148,  148,  148,  148,  148,  148,  117,  148,  148,
+      148,  148,  118,  148,  148,  148,  148,  119,  148,  148,
+      148,  148,  148,  148,  148,  148,  148,  148,  148,  148,
         2,    2,    2,    2,    2,    2,    2,    2,    2,    2,
-        2,    2,    2,    2,    2,    2,    2,    2,    2,    2,
-
-        2,    2,    2,    2,    2,    2,    2,    2,    2,    2,
-        2,    2,    2,    2,    2,    2,    2,    2,    2,    2,
-        2,    2,    2,    2,    2,    2,    2,    2,    2,    2,
-        2,    2,    2,    2,    2,    2,    2,    2,    2,    2,
-        2,    2,    2,    2,    2,    2,    2,    2,    2,    2,
-        2,    2,    2,    2,    2,    2,    2,    2,    2,    2,
-        2,    2,    2,    2,    2,    2,    2,    2,    2,    2,
-        2,    2,    2,    2,    2,    2,    2,    2,    2,    2,
-        2,    2,    2,    2,    2,    2,    2,    2,  146,  146,
-      146,  146,  146,  146,   76,  146,   77,   78,  146,  146,
-
-      146,  146,   79,  146,  146,  146,  146,   80,  146,  146,
-      146,   81,   82,  146,  146,  146,  146,  146,  146,  146,
-       83,  146,   84,   85,  146,  146,   86,  146,   87,  129,
-      146,  146,  146,  146,  146,  146,   88,  146,   89,   90,
-       91,  146,   93,  146,   94,  146,  146,  146,  146,   95,
-      146,  146,  146,  146,  146,   96,  146,  146,  146,  146,
-      146,  146,  146,  146,   97,  146,  146,  146,  146,   98,
-       99,  100,  133,  146,  146,  146,  146,  146,  146,  146,
-      146,  101,  146,  102,  146,  103,  132,    2,    2,    2,
         2,    2,    2,    2,    2,    2,    2,    2,    2,    2,
 
         2,    2,    2,    2,    2,    2,    2,    2,    2,    2,
@@ -658,44 +636,66 @@ static const flex_int16_t yy_accept[1024] =
         2,    2,    2,    2,    2,    2,    2,    2,    2,    2,
         2,    2,    2,    2,    2,    2,    2,    2,    2,    2,
         2,    2,    2,    2,    2,    2,    2,    2,    2,    2,
-        2,    2,    2,    2,    2,    2,   56,   57,  146,   58,
-      146,  146,  146,  146,  146,  146,   59,  146,  146,  146,
+        2,    2,    2,    2,    2,    2,    2,    2,  148,  148,
+      148,  148,  148,  148,   78,  148,   79,   80,  148,  148,
 
-       60,  146,  146,  146,  146,  146,  146,  146,  146,  146,
-      146,  134,   61,  146,   62,  146,   92,  146,   63,   64,
-      146,  146,  146,  146,   65,   66,   67,   68,  146,  131,
-      146,  146,  146,   69,   70,  146,  146,  146,  146,  146,
-       71,  146,  146,  146,  146,  146,   72,  146,  146,  146,
-       73,  146,  146,  146,   74,  146,  146,  146,   75,    2,
-        2,    2,    2,    2,    2,    2,    2,    2,    2,    2,
-        2,    2,    2,    2,    2,    2,    2,    2,    2,    2,
-        2,    2,    2,    2,    2,    2,    2,    2,    2,    2,
-        2,    2,    2,    2,    2,    2,    2,    2,    2,    2,
-
-        2,    2,    2,    2,    2,    2,    2,    2,    2,    2,
-        2,    2,    2,    2,    2,    2,    2,    2,    2,    2,
-        2,    2,    2,    2,    2,    2,    2,    2,    2,    2,
-        2,    2,  146,   31,  146,  146,   32,  146,   33,  146,
-      146,   34,  146,   35,  146,   36,   37,   38,  146,   39,
-      146,  146,   41,   42,   43,   44,  146,  146,   45,  128,
-      146,  146,   46,  146,  146,  146,   47,  146,   48,  127,
-       49,   50,  146,   51,  146,  146,  146,   52,   53,   54,
-       55,  146,  146,    2,    2,    2,    2,    2,    2,    2,
+      148,  148,   81,  148,  148,  148,  148,   82,  148,  148,
+      148,   83,   84,  148,  148,  148,  148,  148,  148,  148,
+       85,  148,   86,   87,  148,  148,   88,  148,   89,  131,
+      148,  148,  148,  148,  148,  148,   90,  148,   91,   92,
+       93,  148,   95,  148,   96,  148,  148,  148,  148,   97,
+      148,  148,  148,  148,  148,   98,  148,  148,  148,  148,
+      148,  148,  148,  148,   99,  148,  148,  148,  148,  100,
+      101,  102,  135,  148,  148,  148,  148,  148,  148,  148,
+      148,  103,  148,  104,  148,  105,  134,    2,    2,    2,
         2,    2,    2,    2,    2,    2,    2,    2,    2,    2,
 
         2,    2,    2,    2,    2,    2,    2,    2,    2,    2,
         2,    2,    2,    2,    2,    2,    2,    2,    2,    2,
         2,    2,    2,    2,    2,    2,    2,    2,    2,    2,
-        2,    2,    2,    2,   15,   16,   17,   18,   19,  146,
-       20,  146,  146,   21,   22,   40,   23,  146,   24,  146,
-      146,   25,   26,  146,   27,   28,  146,  146,  146,   29,
+        2,    2,    2,    2,    2,    2,    2,    2,    2,    2,
+        2,    2,    2,    2,    2,    2,    2,    2,    2,    2,
+        2,    2,    2,    2,    2,    2,    2,    2,    2,    2,
+        2,    2,    2,    2,    2,    2,    2,    2,    2,    2,
+        2,    2,    2,    2,    2,    2,    2,    2,    2,    2,
+        2,    2,    2,    2,    2,    2,   56,   57,  148,   58,
+      148,  148,  148,  148,  148,  148,   59,  148,  148,  148,
+
+       60,  148,  148,  148,  148,  148,  148,  148,  148,  148,
+      148,  136,   61,  148,   62,  148,   94,  148,   63,   64,
+      148,  148,  148,  148,   65,   66,   67,   68,  148,  133,
+      148,  148,  148,   69,   70,  148,  148,  148,  148,  148,
+       71,  148,  148,  148,  148,  148,   72,  148,  148,  148,
+       73,  148,  148,  148,   76,  148,  148,  148,   77,    2,
+        2,    2,    2,    2,    2,    2,    2,    2,    2,    2,
+        2,    2,    2,    2,    2,    2,    2,    2,    2,    2,
+        2,    2,    2,    2,    2,    2,    2,    2,    2,    2,
+        2,    2,    2,    2,    2,    2,    2,    2,    2,    2,
+
+        2,    2,    2,    2,    2,    2,    2,    2,    2,    2,
+        2,    2,    2,    2,    2,    2,    2,    2,    2,    2,
+        2,    2,    2,    2,    2,    2,    2,    2,    2,    2,
+        2,    2,  148,   31,  148,  148,   32,  148,   33,  148,
+      148,   34,  148,   35,  148,   36,   37,   38,  148,   39,
+      148,  148,   41,   42,   43,   44,  148,  148,   45,  130,
+      148,  148,   46,  148,  148,  148,   47,  148,   48,  129,
+       49,   50,  148,   51,  148,  148,  148,   52,   53,   54,
+       55,  148,  148,    2,    2,    2,    2,    2,    2,    2,
+        2,    2,    2,    2,    2,    2,    2,    2,    2,    2,
+
+        2,    2,    2,    2,    2,    2,    2,    2,    2,    2,
+        2,    2,    2,    2,    2,    2,    2,    2,    2,    2,
+        2,    2,    2,    2,    2,    2,    2,    2,    2,    2,
+        2,    2,    2,    2,   15,   16,   17,   18,   19,  148,
+       20,  148,  148,   21,   22,   40,   23,  148,   24,  148,
+      148,   25,   26,  148,   27,   28,  148,  148,  148,   29,
        30,    2,    2,    2,    2,    2,    2,    2,    2,    2,
         2,    2,    2,    2,    2,    2,    2,    2,    2,    2,
-        2,    2,    2,    2,    2,    2,    2,    2,  146,   10,
-       11,  146,   12,  146,   13,  146,  146,   14,    2,    2,
+        2,    2,    2,    2,    2,    2,    2,    2,  148,   10,
+       11,  148,   12,  148,   13,  148,  148,   14,    2,    2,
 
-        2,    2,    2,    2,    2,    2,    2,    2,  146,    7,
-      146,    8,    9,    2,    2,    2,    2,    2,    5,    6,
+        2,    2,    2,    2,    2,    2,    2,    2,  148,    7,
+      148,    8,    9,    2,    2,    2,    2,    2,    5,    6,
         2,    2,    0
     } ;
 
@@ -2641,415 +2641,425 @@ TOKEN(UNION)
 case 74:
 YY_RULE_SETUP
 #line 133 "flex_lexer.l"
-TOKEN(USING)
+TOKEN(INTERSECT)
 	YY_BREAK
 case 75:
 YY_RULE_SETUP
 #line 134 "flex_lexer.l"
-TOKEN(WHERE)
+TOKEN(EXCEPT)
 	YY_BREAK
 case 76:
 YY_RULE_SETUP
 #line 135 "flex_lexer.l"
-TOKEN(CALL)
+TOKEN(USING)
 	YY_BREAK
 case 77:
 YY_RULE_SETUP
 #line 136 "flex_lexer.l"
-TOKEN(CASE)
+TOKEN(WHERE)
 	YY_BREAK
 case 78:
 YY_RULE_SETUP
 #line 137 "flex_lexer.l"
-TOKEN(CHAR)
+TOKEN(CALL)
 	YY_BREAK
 case 79:
 YY_RULE_SETUP
 #line 138 "flex_lexer.l"
-TOKEN(DATE)
+TOKEN(CASE)
 	YY_BREAK
 case 80:
 YY_RULE_SETUP
 #line 139 "flex_lexer.l"
-TOKEN(DESC)
+TOKEN(CHAR)
 	YY_BREAK
 case 81:
 YY_RULE_SETUP
 #line 140 "flex_lexer.l"
-TOKEN(DROP)
+TOKEN(DATE)
 	YY_BREAK
 case 82:
 YY_RULE_SETUP
 #line 141 "flex_lexer.l"
-TOKEN(ELSE)
+TOKEN(DESC)
 	YY_BREAK
 case 83:
 YY_RULE_SETUP
 #line 142 "flex_lexer.l"
-TOKEN(FILE)
+TOKEN(DROP)
 	YY_BREAK
 case 84:
 YY_RULE_SETUP
 #line 143 "flex_lexer.l"
-TOKEN(FROM)
+TOKEN(ELSE)
 	YY_BREAK
 case 85:
 YY_RULE_SETUP
 #line 144 "flex_lexer.l"
-TOKEN(FULL)
+TOKEN(FILE)
 	YY_BREAK
 case 86:
 YY_RULE_SETUP
 #line 145 "flex_lexer.l"
-TOKEN(HASH)
+TOKEN(FROM)
 	YY_BREAK
 case 87:
 YY_RULE_SETUP
 #line 146 "flex_lexer.l"
-TOKEN(HINT)
+TOKEN(FULL)
 	YY_BREAK
 case 88:
 YY_RULE_SETUP
 #line 147 "flex_lexer.l"
-TOKEN(INTO)
+TOKEN(HASH)
 	YY_BREAK
 case 89:
 YY_RULE_SETUP
 #line 148 "flex_lexer.l"
-TOKEN(JOIN)
+TOKEN(HINT)
 	YY_BREAK
 case 90:
 YY_RULE_SETUP
 #line 149 "flex_lexer.l"
-TOKEN(LEFT)
+TOKEN(INTO)
 	YY_BREAK
 case 91:
 YY_RULE_SETUP
 #line 150 "flex_lexer.l"
-TOKEN(LIKE)
+TOKEN(JOIN)
 	YY_BREAK
 case 92:
 YY_RULE_SETUP
 #line 151 "flex_lexer.l"
-TOKEN(ILIKE)
+TOKEN(LEFT)
 	YY_BREAK
 case 93:
 YY_RULE_SETUP
 #line 152 "flex_lexer.l"
-TOKEN(LOAD)
+TOKEN(LIKE)
 	YY_BREAK
 case 94:
 YY_RULE_SETUP
 #line 153 "flex_lexer.l"
-TOKEN(LONG)
+TOKEN(ILIKE)
 	YY_BREAK
 case 95:
 YY_RULE_SETUP
 #line 154 "flex_lexer.l"
-TOKEN(NULL)
+TOKEN(LOAD)
 	YY_BREAK
 case 96:
 YY_RULE_SETUP
 #line 155 "flex_lexer.l"
-TOKEN(PLAN)
+TOKEN(LONG)
 	YY_BREAK
 case 97:
 YY_RULE_SETUP
 #line 156 "flex_lexer.l"
-TOKEN(SHOW)
+TOKEN(NULL)
 	YY_BREAK
 case 98:
 YY_RULE_SETUP
 #line 157 "flex_lexer.l"
-TOKEN(TEXT)
+TOKEN(PLAN)
 	YY_BREAK
 case 99:
 YY_RULE_SETUP
 #line 158 "flex_lexer.l"
-TOKEN(THEN)
+TOKEN(SHOW)
 	YY_BREAK
 case 100:
 YY_RULE_SETUP
 #line 159 "flex_lexer.l"
-TOKEN(TIME)
+TOKEN(TEXT)
 	YY_BREAK
 case 101:
 YY_RULE_SETUP
 #line 160 "flex_lexer.l"
-TOKEN(VIEW)
+TOKEN(THEN)
 	YY_BREAK
 case 102:
 YY_RULE_SETUP
 #line 161 "flex_lexer.l"
-TOKEN(WHEN)
+TOKEN(TIME)
 	YY_BREAK
 case 103:
 YY_RULE_SETUP
 #line 162 "flex_lexer.l"
-TOKEN(WITH)
+TOKEN(VIEW)
 	YY_BREAK
 case 104:
 YY_RULE_SETUP
 #line 163 "flex_lexer.l"
-TOKEN(ADD)
+TOKEN(WHEN)
 	YY_BREAK
 case 105:
 YY_RULE_SETUP
 #line 164 "flex_lexer.l"
-TOKEN(ALL)
+TOKEN(WITH)
 	YY_BREAK
 case 106:
 YY_RULE_SETUP
 #line 165 "flex_lexer.l"
-TOKEN(AND)
+TOKEN(ADD)
 	YY_BREAK
 case 107:
 YY_RULE_SETUP
 #line 166 "flex_lexer.l"
-TOKEN(ASC)
+TOKEN(ALL)
 	YY_BREAK
 case 108:
 YY_RULE_SETUP
 #line 167 "flex_lexer.l"
-TOKEN(CSV)
+TOKEN(AND)
 	YY_BREAK
 case 109:
 YY_RULE_SETUP
 #line 168 "flex_lexer.l"
-TOKEN(END)
+TOKEN(ASC)
 	YY_BREAK
 case 110:
 YY_RULE_SETUP
 #line 169 "flex_lexer.l"
-TOKEN(FOR)
+TOKEN(CSV)
 	YY_BREAK
 case 111:
 YY_RULE_SETUP
 #line 170 "flex_lexer.l"
-TOKEN(INT)
+TOKEN(END)
 	YY_BREAK
 case 112:
 YY_RULE_SETUP
 #line 171 "flex_lexer.l"
-TOKEN(KEY)
+TOKEN(FOR)
 	YY_BREAK
 case 113:
 YY_RULE_SETUP
 #line 172 "flex_lexer.l"
-TOKEN(NOT)
+TOKEN(INT)
 	YY_BREAK
 case 114:
 YY_RULE_SETUP
 #line 173 "flex_lexer.l"
-TOKEN(OFF)
+TOKEN(KEY)
 	YY_BREAK
 case 115:
 YY_RULE_SETUP
 #line 174 "flex_lexer.l"
-TOKEN(SET)
+TOKEN(NOT)
 	YY_BREAK
 case 116:
 YY_RULE_SETUP
 #line 175 "flex_lexer.l"
-TOKEN(TBL)
+TOKEN(OFF)
 	YY_BREAK
 case 117:
 YY_RULE_SETUP
 #line 176 "flex_lexer.l"
-TOKEN(TOP)
+TOKEN(SET)
 	YY_BREAK
 case 118:
 YY_RULE_SETUP
 #line 177 "flex_lexer.l"
-TOKEN(AS)
+TOKEN(TBL)
 	YY_BREAK
 case 119:
 YY_RULE_SETUP
 #line 178 "flex_lexer.l"
-TOKEN(BY)
+TOKEN(TOP)
 	YY_BREAK
 case 120:
 YY_RULE_SETUP
 #line 179 "flex_lexer.l"
-TOKEN(IF)
+TOKEN(AS)
 	YY_BREAK
 case 121:
 YY_RULE_SETUP
 #line 180 "flex_lexer.l"
-TOKEN(IN)
+TOKEN(BY)
 	YY_BREAK
 case 122:
 YY_RULE_SETUP
 #line 181 "flex_lexer.l"
-TOKEN(IS)
+TOKEN(IF)
 	YY_BREAK
 case 123:
 YY_RULE_SETUP
 #line 182 "flex_lexer.l"
-TOKEN(OF)
+TOKEN(IN)
 	YY_BREAK
 case 124:
 YY_RULE_SETUP
 #line 183 "flex_lexer.l"
-TOKEN(ON)
+TOKEN(IS)
 	YY_BREAK
 case 125:
 YY_RULE_SETUP
 #line 184 "flex_lexer.l"
-TOKEN(OR)
+TOKEN(OF)
 	YY_BREAK
 case 126:
 YY_RULE_SETUP
 #line 185 "flex_lexer.l"
-TOKEN(TO)
+TOKEN(ON)
 	YY_BREAK
 case 127:
 YY_RULE_SETUP
 #line 186 "flex_lexer.l"
-TOKEN(SECOND)
+TOKEN(OR)
 	YY_BREAK
 case 128:
 YY_RULE_SETUP
 #line 187 "flex_lexer.l"
-TOKEN(MINUTE)
+TOKEN(TO)
 	YY_BREAK
 case 129:
 YY_RULE_SETUP
 #line 188 "flex_lexer.l"
-TOKEN(HOUR)
+TOKEN(SECOND)
 	YY_BREAK
 case 130:
 YY_RULE_SETUP
 #line 189 "flex_lexer.l"
-TOKEN(DAY)
+TOKEN(MINUTE)
 	YY_BREAK
 case 131:
 YY_RULE_SETUP
 #line 190 "flex_lexer.l"
-TOKEN(MONTH)
+TOKEN(HOUR)
 	YY_BREAK
 case 132:
 YY_RULE_SETUP
 #line 191 "flex_lexer.l"
-TOKEN(YEAR)
+TOKEN(DAY)
 	YY_BREAK
 case 133:
 YY_RULE_SETUP
 #line 192 "flex_lexer.l"
-TOKEN(TRUE)
+TOKEN(MONTH)
 	YY_BREAK
 case 134:
 YY_RULE_SETUP
 #line 193 "flex_lexer.l"
-TOKEN(FALSE)
+TOKEN(YEAR)
 	YY_BREAK
-/* Allow =/== see https://sqlite.org/lang_expr.html#collateop */
 case 135:
 YY_RULE_SETUP
-#line 196 "flex_lexer.l"
-TOKEN(EQUALS)             
+#line 194 "flex_lexer.l"
+TOKEN(TRUE)
 	YY_BREAK
 case 136:
 YY_RULE_SETUP
-#line 197 "flex_lexer.l"
-TOKEN(NOTEQUALS)
+#line 195 "flex_lexer.l"
+TOKEN(FALSE)
 	YY_BREAK
+/* Allow =/== see https://sqlite.org/lang_expr.html#collateop */
 case 137:
 YY_RULE_SETUP
 #line 198 "flex_lexer.l"
-TOKEN(NOTEQUALS)
+TOKEN(EQUALS)             
 	YY_BREAK
 case 138:
 YY_RULE_SETUP
 #line 199 "flex_lexer.l"
-TOKEN(LESSEQ)
+TOKEN(NOTEQUALS)
 	YY_BREAK
 case 139:
 YY_RULE_SETUP
 #line 200 "flex_lexer.l"
-TOKEN(GREATEREQ)
+TOKEN(NOTEQUALS)
 	YY_BREAK
 case 140:
 YY_RULE_SETUP
 #line 201 "flex_lexer.l"
-TOKEN(CONCAT)
+TOKEN(LESSEQ)
 	YY_BREAK
 case 141:
 YY_RULE_SETUP
-#line 203 "flex_lexer.l"
-{ return yytext[0]; }
+#line 202 "flex_lexer.l"
+TOKEN(GREATEREQ)
 	YY_BREAK
 case 142:
-#line 206 "flex_lexer.l"
+YY_RULE_SETUP
+#line 203 "flex_lexer.l"
+TOKEN(CONCAT)
+	YY_BREAK
 case 143:
 YY_RULE_SETUP
-#line 206 "flex_lexer.l"
+#line 205 "flex_lexer.l"
+{ return yytext[0]; }
+	YY_BREAK
+case 144:
+#line 208 "flex_lexer.l"
+case 145:
+YY_RULE_SETUP
+#line 208 "flex_lexer.l"
 {
 	yylval->fval = atof(yytext);
 	return SQL_FLOATVAL;
 }
 	YY_BREAK
-case 144:
+case 146:
 YY_RULE_SETUP
-#line 211 "flex_lexer.l"
+#line 213 "flex_lexer.l"
 {
 	yylval->ival = atol(yytext);
 	return SQL_INTVAL;
 }
 	YY_BREAK
-case 145:
+case 147:
 YY_RULE_SETUP
-#line 216 "flex_lexer.l"
+#line 218 "flex_lexer.l"
 {
 	// Crop the leading and trailing quote char
 	yylval->sval = hsql::substr(yytext, 1, strlen(yytext)-1);
 	return SQL_IDENTIFIER;
 }
 	YY_BREAK
-case 146:
+case 148:
 YY_RULE_SETUP
-#line 222 "flex_lexer.l"
+#line 224 "flex_lexer.l"
 {
 	yylval->sval = strdup(yytext);
 	return SQL_IDENTIFIER;
 }
 	YY_BREAK
-case 147:
-YY_RULE_SETUP
-#line 227 "flex_lexer.l"
-{ BEGIN singlequotedstring; strbuf = std::stringstream{}; }
-	YY_BREAK
-case 148:
-YY_RULE_SETUP
-#line 228 "flex_lexer.l"
-{ strbuf << '\''; }
-	YY_BREAK
 case 149:
-/* rule 149 can match eol */
 YY_RULE_SETUP
 #line 229 "flex_lexer.l"
-{ strbuf << yytext; }
+{ BEGIN singlequotedstring; strbuf = std::stringstream{}; }
 	YY_BREAK
 case 150:
 YY_RULE_SETUP
 #line 230 "flex_lexer.l"
-{ BEGIN 0; yylval->sval = strdup(strbuf.str().c_str()); return SQL_STRING; }
-	YY_BREAK
-case YY_STATE_EOF(singlequotedstring):
-#line 231 "flex_lexer.l"
-{ fprintf(stderr, "[SQL-Lexer-Error] Unterminated string\n"); return 0; }
+{ strbuf << '\''; }
 	YY_BREAK
 case 151:
+/* rule 151 can match eol */
 YY_RULE_SETUP
-#line 233 "flex_lexer.l"
-{ fprintf(stderr, "[SQL-Lexer-Error] Unknown Character: %c\n", yytext[0]); return 0; }
+#line 231 "flex_lexer.l"
+{ strbuf << yytext; }
 	YY_BREAK
 case 152:
 YY_RULE_SETUP
-#line 236 "flex_lexer.l"
+#line 232 "flex_lexer.l"
+{ BEGIN 0; yylval->sval = strdup(strbuf.str().c_str()); return SQL_STRING; }
+	YY_BREAK
+case YY_STATE_EOF(singlequotedstring):
+#line 233 "flex_lexer.l"
+{ fprintf(stderr, "[SQL-Lexer-Error] Unterminated string\n"); return 0; }
+	YY_BREAK
+case 153:
+YY_RULE_SETUP
+#line 235 "flex_lexer.l"
+{ fprintf(stderr, "[SQL-Lexer-Error] Unknown Character: %c\n", yytext[0]); return 0; }
+	YY_BREAK
+case 154:
+YY_RULE_SETUP
+#line 238 "flex_lexer.l"
 ECHO;
 	YY_BREAK
-#line 3052 "flex_lexer.cpp"
+#line 3062 "flex_lexer.cpp"
 case YY_STATE_EOF(INITIAL):
 case YY_STATE_EOF(COMMENT):
 	yyterminate();
@@ -4206,7 +4216,7 @@ void yyfree (void * ptr , yyscan_t yyscanner)
 
 #define YYTABLES_NAME "yytables"
 
-#line 236 "flex_lexer.l"
+#line 238 "flex_lexer.l"
 
 /***************************
  ** Section 3: User code

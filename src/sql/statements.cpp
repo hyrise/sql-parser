@@ -359,4 +359,12 @@ namespace hsql {
     delete condition;
   }
 
+  SetType::SetType() {}
+
+  SetType::~SetType() {}
+
+  SetOperator::SetOperator() {}
+
+  SetOperator::~SetOperator() {}
+
 } // namespace hsql

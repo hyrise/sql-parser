@@ -11,6 +11,26 @@ namespace hsql {
     kOrderDesc
   };
 
+  enum UnionType {
+    Union,
+    Intersect,
+    Except
+  };
+
+  struct SetType {
+    SetType();
+    virtual ~SetType();
+
+    UnionType internal_type;
+  };
+
+  struct SetOperator {
+    SetOperator();
+    virtual ~SetOperator();
+
+    SetType* set_type;
+    bool is_all;
+  };
 
   // Description of the order by clause within a select statement.
   struct OrderDescription {
@@ -57,6 +77,7 @@ namespace hsql {
     std::vector<Expr*>* selectList;
     Expr* whereClause;
     GroupByDescription* groupBy;
+    SetOperator* set_operator;
 
     SelectStatement* unionSelect;
     std::vector<OrderDescription*>* order;

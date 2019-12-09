@@ -169,7 +169,13 @@ namespace hsql {
     }
 
     if (stmt->unionSelect != nullptr) {
-      inprint("Union:", numIndent + 1);
+      if (stmt->set_operator->set_type->internal_type == UnionType::Union) {
+        inprint("Union:", numIndent + 1);
+      } else if (stmt->set_operator->set_type->internal_type == UnionType::Intersect) {
+        inprint("Intersect:", numIndent + 1);
+      } else {
+        inprint("Except:", numIndent + 1);
+      }
       printSelectStatementInfo(stmt->unionSelect, numIndent + 2);
     }
 

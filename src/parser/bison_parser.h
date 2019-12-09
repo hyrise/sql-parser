@@ -1,4 +1,4 @@
-/* A Bison parser, made by GNU Bison 3.3.2.  */
+/* A Bison parser, made by GNU Bison 3.4.2.  */
 
 /* Bison interface for Yacc-like parsers in C
 
@@ -52,7 +52,7 @@
 extern int hsql_debug;
 #endif
 /* "%code requires" blocks.  */
-#line 35 "bison_parser.y" /* yacc.c:1927  */
+#line 35 "bison_parser.y"
 
 // %code requires block
 
@@ -76,7 +76,7 @@ extern int hsql_debug;
 				} \
 		}
 
-#line 80 "bison_parser.h" /* yacc.c:1927  */
+#line 80 "bison_parser.h"
 
 /* Token type.  */
 #ifndef HSQL_TOKENTYPE
@@ -231,10 +231,9 @@ extern int hsql_debug;
 
 /* Value type.  */
 #if ! defined HSQL_STYPE && ! defined HSQL_STYPE_IS_DECLARED
-
 union HSQL_STYPE
 {
-#line 95 "bison_parser.y" /* yacc.c:1927  */
+#line 95 "bison_parser.y"
 
 	double fval;
 	int64_t ival;
@@ -267,6 +266,8 @@ union HSQL_STYPE
 	hsql::GroupByDescription* group_t;
 	hsql::UpdateClause* update_t;
 	hsql::Alias* alias_t;
+	hsql::SetType* set_type_t;
+	hsql::SetOperator* set_operator_t;
 
 	std::vector<hsql::SQLStatement*>* stmt_vec;
 
@@ -278,9 +279,9 @@ union HSQL_STYPE
 	std::vector<hsql::OrderDescription*>* order_vec;
 	std::vector<hsql::WithDescription*>* with_description_vec;
 
-#line 282 "bison_parser.h" /* yacc.c:1927  */
-};
+#line 283 "bison_parser.h"
 
+};
 typedef union HSQL_STYPE HSQL_STYPE;
 # define HSQL_STYPE_IS_TRIVIAL 1
 # define HSQL_STYPE_IS_DECLARED 1
