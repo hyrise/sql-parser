@@ -174,7 +174,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 %token OUTER RIGHT TABLE UNION USING WHERE CALL CASE CHAR DATE
 %token DESC DROP ELSE FILE FROM FULL HASH HINT INTO JOIN
 %token LEFT LIKE LOAD LONG NULL PLAN SHOW TEXT THEN TIME
-%token VIEW WHEN WITH ADD ALL AND ASC CSV END FOR INT KEY
+%token VIEW WHEN WITH ADD ALL AND ASC END FOR INT KEY
 %token NOT OFF SET TBL TOP AS BY IF IN IS OF ON OR TO
 %token ARRAY CONCAT ILIKE SECOND MINUTE HOUR DAY MONTH YEAR
 %token TRUE FALSE
@@ -384,8 +384,16 @@ import_statement:
 		}
 	;
 
-import_file_type:
-		CSV { $$ = kImportCSV; }
+import_file_type: {
+	 if (strcmpi($, "csv") == 0) {
+	 	$$ = kImportCSV;
+	 } else if (strcmpi($, "tbl") == 0) {
+	 	$$ = kImportTbl;
+	 } else if (strcmpi($, "binary") == 0) {
+	 	$$ = kImportBin;
+	 } else {
+	 	throw yyerror("Unknown import file type.");
+	 }
 	;
 
 file_path:
