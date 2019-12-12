@@ -20,7 +20,7 @@ namespace hsql {
     kStmtExport,
     kStmtRename,
     kStmtAlter,
-    kStmtShow
+    kStmtShow,
   };
 
   // Base struct for every SQL statement
