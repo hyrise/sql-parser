@@ -406,7 +406,7 @@ import_file_type:
 			} else if (strcasecmp($1, "binary") == 0) {
 			 	$$ = kImportBinary;
 			} else {
-			 	yyerror(&@$, result, scanner, "File typegit is unknown.");
+			 	yyerror(&@$, result, scanner, "File type is unknown.");
 			 	YYERROR;
 			}
 		}
@@ -422,6 +422,7 @@ opt_file_type:
 		}
 	|	/* empty */  { $$ = kImportAuto; }
 	;
+
 
 /******************************
  * Export Statement
