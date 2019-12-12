@@ -5,7 +5,7 @@
 #include "SQLStatement.h"
 
 namespace hsql {
-  // Represents SQL Copy statements.
+  // Represents SQL Export statements.
   struct ExportStatement : SQLStatement {
     ExportStatement(ImportType type);
     virtual ~ExportStatement();

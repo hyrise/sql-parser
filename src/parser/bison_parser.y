@@ -400,13 +400,14 @@ import_statement:
 import_file_type:
 		IDENTIFIER {
 			if (strcasecmp($1, "csv") == 0) {
-			  $$ = kImportCSV;
+			 	$$ = kImportCSV;
 			} else if (strcasecmp($1, "tbl") == 0) {
-			  $$ = kImportTbl;
+			 	$$ = kImportTbl;
 			} else if (strcasecmp($1, "binary") == 0) {
-			  $$ = kImportBinary;
+			 	$$ = kImportBinary;
 			} else {
-			  throw std::runtime_error("unknown type"); // TODO type
+			 	yyerror(&@$, result, scanner, "File typegit is unknown.");
+			 	YYERROR;
 			}
 		}
 	;
@@ -469,7 +470,8 @@ create_statement:
 			$$->schema = $4.schema;
 			$$->tableName = $4.name;
 			if (strcasecmp($6, "tbl") != 0) {
-				throw std::runtime_error("Unknown file type");  // TODO exception type
+				yyerror(&@$, result, scanner, "File type is unknown.");
+			 	YYERROR;
 			}
 			$$->filePath = $8;
 		}
