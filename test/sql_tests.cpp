@@ -11,8 +11,8 @@
 
 using namespace hsql;
 
-
-TEST(DeleteStatementTest) {
+TEST(DeleteStatementTest)
+{
   SQLParserResult result;
   SQLParser::parse("DELETE FROM students WHERE grade > 2.0;", &result);
 
@@ -20,7 +20,7 @@ TEST(DeleteStatementTest) {
   ASSERT_EQ(result.size(), 1);
   ASSERT(result.getStatement(0)->type() == kStmtDelete);
 
-  const DeleteStatement* stmt = (const DeleteStatement*) result.getStatement(0);
+  const DeleteStatement *stmt = (const DeleteStatement *)result.getStatement(0);
   ASSERT_STREQ(stmt->tableName, "students");
   ASSERT_NOTNULL(stmt->expr);
   ASSERT(stmt->expr->isType(kExprOperator));
@@ -28,7 +28,8 @@ TEST(DeleteStatementTest) {
   ASSERT_EQ(stmt->expr->expr2->fval, 2.0);
 }
 
-TEST(CreateStatementTest) {
+TEST(CreateStatementTest)
+{
   SQLParserResult result;
   SQLParser::parse("CREATE TABLE students (name VARCHAR(50), student_number INT, city INTEGER NULL, grade DOUBLE NOT NULL, comment TEXT)", &result);
 
@@ -36,7 +37,7 @@ TEST(CreateStatementTest) {
   ASSERT_EQ(result.size(), 1);
   ASSERT_EQ(result.getStatement(0)->type(), kStmtCreate);
 
-  const CreateStatement* stmt = (const CreateStatement*) result.getStatement(0);
+  const CreateStatement *stmt = (const CreateStatement *)result.getStatement(0);
   ASSERT_EQ(stmt->type, kCreateTable);
   ASSERT_STREQ(stmt->tableName, "students");
   ASSERT_NOTNULL(stmt->columns);
@@ -58,7 +59,8 @@ TEST(CreateStatementTest) {
   ASSERT_EQ(stmt->columns->at(3)->nullable, false);
 }
 
-TEST(CreateAsSelectStatementTest) {
+TEST(CreateAsSelectStatementTest)
+{
   SQLParserResult result;
   SQLParser::parse("CREATE TABLE students_2 AS SELECT student_number, grade FROM students", &result);
 
@@ -66,7 +68,7 @@ TEST(CreateAsSelectStatementTest) {
   ASSERT_EQ(result.size(), 1);
   ASSERT_EQ(result.getStatement(0)->type(), kStmtCreate);
 
-  const CreateStatement* stmt = (const CreateStatement*) result.getStatement(0);
+  const CreateStatement *stmt = (const CreateStatement *)result.getStatement(0);
   ASSERT_EQ(stmt->type, kCreateTable);
   ASSERT_STREQ(stmt->tableName, "students_2");
   ASSERT_NULL(stmt->columns);
@@ -77,7 +79,8 @@ TEST(CreateAsSelectStatementTest) {
   ASSERT_STREQ(stmt->select->selectList->at(1)->getName(), "grade");
 }
 
-TEST(UpdateStatementTest) {
+TEST(UpdateStatementTest)
+{
   SQLParserResult result;
   SQLParser::parse("UPDATE students SET grade = 5.0, name = 'test' WHERE name = 'Max O''Mustermann';", &result);
 
@@ -85,7 +88,7 @@ TEST(UpdateStatementTest) {
   ASSERT_EQ(result.size(), 1);
   ASSERT_EQ(result.getStatement(0)->type(), kStmtUpdate);
 
-  const UpdateStatement* stmt = (const UpdateStatement*) result.getStatement(0);
+  const UpdateStatement *stmt = (const UpdateStatement *)result.getStatement(0);
   ASSERT_NOTNULL(stmt->table);
   ASSERT_STREQ(stmt->table->name, "students");
 
@@ -105,27 +108,27 @@ TEST(UpdateStatementTest) {
   ASSERT_STREQ(stmt->where->expr2->name, "Max O'Mustermann");
 }
 
-
-TEST(InsertStatementTest) {
+TEST(InsertStatementTest)
+{
   TEST_PARSE_SINGLE_SQL(
-    "INSERT INTO students VALUES ('Max Mustermann', 12345, 'Musterhausen', 2.0)",
-    kStmtInsert,
-    InsertStatement,
-    result,
-    stmt);
+      "INSERT INTO students VALUES ('Max Mustermann', 12345, 'Musterhausen', 2.0)",
+      kStmtInsert,
+      InsertStatement,
+      result,
+      stmt);
 
   ASSERT_EQ(stmt->values->size(), 4);
   // TODO
 }
 
-
-TEST(DropTableStatementTest) {
+TEST(DropTableStatementTest)
+{
   TEST_PARSE_SINGLE_SQL(
-    "DROP TABLE students",
-    kStmtDrop,
-    DropStatement,
-    result,
-    stmt);
+      "DROP TABLE students",
+      kStmtDrop,
+      DropStatement,
+      result,
+      stmt);
 
   ASSERT_FALSE(stmt->ifExists);
   ASSERT_EQ(stmt->type, kDropTable);
@@ -133,13 +136,14 @@ TEST(DropTableStatementTest) {
   ASSERT_STREQ(stmt->name, "students");
 }
 
-TEST(DropTableIfExistsStatementTest) {
+TEST(DropTableIfExistsStatementTest)
+{
   TEST_PARSE_SINGLE_SQL(
-    "DROP TABLE IF EXISTS students",
-    kStmtDrop,
-    DropStatement,
-    result,
-    stmt);
+      "DROP TABLE IF EXISTS students",
+      kStmtDrop,
+      DropStatement,
+      result,
+      stmt);
 
   ASSERT_TRUE(stmt->ifExists);
   ASSERT_EQ(stmt->type, kDropTable);
@@ -147,78 +151,85 @@ TEST(DropTableIfExistsStatementTest) {
   ASSERT_STREQ(stmt->name, "students");
 }
 
-TEST(ReleaseStatementTest) {
+TEST(ReleaseStatementTest)
+{
   TEST_PARSE_SINGLE_SQL(
-    "SELECT * FROM students;",
-    kStmtSelect,
-    SelectStatement,
-    result,
-    stmt);
+      "SELECT * FROM students;",
+      kStmtSelect,
+      SelectStatement,
+      result,
+      stmt);
 
   ASSERT_EQ(1, result.size());
   ASSERT_NULL(stmt->whereClause);
 
-  std::vector<SQLStatement*> statements = result.releaseStatements();
+  std::vector<SQLStatement *> statements = result.releaseStatements();
 
   ASSERT_EQ(0, result.size());
 
-  for (SQLStatement* stmt : statements) {
+  for (SQLStatement *stmt : statements)
+  {
     delete stmt;
   }
 }
 
-TEST(ShowTableStatementTest) {
+TEST(ShowTableStatementTest)
+{
   TEST_PARSE_SINGLE_SQL(
-    "SHOW TABLES;",
-    kStmtShow,
-    ShowStatement,
-    result,
-    stmt);
+      "SHOW TABLES;",
+      kStmtShow,
+      ShowStatement,
+      result,
+      stmt);
 
   ASSERT_EQ(stmt->type, kShowTables);
   ASSERT_NULL(stmt->name);
 }
 
-TEST(ShowColumnsStatementTest) {
+TEST(ShowColumnsStatementTest)
+{
   TEST_PARSE_SINGLE_SQL(
-    "SHOW COLUMNS students;",
-    kStmtShow,
-    ShowStatement,
-    result,
-    stmt);
+      "SHOW COLUMNS students;",
+      kStmtShow,
+      ShowStatement,
+      result,
+      stmt);
 
   ASSERT_EQ(stmt->type, kShowColumns);
   ASSERT_NOTNULL(stmt->name);
   ASSERT_STREQ(stmt->name, "students");
 }
 
-TEST(DescribeStatementTest) {
+TEST(DescribeStatementTest)
+{
   TEST_PARSE_SINGLE_SQL(
-    "DESCRIBE students;",
-    kStmtShow,
-    ShowStatement,
-    result,
-    stmt);
+      "DESCRIBE students;",
+      kStmtShow,
+      ShowStatement,
+      result,
+      stmt);
 
   ASSERT_EQ(stmt->type, kShowColumns);
   ASSERT_NOTNULL(stmt->name);
   ASSERT_STREQ(stmt->name, "students");
 }
 
-
-SQLParserResult parse_and_move(std::string query) {
+SQLParserResult parse_and_move(std::string query)
+{
   hsql::SQLParserResult result;
   hsql::SQLParser::parse(query, &result);
   // Moves on return.
   return result;
 }
 
-SQLParserResult move_in_and_back(SQLParserResult res) {
+SQLParserResult move_in_and_back(SQLParserResult res)
+{
   // Moves on return.
   return res;
 }
 
-TEST(MoveSQLResultTest) {
+TEST(MoveSQLResultTest)
+{
   SQLParserResult res = parse_and_move("SELECT * FROM test;");
   ASSERT(res.isValid());
   ASSERT_EQ(1, res.size());
@@ -234,14 +245,14 @@ TEST(MoveSQLResultTest) {
   ASSERT_EQ(1, new_res.size());
 }
 
-TEST(HintTest) {
+TEST(HintTest)
+{
   TEST_PARSE_SINGLE_SQL(
-    "SELECT * FROM students WITH HINT(NO_CACHE, SAMPLE_RATE(10));",
-    kStmtSelect,
-    SelectStatement,
-    result,
-    stmt);
-
+      "SELECT * FROM students WITH HINT(NO_CACHE, SAMPLE_RATE(10));",
+      kStmtSelect,
+      SelectStatement,
+      result,
+      stmt);
 
   ASSERT_NOTNULL(stmt->hints);
   ASSERT_EQ(2, stmt->hints->size());
@@ -251,15 +262,33 @@ TEST(HintTest) {
   ASSERT_EQ(10, stmt->hints->at(1)->exprList->at(0)->ival);
 }
 
-TEST(StringLengthTest) {
+TEST(StringLengthTest)
+{
   TEST_PARSE_SQL_QUERY(
-    "SELECT * FROM bar; INSERT INTO foo VALUES (4);\t\n SELECT * FROM foo;",
-    result,
-    3);
+      "SELECT * FROM bar; INSERT INTO foo VALUES (4);\t\n SELECT * FROM foo;",
+      result,
+      3);
 
   ASSERT_EQ(result.getStatement(0)->stringLength, 18);
   ASSERT_EQ(result.getStatement(1)->stringLength, 28);
   ASSERT_EQ(result.getStatement(2)->stringLength, 21);
+}
+
+TEST(SetOperatorTest)
+{
+  TEST_PARSE_SINGLE_SQL(
+      "SELECT * FROM students INTERSECT SELECT grade FROM students_2 UNION SELECT * FROM employees;",
+      kStmtSelect,
+      SelectStatement,
+      result,
+      stmt);
+
+  ASSERT_EQ(0, strcmp(stmt->nestedSetSelectStatement->nestedSetSelectStatement->fromTable->name, "employees"));
+  ASSERT_EQ(0, strcmp(stmt->nestedSetSelectStatement->fromTable->name, "students_2"));
+  ASSERT_EQ(0, strcmp(stmt->fromTable->name, "students"));
+  ASSERT_EQ(stmt->setOperator->setType, Intersect);
+  ASSERT_EQ(stmt->nestedSetSelectStatement->setOperator->setType, Union);
+  ASSERT_EQ(stmt->selectList->at(0)->name, "grade");
 }
 
 TEST_MAIN();
