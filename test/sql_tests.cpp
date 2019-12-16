@@ -274,7 +274,49 @@ TEST(StringLengthTest)
   ASSERT_EQ(result.getStatement(2)->stringLength, 21);
 }
 
-TEST(SetOperatorTest)
+TEST(ExceptOperatorTest)
+{
+  TEST_PARSE_SINGLE_SQL(
+          "SELECT * FROM students EXCEPT SELECT * FROM students_2;",
+          kStmtSelect,
+          SelectStatement,
+          result,
+          stmt);
+
+  ASSERT_STREQ(stmt->nestedSetSelectStatement->fromTable->name, "students_2");
+  ASSERT_STREQ(stmt->fromTable->name, "students");
+  ASSERT_EQ(stmt->setOperator->setType, Except);
+}
+
+TEST(IntersectOperatorTest)
+{
+  TEST_PARSE_SINGLE_SQL(
+          "SELECT * FROM students INTERSECT SELECT * FROM students_2;",
+          kStmtSelect,
+          SelectStatement,
+          result,
+          stmt);
+
+  ASSERT_STREQ(stmt->nestedSetSelectStatement->fromTable->name, "students_2");
+  ASSERT_STREQ(stmt->fromTable->name, "students");
+  ASSERT_EQ(stmt->setOperator->setType, Intersect);
+}
+
+TEST(UnionOperatorTest)
+{
+  TEST_PARSE_SINGLE_SQL(
+          "SELECT * FROM students UNION SELECT * FROM students_2;",
+          kStmtSelect,
+          SelectStatement,
+          result,
+          stmt);
+
+  ASSERT_STREQ(stmt->nestedSetSelectStatement->fromTable->name, "students_2");
+  ASSERT_STREQ(stmt->fromTable->name, "students");
+  ASSERT_EQ(stmt->setOperator->setType, Union);
+}
+
+TEST(NestedSetOperatorTest)
 {
   TEST_PARSE_SINGLE_SQL(
       "SELECT * FROM students INTERSECT SELECT grade FROM students_2 UNION SELECT * FROM employees;",
@@ -288,7 +330,7 @@ TEST(SetOperatorTest)
   ASSERT_STREQ(stmt->fromTable->name, "students");
   ASSERT_EQ(stmt->setOperator->setType, Intersect);
   ASSERT_EQ(stmt->nestedSetSelectStatement->setOperator->setType, Union);
-  //ASSERT_STREQ(stmt->selectList->at(0)->name, "grade");
+  //ASSERT_STREQ(stmt->selectList->at(0)->getName(), "grade");
 }
 
 TEST_MAIN();
