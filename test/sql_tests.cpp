@@ -2,7 +2,6 @@
  * sql_tests.cpp
  */
 
-#include <cstring>
 #include "thirdparty/microtest/microtest.h"
 
 #include "SQLParser.h"
@@ -284,12 +283,12 @@ TEST(SetOperatorTest)
       result,
       stmt);
 
-  ASSERT_EQ(0, strcmp(stmt->nestedSetSelectStatement->nestedSetSelectStatement->fromTable->name, "employees"));
-  ASSERT_EQ(0, strcmp(stmt->nestedSetSelectStatement->fromTable->name, "students_2"));
-  ASSERT_EQ(0, strcmp(stmt->fromTable->name, "students"));
+  ASSERT_STREQ(stmt->nestedSetSelectStatement->nestedSetSelectStatement->fromTable->name, "employees");
+  ASSERT_STREQ(stmt->nestedSetSelectStatement->fromTable->name, "students_2");
+  ASSERT_STREQ(stmt->fromTable->name, "students");
   ASSERT_EQ(stmt->setOperator->setType, Intersect);
   ASSERT_EQ(stmt->nestedSetSelectStatement->setOperator->setType, Union);
-//  ASSERT_EQ(0, strcmp(stmt->selectList->at(0)->name, "grade"));
+  //ASSERT_STREQ(stmt->selectList->at(0)->name, "grade");
 }
 
 TEST_MAIN();
