@@ -187,7 +187,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 %type <stmt_vec>	    statement_list
 %type <statement> 	    statement preparable_statement
 %type <exec_stmt>	    execute_statement
-%type <transaction_stmt>transaction_statement
+%type <transaction_stmt> transaction_statement
 %type <prep_stmt>	    prepare_statement
 %type <select_stmt>     select_statement select_with_paren select_no_paren select_clause select_paren_or_clause
 %type <import_stmt>     import_statement
