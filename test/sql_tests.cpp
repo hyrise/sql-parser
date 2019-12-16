@@ -262,4 +262,35 @@ TEST(StringLengthTest) {
   ASSERT_EQ(result.getStatement(2)->stringLength, 21);
 }
 
+TEST(BeginTransactionTest) {
+  {
+    TEST_PARSE_SQL_QUERY("BEGIN TRANSACTION;", result, 1);
+
+    ASSERT_EQ(result.getStatement(0)->type(), kStmtTransaction);
+    ASSERT_EQ(static_cast<const TransactionStatement *>(result.getStatement(0))->action, kBeginTransaction);
+  }
+
+  {
+    TEST_PARSE_SQL_QUERY("BEGIN;", result, 1);
+
+    ASSERT_EQ(result.getStatement(0)->type(), kStmtTransaction);
+    ASSERT_EQ(static_cast<const TransactionStatement *>(result.getStatement(0))->action, kBeginTransaction);
+
+  }
+}
+
+TEST(RollbackTransactionTest) {
+  TEST_PARSE_SQL_QUERY("ROLLBACK TRANSACTION;", result, 1);
+
+  ASSERT_EQ(result.getStatement(0)->type(), kStmtTransaction);
+  ASSERT_EQ(static_cast<const TransactionStatement *>(result.getStatement(0))->action, kRollbackTransaction);
+}
+
+TEST(CommitTransactionTest) {
+  TEST_PARSE_SQL_QUERY("COMMIT TRANSACTION;", result, 1);
+
+  ASSERT_EQ(result.getStatement(0)->type(), kStmtTransaction);
+  ASSERT_EQ(static_cast<const TransactionStatement *>(result.getStatement(0))->action, kCommitTransaction);
+}
+
 TEST_MAIN();

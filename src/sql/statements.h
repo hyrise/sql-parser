@@ -11,5 +11,6 @@
 #include "PrepareStatement.h"
 #include "ExecuteStatement.h"
 #include "ShowStatement.h"
+#include "TransactionStatement.h"
 
 #endif // SQLPARSER_STATEMENTS_H
