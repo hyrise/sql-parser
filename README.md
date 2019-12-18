@@ -1,7 +1,6 @@
 C++ SQL Parser
 =========================
-[![GitHub release](https://img.shields.io/github/release/hyrise/sql-parser.svg?maxAge=2592000)]()
-[![Build Status](https://img.shields.io/travis/hyrise/sql-parser.svg?maxAge=2592000)](https://travis-ci.org/hyrise/sql-parser)
+[![Build Status](https://img.shields.io/travis/hyrise/sql-parser/master.svg?maxAge=2592000)](https://travis-ci.org/hyrise/sql-parser)
 
 
 This is a SQL Parser for C++. It parses the given SQL query into C++ objects.
