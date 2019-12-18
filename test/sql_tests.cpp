@@ -20,7 +20,7 @@ TEST(DeleteStatementTest) {
   ASSERT_EQ(result.size(), 1);
   ASSERT(result.getStatement(0)->type() == kStmtDelete);
 
-  const DeleteStatement* stmt = (const DeleteStatement*)result.getStatement(0);
+  const DeleteStatement* stmt = (const DeleteStatement*) result.getStatement(0);
   ASSERT_STREQ(stmt->tableName, "students");
   ASSERT_NOTNULL(stmt->expr);
   ASSERT(stmt->expr->isType(kExprOperator));
@@ -36,7 +36,7 @@ TEST(CreateStatementTest) {
   ASSERT_EQ(result.size(), 1);
   ASSERT_EQ(result.getStatement(0)->type(), kStmtCreate);
 
-  const CreateStatement* stmt = (const CreateStatement*)result.getStatement(0);
+  const CreateStatement* stmt = (const CreateStatement*) result.getStatement(0);
   ASSERT_EQ(stmt->type, kCreateTable);
   ASSERT_STREQ(stmt->tableName, "students");
   ASSERT_NOTNULL(stmt->columns);
@@ -66,7 +66,7 @@ TEST(CreateAsSelectStatementTest) {
   ASSERT_EQ(result.size(), 1);
   ASSERT_EQ(result.getStatement(0)->type(), kStmtCreate);
 
-  const CreateStatement* stmt = (const CreateStatement*)result.getStatement(0);
+  const CreateStatement* stmt = (const CreateStatement*) result.getStatement(0);
   ASSERT_EQ(stmt->type, kCreateTable);
   ASSERT_STREQ(stmt->tableName, "students_2");
   ASSERT_NULL(stmt->columns);
@@ -85,7 +85,7 @@ TEST(UpdateStatementTest) {
   ASSERT_EQ(result.size(), 1);
   ASSERT_EQ(result.getStatement(0)->type(), kStmtUpdate);
 
-  const UpdateStatement* stmt = (const UpdateStatement*)result.getStatement(0);
+  const UpdateStatement* stmt = (const UpdateStatement*) result.getStatement(0);
   ASSERT_NOTNULL(stmt->table);
   ASSERT_STREQ(stmt->table->name, "students");
 
