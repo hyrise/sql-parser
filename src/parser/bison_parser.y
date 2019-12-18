@@ -615,6 +615,7 @@ select_statement:
 			$$->withDescriptions = $1;
 			$$->nestedSetSelectStatement = $4;
 			$$->order = $5;
+
 			// Limit could have been set by TOP.
 			if ($6 != nullptr) {
 				delete $$->limit;
@@ -657,6 +658,7 @@ select_no_paren:
 			$$->setOperator = $2;
 			$$->nestedSetSelectStatement = $3;
 			$$->order = $4;
+
 			// Limit could have been set by TOP.
 			if ($5 != nullptr) {
 				delete $$->limit;
@@ -784,7 +786,8 @@ limit:
 	|	OFFSET expr { $$ = new LimitDescription(nullptr, $2); }
 	|	LIMIT expr OFFSET expr { $$ = new LimitDescription($2, $4); }
 	|	LIMIT ALL { $$ = new LimitDescription(nullptr, nullptr); }
-	|	LIMIT ALL OFFSET expr { $$ = new LimitDescription(nullptr, $4); };
+	|	LIMIT ALL OFFSET expr { $$ = new LimitDescription(nullptr, $4); }
+	;
 
 /******************************
  * Expressions
