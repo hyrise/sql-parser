@@ -11,8 +11,7 @@
 
 using namespace hsql;
 
-TEST(DeleteStatementTest)
-{
+TEST(DeleteStatementTest) {
   SQLParserResult result;
   SQLParser::parse("DELETE FROM students WHERE grade > 2.0;", &result);
 
@@ -28,8 +27,7 @@ TEST(DeleteStatementTest)
   ASSERT_EQ(stmt->expr->expr2->fval, 2.0);
 }
 
-TEST(CreateStatementTest)
-{
+TEST(CreateStatementTest) {
   SQLParserResult result;
   SQLParser::parse("CREATE TABLE students (name VARCHAR(50), student_number INT, city INTEGER NULL, grade DOUBLE NOT NULL, comment TEXT)", &result);
 
@@ -59,8 +57,7 @@ TEST(CreateStatementTest)
   ASSERT_EQ(stmt->columns->at(3)->nullable, false);
 }
 
-TEST(CreateAsSelectStatementTest)
-{
+TEST(CreateAsSelectStatementTest) {
   SQLParserResult result;
   SQLParser::parse("CREATE TABLE students_2 AS SELECT student_number, grade FROM students", &result);
 
@@ -79,8 +76,7 @@ TEST(CreateAsSelectStatementTest)
   ASSERT_STREQ(stmt->select->selectList->at(1)->getName(), "grade");
 }
 
-TEST(UpdateStatementTest)
-{
+TEST(UpdateStatementTest) {
   SQLParserResult result;
   SQLParser::parse("UPDATE students SET grade = 5.0, name = 'test' WHERE name = 'Max O''Mustermann';", &result);
 
@@ -108,8 +104,7 @@ TEST(UpdateStatementTest)
   ASSERT_STREQ(stmt->where->expr2->name, "Max O'Mustermann");
 }
 
-TEST(InsertStatementTest)
-{
+TEST(InsertStatementTest) {
   TEST_PARSE_SINGLE_SQL(
       "INSERT INTO students VALUES ('Max Mustermann', 12345, 'Musterhausen', 2.0)",
       kStmtInsert,
@@ -121,8 +116,7 @@ TEST(InsertStatementTest)
   // TODO
 }
 
-TEST(DropTableStatementTest)
-{
+TEST(DropTableStatementTest) {
   TEST_PARSE_SINGLE_SQL(
       "DROP TABLE students",
       kStmtDrop,
@@ -136,8 +130,7 @@ TEST(DropTableStatementTest)
   ASSERT_STREQ(stmt->name, "students");
 }
 
-TEST(DropTableIfExistsStatementTest)
-{
+TEST(DropTableIfExistsStatementTest) {
   TEST_PARSE_SINGLE_SQL(
       "DROP TABLE IF EXISTS students",
       kStmtDrop,
@@ -151,8 +144,7 @@ TEST(DropTableIfExistsStatementTest)
   ASSERT_STREQ(stmt->name, "students");
 }
 
-TEST(ReleaseStatementTest)
-{
+TEST(ReleaseStatementTest) {
   TEST_PARSE_SINGLE_SQL(
       "SELECT * FROM students;",
       kStmtSelect,
@@ -167,14 +159,12 @@ TEST(ReleaseStatementTest)
 
   ASSERT_EQ(0, result.size());
 
-  for (SQLStatement *stmt : statements)
-  {
+  for (SQLStatement *stmt : statements) {
     delete stmt;
   }
 }
 
-TEST(ShowTableStatementTest)
-{
+TEST(ShowTableStatementTest) {
   TEST_PARSE_SINGLE_SQL(
       "SHOW TABLES;",
       kStmtShow,
@@ -186,8 +176,7 @@ TEST(ShowTableStatementTest)
   ASSERT_NULL(stmt->name);
 }
 
-TEST(ShowColumnsStatementTest)
-{
+TEST(ShowColumnsStatementTest) {
   TEST_PARSE_SINGLE_SQL(
       "SHOW COLUMNS students;",
       kStmtShow,
@@ -200,8 +189,7 @@ TEST(ShowColumnsStatementTest)
   ASSERT_STREQ(stmt->name, "students");
 }
 
-TEST(DescribeStatementTest)
-{
+TEST(DescribeStatementTest) {
   TEST_PARSE_SINGLE_SQL(
       "DESCRIBE students;",
       kStmtShow,
@@ -214,22 +202,19 @@ TEST(DescribeStatementTest)
   ASSERT_STREQ(stmt->name, "students");
 }
 
-SQLParserResult parse_and_move(std::string query)
-{
+SQLParserResult parse_and_move(std::string query) {
   hsql::SQLParserResult result;
   hsql::SQLParser::parse(query, &result);
   // Moves on return.
   return result;
 }
 
-SQLParserResult move_in_and_back(SQLParserResult res)
-{
+SQLParserResult move_in_and_back(SQLParserResult res) {
   // Moves on return.
   return res;
 }
 
-TEST(MoveSQLResultTest)
-{
+TEST(MoveSQLResultTest) {
   SQLParserResult res = parse_and_move("SELECT * FROM test;");
   ASSERT(res.isValid());
   ASSERT_EQ(1, res.size());
@@ -245,8 +230,7 @@ TEST(MoveSQLResultTest)
   ASSERT_EQ(1, new_res.size());
 }
 
-TEST(HintTest)
-{
+TEST(HintTest) {
   TEST_PARSE_SINGLE_SQL(
       "SELECT * FROM students WITH HINT(NO_CACHE, SAMPLE_RATE(10));",
       kStmtSelect,
@@ -262,8 +246,7 @@ TEST(HintTest)
   ASSERT_EQ(10, stmt->hints->at(1)->exprList->at(0)->ival);
 }
 
-TEST(StringLengthTest)
-{
+TEST(StringLengthTest) {
   TEST_PARSE_SQL_QUERY(
       "SELECT * FROM bar; INSERT INTO foo VALUES (4);\t\n SELECT * FROM foo;",
       result,
@@ -274,8 +257,7 @@ TEST(StringLengthTest)
   ASSERT_EQ(result.getStatement(2)->stringLength, 21);
 }
 
-TEST(ExceptOperatorTest)
-{
+TEST(ExceptOperatorTest) {
   TEST_PARSE_SINGLE_SQL(
       "SELECT * FROM students EXCEPT SELECT * FROM students_2;",
       kStmtSelect,
@@ -288,8 +270,7 @@ TEST(ExceptOperatorTest)
   ASSERT_EQ(stmt->setOperator->setType, Except);
 }
 
-TEST(IntersectOperatorTest)
-{
+TEST(IntersectOperatorTest) {
   TEST_PARSE_SINGLE_SQL(
       "SELECT * FROM students INTERSECT SELECT * FROM students_2;",
       kStmtSelect,
@@ -302,8 +283,7 @@ TEST(IntersectOperatorTest)
   ASSERT_EQ(stmt->setOperator->setType, Intersect);
 }
 
-TEST(UnionOperatorTest)
-{
+TEST(UnionOperatorTest) {
   TEST_PARSE_SINGLE_SQL(
       "SELECT * FROM students UNION SELECT * FROM students_2;",
       kStmtSelect,
@@ -317,8 +297,7 @@ TEST(UnionOperatorTest)
   ASSERT_FALSE(stmt->setOperator->isAll);
 }
 
-TEST(UnionAllOperatorTest)
-{
+TEST(UnionAllOperatorTest) {
   TEST_PARSE_SINGLE_SQL(
       "SELECT * FROM students UNION ALL SELECT * FROM students_2;",
       kStmtSelect,
@@ -331,8 +310,7 @@ TEST(UnionAllOperatorTest)
   ASSERT_TRUE(stmt->setOperator->isAll);
 }
 
-TEST(NestedSetOperatorTest)
-{
+TEST(NestedSetOperatorTest) {
   TEST_PARSE_SINGLE_SQL(
       "SELECT * FROM students INTERSECT SELECT grade FROM students_2 UNION SELECT * FROM employees;",
       kStmtSelect,
@@ -346,11 +324,9 @@ TEST(NestedSetOperatorTest)
   ASSERT_EQ(stmt->setOperator->setType, Intersect);
   ASSERT_EQ(stmt->nestedSetSelectStatement->setOperator->setType, Union);
   ASSERT_FALSE(stmt->setOperator->isAll);
-  //ASSERT_STREQ(stmt->selectList->at(0)->getName(), "grade");
 }
 
-TEST(OrderByFullStatementTest)
-{
+TEST(OrderByFullStatementTest) {
   TEST_PARSE_SINGLE_SQL(
       "SELECT * FROM students INTERSECT SELECT grade FROM students_2 UNION SELECT * FROM employees ORDER BY grade ASC;",
       kStmtSelect,
@@ -363,8 +339,7 @@ TEST(OrderByFullStatementTest)
   ASSERT_FALSE(stmt->setOperator->isAll);
 }
 
-TEST(WrongOrderByStatementTest)
-{
+TEST(WrongOrderByStatementTest) {
   SQLParserResult res = parse_and_move("SELECT * FROM students ORDER BY name INTERSECT SELECT grade FROM students_2;");
   ASSERT_FALSE(res.isValid());
 }
