@@ -316,6 +316,20 @@ TEST(UnionOperatorTest)
   ASSERT_EQ(stmt->setOperator->setType, Union);
 }
 
+TEST(UnionAllOperatorTest)
+{
+    TEST_PARSE_SINGLE_SQL(
+            "SELECT * FROM students UNION ALL SELECT * FROM students_2;",
+            kStmtSelect,
+            SelectStatement,
+            result,
+            stmt);
+
+    ASSERT_STREQ(stmt->nestedSetSelectStatement->fromTable->name, "students_2");
+    ASSERT_STREQ(stmt->fromTable->name, "students");
+    ASSERT_TRUE(stmt->setOperator->isAll);
+}
+
 TEST(NestedSetOperatorTest)
 {
   TEST_PARSE_SINGLE_SQL(
