@@ -11,17 +11,17 @@ namespace hsql {
     kOrderDesc
   };
 
-  enum UnionType {
-    Union,
-    Intersect,
-    Except
+  enum SetType {
+    kSetUnion,
+    kSetIntersect,
+    kSetExcept
   };
 
   struct SetOperator {
     SetOperator();
     virtual ~SetOperator();
 
-    UnionType setType;
+    SetType setType;
     bool isAll;
   };
 

@@ -3399,7 +3399,7 @@ yyreduce:
 #line 678 "bison_parser.y"
     {
 		(yyval.set_operator_t) = new SetOperator();
-		(yyval.set_operator_t)->setType = UnionType::Union;
+		(yyval.set_operator_t)->setType = SetType::kSetUnion;
 		}
 #line 3405 "bison_parser.cpp"
     break;
@@ -3408,7 +3408,7 @@ yyreduce:
 #line 682 "bison_parser.y"
     {
 		(yyval.set_operator_t) = new SetOperator();
-		(yyval.set_operator_t)->setType = UnionType::Intersect;
+		(yyval.set_operator_t)->setType = SetType::kSetIntersect;
 	}
 #line 3414 "bison_parser.cpp"
     break;
@@ -3417,7 +3417,7 @@ yyreduce:
 #line 686 "bison_parser.y"
     {
 		(yyval.set_operator_t) = new SetOperator();
-		(yyval.set_operator_t)->setType = UnionType::Except;
+		(yyval.set_operator_t)->setType = SetType::kSetExcept;
 	}
 #line 3423 "bison_parser.cpp"
     break;

@@ -268,7 +268,7 @@ TEST(ExceptOperatorTest) {
 
   ASSERT_STREQ(stmt->nestedSetSelectStatement->fromTable->name, "students_2");
   ASSERT_STREQ(stmt->fromTable->name, "students");
-  ASSERT_EQ(stmt->setOperator->setType, Except);
+  ASSERT_EQ(stmt->setOperator->setType, kSetExcept);
 }
 
 TEST(IntersectOperatorTest) {
@@ -281,7 +281,7 @@ TEST(IntersectOperatorTest) {
 
   ASSERT_STREQ(stmt->nestedSetSelectStatement->fromTable->name, "students_2");
   ASSERT_STREQ(stmt->fromTable->name, "students");
-  ASSERT_EQ(stmt->setOperator->setType, Intersect);
+  ASSERT_EQ(stmt->setOperator->setType, kSetIntersect);
 }
 
 TEST(UnionOperatorTest) {
@@ -294,7 +294,7 @@ TEST(UnionOperatorTest) {
 
   ASSERT_STREQ(stmt->nestedSetSelectStatement->fromTable->name, "students_2");
   ASSERT_STREQ(stmt->fromTable->name, "students");
-  ASSERT_EQ(stmt->setOperator->setType, Union);
+  ASSERT_EQ(stmt->setOperator->setType, kSetUnion);
   ASSERT_FALSE(stmt->setOperator->isAll);
 }
 
@@ -322,8 +322,8 @@ TEST(NestedSetOperatorTest) {
   ASSERT_STREQ(stmt->nestedSetSelectStatement->nestedSetSelectStatement->fromTable->name, "employees");
   ASSERT_STREQ(stmt->nestedSetSelectStatement->fromTable->name, "students_2");
   ASSERT_STREQ(stmt->fromTable->name, "students");
-  ASSERT_EQ(stmt->setOperator->setType, Intersect);
-  ASSERT_EQ(stmt->nestedSetSelectStatement->setOperator->setType, Union);
+  ASSERT_EQ(stmt->setOperator->setType, kSetIntersect);
+  ASSERT_EQ(stmt->nestedSetSelectStatement->setOperator->setType, kSetUnion);
   ASSERT_FALSE(stmt->setOperator->isAll);
 }
 

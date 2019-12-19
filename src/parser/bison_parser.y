@@ -677,15 +677,15 @@ set_operator:
 set_type:
 		UNION {
 		$$ = new SetOperator();
-		$$->setType = UnionType::Union;
+		$$->setType = SetType::kSetUnion;
 		}
 	|	INTERSECT {
 		$$ = new SetOperator();
-		$$->setType = UnionType::Intersect;
+		$$->setType = SetType::kSetIntersect;
 	}
 	|	EXCEPT {
 		$$ = new SetOperator();
-		$$->setType = UnionType::Except;
+		$$->setType = SetType::kSetExcept;
 	}
 	;
 
