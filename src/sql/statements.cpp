@@ -118,9 +118,9 @@ namespace hsql {
   }
 
   // TransactionStatement
-  TransactionStatement::TransactionStatement(TransactionAction action)
+  TransactionStatement::TransactionStatement(TransactionCommand command)
     : SQLStatement(kStmtTransaction)
-    , action(action) {};
+    , command(command) {};
 
   TransactionStatement::~TransactionStatement() {}
 

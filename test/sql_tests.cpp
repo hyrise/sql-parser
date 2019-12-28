@@ -267,14 +267,14 @@ TEST(BeginTransactionTest) {
     TEST_PARSE_SQL_QUERY("BEGIN TRANSACTION;", result, 1);
 
     ASSERT_EQ(result.getStatement(0)->type(), kStmtTransaction);
-    ASSERT_EQ(static_cast<const TransactionStatement *>(result.getStatement(0))->action, kBeginTransaction);
+    ASSERT_EQ(static_cast<const TransactionStatement *>(result.getStatement(0))->command, kBeginTransaction);
   }
 
   {
     TEST_PARSE_SQL_QUERY("BEGIN;", result, 1);
 
     ASSERT_EQ(result.getStatement(0)->type(), kStmtTransaction);
-    ASSERT_EQ(static_cast<const TransactionStatement *>(result.getStatement(0))->action, kBeginTransaction);
+    ASSERT_EQ(static_cast<const TransactionStatement *>(result.getStatement(0))->command, kBeginTransaction);
 
   }
 }
@@ -283,14 +283,14 @@ TEST(RollbackTransactionTest) {
   TEST_PARSE_SQL_QUERY("ROLLBACK TRANSACTION;", result, 1);
 
   ASSERT_EQ(result.getStatement(0)->type(), kStmtTransaction);
-  ASSERT_EQ(static_cast<const TransactionStatement *>(result.getStatement(0))->action, kRollbackTransaction);
+  ASSERT_EQ(static_cast<const TransactionStatement *>(result.getStatement(0))->command, kRollbackTransaction);
 }
 
 TEST(CommitTransactionTest) {
   TEST_PARSE_SQL_QUERY("COMMIT TRANSACTION;", result, 1);
 
   ASSERT_EQ(result.getStatement(0)->type(), kStmtTransaction);
-  ASSERT_EQ(static_cast<const TransactionStatement *>(result.getStatement(0))->action, kCommitTransaction);
+  ASSERT_EQ(static_cast<const TransactionStatement *>(result.getStatement(0))->command, kCommitTransaction);
 }
 
 TEST_MAIN();

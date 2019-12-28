@@ -4,18 +4,22 @@
 #include "SQLStatement.h"
 
 namespace hsql {
-  enum TransactionAction {
+
+  // Represents SQL Transaction statements.
+  // Example: BEGIN TRANSACTION;
+  enum TransactionCommand {
     kBeginTransaction,
     kCommitTransaction,
     kRollbackTransaction
   };
 
   struct TransactionStatement : SQLStatement {
-    TransactionStatement(TransactionAction action);
+    TransactionStatement(TransactionCommand command);
     virtual ~TransactionStatement();
 
-    TransactionAction action;
+    TransactionCommand command;
   };
-}
+  
+} // namsepace hsql
 
 #endif
