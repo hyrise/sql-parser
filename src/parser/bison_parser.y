@@ -14,6 +14,7 @@
 #include "bison_parser.h"
 #include "flex_lexer.h"
 
+#include <iostream>
 #include <stdio.h>
 #include <string.h>
 
@@ -306,13 +307,17 @@ statement:
 	|	show_statement {
 			$$ = $1;
 		}
+	|	import_statement {
+		 	$$ = $1;
+		 }
+	|	export_statement {
+		 	$$ = $1;
+		 }
 	;
 
 
 preparable_statement:
 		select_statement { $$ = $1; }
-	|	import_statement { $$ = $1; }
-	|	export_statement { $$ = $1; }
 	|	create_statement { $$ = $1; }
 	|	insert_statement { $$ = $1; }
 	|	delete_statement { $$ = $1; }
@@ -389,7 +394,7 @@ import_statement:
 			$$->schema = $7.schema;
 			$$->tableName = $7.name;
 		}
-	|	COPY table_name FROM file_path opt_file_type  {
+	|	COPY table_name FROM file_path opt_file_type {
 			$$ = new ImportStatement($5);
 			$$->filePath = $4;
 			$$->schema = $2.schema;
@@ -403,12 +408,14 @@ import_file_type:
 			 	$$ = kImportCSV;
 			} else if (strcasecmp($1, "tbl") == 0) {
 			 	$$ = kImportTbl;
-			} else if (strcasecmp($1, "binary") == 0) {
+			} else if (strcasecmp($1, "bin") == 0) {
 			 	$$ = kImportBinary;
 			} else {
-			 	yyerror(&@$, result, scanner, "File type is unknown.");
+				free($1);
+				yyerror(&yyloc, result, scanner, "File type is unknown.");
 			 	YYERROR;
 			}
+			free($1);
 		}
 	;
 
@@ -471,9 +478,11 @@ create_statement:
 			$$->schema = $4.schema;
 			$$->tableName = $4.name;
 			if (strcasecmp($6, "tbl") != 0) {
-				yyerror(&@$, result, scanner, "File type is unknown.");
+				free($6);
+				yyerror(&yyloc, result, scanner, "File type is unknown.");
 			 	YYERROR;
 			}
+			free($6);
 			$$->filePath = $8;
 		}
 	|	CREATE TABLE opt_not_exists table_name '(' column_def_commalist ')' {
@@ -748,6 +757,7 @@ select_list:
 opt_from_clause:
         from_clause  { $$ = $1; }
     |   /* empty */  { $$ = nullptr; }
+    ;
 
 from_clause:
 		FROM table_ref { $$ = $2; }
@@ -771,6 +781,7 @@ opt_group:
 opt_having:
 		HAVING expr { $$ = $2; }
 	|	/* empty */ { $$ = nullptr; }
+	;
 
 opt_order:
 		ORDER BY order_list { $$ = $3; }
@@ -941,6 +952,7 @@ datetime_field:
     |   DAY { $$ = kDatetimeDay; }
     |   MONTH { $$ = kDatetimeMonth; }
     |   YEAR { $$ = kDatetimeYear; }
+    ;
 
 array_expr:
 	  	ARRAY '[' expr_list ']' { $$ = Expr::makeArray($3); }
@@ -1070,6 +1082,7 @@ table_alias:
 opt_table_alias:
 		table_alias
 	|	/* empty */ { $$ = nullptr; }
+	;
 
 
 alias:
@@ -1081,6 +1094,7 @@ alias:
 opt_alias:
 		alias
 	|	/* empty */ { $$ = nullptr; }
+	;
 
 
 /******************************

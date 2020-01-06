@@ -52,7 +52,7 @@
 extern int hsql_debug;
 #endif
 /* "%code requires" blocks.  */
-#line 35 "bison_parser.y"
+#line 36 "bison_parser.y"
 
 // %code requires block
 
@@ -233,7 +233,7 @@ extern int hsql_debug;
 #if ! defined HSQL_STYPE && ! defined HSQL_STYPE_IS_DECLARED
 union HSQL_STYPE
 {
-#line 95 "bison_parser.y"
+#line 96 "bison_parser.y"
 
 	double fval;
 	int64_t ival;
