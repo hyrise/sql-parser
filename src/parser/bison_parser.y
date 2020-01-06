@@ -14,7 +14,6 @@
 #include "bison_parser.h"
 #include "flex_lexer.h"
 
-#include <iostream>
 #include <stdio.h>
 #include <string.h>
 
