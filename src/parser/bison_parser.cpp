@@ -2976,7 +2976,7 @@ yyreduce:
 			 	(yyval.import_type_t) = kImportCSV;
 			} else if (strcasecmp((yyvsp[0].sval), "tbl") == 0) {
 			 	(yyval.import_type_t) = kImportTbl;
-			} else if (strcasecmp((yyvsp[0].sval), "bin") == 0) {
+			} else if (strcasecmp((yyvsp[0].sval), "binary") == 0) {
 			 	(yyval.import_type_t) = kImportBinary;
 			} else {
 				free((yyvsp[0].sval));

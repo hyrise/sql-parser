@@ -408,7 +408,7 @@ import_file_type:
 			 	$$ = kImportCSV;
 			} else if (strcasecmp($1, "tbl") == 0) {
 			 	$$ = kImportTbl;
-			} else if (strcasecmp($1, "bin") == 0) {
+			} else if (strcasecmp($1, "binary") == 0) {
 			 	$$ = kImportBinary;
 			} else {
 				free($1);
