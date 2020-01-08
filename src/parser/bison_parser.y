@@ -218,7 +218,9 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 %type <group_t>		    opt_group
 %type <alias_t>		    opt_table_alias table_alias opt_alias alias
 %type <with_description_t>  with_description
-%type <import_type_t>	opt_file_type import_file_type
+
+// ImportType is used for compatibility reasons
+%type <import_type_t>	opt_file_type file_type
 
 %type <str_vec>			ident_commalist opt_column_list
 %type <expr_vec> 		expr_list select_list opt_literal_list literal_list hint_list opt_hints
@@ -387,7 +389,7 @@ execute_statement:
  * COPY students FROM 'test/students.tbl' [WITH FORMAT TBL]
  ******************************/
 import_statement:
-		IMPORT FROM import_file_type FILE file_path INTO table_name {
+		IMPORT FROM file_type FILE file_path INTO table_name {
 			$$ = new ImportStatement($3);
 			$$->filePath = $5;
 			$$->schema = $7.schema;
@@ -401,7 +403,7 @@ import_statement:
 		}
 	;
 
-import_file_type:
+file_type:
 		IDENTIFIER {
 			if (strcasecmp($1, "csv") == 0) {
 				$$ = kImportCSV;
@@ -423,7 +425,7 @@ file_path:
 	;
 
 opt_file_type:
-		WITH FORMAT import_file_type {
+		WITH FORMAT file_type {
 			$$ = $3;
 		}
 	|	/* empty */  { $$ = kImportAuto; }

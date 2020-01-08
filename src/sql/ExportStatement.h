@@ -10,6 +10,7 @@ namespace hsql {
     ExportStatement(ImportType type);
     virtual ~ExportStatement();
 
+    // ImportType is used for compatibility reasons
     ImportType type;
     char* filePath;
     char* schema;
