@@ -307,10 +307,10 @@ statement:
 			$$ = $1;
 		}
 	|	import_statement {
-		 	$$ = $1;
+			$$ = $1;
 		 }
 	|	export_statement {
-		 	$$ = $1;
+			$$ = $1;
 		 }
 	;
 
@@ -384,7 +384,7 @@ execute_statement:
 /******************************
  * Import Statement
  * IMPORT FROM TBL FILE 'test/students.tbl' INTO students
- * COPY students FROM 'test/students.tbl' (WITH FORMAT TBL)
+ * COPY students FROM 'test/students.tbl' [WITH FORMAT TBL]
  ******************************/
 import_statement:
 		IMPORT FROM import_file_type FILE file_path INTO table_name {

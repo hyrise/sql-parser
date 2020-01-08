@@ -2813,7 +2813,7 @@ yyreduce:
   case 8:
 #line 309 "bison_parser.y"
     {
-		 	(yyval.statement) = (yyvsp[0].import_stmt);
+			(yyval.statement) = (yyvsp[0].import_stmt);
 		 }
 #line 2819 "bison_parser.cpp"
     break;
@@ -2821,7 +2821,7 @@ yyreduce:
   case 9:
 #line 312 "bison_parser.y"
     {
-		 	(yyval.statement) = (yyvsp[0].export_stmt);
+			(yyval.statement) = (yyvsp[0].export_stmt);
 		 }
 #line 2827 "bison_parser.cpp"
     break;
