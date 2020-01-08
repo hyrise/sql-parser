@@ -206,7 +206,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 %type <expr> 		    column_name literal int_literal num_literal string_literal bool_literal
 %type <expr> 		    comp_expr opt_where join_condition opt_having case_expr case_list in_expr hint
 %type <expr> 		    array_expr array_index null_literal
-%type <limit>		    opt_limit opt_top limit
+%type <limit>		    opt_limit opt_top
 %type <order>		    order_desc
 %type <order_type>	    opt_order_type
 %type <datetime_field>	datetime_field
@@ -221,7 +221,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 %type <str_vec>			ident_commalist opt_column_list
 %type <expr_vec> 		expr_list select_list opt_literal_list literal_list hint_list opt_hints
 %type <table_vec> 		table_ref_commalist
-%type <order_vec>		opt_order order_list order
+%type <order_vec>		opt_order order_list
 %type <with_description_vec> 	opt_with_clause with_clause with_description_list
 %type <update_vec>		update_clause_commalist
 %type <column_vec>		column_def_commalist
@@ -613,14 +613,9 @@ select_statement:
 			$$ = $2;
 			$$->setOperator = $3;
 			$$->withDescriptions = $1;
-			$$->nestedSetSelectStatement = $4;
-			$$->order = $5;
-
-			// Limit could have been set by TOP.
-			if ($6 != nullptr) {
-				delete $$->limit;
-				$$->limit = $6;
-			}
+			$$->setOperator->nestedSelectStatement = $4;
+			$$->setOperator->resultOrder = $5;
+			$$->setOperator->resultLimit = $6;
 		}
 	;
 
@@ -633,7 +628,7 @@ select_part_of_set_operation:
 	|	select_clause set_operator select_statement_in_set_operation {
 		$$ = $1;
 		$$->setOperator = $2;
-		$$-> nestedSetSelectStatement = $3;
+		$$->setOperator->nestedSelectStatement = $3;
 	}
 	;
 
@@ -656,14 +651,9 @@ select_no_paren:
 	|	select_clause set_operator select_statement_in_set_operation opt_order opt_limit {
 			$$ = $1;
 			$$->setOperator = $2;
-			$$->nestedSetSelectStatement = $3;
-			$$->order = $4;
-
-			// Limit could have been set by TOP.
-			if ($5 != nullptr) {
-				delete $$->limit;
-				$$->limit = $5;
-			}
+			$$->setOperator->nestedSelectStatement = $3;
+			$$->setOperator->resultOrder = $4;
+			$$->setOperator->resultLimit = $5;
 		}
 	;
 
@@ -747,12 +737,9 @@ opt_having:
 	|	/* empty */ { $$ = nullptr; }
 
 opt_order:
-		order { $$ = $1; }
+		ORDER BY order_list { $$ = $3; };
 	|	/* empty */ { $$ = nullptr; }
 	;
-
-order:
-	ORDER BY order_list { $$ = $3; };
 
 order_list:
 		order_desc { $$ = new std::vector<OrderDescription*>(); $$->push_back($1); }
@@ -777,16 +764,12 @@ opt_top:
 	;
 
 opt_limit:
-	limit { $$ = $1; }
-	|	/* empty */ { $$ = nullptr; }
-	;
-
-limit:
-	LIMIT expr { $$ = new LimitDescription($2, nullptr); }
+		LIMIT expr { $$ = new LimitDescription($2, nullptr); }
 	|	OFFSET expr { $$ = new LimitDescription(nullptr, $2); }
 	|	LIMIT expr OFFSET expr { $$ = new LimitDescription($2, $4); }
 	|	LIMIT ALL { $$ = new LimitDescription(nullptr, nullptr); }
 	|	LIMIT ALL OFFSET expr { $$ = new LimitDescription(nullptr, $4); }
+	|	/* empty */ { $$ = nullptr; }
 	;
 
 /******************************

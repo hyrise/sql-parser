@@ -241,7 +241,6 @@ namespace hsql {
     whereClause(nullptr),
     groupBy(nullptr),
     setOperator(nullptr),
-    nestedSetSelectStatement(nullptr),
     order(nullptr),
     withDescriptions(nullptr),
     limit(nullptr) {};
@@ -250,7 +249,6 @@ namespace hsql {
     delete fromTable;
     delete whereClause;
     delete groupBy;
-    delete nestedSetSelectStatement;
     delete limit;
     delete setOperator;
 
@@ -361,8 +359,21 @@ namespace hsql {
     delete condition;
   }
 
-  SetOperator::SetOperator() {}
+  SetOperator::SetOperator() : 
+    nestedSelectStatement(nullptr), 
+    resultOrder(nullptr),
+    resultLimit(nullptr) {}
 
-  SetOperator::~SetOperator() {}
+  SetOperator::~SetOperator() {
+    delete nestedSelectStatement;
+    delete resultLimit;
+
+    if (resultOrder != nullptr) {
+      for (OrderDescription* desc: *resultOrder) {
+        delete desc;
+      }
+      delete resultOrder;
+    }
+  }
 
 } // namespace hsql

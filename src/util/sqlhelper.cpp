@@ -168,7 +168,7 @@ namespace hsql {
       }
     }
 
-    if (stmt->nestedSetSelectStatement != nullptr) {
+    if (stmt->setOperator != nullptr) {
       if (stmt->setOperator->setType == SetType::kSetUnion) {
         inprint("Union:", numIndent + 1);
       } else if (stmt->setOperator->setType == SetType::kSetIntersect) {
@@ -176,7 +176,7 @@ namespace hsql {
       } else {
         inprint("Except:", numIndent + 1);
       }
-      printSelectStatementInfo(stmt->nestedSetSelectStatement, numIndent + 2);
+      printSelectStatementInfo(stmt->setOperator->nestedSelectStatement, numIndent + 2);
     }
 
     if (stmt->order != nullptr) {
@@ -194,6 +194,25 @@ namespace hsql {
     if (stmt->limit != nullptr && stmt->limit->offset != nullptr) {
       inprint("Offset:", numIndent + 1);
       printExpression(stmt->limit->offset, numIndent + 2);
+    }
+
+    if (stmt->setOperator != nullptr && stmt->setOperator->resultOrder != nullptr) {
+      inprint("SetResultOrderBy:", numIndent + 1);
+      printExpression(stmt->setOperator->resultOrder->at(0)->expr, numIndent + 2);
+      if (stmt->setOperator->resultOrder->at(0)->type == kOrderAsc) inprint("ascending", numIndent + 2);
+      else inprint("descending", numIndent + 2);
+    }
+
+    if (stmt->setOperator != nullptr && stmt->setOperator->resultLimit != nullptr) {
+      if (stmt->setOperator->resultLimit->limit != nullptr) {
+        inprint("SetResultLimit:", numIndent + 1);
+        printExpression(stmt->setOperator->resultLimit->limit, numIndent + 2);
+      }
+
+      if (stmt->setOperator->resultLimit->offset != nullptr) {
+        inprint("SetResultOffset:", numIndent + 1);
+        printExpression(stmt->setOperator->resultLimit->offset, numIndent + 2);
+      }
     }
   }
 

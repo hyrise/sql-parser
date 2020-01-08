@@ -17,14 +17,6 @@ namespace hsql {
     kSetExcept
   };
 
-  struct SetOperator {
-    SetOperator();
-    virtual ~SetOperator();
-
-    SetType setType;
-    bool isAll;
-  };
-
   // Description of the order by clause within a select statement.
   struct OrderDescription {
     OrderDescription(OrderType type, Expr* expr);
@@ -59,8 +51,21 @@ namespace hsql {
       SelectStatement* select;
   };
 
+  struct SetOperator {
+    SetOperator();
+    virtual ~SetOperator();
+
+    SetType setType;
+    bool isAll;
+
+    SelectStatement* nestedSelectStatement;
+    std::vector<OrderDescription*>* resultOrder;
+    LimitDescription* resultLimit;
+
+  };
+
   // Representation of a full SQL select statement.
-  // TODO: add union_order and union_limit.
+  // TODO: Fit query and order into setOperator.
   struct SelectStatement : SQLStatement {
     SelectStatement();
     virtual ~SelectStatement();
@@ -72,7 +77,6 @@ namespace hsql {
     GroupByDescription* groupBy;
     SetOperator* setOperator;
 
-    SelectStatement* nestedSetSelectStatement;
     std::vector<OrderDescription*>* order;
     std::vector<WithDescription*>* withDescriptions;
     LimitDescription* limit;

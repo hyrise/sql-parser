@@ -266,7 +266,7 @@ TEST(ExceptOperatorTest) {
     result,
     stmt);
 
-  ASSERT_STREQ(stmt->nestedSetSelectStatement->fromTable->name, "students_2");
+  ASSERT_STREQ(stmt->setOperator->nestedSelectStatement->fromTable->name, "students_2");
   ASSERT_STREQ(stmt->fromTable->name, "students");
   ASSERT_EQ(stmt->setOperator->setType, kSetExcept);
 }
@@ -279,7 +279,7 @@ TEST(IntersectOperatorTest) {
     result,
     stmt);
 
-  ASSERT_STREQ(stmt->nestedSetSelectStatement->fromTable->name, "students_2");
+  ASSERT_STREQ(stmt->setOperator->nestedSelectStatement->fromTable->name, "students_2");
   ASSERT_STREQ(stmt->fromTable->name, "students");
   ASSERT_EQ(stmt->setOperator->setType, kSetIntersect);
 }
@@ -292,7 +292,7 @@ TEST(UnionOperatorTest) {
     result,
     stmt);
 
-  ASSERT_STREQ(stmt->nestedSetSelectStatement->fromTable->name, "students_2");
+  ASSERT_STREQ(stmt->setOperator->nestedSelectStatement->fromTable->name, "students_2");
   ASSERT_STREQ(stmt->fromTable->name, "students");
   ASSERT_EQ(stmt->setOperator->setType, kSetUnion);
   ASSERT_FALSE(stmt->setOperator->isAll);
@@ -306,7 +306,7 @@ TEST(UnionAllOperatorTest) {
     result,
     stmt);
 
-  ASSERT_STREQ(stmt->nestedSetSelectStatement->fromTable->name, "students_2");
+  ASSERT_STREQ(stmt->setOperator->nestedSelectStatement->fromTable->name, "students_2");
   ASSERT_STREQ(stmt->fromTable->name, "students");
   ASSERT_TRUE(stmt->setOperator->isAll);
 }
@@ -319,11 +319,11 @@ TEST(NestedSetOperatorTest) {
     result,
     stmt);
 
-  ASSERT_STREQ(stmt->nestedSetSelectStatement->nestedSetSelectStatement->fromTable->name, "employees");
-  ASSERT_STREQ(stmt->nestedSetSelectStatement->fromTable->name, "students_2");
+  ASSERT_STREQ(stmt->setOperator->nestedSelectStatement->setOperator->nestedSelectStatement->fromTable->name, "employees");
+  ASSERT_STREQ(stmt->setOperator->nestedSelectStatement->fromTable->name, "students_2");
   ASSERT_STREQ(stmt->fromTable->name, "students");
   ASSERT_EQ(stmt->setOperator->setType, kSetIntersect);
-  ASSERT_EQ(stmt->nestedSetSelectStatement->setOperator->setType, kSetUnion);
+  ASSERT_EQ(stmt->setOperator->nestedSelectStatement->setOperator->setType, kSetUnion);
   ASSERT_FALSE(stmt->setOperator->isAll);
 }
 
@@ -335,8 +335,24 @@ TEST(OrderByFullStatementTest) {
     result,
     stmt);
 
-  ASSERT_EQ(stmt->order->at(0)->type, kOrderAsc);
-  ASSERT_STREQ(stmt->order->at(0)->expr->name, "grade");
+  ASSERT_EQ(stmt->setOperator->resultOrder->at(0)->type, kOrderAsc);
+  ASSERT_STREQ(stmt->setOperator->resultOrder->at(0)->expr->name, "grade");
+  ASSERT_FALSE(stmt->setOperator->isAll);
+}
+
+TEST(SetOperatorSubQueryOrder) {
+    TEST_PARSE_SINGLE_SQL(
+    "(SELECT * FROM students ORDER BY name DESC) INTERSECT SELECT grade FROM students_2 UNION SELECT * FROM employees ORDER BY grade ASC;",
+    kStmtSelect,
+    SelectStatement,
+    result,
+    stmt);
+
+  ASSERT_EQ(stmt->order->at(0)->type, kOrderDesc);
+  ASSERT_STREQ(stmt->order->at(0)->expr->name, "name");
+
+  ASSERT_EQ(stmt->setOperator->resultOrder->at(0)->type, kOrderAsc);
+  ASSERT_STREQ(stmt->setOperator->resultOrder->at(0)->expr->name, "grade");
   ASSERT_FALSE(stmt->setOperator->isAll);
 }
 
