@@ -134,6 +134,20 @@ namespace hsql {
     }
   }
 
+  // ExportStatement
+  ExportStatement::ExportStatement(ImportType type) :
+    SQLStatement(kStmtExport),
+    type(type),
+    filePath(nullptr),
+    schema(nullptr),
+    tableName(nullptr) {};
+
+  ExportStatement::~ExportStatement() {
+    free(filePath);
+    free(schema);
+    free(tableName);
+  }
+
   // ImportStatement
   ImportStatement::ImportStatement(ImportType type) :
     SQLStatement(kStmtImport),

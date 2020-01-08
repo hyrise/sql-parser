@@ -196,6 +196,40 @@ namespace hsql {
   void printImportStatementInfo(const ImportStatement* stmt, uintmax_t numIndent) {
     inprint("ImportStatement", numIndent);
     inprint(stmt->filePath, numIndent + 1);
+    switch (stmt->type) {
+      case ImportType::kImportCSV:
+        inprint("CSV", numIndent + 1);
+        break;
+      case ImportType::kImportTbl:
+        inprint("TBL", numIndent + 1);
+        break;
+      case ImportType::kImportBinary:
+        inprint("BINARY", numIndent + 1);
+        break;
+      case ImportType::kImportAuto:
+        inprint("AUTO", numIndent + 1);
+        break;
+    }
+    inprint(stmt->tableName, numIndent + 1);
+  }
+
+  void printExportStatementInfo(const ExportStatement* stmt, uintmax_t numIndent) {
+    inprint("ExportStatement", numIndent);
+    inprint(stmt->filePath, numIndent + 1);
+    switch (stmt->type) {
+      case ImportType::kImportCSV:
+        inprint("CSV", numIndent + 1);
+        break;
+      case ImportType::kImportTbl:
+        inprint("TBL", numIndent + 1);
+        break;
+      case ImportType::kImportBinary:
+        inprint("BINARY", numIndent + 1);
+        break;
+      case ImportType::kImportAuto:
+        inprint("AUTO", numIndent + 1);
+        break;
+    }
     inprint(stmt->tableName, numIndent + 1);
   }
 
@@ -240,6 +274,9 @@ namespace hsql {
       break;
     case kStmtImport:
       printImportStatementInfo((const ImportStatement*) stmt, 0);
+      break;
+    case kStmtExport:
+      printExportStatementInfo((const ExportStatement*) stmt, 0);
       break;
     default:
       break;

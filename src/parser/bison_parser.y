@@ -102,6 +102,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 	hsql::SQLStatement* statement;
 	hsql::SelectStatement* 	select_stmt;
 	hsql::ImportStatement* 	import_stmt;
+	hsql::ExportStatement* 	export_stmt;
 	hsql::CreateStatement* 	create_stmt;
 	hsql::InsertStatement* 	insert_stmt;
 	hsql::DeleteStatement* 	delete_stmt;
@@ -121,6 +122,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 	hsql::LimitDescription* limit;
 	hsql::ColumnDefinition* column_t;
 	hsql::ColumnType column_type_t;
+	hsql::ImportType import_type_t;
 	hsql::GroupByDescription* group_t;
 	hsql::UpdateClause* update_t;
 	hsql::Alias* alias_t;
@@ -140,7 +142,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 /*********************************
  ** Destructor symbols
  *********************************/
-%destructor { } <fval> <ival> <uval> <bval> <order_type> <datetime_field> <column_type_t>
+%destructor { } <fval> <ival> <uval> <bval> <order_type> <datetime_field> <column_type_t> <import_type_t>
 %destructor { free( ($$.name) ); free( ($$.schema) ); } <table_name>
 %destructor { free( ($$) ); } <sval>
 %destructor {
@@ -167,15 +169,15 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 %token CASCADE COLUMNS CONTROL DEFAULT EXECUTE EXPLAIN
 %token INTEGER NATURAL PREPARE PRIMARY SCHEMAS
 %token SPATIAL VARCHAR VIRTUAL DESCRIBE BEFORE COLUMN CREATE DELETE DIRECT
-%token DOUBLE ESCAPE EXCEPT EXISTS EXTRACT GLOBAL HAVING IMPORT
+%token DOUBLE ESCAPE EXCEPT EXISTS EXTRACT FORMAT GLOBAL HAVING IMPORT
 %token INSERT ISNULL OFFSET RENAME SCHEMA SELECT SORTED
 %token TABLES UNIQUE UNLOAD UPDATE VALUES AFTER ALTER CROSS
 %token DELTA FLOAT GROUP INDEX INNER LIMIT LOCAL MERGE MINUS ORDER
-%token OUTER RIGHT TABLE UNION USING WHERE CALL CASE CHAR DATE
+%token OUTER RIGHT TABLE UNION USING WHERE CALL CASE CHAR COPY DATE
 %token DESC DROP ELSE FILE FROM FULL HASH HINT INTO JOIN
 %token LEFT LIKE LOAD LONG NULL PLAN SHOW TEXT THEN TIME
-%token VIEW WHEN WITH ADD ALL AND ASC CSV END FOR INT KEY
-%token NOT OFF SET TBL TOP AS BY IF IN IS OF ON OR TO
+%token VIEW WHEN WITH ADD ALL AND ASC END FOR INT KEY
+%token NOT OFF SET TOP AS BY IF IN IS OF ON OR TO
 %token ARRAY CONCAT ILIKE SECOND MINUTE HOUR DAY MONTH YEAR
 %token TRUE FALSE
 
@@ -188,6 +190,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 %type <prep_stmt>	    prepare_statement
 %type <select_stmt>     select_statement select_with_paren select_no_paren select_clause select_paren_or_clause
 %type <import_stmt>     import_statement
+%type <export_stmt>     export_statement
 %type <create_stmt>     create_statement
 %type <insert_stmt>     insert_statement
 %type <delete_stmt>     delete_statement truncate_statement
@@ -197,7 +200,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 %type <table_name>      table_name
 %type <sval> 		    file_path prepare_target_query
 %type <bval> 		    opt_not_exists opt_exists opt_distinct opt_column_nullable
-%type <uval>		    import_file_type opt_join_type
+%type <uval>		    opt_join_type
 %type <table> 		    opt_from_clause from_clause table_ref table_ref_atomic table_ref_name nonjoin_table_ref_atomic
 %type <table>		    join_clause table_ref_name_no_alias
 %type <expr> 		    expr operand scalar_expr unary_expr binary_expr logic_expr exists_expr extract_expr
@@ -215,6 +218,9 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 %type <group_t>		    opt_group
 %type <alias_t>		    opt_table_alias table_alias opt_alias alias
 %type <with_description_t>  with_description
+
+// ImportType is used for compatibility reasons
+%type <import_type_t>	opt_file_type file_type
 
 %type <str_vec>			ident_commalist opt_column_list
 %type <expr_vec> 		expr_list select_list opt_literal_list literal_list hint_list opt_hints
@@ -302,12 +308,17 @@ statement:
 	|	show_statement {
 			$$ = $1;
 		}
+	|	import_statement {
+			$$ = $1;
+		 }
+	|	export_statement {
+			$$ = $1;
+		 }
 	;
 
 
 preparable_statement:
 		select_statement { $$ = $1; }
-	|	import_statement { $$ = $1; }
 	|	create_statement { $$ = $1; }
 	|	insert_statement { $$ = $1; }
 	|	delete_statement { $$ = $1; }
@@ -374,24 +385,65 @@ execute_statement:
 
 /******************************
  * Import Statement
+ * IMPORT FROM TBL FILE 'test/students.tbl' INTO students
+ * COPY students FROM 'test/students.tbl' [WITH FORMAT TBL]
  ******************************/
 import_statement:
-		IMPORT FROM import_file_type FILE file_path INTO table_name {
-			$$ = new ImportStatement((ImportType) $3);
+		IMPORT FROM file_type FILE file_path INTO table_name {
+			$$ = new ImportStatement($3);
 			$$->filePath = $5;
 			$$->schema = $7.schema;
 			$$->tableName = $7.name;
 		}
+	|	COPY table_name FROM file_path opt_file_type {
+			$$ = new ImportStatement($5);
+			$$->filePath = $4;
+			$$->schema = $2.schema;
+			$$->tableName = $2.name;
+		}
 	;
 
-import_file_type:
-		CSV { $$ = kImportCSV; }
+file_type:
+		IDENTIFIER {
+			if (strcasecmp($1, "csv") == 0) {
+				$$ = kImportCSV;
+			} else if (strcasecmp($1, "tbl") == 0) {
+				$$ = kImportTbl;
+			} else if (strcasecmp($1, "binary") == 0 || strcasecmp($1, "bin") == 0) {
+				$$ = kImportBinary;
+			} else {
+				free($1);
+				yyerror(&yyloc, result, scanner, "File type is unknown.");
+				YYERROR;
+			}
+			free($1);
+		}
 	;
 
 file_path:
 		string_literal { $$ = strdup($1->name); delete $1; }
 	;
 
+opt_file_type:
+		WITH FORMAT file_type {
+			$$ = $3;
+		}
+	|	/* empty */  { $$ = kImportAuto; }
+	;
+
+
+/******************************
+ * Export Statement
+ * COPY students TO 'test/students.tbl' (WITH FORMAT TBL)
+ ******************************/
+export_statement:
+		COPY table_name TO file_path opt_file_type {
+			$$ = new ExportStatement($5);
+			$$->filePath = $4;
+			$$->schema = $2.schema;
+			$$->tableName = $2.name;
+		}
+	;
 
 /******************************
  * Show Statement
@@ -421,11 +473,17 @@ show_statement:
  * CREATE TABLE students FROM TBL FILE 'test/students.tbl'
  ******************************/
 create_statement:
-		CREATE TABLE opt_not_exists table_name FROM TBL FILE file_path {
+		CREATE TABLE opt_not_exists table_name FROM IDENTIFIER FILE file_path {
 			$$ = new CreateStatement(kCreateTableFromTbl);
 			$$->ifNotExists = $3;
 			$$->schema = $4.schema;
 			$$->tableName = $4.name;
+			if (strcasecmp($6, "tbl") != 0) {
+				free($6);
+				yyerror(&yyloc, result, scanner, "File type is unknown.");
+			 	YYERROR;
+			}
+			free($6);
 			$$->filePath = $8;
 		}
 	|	CREATE TABLE opt_not_exists table_name '(' column_def_commalist ')' {
@@ -700,6 +758,7 @@ select_list:
 opt_from_clause:
         from_clause  { $$ = $1; }
     |   /* empty */  { $$ = nullptr; }
+    ;
 
 from_clause:
 		FROM table_ref { $$ = $2; }
@@ -723,6 +782,7 @@ opt_group:
 opt_having:
 		HAVING expr { $$ = $2; }
 	|	/* empty */ { $$ = nullptr; }
+	;
 
 opt_order:
 		ORDER BY order_list { $$ = $3; }
@@ -893,6 +953,7 @@ datetime_field:
     |   DAY { $$ = kDatetimeDay; }
     |   MONTH { $$ = kDatetimeMonth; }
     |   YEAR { $$ = kDatetimeYear; }
+    ;
 
 array_expr:
 	  	ARRAY '[' expr_list ']' { $$ = Expr::makeArray($3); }
@@ -1022,6 +1083,7 @@ table_alias:
 opt_table_alias:
 		table_alias
 	|	/* empty */ { $$ = nullptr; }
+	;
 
 
 alias:
@@ -1033,6 +1095,7 @@ alias:
 opt_alias:
 		alias
 	|	/* empty */ { $$ = nullptr; }
+	;
 
 
 /******************************

@@ -7,6 +7,8 @@ namespace hsql {
   enum ImportType {
     kImportCSV,
     kImportTbl, // Hyrise file format
+    kImportBinary,
+    kImportAuto
   };
 
   // Represents SQL Import statements.

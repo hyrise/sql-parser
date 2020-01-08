@@ -14,6 +14,9 @@ namespace hsql {
   // Prints a summary of the given ImportStatement with the given indentation.
   void printImportStatementInfo(const ImportStatement* stmt, uintmax_t num_indent);
 
+    // Prints a summary of the given CopyStatement with the given indentation.
+  void printExportStatementInfo(const ExportStatement* stmt, uintmax_t num_indent);
+
   // Prints a summary of the given InsertStatement with the given indentation.
   void printInsertStatementInfo(const InsertStatement* stmt, uintmax_t num_indent);
 

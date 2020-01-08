@@ -1,4 +1,4 @@
-/* A Bison parser, made by GNU Bison 3.3.2.  */
+/* A Bison parser, made by GNU Bison 3.4.1.  */
 
 /* Bison interface for Yacc-like parsers in C
 
@@ -52,7 +52,7 @@
 extern int hsql_debug;
 #endif
 /* "%code requires" blocks.  */
-#line 35 "bison_parser.y" /* yacc.c:1927  */
+#line 35 "bison_parser.y"
 
 // %code requires block
 
@@ -76,7 +76,7 @@ extern int hsql_debug;
 				} \
 		}
 
-#line 80 "bison_parser.h" /* yacc.c:1927  */
+#line 80 "bison_parser.h"
 
 /* Token type.  */
 #ifndef HSQL_TOKENTYPE
@@ -123,80 +123,80 @@ extern int hsql_debug;
     SQL_EXCEPT = 295,
     SQL_EXISTS = 296,
     SQL_EXTRACT = 297,
-    SQL_GLOBAL = 298,
-    SQL_HAVING = 299,
-    SQL_IMPORT = 300,
-    SQL_INSERT = 301,
-    SQL_ISNULL = 302,
-    SQL_OFFSET = 303,
-    SQL_RENAME = 304,
-    SQL_SCHEMA = 305,
-    SQL_SELECT = 306,
-    SQL_SORTED = 307,
-    SQL_TABLES = 308,
-    SQL_UNIQUE = 309,
-    SQL_UNLOAD = 310,
-    SQL_UPDATE = 311,
-    SQL_VALUES = 312,
-    SQL_AFTER = 313,
-    SQL_ALTER = 314,
-    SQL_CROSS = 315,
-    SQL_DELTA = 316,
-    SQL_FLOAT = 317,
-    SQL_GROUP = 318,
-    SQL_INDEX = 319,
-    SQL_INNER = 320,
-    SQL_LIMIT = 321,
-    SQL_LOCAL = 322,
-    SQL_MERGE = 323,
-    SQL_MINUS = 324,
-    SQL_ORDER = 325,
-    SQL_OUTER = 326,
-    SQL_RIGHT = 327,
-    SQL_TABLE = 328,
-    SQL_UNION = 329,
-    SQL_USING = 330,
-    SQL_WHERE = 331,
-    SQL_CALL = 332,
-    SQL_CASE = 333,
-    SQL_CHAR = 334,
-    SQL_DATE = 335,
-    SQL_DESC = 336,
-    SQL_DROP = 337,
-    SQL_ELSE = 338,
-    SQL_FILE = 339,
-    SQL_FROM = 340,
-    SQL_FULL = 341,
-    SQL_HASH = 342,
-    SQL_HINT = 343,
-    SQL_INTO = 344,
-    SQL_JOIN = 345,
-    SQL_LEFT = 346,
-    SQL_LIKE = 347,
-    SQL_LOAD = 348,
-    SQL_LONG = 349,
-    SQL_NULL = 350,
-    SQL_PLAN = 351,
-    SQL_SHOW = 352,
-    SQL_TEXT = 353,
-    SQL_THEN = 354,
-    SQL_TIME = 355,
-    SQL_VIEW = 356,
-    SQL_WHEN = 357,
-    SQL_WITH = 358,
-    SQL_ADD = 359,
-    SQL_ALL = 360,
-    SQL_AND = 361,
-    SQL_ASC = 362,
-    SQL_CSV = 363,
-    SQL_END = 364,
-    SQL_FOR = 365,
-    SQL_INT = 366,
-    SQL_KEY = 367,
-    SQL_NOT = 368,
-    SQL_OFF = 369,
-    SQL_SET = 370,
-    SQL_TBL = 371,
+    SQL_FORMAT = 298,
+    SQL_GLOBAL = 299,
+    SQL_HAVING = 300,
+    SQL_IMPORT = 301,
+    SQL_INSERT = 302,
+    SQL_ISNULL = 303,
+    SQL_OFFSET = 304,
+    SQL_RENAME = 305,
+    SQL_SCHEMA = 306,
+    SQL_SELECT = 307,
+    SQL_SORTED = 308,
+    SQL_TABLES = 309,
+    SQL_UNIQUE = 310,
+    SQL_UNLOAD = 311,
+    SQL_UPDATE = 312,
+    SQL_VALUES = 313,
+    SQL_AFTER = 314,
+    SQL_ALTER = 315,
+    SQL_CROSS = 316,
+    SQL_DELTA = 317,
+    SQL_FLOAT = 318,
+    SQL_GROUP = 319,
+    SQL_INDEX = 320,
+    SQL_INNER = 321,
+    SQL_LIMIT = 322,
+    SQL_LOCAL = 323,
+    SQL_MERGE = 324,
+    SQL_MINUS = 325,
+    SQL_ORDER = 326,
+    SQL_OUTER = 327,
+    SQL_RIGHT = 328,
+    SQL_TABLE = 329,
+    SQL_UNION = 330,
+    SQL_USING = 331,
+    SQL_WHERE = 332,
+    SQL_CALL = 333,
+    SQL_CASE = 334,
+    SQL_CHAR = 335,
+    SQL_COPY = 336,
+    SQL_DATE = 337,
+    SQL_DESC = 338,
+    SQL_DROP = 339,
+    SQL_ELSE = 340,
+    SQL_FILE = 341,
+    SQL_FROM = 342,
+    SQL_FULL = 343,
+    SQL_HASH = 344,
+    SQL_HINT = 345,
+    SQL_INTO = 346,
+    SQL_JOIN = 347,
+    SQL_LEFT = 348,
+    SQL_LIKE = 349,
+    SQL_LOAD = 350,
+    SQL_LONG = 351,
+    SQL_NULL = 352,
+    SQL_PLAN = 353,
+    SQL_SHOW = 354,
+    SQL_TEXT = 355,
+    SQL_THEN = 356,
+    SQL_TIME = 357,
+    SQL_VIEW = 358,
+    SQL_WHEN = 359,
+    SQL_WITH = 360,
+    SQL_ADD = 361,
+    SQL_ALL = 362,
+    SQL_AND = 363,
+    SQL_ASC = 364,
+    SQL_END = 365,
+    SQL_FOR = 366,
+    SQL_INT = 367,
+    SQL_KEY = 368,
+    SQL_NOT = 369,
+    SQL_OFF = 370,
+    SQL_SET = 371,
     SQL_TOP = 372,
     SQL_AS = 373,
     SQL_BY = 374,
@@ -231,10 +231,9 @@ extern int hsql_debug;
 
 /* Value type.  */
 #if ! defined HSQL_STYPE && ! defined HSQL_STYPE_IS_DECLARED
-
 union HSQL_STYPE
 {
-#line 95 "bison_parser.y" /* yacc.c:1927  */
+#line 95 "bison_parser.y"
 
 	double fval;
 	int64_t ival;
@@ -245,6 +244,7 @@ union HSQL_STYPE
 	hsql::SQLStatement* statement;
 	hsql::SelectStatement* 	select_stmt;
 	hsql::ImportStatement* 	import_stmt;
+	hsql::ExportStatement* 	export_stmt;
 	hsql::CreateStatement* 	create_stmt;
 	hsql::InsertStatement* 	insert_stmt;
 	hsql::DeleteStatement* 	delete_stmt;
@@ -264,6 +264,7 @@ union HSQL_STYPE
 	hsql::LimitDescription* limit;
 	hsql::ColumnDefinition* column_t;
 	hsql::ColumnType column_type_t;
+	hsql::ImportType import_type_t;
 	hsql::GroupByDescription* group_t;
 	hsql::UpdateClause* update_t;
 	hsql::Alias* alias_t;
@@ -278,9 +279,9 @@ union HSQL_STYPE
 	std::vector<hsql::OrderDescription*>* order_vec;
 	std::vector<hsql::WithDescription*>* with_description_vec;
 
-#line 282 "bison_parser.h" /* yacc.c:1927  */
-};
+#line 283 "bison_parser.h"
 
+};
 typedef union HSQL_STYPE HSQL_STYPE;
 # define HSQL_STYPE_IS_TRIVIAL 1
 # define HSQL_STYPE_IS_DECLARED 1
