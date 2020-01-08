@@ -404,15 +404,15 @@ import_statement:
 import_file_type:
 		IDENTIFIER {
 			if (strcasecmp($1, "csv") == 0) {
-			 	$$ = kImportCSV;
+				$$ = kImportCSV;
 			} else if (strcasecmp($1, "tbl") == 0) {
-			 	$$ = kImportTbl;
-			} else if (strcasecmp($1, "binary") == 0) {
-			 	$$ = kImportBinary;
+				$$ = kImportTbl;
+			} else if (strcasecmp($1, "binary") == 0 || strcasecmp($1, "bin") == 0) {
+				$$ = kImportBinary;
 			} else {
 				free($1);
 				yyerror(&yyloc, result, scanner, "File type is unknown.");
-			 	YYERROR;
+				YYERROR;
 			}
 			free($1);
 		}

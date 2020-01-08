@@ -2972,15 +2972,15 @@ yyreduce:
 #line 405 "bison_parser.y"
     {
 			if (strcasecmp((yyvsp[0].sval), "csv") == 0) {
-			 	(yyval.import_type_t) = kImportCSV;
+				(yyval.import_type_t) = kImportCSV;
 			} else if (strcasecmp((yyvsp[0].sval), "tbl") == 0) {
-			 	(yyval.import_type_t) = kImportTbl;
-			} else if (strcasecmp((yyvsp[0].sval), "binary") == 0) {
-			 	(yyval.import_type_t) = kImportBinary;
+				(yyval.import_type_t) = kImportTbl;
+			} else if (strcasecmp((yyvsp[0].sval), "binary") == 0 || strcasecmp((yyvsp[0].sval), "bin") == 0) {
+				(yyval.import_type_t) = kImportBinary;
 			} else {
 				free((yyvsp[0].sval));
 				yyerror(&yyloc, result, scanner, "File type is unknown.");
-			 	YYERROR;
+				YYERROR;
 			}
 			free((yyvsp[0].sval));
 		}

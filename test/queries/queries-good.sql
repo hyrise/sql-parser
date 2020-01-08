@@ -58,10 +58,12 @@ DEALLOCATE PREPARE prep;
 COPY students FROM 'student.tbl';
 COPY students FROM 'file_path' WITH FORMAT TBL;
 COPY students FROM 'file_path' WITH FORMAT CSV;
+COPY students FROM 'file_path' WITH FORMAT BIN;
 COPY students FROM 'file_path' WITH FORMAT BINARY;
 COPY students TO 'student.tbl';
 COPY students TO 'file_path' WITH FORMAT TBL;
 COPY students TO 'file_path' WITH FORMAT CSV;
+COPY students TO 'file_path' WITH FORMAT BIN;
 COPY students TO 'file_path' WITH FORMAT BINARY;
 # HINTS
 SELECT * FROM test WITH HINT(NO_CACHE);
