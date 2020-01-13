@@ -303,33 +303,48 @@ TEST(StringLengthTest) {
 
 TEST(BeginTransactionTest) {
   {
-    TEST_PARSE_SQL_QUERY("BEGIN TRANSACTION;", result, 1);
+    TEST_PARSE_SINGLE_SQL(
+        "BEGIN TRANSACTION;",
+        kStmtTransaction,
+        TransactionStatement,
+        transaction_result,
+        transaction_stmt);
 
-    ASSERT_EQ(result.getStatement(0)->type(), kStmtTransaction);
-    ASSERT_EQ(static_cast<const TransactionStatement *>(result.getStatement(0))->command, kBeginTransaction);
+    ASSERT_EQ(transaction_stmt->command, kBeginTransaction);
   }
 
   {
-    TEST_PARSE_SQL_QUERY("BEGIN;", result, 1);
+    TEST_PARSE_SINGLE_SQL(
+        "BEGIN;",
+        kStmtTransaction,
+        TransactionStatement,
+        transaction_result,
+        transaction_stmt);
 
-    ASSERT_EQ(result.getStatement(0)->type(), kStmtTransaction);
-    ASSERT_EQ(static_cast<const TransactionStatement *>(result.getStatement(0))->command, kBeginTransaction);
-
+    ASSERT_EQ(transaction_stmt->command, kBeginTransaction);
   }
 }
 
 TEST(RollbackTransactionTest) {
-  TEST_PARSE_SQL_QUERY("ROLLBACK TRANSACTION;", result, 1);
+  TEST_PARSE_SINGLE_SQL(
+      "ROLLBACK TRANSACTION;",
+      kStmtTransaction,
+      TransactionStatement,
+      transaction_result,
+      transaction_stmt);
 
-  ASSERT_EQ(result.getStatement(0)->type(), kStmtTransaction);
-  ASSERT_EQ(static_cast<const TransactionStatement *>(result.getStatement(0))->command, kRollbackTransaction);
+  ASSERT_EQ(transaction_stmt->command, kRollbackTransaction);
 }
 
 TEST(CommitTransactionTest) {
-  TEST_PARSE_SQL_QUERY("COMMIT TRANSACTION;", result, 1);
+  TEST_PARSE_SINGLE_SQL(
+      "COMMIT TRANSACTION;",
+      kStmtTransaction,
+      TransactionStatement,
+      transaction_result,
+      transaction_stmt);
 
-  ASSERT_EQ(result.getStatement(0)->type(), kStmtTransaction);
-  ASSERT_EQ(static_cast<const TransactionStatement *>(result.getStatement(0))->command, kCommitTransaction);
+  ASSERT_EQ(transaction_stmt->command, kCommitTransaction);
 }
 
 TEST_MAIN();

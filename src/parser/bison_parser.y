@@ -376,7 +376,10 @@ hint:
         }
     ;
 
-opt_transaction_keyword: TRANSACTION | ;
+opt_transaction_keyword:
+        TRANSACTION
+    |   /* empty */
+    ;
 
 /******************************
  * Prepared Statement
