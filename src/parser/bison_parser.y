@@ -329,7 +329,7 @@ preparable_statement:
 	|	update_statement { $$ = $1; }
 	|	drop_statement { $$ = $1; }
 	|	execute_statement { $$ = $1; }
-	|   transaction_statement { $$ = $1; }
+	|	transaction_statement { $$ = $1; }
 	;
 
 
