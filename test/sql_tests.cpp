@@ -301,4 +301,50 @@ TEST(StringLengthTest) {
   ASSERT_EQ(result.getStatement(2)->stringLength, 21);
 }
 
+TEST(BeginTransactionTest) {
+  {
+    TEST_PARSE_SINGLE_SQL(
+        "BEGIN TRANSACTION;",
+        kStmtTransaction,
+        TransactionStatement,
+        transaction_result,
+        transaction_stmt);
+
+    ASSERT_EQ(transaction_stmt->command, kBeginTransaction);
+  }
+
+  {
+    TEST_PARSE_SINGLE_SQL(
+        "BEGIN;",
+        kStmtTransaction,
+        TransactionStatement,
+        transaction_result,
+        transaction_stmt);
+
+    ASSERT_EQ(transaction_stmt->command, kBeginTransaction);
+  }
+}
+
+TEST(RollbackTransactionTest) {
+  TEST_PARSE_SINGLE_SQL(
+      "ROLLBACK TRANSACTION;",
+      kStmtTransaction,
+      TransactionStatement,
+      transaction_result,
+      transaction_stmt);
+
+  ASSERT_EQ(transaction_stmt->command, kRollbackTransaction);
+}
+
+TEST(CommitTransactionTest) {
+  TEST_PARSE_SINGLE_SQL(
+      "COMMIT TRANSACTION;",
+      kStmtTransaction,
+      TransactionStatement,
+      transaction_result,
+      transaction_stmt);
+
+  ASSERT_EQ(transaction_stmt->command, kCommitTransaction);
+}
+
 TEST_MAIN();

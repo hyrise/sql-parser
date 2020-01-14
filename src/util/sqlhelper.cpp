@@ -261,6 +261,21 @@ namespace hsql {
     }
   }
 
+  void printTransactionStatementInfo(const TransactionStatement* stmt, uintmax_t numIndent) {
+    inprint("TransactionStatement", numIndent);
+    switch (stmt->command){
+    case kBeginTransaction:
+      inprint("BEGIN", numIndent + 1);
+      break;
+    case kCommitTransaction:
+      inprint("COMMIT", numIndent + 1);
+      break;
+    case kRollbackTransaction:
+      inprint("ROLLBACK", numIndent + 1);
+      break;
+    }
+  }
+
   void printStatementInfo(const SQLStatement* stmt) {
     switch (stmt->type()) {
     case kStmtSelect:
@@ -277,6 +292,9 @@ namespace hsql {
       break;
     case kStmtExport:
       printExportStatementInfo((const ExportStatement*) stmt, 0);
+      break;
+    case kStmtTransaction:
+      printTransactionStatementInfo((const TransactionStatement*) stmt, 0);
       break;
     default:
       break;

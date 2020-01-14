@@ -191,6 +191,10 @@ MONTH       TOKEN(MONTH)
 YEAR        TOKEN(YEAR)
 TRUE		TOKEN(TRUE)
 FALSE		TOKEN(FALSE)
+TRANSACTION TOKEN(TRANSACTION)
+BEGIN       TOKEN(BEGIN)
+ROLLBACK    TOKEN(ROLLBACK)
+COMMIT      TOKEN(COMMIT)
 
                 /* Allow =/== see https://sqlite.org/lang_expr.html#collateop */
 "=="		TOKEN(EQUALS)

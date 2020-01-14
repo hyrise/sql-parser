@@ -105,7 +105,7 @@ namespace hsql {
     delete expr;
   }
 
-  // DropStatament
+  // DropStatement
   DropStatement::DropStatement(DropType type) :
     SQLStatement(kStmtDrop),
     type(type),
@@ -116,6 +116,14 @@ namespace hsql {
     free(schema);
     free(name);
   }
+
+  // TransactionStatement
+  TransactionStatement::TransactionStatement(TransactionCommand command) :
+    SQLStatement(kStmtTransaction),
+    command(command) {}
+
+  TransactionStatement::~TransactionStatement() {}
+
 
   // ExecuteStatement
   ExecuteStatement::ExecuteStatement() :

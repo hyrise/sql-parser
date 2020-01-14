@@ -111,6 +111,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 	hsql::PrepareStatement* prep_stmt;
 	hsql::ExecuteStatement* exec_stmt;
 	hsql::ShowStatement*    show_stmt;
+	hsql::TransactionStatement* transaction_stmt;
 
 	hsql::TableName table_name;
 	hsql::TableRef* table;
@@ -180,6 +181,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 %token NOT OFF SET TOP AS BY IF IN IS OF ON OR TO
 %token ARRAY CONCAT ILIKE SECOND MINUTE HOUR DAY MONTH YEAR
 %token TRUE FALSE
+%token TRANSACTION BEGIN COMMIT ROLLBACK
 
 /*********************************
  ** Non-Terminal types (http://www.gnu.org/software/bison/manual/html_node/Type-Decl.html)
@@ -187,6 +189,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 %type <stmt_vec>	    statement_list
 %type <statement> 	    statement preparable_statement
 %type <exec_stmt>	    execute_statement
+%type <transaction_stmt>    transaction_statement
 %type <prep_stmt>	    prepare_statement
 %type <select_stmt>     select_statement select_with_paren select_no_paren select_clause select_paren_or_clause
 %type <import_stmt>     import_statement
@@ -326,6 +329,7 @@ preparable_statement:
 	|	update_statement { $$ = $1; }
 	|	drop_statement { $$ = $1; }
 	|	execute_statement { $$ = $1; }
+	|	transaction_statement { $$ = $1; }
 	;
 
 
@@ -356,6 +360,26 @@ hint:
 		}
 	;
 
+/******************************
+ * Transaction Statement
+ ******************************/
+
+ transaction_statement:
+    BEGIN opt_transaction_keyword {
+            $$ = new TransactionStatement(kBeginTransaction);
+        }
+    | ROLLBACK opt_transaction_keyword {
+            $$ = new TransactionStatement(kRollbackTransaction);
+        }
+    | COMMIT opt_transaction_keyword {
+            $$ = new TransactionStatement(kCommitTransaction);
+        }
+    ;
+
+opt_transaction_keyword:
+        TRANSACTION
+    |   /* empty */
+    ;
 
 /******************************
  * Prepared Statement
