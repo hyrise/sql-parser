@@ -264,11 +264,14 @@ namespace hsql {
   void printTransactionStatementInfo(const TransactionStatement* stmt, uintmax_t numIndent) {
     inprint("TransactionStatement", numIndent);
     switch (stmt->command){
-    case kBeginTransaction: inprint("BEGIN", numIndent + 1);
+    case kBeginTransaction:
+      inprint("BEGIN", numIndent + 1);
       break;
-    case kCommitTransaction: inprint("COMMIT", numIndent + 1);
+    case kCommitTransaction:
+      inprint("COMMIT", numIndent + 1);
       break;
-    case kRollbackTransaction: inprint("ROLLBACK", numIndent + 1);
+    case kRollbackTransaction:
+      inprint("ROLLBACK", numIndent + 1);
       break;
     }
   }
