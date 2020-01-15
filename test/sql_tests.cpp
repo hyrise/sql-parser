@@ -361,10 +361,10 @@ TEST(SetOperatorSubQueryOrder) {
 TEST(NestedDifferentSetOperatorsWithWithClause) {
 
   TEST_PARSE_SINGLE_SQL("WITH UNION_FIRST AS (SELECT * FROM A UNION SELECT * FROM B) SELECT * FROM UNION_FIRST EXCEPT SELECT * FROM C",
-  kStmtSelect,
-  SelectStatement,
-  result,
-  stmt);
+      kStmtSelect,
+      SelectStatement,
+      result,
+      stmt);
 
   ASSERT_STREQ(stmt->withDescriptions->back()->alias, "UNION_FIRST");
   ASSERT_EQ(stmt->withDescriptions->back()->select->setOperators->back()->setType, kSetUnion);
@@ -380,10 +380,10 @@ TEST(NestedDifferentSetOperatorsWithWithClause) {
 TEST(NestedAllSetOperatorsWithWithClause) {
 
   TEST_PARSE_SINGLE_SQL("WITH UNION_FIRST AS (SELECT * FROM A UNION SELECT * FROM B) SELECT * FROM UNION_FIRST EXCEPT SELECT * FROM (SELECT * FROM C INTERSECT SELECT * FROM D)",
-  kStmtSelect,
-  SelectStatement,
-  result,
-  stmt);
+      kStmtSelect,
+      SelectStatement,
+      result,
+      stmt);
 
   ASSERT_STREQ(stmt->withDescriptions->back()->alias, "UNION_FIRST");
   ASSERT_EQ(stmt->withDescriptions->back()->select->setOperators->back()->setType, kSetUnion);
@@ -395,6 +395,22 @@ TEST(NestedAllSetOperatorsWithWithClause) {
   ASSERT_EQ(stmt->setOperators->back()->nestedSelectStatement->fromTable->select->setOperators->back()->setType, kSetIntersect);
   ASSERT_STREQ(stmt->setOperators->back()->nestedSelectStatement->fromTable->select->fromTable->name, "C");
   ASSERT_STREQ(stmt->setOperators->back()->nestedSelectStatement->fromTable->select->setOperators->back()->nestedSelectStatement->fromTable->name, "D");
+
+}
+
+TEST(NestedSetOperatorsWithMultipleWithClauses) {
+
+  TEST_PARSE_SINGLE_SQL(
+       "WITH UNION_FIRST AS (SELECT * FROM A UNION SELECT * FROM B),INTERSECT_SECOND AS (SELECT * FROM UNION_FIRST INTERSECT SELECT * FROM C) SELECT * FROM UNION_FIRST EXCEPT SELECT * FROM INTERSECT_SECOND",
+        kStmtSelect,
+        SelectStatement,
+        result,
+        stmt);
+
+  ASSERT_STREQ(stmt->withDescriptions->at(0)->alias, "UNION_FIRST");
+  ASSERT_STREQ(stmt->withDescriptions->back()->alias, "INTERSECT_SECOND");
+
+
 
 }
 
