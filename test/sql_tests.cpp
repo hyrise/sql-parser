@@ -266,9 +266,9 @@ TEST(ExceptOperatorTest) {
     result,
     stmt);
 
-  ASSERT_STREQ(stmt->setOperator->nestedSelectStatement->fromTable->name, "students_2");
+  ASSERT_STREQ(stmt->setOperators->back()->nestedSelectStatement->fromTable->name, "students_2");
   ASSERT_STREQ(stmt->fromTable->name, "students");
-  ASSERT_EQ(stmt->setOperator->setType, kSetExcept);
+  ASSERT_EQ(stmt->setOperators->back()->setType, kSetExcept);
 }
 
 TEST(IntersectOperatorTest) {
@@ -279,9 +279,9 @@ TEST(IntersectOperatorTest) {
     result,
     stmt);
 
-  ASSERT_STREQ(stmt->setOperator->nestedSelectStatement->fromTable->name, "students_2");
+  ASSERT_STREQ(stmt->setOperators->back()->nestedSelectStatement->fromTable->name, "students_2");
   ASSERT_STREQ(stmt->fromTable->name, "students");
-  ASSERT_EQ(stmt->setOperator->setType, kSetIntersect);
+  ASSERT_EQ(stmt->setOperators->back()->setType, kSetIntersect);
 }
 
 TEST(UnionOperatorTest) {
@@ -292,10 +292,10 @@ TEST(UnionOperatorTest) {
     result,
     stmt);
 
-  ASSERT_STREQ(stmt->setOperator->nestedSelectStatement->fromTable->name, "students_2");
+  ASSERT_STREQ(stmt->setOperators->back()->nestedSelectStatement->fromTable->name, "students_2");
   ASSERT_STREQ(stmt->fromTable->name, "students");
-  ASSERT_EQ(stmt->setOperator->setType, kSetUnion);
-  ASSERT_FALSE(stmt->setOperator->isAll);
+  ASSERT_EQ(stmt->setOperators->back()->setType, kSetUnion);
+  ASSERT_FALSE(stmt->setOperators->back()->isAll);
 }
 
 TEST(UnionAllOperatorTest) {
@@ -306,9 +306,9 @@ TEST(UnionAllOperatorTest) {
     result,
     stmt);
 
-  ASSERT_STREQ(stmt->setOperator->nestedSelectStatement->fromTable->name, "students_2");
+  ASSERT_STREQ(stmt->setOperators->back()->nestedSelectStatement->fromTable->name, "students_2");
   ASSERT_STREQ(stmt->fromTable->name, "students");
-  ASSERT_TRUE(stmt->setOperator->isAll);
+  ASSERT_TRUE(stmt->setOperators->back()->isAll);
 }
 
 TEST(NestedSetOperatorTest) {
@@ -319,12 +319,12 @@ TEST(NestedSetOperatorTest) {
     result,
     stmt);
 
-  ASSERT_STREQ(stmt->setOperator->nestedSelectStatement->setOperator->nestedSelectStatement->fromTable->name, "employees");
-  ASSERT_STREQ(stmt->setOperator->nestedSelectStatement->fromTable->name, "students_2");
+  ASSERT_STREQ(stmt->setOperators->back()->nestedSelectStatement->setOperators->back()->nestedSelectStatement->fromTable->name, "employees");
+  ASSERT_STREQ(stmt->setOperators->back()->nestedSelectStatement->fromTable->name, "students_2");
   ASSERT_STREQ(stmt->fromTable->name, "students");
-  ASSERT_EQ(stmt->setOperator->setType, kSetIntersect);
-  ASSERT_EQ(stmt->setOperator->nestedSelectStatement->setOperator->setType, kSetUnion);
-  ASSERT_FALSE(stmt->setOperator->isAll);
+  ASSERT_EQ(stmt->setOperators->back()->setType, kSetIntersect);
+  ASSERT_EQ(stmt->setOperators->back()->nestedSelectStatement->setOperators->back()->setType, kSetUnion);
+  ASSERT_FALSE(stmt->setOperators->back()->isAll);
 }
 
 TEST(OrderByFullStatementTest) {
@@ -335,9 +335,9 @@ TEST(OrderByFullStatementTest) {
     result,
     stmt);
 
-  ASSERT_EQ(stmt->setOperator->resultOrder->at(0)->type, kOrderAsc);
-  ASSERT_STREQ(stmt->setOperator->resultOrder->at(0)->expr->name, "grade");
-  ASSERT_FALSE(stmt->setOperator->isAll);
+  ASSERT_EQ(stmt->setOperators->back()->resultOrder->at(0)->type, kOrderAsc);
+  ASSERT_STREQ(stmt->setOperators->back()->resultOrder->at(0)->expr->name, "grade");
+  ASSERT_FALSE(stmt->setOperators->back()->isAll);
 }
 
 TEST(SetOperatorSubQueryOrder) {
@@ -351,9 +351,9 @@ TEST(SetOperatorSubQueryOrder) {
   ASSERT_EQ(stmt->order->at(0)->type, kOrderDesc);
   ASSERT_STREQ(stmt->order->at(0)->expr->name, "name");
 
-  ASSERT_EQ(stmt->setOperator->resultOrder->at(0)->type, kOrderAsc);
-  ASSERT_STREQ(stmt->setOperator->resultOrder->at(0)->expr->name, "grade");
-  ASSERT_FALSE(stmt->setOperator->isAll);
+  ASSERT_EQ(stmt->setOperators->back()->resultOrder->at(0)->type, kOrderAsc);
+  ASSERT_STREQ(stmt->setOperators->back()->resultOrder->at(0)->expr->name, "grade");
+  ASSERT_FALSE(stmt->setOperators->back()->isAll);
 }
 
 TEST(WrongOrderByStatementTest) {

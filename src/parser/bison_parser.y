@@ -611,11 +611,14 @@ select_statement:
 		}
 	|	opt_with_clause select_with_paren set_operator select_statement_in_set_operation opt_order opt_limit {
 			$$ = $2;
-			$$->setOperator = $3;
+			if ($$->setOperators == nullptr) {
+				$$->setOperators = new std::vector<SetOperator*>();
+			}
+			$$->setOperators->push_back($3);
+			$$->setOperators->back()->nestedSelectStatement = $4;
+			$$->setOperators->back()->resultOrder = $5;
+			$$->setOperators->back()->resultLimit = $6;
 			$$->withDescriptions = $1;
-			$$->setOperator->nestedSelectStatement = $4;
-			$$->setOperator->resultOrder = $5;
-			$$->setOperator->resultLimit = $6;
 		}
 	;
 
@@ -627,8 +630,11 @@ select_part_of_set_operation:
 		select_clause { $$ = $1; }
 	|	select_clause set_operator select_statement_in_set_operation {
 		$$ = $1;
-		$$->setOperator = $2;
-		$$->setOperator->nestedSelectStatement = $3;
+		if ($$->setOperators == nullptr) {
+			$$->setOperators = new std::vector<SetOperator*>();
+		}
+		$$->setOperators->push_back($2);
+		$$->setOperators->back()->nestedSelectStatement = $3;
 	}
 	;
 
@@ -650,10 +656,13 @@ select_no_paren:
 		}
 	|	select_clause set_operator select_statement_in_set_operation opt_order opt_limit {
 			$$ = $1;
-			$$->setOperator = $2;
-			$$->setOperator->nestedSelectStatement = $3;
-			$$->setOperator->resultOrder = $4;
-			$$->setOperator->resultLimit = $5;
+			if ($$->setOperators == nullptr) {
+				$$->setOperators = new std::vector<SetOperator*>();
+			}
+			$$->setOperators->push_back($2);
+			$$->setOperators->back()->nestedSelectStatement = $3;
+			$$->setOperators->back()->resultOrder = $4;
+			$$->setOperators->back()->resultLimit = $5;
 		}
 	;
 

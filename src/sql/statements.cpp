@@ -240,7 +240,7 @@ namespace hsql {
     selectList(nullptr),
     whereClause(nullptr),
     groupBy(nullptr),
-    setOperator(nullptr),
+    setOperators(nullptr),
     order(nullptr),
     withDescriptions(nullptr),
     limit(nullptr) {};
@@ -250,7 +250,6 @@ namespace hsql {
     delete whereClause;
     delete groupBy;
     delete limit;
-    delete setOperator;
 
     // Delete each element in the select list.
     if (selectList != nullptr) {
@@ -272,6 +271,13 @@ namespace hsql {
         delete desc;
       }
       delete withDescriptions;
+    }
+
+    if (setOperators != nullptr) {
+      for (SetOperator* setOperator : *setOperators) {
+        delete setOperator;
+      }
+      delete setOperators;
     }
   }
 
