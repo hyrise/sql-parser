@@ -377,6 +377,27 @@ TEST(NestedDifferentSetOperatorsWithWithClause) {
 
 }
 
+TEST(NestedAllSetOperatorsWithWithClause) {
+
+  TEST_PARSE_SINGLE_SQL("WITH UNION_FIRST AS (SELECT * FROM A UNION SELECT * FROM B) SELECT * FROM UNION_FIRST EXCEPT SELECT * FROM (SELECT * FROM C INTERSECT SELECT * FROM D)",
+                        kStmtSelect,
+                        SelectStatement,
+                        result,
+                        stmt);
+
+  ASSERT_STREQ(stmt->withDescriptions->back()->alias, "UNION_FIRST");
+  ASSERT_EQ(stmt->withDescriptions->back()->select->setOperators->back()->setType, kSetUnion);
+  ASSERT_STREQ(stmt->withDescriptions->back()->select->fromTable->name, "A");
+  ASSERT_STREQ(stmt->withDescriptions->back()->select->setOperators->back()->nestedSelectStatement->fromTable->name, "B");
+
+  ASSERT_EQ(stmt->setOperators->back()->setType, kSetExcept);
+  ASSERT_STREQ(stmt->fromTable->name, "UNION_FIRST");
+  ASSERT_EQ(stmt->setOperators->back()->nestedSelectStatement->fromTable->select->setOperators->back()->setType, kSetIntersect);
+  ASSERT_STREQ(stmt->setOperators->back()->nestedSelectStatement->fromTable->select->fromTable->name, "C");
+  ASSERT_STREQ(stmt->setOperators->back()->nestedSelectStatement->fromTable->select->setOperators->back()->nestedSelectStatement->fromTable->name, "D");
+
+}
+
 TEST(WrongOrderByStatementTest) {
   SQLParserResult res = parse_and_move("SELECT * FROM students ORDER BY name INTERSECT SELECT grade FROM students_2;");
   ASSERT_FALSE(res.isValid());
