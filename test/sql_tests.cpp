@@ -380,10 +380,10 @@ TEST(NestedDifferentSetOperatorsWithWithClause) {
 TEST(NestedAllSetOperatorsWithWithClause) {
 
   TEST_PARSE_SINGLE_SQL("WITH UNION_FIRST AS (SELECT * FROM A UNION SELECT * FROM B) SELECT * FROM UNION_FIRST EXCEPT SELECT * FROM (SELECT * FROM C INTERSECT SELECT * FROM D)",
-                        kStmtSelect,
-                        SelectStatement,
-                        result,
-                        stmt);
+  kStmtSelect,
+  SelectStatement,
+  result,
+  stmt);
 
   ASSERT_STREQ(stmt->withDescriptions->back()->alias, "UNION_FIRST");
   ASSERT_EQ(stmt->withDescriptions->back()->select->setOperators->back()->setType, kSetUnion);
