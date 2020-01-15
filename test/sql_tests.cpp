@@ -410,8 +410,17 @@ TEST(NestedSetOperatorsWithMultipleWithClauses) {
   ASSERT_STREQ(stmt->withDescriptions->at(0)->alias, "UNION_FIRST");
   ASSERT_STREQ(stmt->withDescriptions->back()->alias, "INTERSECT_SECOND");
 
+  ASSERT_EQ(stmt->withDescriptions->at(0)->select->setOperators->back()->setType, kSetUnion);
+  ASSERT_STREQ(stmt->withDescriptions->at(0)->select->fromTable->name, "A");
+  ASSERT_STREQ(stmt->withDescriptions->at(0)->select->setOperators->back()->nestedSelectStatement->fromTable->name, "B");
 
+  ASSERT_EQ(stmt->withDescriptions->back()->select->setOperators->back()->setType, kSetIntersect);
+  ASSERT_STREQ(stmt->withDescriptions->back()->select->fromTable->name, "UNION_FIRST");
+  ASSERT_STREQ(stmt->withDescriptions->back()->select->setOperators->back()->nestedSelectStatement->fromTable->name, "C");
 
+  ASSERT_EQ(stmt->setOperators->back()->setType, kSetExcept);
+  ASSERT_STREQ(stmt->fromTable->name, "UNION_FIRST");
+  ASSERT_STREQ(stmt->setOperators->back()->nestedSelectStatement->fromTable->name, "INTERSECT_SECOND");
 }
 
 TEST(WrongOrderByStatementTest) {
