@@ -356,8 +356,6 @@ TEST(SetOperatorSubQueryOrder) {
   ASSERT_FALSE(stmt->setOperators->back()->isAll);
 }
 
-// (multiple, different, nested, ...) set operations in the WITH part of the query?
-
 TEST(NestedDifferentSetOperatorsWithWithClause) {
 
   TEST_PARSE_SINGLE_SQL("WITH UNION_FIRST AS (SELECT * FROM A UNION SELECT * FROM B) SELECT * FROM UNION_FIRST EXCEPT SELECT * FROM C",
