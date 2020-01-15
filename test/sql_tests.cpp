@@ -356,6 +356,27 @@ TEST(SetOperatorSubQueryOrder) {
   ASSERT_FALSE(stmt->setOperators->back()->isAll);
 }
 
+// (multiple, different, nested, ...) set operations in the WITH part of the query?
+
+TEST(NestedDifferentSetOperatorsWithWithClause) {
+
+  TEST_PARSE_SINGLE_SQL("WITH UNION_FIRST AS (SELECT * FROM A UNION SELECT * FROM B) SELECT * FROM UNION_FIRST EXCEPT SELECT * FROM C",
+  kStmtSelect,
+  SelectStatement,
+  result,
+  stmt);
+
+  ASSERT_STREQ(stmt->withDescriptions->back()->alias, "UNION_FIRST");
+  ASSERT_EQ(stmt->withDescriptions->back()->select->setOperators->back()->setType, kSetUnion);
+  ASSERT_STREQ(stmt->withDescriptions->back()->select->fromTable->name, "A");
+  ASSERT_STREQ(stmt->withDescriptions->back()->select->setOperators->back()->nestedSelectStatement->fromTable->name, "B");
+
+  ASSERT_EQ(stmt->setOperators->back()->setType, kSetExcept);
+  ASSERT_STREQ(stmt->fromTable->name, "UNION_FIRST");
+  ASSERT_STREQ(stmt->setOperators->back()->nestedSelectStatement->fromTable->name, "C");
+
+}
+
 TEST(WrongOrderByStatementTest) {
   SQLParserResult res = parse_and_move("SELECT * FROM students ORDER BY name INTERSECT SELECT grade FROM students_2;");
   ASSERT_FALSE(res.isValid());
