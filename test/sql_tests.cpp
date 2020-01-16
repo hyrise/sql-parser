@@ -203,6 +203,46 @@ TEST(DescribeStatementTest) {
   ASSERT_STREQ(stmt->name, "students");
 }
 
+TEST(ImportStatementTest) {
+  TEST_PARSE_SINGLE_SQL(
+    "IMPORT FROM TBL FILE 'students_file' INTO students;",
+    kStmtImport,
+    ImportStatement,
+    result,
+    stmt);
+
+  ASSERT_EQ(stmt->type, kImportTbl);
+  ASSERT_NOTNULL(stmt->tableName);
+  ASSERT_STREQ(stmt->tableName, "students");
+  ASSERT_STREQ(stmt->filePath, "students_file");
+}
+
+TEST(CopyStatementTest) {
+  TEST_PARSE_SINGLE_SQL(
+    "COPY students FROM 'students_file' ;",
+    kStmtImport,
+    ImportStatement,
+    import_result,
+    import_stmt);
+
+  ASSERT_EQ(import_stmt->type, kImportAuto);
+  ASSERT_NOTNULL(import_stmt->tableName);
+  ASSERT_STREQ(import_stmt->tableName, "students");
+  ASSERT_STREQ(import_stmt->filePath, "students_file");
+
+  TEST_PARSE_SINGLE_SQL(
+    "COPY students TO 'students_file';",
+    kStmtExport,
+    ExportStatement,
+    export_result,
+    export_stmt);
+
+  ASSERT_EQ(export_stmt->type, kImportAuto);
+  ASSERT_NOTNULL(export_stmt->tableName);
+  ASSERT_STREQ(export_stmt->tableName, "students");
+  ASSERT_STREQ(export_stmt->filePath, "students_file");
+}
+
 SQLParserResult parse_and_move(std::string query) {
   hsql::SQLParserResult result;
   hsql::SQLParser::parse(query, &result);
@@ -424,6 +464,52 @@ TEST(NestedSetOperatorsWithMultipleWithClauses) {
 TEST(WrongOrderByStatementTest) {
   SQLParserResult res = parse_and_move("SELECT * FROM students ORDER BY name INTERSECT SELECT grade FROM students_2;");
   ASSERT_FALSE(res.isValid());
+}
+
+TEST(BeginTransactionTest) {
+  {
+    TEST_PARSE_SINGLE_SQL(
+        "BEGIN TRANSACTION;",
+        kStmtTransaction,
+        TransactionStatement,
+        transaction_result,
+        transaction_stmt);
+
+    ASSERT_EQ(transaction_stmt->command, kBeginTransaction);
+  }
+
+  {
+    TEST_PARSE_SINGLE_SQL(
+        "BEGIN;",
+        kStmtTransaction,
+        TransactionStatement,
+        transaction_result,
+        transaction_stmt);
+
+    ASSERT_EQ(transaction_stmt->command, kBeginTransaction);
+  }
+}
+
+TEST(RollbackTransactionTest) {
+  TEST_PARSE_SINGLE_SQL(
+      "ROLLBACK TRANSACTION;",
+      kStmtTransaction,
+      TransactionStatement,
+      transaction_result,
+      transaction_stmt);
+
+  ASSERT_EQ(transaction_stmt->command, kRollbackTransaction);
+}
+
+TEST(CommitTransactionTest) {
+  TEST_PARSE_SINGLE_SQL(
+      "COMMIT TRANSACTION;",
+      kStmtTransaction,
+      TransactionStatement,
+      transaction_result,
+      transaction_stmt);
+
+  ASSERT_EQ(transaction_stmt->command, kCommitTransaction);
 }
 
 TEST_MAIN();

@@ -44,7 +44,7 @@ static thread_local std::stringstream strbuf;
 %option warn
 %option case-insensitive
 %option prefix="hsql_"
-%option bison-locations 
+%option bison-locations
 /* %option nodefault */
 
 
@@ -97,6 +97,7 @@ ESCAPE		TOKEN(ESCAPE)
 EXCEPT		TOKEN(EXCEPT)
 EXISTS		TOKEN(EXISTS)
 EXTRACT 	TOKEN(EXTRACT)
+FORMAT		TOKEN(FORMAT)
 GLOBAL		TOKEN(GLOBAL)
 HAVING		TOKEN(HAVING)
 IMPORT		TOKEN(IMPORT)
@@ -137,6 +138,7 @@ WHERE		TOKEN(WHERE)
 CALL		TOKEN(CALL)
 CASE		TOKEN(CASE)
 CHAR		TOKEN(CHAR)
+COPY		TOKEN(COPY)
 DATE		TOKEN(DATE)
 DESC		TOKEN(DESC)
 DROP		TOKEN(DROP)
@@ -166,7 +168,6 @@ ADD			TOKEN(ADD)
 ALL			TOKEN(ALL)
 AND			TOKEN(AND)
 ASC			TOKEN(ASC)
-CSV			TOKEN(CSV)
 END			TOKEN(END)
 FOR			TOKEN(FOR)
 INT			TOKEN(INT)
@@ -174,7 +175,6 @@ KEY			TOKEN(KEY)
 NOT			TOKEN(NOT)
 OFF			TOKEN(OFF)
 SET			TOKEN(SET)
-TBL			TOKEN(TBL)
 TOP			TOKEN(TOP)
 AS			TOKEN(AS)
 BY			TOKEN(BY)
@@ -193,9 +193,13 @@ MONTH       TOKEN(MONTH)
 YEAR        TOKEN(YEAR)
 TRUE		TOKEN(TRUE)
 FALSE		TOKEN(FALSE)
+TRANSACTION TOKEN(TRANSACTION)
+BEGIN       TOKEN(BEGIN)
+ROLLBACK    TOKEN(ROLLBACK)
+COMMIT      TOKEN(COMMIT)
 
                 /* Allow =/== see https://sqlite.org/lang_expr.html#collateop */
-"=="		TOKEN(EQUALS)             
+"=="		TOKEN(EQUALS)
 "!=" 		TOKEN(NOTEQUALS)
 "<>" 		TOKEN(NOTEQUALS)
 "<="		TOKEN(LESSEQ)

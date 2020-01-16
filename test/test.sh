@@ -46,7 +46,7 @@ fi
 
 #################################################
 # Checking if the grammar is conflict free.
-printf "\n${GREEN}Checking for conflicts in the grammer...${NC}\n"
+printf "\n${GREEN}Checking for conflicts in the grammar...${NC}\n"
 printf "${RED}"
 make -C src/parser/ test >>/dev/null
 CONFLICT_RET=$?

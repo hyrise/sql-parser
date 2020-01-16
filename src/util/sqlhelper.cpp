@@ -223,6 +223,40 @@ namespace hsql {
   void printImportStatementInfo(const ImportStatement* stmt, uintmax_t numIndent) {
     inprint("ImportStatement", numIndent);
     inprint(stmt->filePath, numIndent + 1);
+    switch (stmt->type) {
+      case ImportType::kImportCSV:
+        inprint("CSV", numIndent + 1);
+        break;
+      case ImportType::kImportTbl:
+        inprint("TBL", numIndent + 1);
+        break;
+      case ImportType::kImportBinary:
+        inprint("BINARY", numIndent + 1);
+        break;
+      case ImportType::kImportAuto:
+        inprint("AUTO", numIndent + 1);
+        break;
+    }
+    inprint(stmt->tableName, numIndent + 1);
+  }
+
+  void printExportStatementInfo(const ExportStatement* stmt, uintmax_t numIndent) {
+    inprint("ExportStatement", numIndent);
+    inprint(stmt->filePath, numIndent + 1);
+    switch (stmt->type) {
+      case ImportType::kImportCSV:
+        inprint("CSV", numIndent + 1);
+        break;
+      case ImportType::kImportTbl:
+        inprint("TBL", numIndent + 1);
+        break;
+      case ImportType::kImportBinary:
+        inprint("BINARY", numIndent + 1);
+        break;
+      case ImportType::kImportAuto:
+        inprint("AUTO", numIndent + 1);
+        break;
+    }
     inprint(stmt->tableName, numIndent + 1);
   }
 
@@ -254,6 +288,21 @@ namespace hsql {
     }
   }
 
+  void printTransactionStatementInfo(const TransactionStatement* stmt, uintmax_t numIndent) {
+    inprint("TransactionStatement", numIndent);
+    switch (stmt->command){
+    case kBeginTransaction:
+      inprint("BEGIN", numIndent + 1);
+      break;
+    case kCommitTransaction:
+      inprint("COMMIT", numIndent + 1);
+      break;
+    case kRollbackTransaction:
+      inprint("ROLLBACK", numIndent + 1);
+      break;
+    }
+  }
+
   void printStatementInfo(const SQLStatement* stmt) {
     switch (stmt->type()) {
     case kStmtSelect:
@@ -267,6 +316,12 @@ namespace hsql {
       break;
     case kStmtImport:
       printImportStatementInfo((const ImportStatement*) stmt, 0);
+      break;
+    case kStmtExport:
+      printExportStatementInfo((const ExportStatement*) stmt, 0);
+      break;
+    case kStmtTransaction:
+      printTransactionStatementInfo((const TransactionStatement*) stmt, 0);
       break;
     default:
       break;
