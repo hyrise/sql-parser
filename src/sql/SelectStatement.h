@@ -65,8 +65,6 @@ namespace hsql {
   };
 
   // Representation of a full SQL select statement.
-  // TODO: Fit query and order into setOperator.
-  // TODO: Analyze more test cases and if ready, put in vector
   struct SelectStatement : SQLStatement {
     SelectStatement();
     virtual ~SelectStatement();
@@ -76,6 +74,18 @@ namespace hsql {
     std::vector<Expr*>* selectList;
     Expr* whereClause;
     GroupByDescription* groupBy;
+
+    // Note that a SetOperator is always connected to a
+    // different SelectStatement. This statement can itself
+    // have SetOperator connections to other SelectStatements.
+    // To evaluate the operators in the correct order: 
+    //    1. Fully evaluate the nested SelectStatement
+    //    2. Connect the nested SelectStatement to our original
+    //       with the given SetOperation
+    //    3. Connect the result with the next SetOperator in the
+    //       vector
+    //    4. Repeat until all SetOperators in the vector are
+    //       connected 
     std::vector<SetOperator*>* setOperators;
 
     std::vector<OrderDescription*>* order;
