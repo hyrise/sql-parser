@@ -396,6 +396,22 @@ TEST(SetOperationSubQueryOrder) {
   ASSERT_FALSE(stmt->setOperations->back()->isAll);
 }
 
+TEST(SetOperationLastSubQueryOrder) {
+    TEST_PARSE_SINGLE_SQL(
+    "SELECT * FROM students INTERSECT SELECT grade FROM students_2 UNION (SELECT * FROM employees ORDER BY name DESC) ORDER BY grade ASC;",
+    kStmtSelect,
+    SelectStatement,
+    result,
+    stmt);
+
+  ASSERT_EQ(stmt->setOperations->back()->nestedSelectStatement->setOperations->back()->nestedSelectStatement->order->at(0)->type, kOrderDesc);
+  ASSERT_STREQ(stmt->setOperations->back()->nestedSelectStatement->setOperations->back()->nestedSelectStatement->order->at(0)->expr->name, "name");
+
+  ASSERT_EQ(stmt->setOperations->back()->resultOrder->at(0)->type, kOrderAsc);
+  ASSERT_STREQ(stmt->setOperations->back()->resultOrder->at(0)->expr->name, "grade");
+  ASSERT_FALSE(stmt->setOperations->back()->isAll);
+}
+
 TEST(NestedDifferentSetOperationsWithWithClause) {
 
   TEST_PARSE_SINGLE_SQL("WITH UNION_FIRST AS (SELECT * FROM A UNION SELECT * FROM B) SELECT * FROM UNION_FIRST EXCEPT SELECT * FROM C",
