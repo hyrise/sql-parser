@@ -366,7 +366,7 @@ union HSQL_STYPE
 	hsql::GroupByDescription* group_t;
 	hsql::UpdateClause* update_t;
 	hsql::Alias* alias_t;
-	hsql::SetOperator* set_operator_t;
+	hsql::SetOperation* set_operator_t;
 
 	std::vector<hsql::SQLStatement*>* stmt_vec;
 
@@ -779,19 +779,19 @@ static const char *const yytname[] =
   "opt_column_nullable", "drop_statement", "opt_exists",
   "delete_statement", "truncate_statement", "insert_statement",
   "opt_column_list", "update_statement", "update_clause_commalist",
-  "update_clause", "select_statement", "select_statement_in_set_operation",
-  "select_part_of_set_operation", "select_with_paren", "select_no_paren",
-  "set_operator", "set_type", "opt_all", "select_clause", "opt_distinct",
-  "select_list", "opt_from_clause", "from_clause", "opt_where",
-  "opt_group", "opt_having", "opt_order", "order_list", "order_desc",
-  "opt_order_type", "opt_top", "opt_limit", "expr_list",
-  "opt_literal_list", "literal_list", "expr_alias", "expr", "operand",
-  "scalar_expr", "unary_expr", "binary_expr", "logic_expr", "in_expr",
-  "case_expr", "case_list", "exists_expr", "comp_expr", "function_expr",
-  "extract_expr", "datetime_field", "array_expr", "array_index",
-  "between_expr", "column_name", "literal", "string_literal",
-  "bool_literal", "num_literal", "int_literal", "null_literal",
-  "param_expr", "table_ref", "table_ref_atomic",
+  "update_clause", "select_statement", "select_within_set_operation",
+  "select_within_set_operation_no_parentheses", "select_with_paren",
+  "select_no_paren", "set_operator", "set_type", "opt_all",
+  "select_clause", "opt_distinct", "select_list", "opt_from_clause",
+  "from_clause", "opt_where", "opt_group", "opt_having", "opt_order",
+  "order_list", "order_desc", "opt_order_type", "opt_top", "opt_limit",
+  "expr_list", "opt_literal_list", "literal_list", "expr_alias", "expr",
+  "operand", "scalar_expr", "unary_expr", "binary_expr", "logic_expr",
+  "in_expr", "case_expr", "case_list", "exists_expr", "comp_expr",
+  "function_expr", "extract_expr", "datetime_field", "array_expr",
+  "array_index", "between_expr", "column_name", "literal",
+  "string_literal", "bool_literal", "num_literal", "int_literal",
+  "null_literal", "param_expr", "table_ref", "table_ref_atomic",
   "nonjoin_table_ref_atomic", "table_ref_commalist", "table_ref_name",
   "table_ref_name_no_alias", "table_name", "table_alias",
   "opt_table_alias", "alias", "opt_alias", "opt_with_clause",
@@ -2005,13 +2005,13 @@ yydestruct (const char *yymsg, int yytype, YYSTYPE *yyvaluep, YYLTYPE *yylocatio
 #line 2006 "bison_parser.cpp"
         break;
 
-    case 202: /* select_statement_in_set_operation  */
+    case 202: /* select_within_set_operation  */
 #line 158 "bison_parser.y"
       { delete (((*yyvaluep).select_stmt)); }
 #line 2012 "bison_parser.cpp"
         break;
 
-    case 203: /* select_part_of_set_operation  */
+    case 203: /* select_within_set_operation_no_parentheses  */
 #line 158 "bison_parser.y"
       { delete (((*yyvaluep).select_stmt)); }
 #line 2018 "bison_parser.cpp"
@@ -3427,13 +3427,13 @@ yyreduce:
 #line 694 "bison_parser.y"
     {
 			(yyval.select_stmt) = (yyvsp[-4].select_stmt);
-			if ((yyval.select_stmt)->setOperators == nullptr) {
-				(yyval.select_stmt)->setOperators = new std::vector<SetOperator*>();
+			if ((yyval.select_stmt)->setOperations == nullptr) {
+				(yyval.select_stmt)->setOperations = new std::vector<SetOperation*>();
 			}
-			(yyval.select_stmt)->setOperators->push_back((yyvsp[-3].set_operator_t));
-			(yyval.select_stmt)->setOperators->back()->nestedSelectStatement = (yyvsp[-2].select_stmt);
-			(yyval.select_stmt)->setOperators->back()->resultOrder = (yyvsp[-1].order_vec);
-			(yyval.select_stmt)->setOperators->back()->resultLimit = (yyvsp[0].limit);
+			(yyval.select_stmt)->setOperations->push_back((yyvsp[-3].set_operator_t));
+			(yyval.select_stmt)->setOperations->back()->nestedSelectStatement = (yyvsp[-2].select_stmt);
+			(yyval.select_stmt)->setOperations->back()->resultOrder = (yyvsp[-1].order_vec);
+			(yyval.select_stmt)->setOperations->back()->resultLimit = (yyvsp[0].limit);
 			(yyval.select_stmt)->withDescriptions = (yyvsp[-5].with_description_vec);
 		}
 #line 3440 "bison_parser.cpp"
@@ -3449,11 +3449,11 @@ yyreduce:
 #line 713 "bison_parser.y"
     {
 		(yyval.select_stmt) = (yyvsp[-2].select_stmt);
-		if ((yyval.select_stmt)->setOperators == nullptr) {
-			(yyval.select_stmt)->setOperators = new std::vector<SetOperator*>();
+		if ((yyval.select_stmt)->setOperations == nullptr) {
+			(yyval.select_stmt)->setOperations = new std::vector<SetOperation*>();
 		}
-		(yyval.select_stmt)->setOperators->push_back((yyvsp[-1].set_operator_t));
-		(yyval.select_stmt)->setOperators->back()->nestedSelectStatement = (yyvsp[0].select_stmt);
+		(yyval.select_stmt)->setOperations->push_back((yyvsp[-1].set_operator_t));
+		(yyval.select_stmt)->setOperations->back()->nestedSelectStatement = (yyvsp[0].select_stmt);
 	}
 #line 3459 "bison_parser.cpp"
     break;
@@ -3489,13 +3489,13 @@ yyreduce:
 #line 739 "bison_parser.y"
     {
 			(yyval.select_stmt) = (yyvsp[-4].select_stmt);
-			if ((yyval.select_stmt)->setOperators == nullptr) {
-				(yyval.select_stmt)->setOperators = new std::vector<SetOperator*>();
+			if ((yyval.select_stmt)->setOperations == nullptr) {
+				(yyval.select_stmt)->setOperations = new std::vector<SetOperation*>();
 			}
-			(yyval.select_stmt)->setOperators->push_back((yyvsp[-3].set_operator_t));
-			(yyval.select_stmt)->setOperators->back()->nestedSelectStatement = (yyvsp[-2].select_stmt);
-			(yyval.select_stmt)->setOperators->back()->resultOrder = (yyvsp[-1].order_vec);
-			(yyval.select_stmt)->setOperators->back()->resultLimit = (yyvsp[0].limit);
+			(yyval.select_stmt)->setOperations->push_back((yyvsp[-3].set_operator_t));
+			(yyval.select_stmt)->setOperations->back()->nestedSelectStatement = (yyvsp[-2].select_stmt);
+			(yyval.select_stmt)->setOperations->back()->resultOrder = (yyvsp[-1].order_vec);
+			(yyval.select_stmt)->setOperations->back()->resultLimit = (yyvsp[0].limit);
 		}
 #line 3501 "bison_parser.cpp"
     break;
@@ -3512,7 +3512,7 @@ yyreduce:
   case 91:
 #line 759 "bison_parser.y"
     {
-		(yyval.set_operator_t) = new SetOperator();
+		(yyval.set_operator_t) = new SetOperation();
 		(yyval.set_operator_t)->setType = SetType::kSetUnion;
 		}
 #line 3519 "bison_parser.cpp"
@@ -3521,7 +3521,7 @@ yyreduce:
   case 92:
 #line 763 "bison_parser.y"
     {
-		(yyval.set_operator_t) = new SetOperator();
+		(yyval.set_operator_t) = new SetOperation();
 		(yyval.set_operator_t)->setType = SetType::kSetIntersect;
 	}
 #line 3528 "bison_parser.cpp"
@@ -3530,7 +3530,7 @@ yyreduce:
   case 93:
 #line 767 "bison_parser.y"
     {
-		(yyval.set_operator_t) = new SetOperator();
+		(yyval.set_operator_t) = new SetOperation();
 		(yyval.set_operator_t)->setType = SetType::kSetExcept;
 	}
 #line 3537 "bison_parser.cpp"

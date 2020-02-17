@@ -262,7 +262,7 @@ namespace hsql {
     selectList(nullptr),
     whereClause(nullptr),
     groupBy(nullptr),
-    setOperators(nullptr),
+    setOperations(nullptr),
     order(nullptr),
     withDescriptions(nullptr),
     limit(nullptr) {};
@@ -295,11 +295,11 @@ namespace hsql {
       delete withDescriptions;
     }
 
-    if (setOperators != nullptr) {
-      for (SetOperator* setOperator : *setOperators) {
-        delete setOperator;
+    if (setOperations != nullptr) {
+      for (SetOperation* setOperation : *setOperations) {
+        delete setOperation;
       }
-      delete setOperators;
+      delete setOperations;
     }
   }
 
@@ -387,12 +387,12 @@ namespace hsql {
     delete condition;
   }
 
-  SetOperator::SetOperator() : 
+  SetOperation::SetOperation() : 
     nestedSelectStatement(nullptr), 
     resultOrder(nullptr),
     resultLimit(nullptr) {}
 
-  SetOperator::~SetOperator() {
+  SetOperation::~SetOperation() {
     delete nestedSelectStatement;
     delete resultLimit;
 

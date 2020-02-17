@@ -127,7 +127,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 	hsql::GroupByDescription* group_t;
 	hsql::UpdateClause* update_t;
 	hsql::Alias* alias_t;
-	hsql::SetOperator* set_operator_t;
+	hsql::SetOperation* set_operator_t;
 
 	std::vector<hsql::SQLStatement*>* stmt_vec;
 
@@ -192,7 +192,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 %type <exec_stmt>	    execute_statement
 %type <transaction_stmt>    transaction_statement
 %type <prep_stmt>	    prepare_statement
-%type <select_stmt>     select_statement select_with_paren select_no_paren select_clause select_statement_in_set_operation select_part_of_set_operation
+%type <select_stmt>     select_statement select_with_paren select_no_paren select_clause select_within_set_operation select_within_set_operation_no_parentheses
 %type <import_stmt>     import_statement
 %type <export_stmt>     export_statement
 %type <create_stmt>     create_statement
@@ -691,32 +691,32 @@ select_statement:
 			$$ = $2;
 			$$->withDescriptions = $1;
 		}
-	|	opt_with_clause select_with_paren set_operator select_statement_in_set_operation opt_order opt_limit {
+	|	opt_with_clause select_with_paren set_operator select_within_set_operation opt_order opt_limit {
 			$$ = $2;
-			if ($$->setOperators == nullptr) {
-				$$->setOperators = new std::vector<SetOperator*>();
+			if ($$->setOperations == nullptr) {
+				$$->setOperations = new std::vector<SetOperation*>();
 			}
-			$$->setOperators->push_back($3);
-			$$->setOperators->back()->nestedSelectStatement = $4;
-			$$->setOperators->back()->resultOrder = $5;
-			$$->setOperators->back()->resultLimit = $6;
+			$$->setOperations->push_back($3);
+			$$->setOperations->back()->nestedSelectStatement = $4;
+			$$->setOperations->back()->resultOrder = $5;
+			$$->setOperations->back()->resultLimit = $6;
 			$$->withDescriptions = $1;
 		}
 	;
 
-select_statement_in_set_operation:
+select_within_set_operation:
 		select_with_paren
-	|	select_part_of_set_operation;
+	|	select_within_set_operation_no_parentheses;
 
-select_part_of_set_operation:
+select_within_set_operation_no_parentheses:
 		select_clause { $$ = $1; }
-	|	select_clause set_operator select_statement_in_set_operation {
+	|	select_clause set_operator select_within_set_operation {
 		$$ = $1;
-		if ($$->setOperators == nullptr) {
-			$$->setOperators = new std::vector<SetOperator*>();
+		if ($$->setOperations == nullptr) {
+			$$->setOperations = new std::vector<SetOperation*>();
 		}
-		$$->setOperators->push_back($2);
-		$$->setOperators->back()->nestedSelectStatement = $3;
+		$$->setOperations->push_back($2);
+		$$->setOperations->back()->nestedSelectStatement = $3;
 	}
 	;
 
@@ -736,15 +736,15 @@ select_no_paren:
 				$$->limit = $3;
 			}
 		}
-	|	select_clause set_operator select_statement_in_set_operation opt_order opt_limit {
+	|	select_clause set_operator select_within_set_operation opt_order opt_limit {
 			$$ = $1;
-			if ($$->setOperators == nullptr) {
-				$$->setOperators = new std::vector<SetOperator*>();
+			if ($$->setOperations == nullptr) {
+				$$->setOperations = new std::vector<SetOperation*>();
 			}
-			$$->setOperators->push_back($2);
-			$$->setOperators->back()->nestedSelectStatement = $3;
-			$$->setOperators->back()->resultOrder = $4;
-			$$->setOperators->back()->resultLimit = $5;
+			$$->setOperations->push_back($2);
+			$$->setOperations->back()->nestedSelectStatement = $3;
+			$$->setOperations->back()->resultOrder = $4;
+			$$->setOperations->back()->resultLimit = $5;
 		}
 	;
 
@@ -757,15 +757,15 @@ set_operator:
 
 set_type:
 		UNION {
-		$$ = new SetOperator();
+		$$ = new SetOperation();
 		$$->setType = SetType::kSetUnion;
 		}
 	|	INTERSECT {
-		$$ = new SetOperator();
+		$$ = new SetOperation();
 		$$->setType = SetType::kSetIntersect;
 	}
 	|	EXCEPT {
-		$$ = new SetOperator();
+		$$ = new SetOperation();
 		$$->setType = SetType::kSetExcept;
 	}
 	;
@@ -830,7 +830,7 @@ opt_having:
 	;
 
 opt_order:
-		ORDER BY order_list { $$ = $3; };
+		ORDER BY order_list { $$ = $3; }
 	|	/* empty */ { $$ = nullptr; }
 	;
 

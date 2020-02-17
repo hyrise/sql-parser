@@ -168,33 +168,38 @@ namespace hsql {
       }
     }
 
-    if (stmt->setOperators != nullptr) {
-      for (SetOperator* setOperator : *stmt->setOperators) {
-        if (setOperator->setType == SetType::kSetUnion) {
-          inprint("Union:", numIndent + 1);
-        } else if (setOperator->setType == SetType::kSetIntersect) {
-          inprint("Intersect:", numIndent + 1);
-        } else {
-          inprint("Except:", numIndent + 1);
+    if (stmt->setOperations != nullptr) {
+      for (SetOperation* setOperation : *stmt->setOperations) {
+        switch (setOperation->setType) {
+          case SetType::kSetIntersect:
+            inprint("Intersect:", numIndent + 1);
+            break;
+          case SetType::kSetUnion:
+            inprint("Union:", numIndent + 1);
+            break;
+          case SetType::kSetExcept:
+            inprint("Except:", numIndent + 1);
+            break;
         }
-        printSelectStatementInfo(setOperator->nestedSelectStatement, numIndent + 2);
 
-        if (setOperator->resultOrder != nullptr) {
+        printSelectStatementInfo(setOperation->nestedSelectStatement, numIndent + 2);
+
+        if (setOperation->resultOrder != nullptr) {
           inprint("SetResultOrderBy:", numIndent + 1);
-          printExpression(setOperator->resultOrder->at(0)->expr, numIndent + 2);
-          if (setOperator->resultOrder->at(0)->type == kOrderAsc) inprint("ascending", numIndent + 2);
+          printExpression(setOperation->resultOrder->at(0)->expr, numIndent + 2);
+          if (setOperation->resultOrder->at(0)->type == kOrderAsc) inprint("ascending", numIndent + 2);
           else inprint("descending", numIndent + 2);
         }
 
-        if (setOperator->resultLimit != nullptr) {
-          if (setOperator->resultLimit->limit != nullptr) {
+        if (setOperation->resultLimit != nullptr) {
+          if (setOperation->resultLimit->limit != nullptr) {
             inprint("SetResultLimit:", numIndent + 1);
-            printExpression(setOperator->resultLimit->limit, numIndent + 2);
+            printExpression(setOperation->resultLimit->limit, numIndent + 2);
           }
 
-          if (setOperator->resultLimit->offset != nullptr) {
+          if (setOperation->resultLimit->offset != nullptr) {
             inprint("SetResultOffset:", numIndent + 1);
-            printExpression(setOperator->resultLimit->offset, numIndent + 2);
+            printExpression(setOperation->resultLimit->offset, numIndent + 2);
           }
         }
       }

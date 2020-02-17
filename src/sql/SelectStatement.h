@@ -51,9 +51,9 @@ namespace hsql {
       SelectStatement* select;
   };
 
-  struct SetOperator {
-    SetOperator();
-    virtual ~SetOperator();
+  struct SetOperation {
+    SetOperation();
+    virtual ~SetOperation();
 
     SetType setType;
     bool isAll;
@@ -86,7 +86,7 @@ namespace hsql {
     //       vector
     //    4. Repeat until all SetOperators in the vector are
     //       connected 
-    std::vector<SetOperator*>* setOperators;
+    std::vector<SetOperation*>* setOperations;
 
     std::vector<OrderDescription*>* order;
     std::vector<WithDescription*>* withDescriptions;
