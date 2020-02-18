@@ -127,6 +127,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 	hsql::GroupByDescription* group_t;
 	hsql::UpdateClause* update_t;
 	hsql::Alias* alias_t;
+	hsql::SetOperation* set_operator_t;
 
 	std::vector<hsql::SQLStatement*>* stmt_vec;
 
@@ -191,7 +192,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 %type <exec_stmt>	    execute_statement
 %type <transaction_stmt>    transaction_statement
 %type <prep_stmt>	    prepare_statement
-%type <select_stmt>     select_statement select_with_paren select_no_paren select_clause select_paren_or_clause
+%type <select_stmt>     select_statement select_with_paren select_no_paren select_clause select_within_set_operation select_within_set_operation_no_parentheses
 %type <import_stmt>     import_statement
 %type <export_stmt>     export_statement
 %type <create_stmt>     create_statement
@@ -202,7 +203,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 %type <show_stmt>	    show_statement
 %type <table_name>      table_name
 %type <sval> 		    file_path prepare_target_query
-%type <bval> 		    opt_not_exists opt_exists opt_distinct opt_column_nullable
+%type <bval> 		    opt_not_exists opt_exists opt_distinct opt_column_nullable opt_all
 %type <uval>		    opt_join_type
 %type <table> 		    opt_from_clause from_clause table_ref table_ref_atomic table_ref_name nonjoin_table_ref_atomic
 %type <table>		    join_clause table_ref_name_no_alias
@@ -221,6 +222,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 %type <group_t>		    opt_group
 %type <alias_t>		    opt_table_alias table_alias opt_alias alias
 %type <with_description_t>  with_description
+%type <set_operator_t>  set_operator set_type
 
 // ImportType is used for compatibility reasons
 %type <import_type_t>	opt_file_type file_type
@@ -689,31 +691,38 @@ select_statement:
 			$$ = $2;
 			$$->withDescriptions = $1;
 		}
-	|	opt_with_clause select_with_paren set_operator select_paren_or_clause opt_order opt_limit {
-			// TODO: allow multiple unions (through linked list)
-			// TODO: capture type of set_operator
-			// TODO: might overwrite order and limit of first select here
+	|	opt_with_clause select_with_paren set_operator select_within_set_operation opt_order opt_limit {
 			$$ = $2;
-			$$->withDescriptions = $1;
-			$$->unionSelect = $4;
-			$$->order = $5;
-
-			// Limit could have been set by TOP.
-			if ($6 != nullptr) {
-				delete $$->limit;
-				$$->limit = $6;
+			if ($$->setOperations == nullptr) {
+				$$->setOperations = new std::vector<SetOperation*>();
 			}
+			$$->setOperations->push_back($3);
+			$$->setOperations->back()->nestedSelectStatement = $4;
+			$$->setOperations->back()->resultOrder = $5;
+			$$->setOperations->back()->resultLimit = $6;
+			$$->withDescriptions = $1;
 		}
+	;
+
+select_within_set_operation:
+		select_with_paren
+	|	select_within_set_operation_no_parentheses;
+
+select_within_set_operation_no_parentheses:
+		select_clause { $$ = $1; }
+	|	select_clause set_operator select_within_set_operation {
+		$$ = $1;
+		if ($$->setOperations == nullptr) {
+			$$->setOperations = new std::vector<SetOperation*>();
+		}
+		$$->setOperations->push_back($2);
+		$$->setOperations->back()->nestedSelectStatement = $3;
+	}
 	;
 
 select_with_paren:
 		'(' select_no_paren ')' { $$ = $2; }
 	|	'(' select_with_paren ')' { $$ = $2; }
-	;
-
-select_paren_or_clause:
-		select_with_paren
-	|	select_clause
 	;
 
 select_no_paren:
@@ -727,35 +736,47 @@ select_no_paren:
 				$$->limit = $3;
 			}
 		}
-	|	select_clause set_operator select_paren_or_clause opt_order opt_limit {
-			// TODO: allow multiple unions (through linked list)
-			// TODO: capture type of set_operator
-			// TODO: might overwrite order and limit of first select here
+	|	select_clause set_operator select_within_set_operation opt_order opt_limit {
 			$$ = $1;
-			$$->unionSelect = $3;
-			$$->order = $4;
-
-			// Limit could have been set by TOP.
-			if ($5 != nullptr) {
-				delete $$->limit;
-				$$->limit = $5;
+			if ($$->setOperations == nullptr) {
+				$$->setOperations = new std::vector<SetOperation*>();
 			}
+			$$->setOperations->push_back($2);
+			$$->setOperations->back()->nestedSelectStatement = $3;
+			$$->setOperations->back()->resultOrder = $4;
+			$$->setOperations->back()->resultLimit = $5;
 		}
 	;
 
 set_operator:
-		set_type opt_all
+		set_type opt_all {
+		$$ = $1;
+		$$->isAll = $2;
+		}
 	;
 
 set_type:
-		UNION
-	|	INTERSECT
-	|	EXCEPT
+		UNION {
+		$$ = new SetOperation();
+		$$->setType = SetType::kSetUnion;
+		}
+	|	INTERSECT {
+		$$ = new SetOperation();
+		$$->setType = SetType::kSetIntersect;
+	}
+	|	EXCEPT {
+		$$ = new SetOperation();
+		$$->setType = SetType::kSetExcept;
+	}
 	;
 
 opt_all:
-		ALL
-	|	/* empty */
+		ALL {
+			$$ = true;
+		}
+	|	/* empty */ {
+		$$ = false;
+	}
 	;
 
 select_clause:

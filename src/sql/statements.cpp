@@ -262,7 +262,7 @@ namespace hsql {
     selectList(nullptr),
     whereClause(nullptr),
     groupBy(nullptr),
-    unionSelect(nullptr),
+    setOperations(nullptr),
     order(nullptr),
     withDescriptions(nullptr),
     limit(nullptr) {};
@@ -271,7 +271,6 @@ namespace hsql {
     delete fromTable;
     delete whereClause;
     delete groupBy;
-    delete unionSelect;
     delete limit;
 
     // Delete each element in the select list.
@@ -294,6 +293,13 @@ namespace hsql {
         delete desc;
       }
       delete withDescriptions;
+    }
+
+    if (setOperations != nullptr) {
+      for (SetOperation* setOperation : *setOperations) {
+        delete setOperation;
+      }
+      delete setOperations;
     }
   }
 
@@ -379,6 +385,23 @@ namespace hsql {
     delete left;
     delete right;
     delete condition;
+  }
+
+  SetOperation::SetOperation() : 
+    nestedSelectStatement(nullptr), 
+    resultOrder(nullptr),
+    resultLimit(nullptr) {}
+
+  SetOperation::~SetOperation() {
+    delete nestedSelectStatement;
+    delete resultLimit;
+
+    if (resultOrder != nullptr) {
+      for (OrderDescription* desc: *resultOrder) {
+        delete desc;
+      }
+      delete resultOrder;
+    }
   }
 
 } // namespace hsql
