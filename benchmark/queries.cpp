@@ -1,13 +1,13 @@
 #include "queries.h"
 
-#include <experimental/filesystem>
+#include <filesystem>
 #include <algorithm>
 #include <iostream>
 #include <regex>
 
 #include "benchmark_utils.h"
 
-namespace filesystem = std::experimental::filesystem;
+namespace filesystem = std::filesystem;
 
 std::string getQueryName(unsigned i) {
   if (sql_queries[i].first.empty()) {
