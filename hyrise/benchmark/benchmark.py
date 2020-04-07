@@ -1,4 +1,6 @@
 #!/bin/python
+from __future__ import print_function
+
 import urllib, urllib2
 import json
 
@@ -14,7 +16,7 @@ class HyriseConnection(object):
 	def __parseResponse(self, response):
 		result = json.loads(response)
 		if 'error' in result:
-			print 'An error occurred: %s' % result['error'][0]
+			print('An error occurred: %s' % result['error'][0])
 			return None
 
 		if 'performanceData' in result:
@@ -47,10 +49,10 @@ class HyriseConnection(object):
 			rsp = urllib2.urlopen(req)
 			response = rsp.read();
 			return self.__parseResponse(response)
-		except TypeError, e:
-			print "An error occurred"
+		except TypeError as e:
+			print("An error occurred")
 			return None
-		except Exception, e:
+		except Exception as e:
 			return self.__parseResponse(e.read())
 
 	def __aggregatePerfArray(self, perfArray):
@@ -160,8 +162,8 @@ if __name__ == '__main__':
 
 	# if 'prepare' in query:	hyrise.executeSQL(query['prepare'])
 	
-	if 'sql' in query: 		print 'SQL: ', hyrise.executeSQL(query['sql'], times)
+	if 'sql' in query: 		print('SQL: ', hyrise.executeSQL(query['sql'], times))
 
-	if 'execute' in query: 	print 'Prepared: ', hyrise.executeSQL(query['execute'], times)
+	if 'execute' in query: 	print('Prepared: ', hyrise.executeSQL(query['execute'], times))
 
-	# if 'json' in query:		print 'JSON: ', hyrise.executeJSON(query['json'], times)
+	# if 'json' in query:		print('JSON: ', hyrise.executeJSON(query['json'], times))

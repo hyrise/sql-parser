@@ -1,4 +1,4 @@
-
+from __future__ import print_function
 import math
 
 
@@ -21,7 +21,7 @@ with open("sql_keywords.txt", 'r') as fh:
 		if len_diff % 4 != 0: num_tabs += 1
 
 		tabs = ''.join(['\t' for _ in range(num_tabs)])
-		print "%s%sTOKEN(%s)" % (keyword, tabs, keyword) 
+		print("%s%sTOKEN(%s)" % (keyword, tabs, keyword))
 
 	#
 	#################
@@ -32,15 +32,15 @@ with open("sql_keywords.txt", 'r') as fh:
 	line = "%token"
 	max_len = 60
 
-	print "/* SQL Keywords */"
+	print("/* SQL Keywords */")
 	for keyword in keywords:
 
 		if len(line + " " + keyword) > max_len:
-			print line
+			print(line)
 			line = "%token " + keyword
 		else:
 			line = line + " " + keyword
-	print line
+	print(line)
 
 	#
 	#################
