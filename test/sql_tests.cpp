@@ -55,7 +55,7 @@ TEST(CreateStatementTest) {
   ASSERT_EQ(stmt->columns->at(1)->nullable, false);
   ASSERT_EQ(stmt->columns->at(2)->nullable, true);
   ASSERT_EQ(stmt->columns->at(3)->nullable, false);
-  ASSERT_EQ(stmt->columns->at(3)->nullable, false);
+  ASSERT_EQ(stmt->columns->at(4)->nullable, false);
 }
 
 TEST(CreateAsSelectStatementTest) {
