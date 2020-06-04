@@ -40,7 +40,7 @@ To use the SQL parser in your own projects you simply have to follow these few s
     if (result.isValid() && result.size() > 0) {
         const hsql::SQLStatement* statement = result.getStatement(0);
 
-        if (statement->isType(hsql::kSelectStmt)) {
+        if (statement->isType(hsql::kStmtSelect)) {
             const auto* select = static_cast<const hsql::SelectStatement*> statement;
             /* ... */
         }
