@@ -41,7 +41,7 @@ To use the SQL parser in your own projects you simply have to follow these few s
         const hsql::SQLStatement* statement = result.getStatement(0);
 
         if (statement->isType(hsql::kStmtSelect)) {
-            const auto* select = static_cast<const hsql::SelectStatement*> statement;
+            const auto* select = static_cast<const hsql::SelectStatement*>(statement);
             /* ... */
         }
     }
