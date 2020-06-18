@@ -18,6 +18,7 @@ Expr::Expr(ExprType type)
       ival(0),
       ival2(0),
       datetimeField(kDatetimeNone),
+      columnType(DataType::UNKNOWN, 0),
       isBoolLiteral(false),
       opType(kOpNone),
       distinct(false){};
@@ -220,6 +221,14 @@ Expr* Expr::makeExtract(DatetimeField datetimeField, Expr* expr) {
     Expr* e = new Expr(kExprFunctionRef);
     e->name = strdup("EXTRACT");
     e->datetimeField = datetimeField;
+    e->expr = expr;
+    return e;
+}
+
+Expr* Expr::makeCast(Expr* expr, ColumnType columnType) {
+    Expr* e = new Expr(kExprFunctionRef);
+    e->name = strdup("CAST");
+    e->columnType = columnType;
     e->expr = expr;
     return e;
 }

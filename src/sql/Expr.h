@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <memory>
 #include <vector>
+#include "ColumnType.h"
 
 namespace hsql {
 struct SelectStatement;
@@ -102,6 +103,7 @@ struct Expr {
     int64_t ival;
     int64_t ival2;
     DatetimeField datetimeField;
+    ColumnType columnType;
     bool isBoolLiteral;
 
     OperatorType opType;
@@ -173,6 +175,8 @@ struct Expr {
     static Expr* makeInOperator(Expr* expr, SelectStatement* select);
 
     static Expr* makeExtract(DatetimeField datetimeField1, Expr* expr);
+
+    static Expr* makeCast(Expr* expr, ColumnType columnType);
 };
 
 // Zero initializes an Expr object and assigns it to a space in the heap

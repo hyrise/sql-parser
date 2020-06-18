@@ -54,6 +54,9 @@ namespace hsql {
       case DataType::TEXT:
         stream << "TEXT";
         break;
+      case DataType::DATETIME:
+        stream << "DATETIME";
+        break;
     }
     return stream;
   }

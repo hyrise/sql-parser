@@ -528,4 +528,20 @@ TEST(CommitTransactionTest) {
   ASSERT_EQ(transaction_stmt->command, kCommitTransaction);
 }
 
+TEST(CastAsType) {
+
+  TEST_PARSE_SINGLE_SQL(
+       "SELECT CAST(ID AS VARCHAR(8)) FROM TEST",
+        kStmtSelect,
+        SelectStatement,
+        result,
+        stmt);
+
+  ASSERT_TRUE(result.isValid());
+  ASSERT_EQ(1, stmt->selectList->size());
+  ASSERT_STREQ("CAST", stmt->selectList->front()->name);
+  ASSERT_EQ(DataType::VARCHAR, stmt->selectList->front()->columnType.data_type);
+  ASSERT_EQ(8, stmt->selectList->front()->columnType.length);
+}
+
 TEST_MAIN();
