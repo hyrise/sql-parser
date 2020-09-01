@@ -562,6 +562,7 @@ column_type:
 	|	CHAR '(' INTVAL ')' { $$ = ColumnType{DataType::CHAR, $3}; }
 	|	TEXT { $$ = ColumnType{DataType::TEXT}; }
 	|	DATETIME { $$ = ColumnType{DataType::DATETIME}; }
+	|	DATE { $$ = ColumnType{DataType::DATE}; }
 	;
 
 opt_column_nullable:
