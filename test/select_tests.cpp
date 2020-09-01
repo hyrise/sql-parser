@@ -638,7 +638,7 @@ TEST(Extract) {
   stmt = (SelectStatement*) result.getStatement(0);
   ASSERT_TRUE(stmt->selectList);
   ASSERT_EQ(stmt->selectList->size(), 1u);
-  ASSERT_EQ(stmt->selectList->at(0)->type, kExprFunctionRef);
+  ASSERT_EQ(stmt->selectList->at(0)->type, kExprExtract);
   ASSERT_EQ(stmt->selectList->at(0)->name, std::string("EXTRACT"));
   ASSERT_EQ(stmt->selectList->at(0)->datetimeField, kDatetimeYear);
   ASSERT_TRUE(stmt->selectList->at(0)->expr);
@@ -647,7 +647,7 @@ TEST(Extract) {
   stmt = (SelectStatement*) result.getStatement(1);
   ASSERT_TRUE(stmt->selectList);
   ASSERT_EQ(stmt->selectList->size(), 2u);
-  ASSERT_EQ(stmt->selectList->at(1)->type, kExprFunctionRef);
+  ASSERT_EQ(stmt->selectList->at(1)->type, kExprExtract);
   ASSERT_EQ(stmt->selectList->at(1)->name, std::string("EXTRACT"));
   ASSERT_EQ(stmt->selectList->at(1)->datetimeField, kDatetimeMonth);
   ASSERT_TRUE(stmt->selectList->at(1)->expr);
@@ -658,9 +658,29 @@ TEST(Extract) {
   stmt = (SelectStatement*) result.getStatement(2);
   ASSERT_TRUE(stmt->whereClause);
   ASSERT_TRUE(stmt->whereClause->expr);
-  ASSERT_EQ(stmt->whereClause->expr->type, kExprFunctionRef);
+  ASSERT_EQ(stmt->whereClause->expr->type, kExprExtract);
   ASSERT_EQ(stmt->whereClause->expr->name, std::string("EXTRACT"));
   ASSERT_EQ(stmt->whereClause->expr->datetimeField, kDatetimeMinute);
+}
+
+TEST(CastExpression) {
+  TEST_PARSE_SINGLE_SQL(
+    "SELECT CAST(10 AS INT);",
+    kStmtSelect,
+    SelectStatement,
+    result,
+    stmt);
+
+  ASSERT_TRUE(stmt->selectList);
+  ASSERT_FALSE(stmt->fromTable);
+  ASSERT_FALSE(stmt->whereClause);
+  ASSERT_FALSE(stmt->groupBy);
+
+  ASSERT_EQ(stmt->selectList->size(), 1u);
+  ASSERT_EQ(stmt->selectList->at(0)->type, kExprCast);
+  ASSERT_EQ(stmt->selectList->at(0)->name, std::string("CAST"));
+  ASSERT_EQ(stmt->selectList->at(0)->columnType, ColumnType(DataType::INT));
+  ASSERT_EQ(stmt->selectList->at(0)->expr->type, kExprLiteralInt);
 }
 
 TEST(NoFromClause) {
