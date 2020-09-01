@@ -738,3 +738,17 @@ TEST(WithClauseDouble) {
   ASSERT_STREQ(stmt->selectList->at(0)->name, "nameA");
   ASSERT_STREQ(stmt->fromTable->name, "a");
 }
+
+TEST(CastAsDate) {
+  TEST_PARSE_SINGLE_SQL(
+       "SELECT CAST(ID AS DATE) FROM TEST",
+        kStmtSelect,
+        SelectStatement,
+        result,
+        stmt);
+
+  ASSERT_TRUE(result.isValid());
+  ASSERT_EQ(1, stmt->selectList->size());
+  ASSERT_STREQ("CAST", stmt->selectList->front()->name);
+  ASSERT_EQ(DataType::DATE, stmt->selectList->front()->columnType.data_type);
+}
