@@ -218,7 +218,7 @@ Expr* Expr::makeInOperator(Expr* expr, SelectStatement* select) {
 }
 
 Expr* Expr::makeExtract(DatetimeField datetimeField, Expr* expr) {
-    Expr* e = new Expr(kExprFunctionRef);
+    Expr* e = new Expr(kExprExtract);
     e->name = strdup("EXTRACT");
     e->datetimeField = datetimeField;
     e->expr = expr;
@@ -226,7 +226,7 @@ Expr* Expr::makeExtract(DatetimeField datetimeField, Expr* expr) {
 }
 
 Expr* Expr::makeCast(Expr* expr, ColumnType columnType) {
-    Expr* e = new Expr(kExprFunctionRef);
+    Expr* e = new Expr(kExprCast);
     e->name = strdup("CAST");
     e->columnType = columnType;
     e->expr = expr;
