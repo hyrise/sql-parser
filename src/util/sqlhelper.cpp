@@ -10,6 +10,7 @@ namespace hsql {
   void printAlias(Alias* alias, uintmax_t numIndent);
 
   std::ostream& operator<<(std::ostream& os, const OperatorType& op);
+  std::ostream& operator<<(std::ostream& os, const DatetimeField& op);
 
   std::string indent(uintmax_t numIndent) {
     return std::string(numIndent, '\t');
@@ -31,6 +32,12 @@ namespace hsql {
   }
   void inprint(const OperatorType& op, uintmax_t numIndent) {
     std::cout << indent(numIndent) << op << std::endl;
+  }
+  void inprint(const ColumnType& colType, uintmax_t numIndent) {
+    std::cout << indent(numIndent) << colType << std::endl;
+  }
+  void inprint(const DatetimeField& colType, uintmax_t numIndent) {
+    std::cout << indent(numIndent) << colType << std::endl;
   }
 
   void printTableRefInfo(TableRef* table, uintmax_t numIndent) {
@@ -117,6 +124,16 @@ namespace hsql {
     case kExprFunctionRef:
       inprint(expr->name, numIndent);
       for (Expr* e : *expr->exprList) printExpression(e, numIndent + 1);
+      break;
+    case kExprExtract:
+      inprint(expr->name, numIndent);
+      inprint(expr->datetimeField, numIndent + 1);
+      printExpression(expr->expr, numIndent + 1);
+      break;
+    case kExprCast:
+      inprint(expr->name, numIndent);
+      inprint(expr->columnType, numIndent + 1);
+      printExpression(expr->expr, numIndent + 1);
       break;
     case kExprOperator:
       printOperatorExpression(expr, numIndent);
@@ -367,6 +384,25 @@ namespace hsql {
     const auto found = operatorToToken.find(op);
     if (found == operatorToToken.cend()) {
       return os << static_cast<uint64_t>(op);
+    } else {
+      return os << (*found).second;
+    }
+  }
+
+  std::ostream& operator<<(std::ostream& os, const DatetimeField& datetime) {
+    static const std::map<const DatetimeField, const std::string> operatorToToken = {
+      {kDatetimeNone, "None"},
+      {kDatetimeSecond, "SECOND"},
+      {kDatetimeMinute, "MINUTE"},
+      {kDatetimeHour, "HOUR"},
+      {kDatetimeDay, "DAY"},
+      {kDatetimeMonth, "MONTH"},
+      {kDatetimeYear, "YEAR"}
+    };
+
+    const auto found = operatorToToken.find(datetime);
+    if (found == operatorToToken.cend()) {
+      return os << static_cast<uint64_t>(datetime);
     } else {
       return os << (*found).second;
     }
