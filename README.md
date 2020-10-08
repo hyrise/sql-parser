@@ -11,7 +11,7 @@ In March 2015 we've also written a short paper outlining discussing some develop
 
 ## Usage
 
-**Note:** You can also find a detailed usage description at this [blog post](http://torpedro.github.io/tech/c++/sql/parser/2016/02/27/c++-sql-parser.html).
+**Note:** You can also find a detailed usage description [here](docs/basic-usage.md).
 
 **Requirements:**
  * gcc 5+ (or clang 5+)
