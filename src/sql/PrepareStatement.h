@@ -9,7 +9,7 @@ namespace hsql {
   // Example: PREPARE test FROM 'SELECT * FROM test WHERE a = ?;'
   struct PrepareStatement : SQLStatement {
     PrepareStatement();
-    virtual ~PrepareStatement();
+    ~PrepareStatement() override;
 
     char* name;
 

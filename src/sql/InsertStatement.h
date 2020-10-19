@@ -14,7 +14,7 @@ namespace hsql {
   // Example: "INSERT INTO students VALUES ('Max', 1112233, 'Musterhausen', 2.3)"
   struct InsertStatement : SQLStatement {
     InsertStatement(InsertType type);
-    virtual ~InsertStatement();
+    ~InsertStatement() override;
 
     InsertType type;
     char* schema;

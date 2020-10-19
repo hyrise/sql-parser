@@ -13,7 +13,7 @@ namespace hsql {
   // Represents definition of a table column
   struct ColumnDefinition {
     ColumnDefinition(char* name, ColumnType type, bool nullable);
-    virtual ~ColumnDefinition();
+    virtual~ColumnDefinition();
 
     char* name;
     ColumnType type;
@@ -30,7 +30,7 @@ namespace hsql {
   // Example: "CREATE TABLE students (name TEXT, student_number INTEGER, city TEXT, grade DOUBLE)"
   struct CreateStatement : SQLStatement {
     CreateStatement(CreateType type);
-    virtual ~CreateStatement();
+    ~CreateStatement() override;
 
     CreateType type;
     bool ifNotExists; // default: false

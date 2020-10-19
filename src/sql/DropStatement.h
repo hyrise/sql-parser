@@ -19,7 +19,7 @@ namespace hsql {
   struct DropStatement : SQLStatement {
 
     DropStatement(DropType type);
-    virtual ~DropStatement();
+    ~DropStatement() override;
 
     DropType type;
     bool ifExists;

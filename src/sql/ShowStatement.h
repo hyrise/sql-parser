@@ -16,7 +16,7 @@ namespace hsql {
   struct ShowStatement : SQLStatement {
 
     ShowStatement(ShowType type);
-    virtual ~ShowStatement();
+    ~ShowStatement() override;
 
     ShowType type;
     char* schema;

@@ -14,7 +14,7 @@ namespace hsql {
   // Represents SQL Import statements.
   struct ImportStatement : SQLStatement {
     ImportStatement(ImportType type);
-    virtual ~ImportStatement();
+    ~ImportStatement() override;
 
     ImportType type;
     char* filePath;
