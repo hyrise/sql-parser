@@ -8,7 +8,7 @@ namespace hsql {
   // Represents SQL Export statements.
   struct ExportStatement : SQLStatement {
     ExportStatement(ImportType type);
-    virtual ~ExportStatement();
+    ~ExportStatement() override;
 
     // ImportType is used for compatibility reasons
     ImportType type;
