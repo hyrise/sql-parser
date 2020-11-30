@@ -224,9 +224,15 @@ namespace hsql {
 
     if (stmt->order != nullptr) {
       inprint("OrderBy:", numIndent + 1);
-      printExpression(stmt->order->at(0)->expr, numIndent + 2);
-      if (stmt->order->at(0)->type == kOrderAsc) inprint("ascending", numIndent + 2);
-      else inprint("descending", numIndent + 2);
+      for (size_t idx = 0; idx < stmt->order->size(); idx++) {
+          printExpression(stmt->order->at(idx)->expr, numIndent + 2);
+          if (stmt->order->at(idx)->type == kOrderAsc) {
+              inprint("ascending", numIndent + 2);
+          }
+          else {
+              inprint("descending", numIndent + 2);
+          }
+      }
     }
 
     if (stmt->limit != nullptr && stmt->limit->limit != nullptr) {
