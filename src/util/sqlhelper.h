@@ -24,10 +24,13 @@ namespace hsql {
   void printCreateStatementInfo(const CreateStatement* stmt, uintmax_t num_indent);
 
   // Prints a summary of the given TransactionStatement with the given indentation.
-  void printTransactionStatementInfo(const TransactionStatement* stmt, uintmax_t numIndent);
+  void printTransactionStatementInfo(const TransactionStatement* stmt, uintmax_t num_indent);
 
   // Prints a summary of the given Expression with the given indentation.
   void printExpression(Expr* expr, uintmax_t num_indent);
+
+  // Prints an ORDER BY clause
+  void printOrderBy(const std::vector<OrderDescription*>* expr, uintmax_t num_indent);
 
 } // namespace hsql
 
