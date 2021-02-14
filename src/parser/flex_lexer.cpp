@@ -2037,13 +2037,13 @@ static const flex_int16_t yy_chk[4543] =
 
 #include "../sql/Expr.h"
 #include "bison_parser.h"
+#include <climits>
 #include <stdio.h>
 #include <sstream>
 
 #define TOKEN(name) { return SQL_##name; }
 
 static thread_local std::stringstream strbuf;
-int yyerror(const char *msg);
 
 #line 2048 "flex_lexer.cpp"
 

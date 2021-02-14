@@ -907,8 +907,8 @@ operand:
 		'(' expr ')' { $$ = $2; }
 	|	array_index
 	|	scalar_expr
-	|	binary_expr
 	|	unary_expr
+	|	binary_expr
 	|	case_expr
 	|	function_expr
 	|	extract_expr
