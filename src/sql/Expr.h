@@ -1,6 +1,7 @@
 #ifndef SQLPARSER_EXPR_H
 #define SQLPARSER_EXPR_H
 
+#include <climits>
 #include <stdlib.h>
 #include <memory>
 #include <vector>
