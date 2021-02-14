@@ -1,4 +1,4 @@
-#include <stdio.h>
+#include <climits>
 
 #include "thirdparty/microtest/microtest.h"
 #include "sql_asserts.h"
