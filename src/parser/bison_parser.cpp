@@ -1,4 +1,4 @@
-/* A Bison parser, made by GNU Bison 3.6.4.  */
+/* A Bison parser, made by GNU Bison 3.6.2.  */
 
 /* Bison implementation for Yacc-like parsers in C
 
@@ -49,7 +49,7 @@
 #define YYBISON 1
 
 /* Bison version.  */
-#define YYBISON_VERSION "3.6.4"
+#define YYBISON_VERSION "3.6.2"
 
 /* Skeleton name.  */
 #define YYSKELETON_NAME "yacc.c"
@@ -1073,7 +1073,7 @@ static const yytype_uint8 yytranslate[] =
 };
 
 #if HSQL_DEBUG
-  /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
+  /* YYRLINEYYN -- Source line where rule number YYN was defined.  */
 static const yytype_int16 yyrline[] =
 {
        0,   269,   269,   290,   296,   305,   309,   313,   316,   319,
@@ -1213,7 +1213,7 @@ static const yytype_int16 yytoknum[] =
 #define yytable_value_is_error(Yyn) \
   ((Yyn) == YYTABLE_NINF)
 
-  /* YYPACT[STATE-NUM] -- Index in YYTABLE of the portion describing
+  /* YYPACTSTATE-NUM -- Index in YYTABLE of the portion describing
      STATE-NUM.  */
 static const yytype_int16 yypact[] =
 {
@@ -1267,7 +1267,7 @@ static const yytype_int16 yypact[] =
        2,   330,   327,  -318
 };
 
-  /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
+  /* YYDEFACTSTATE-NUM -- Default reduction number in state STATE-NUM.
      Performed when YYTABLE does not specify something else to do.  Zero
      means the default is an error.  */
 static const yytype_int16 yydefact[] =
@@ -1290,7 +1290,7 @@ static const yytype_int16 yydefact[] =
       88,   112,    85,    84,    86,    96,    92,     0,   112,     0,
        0,    90,    33,     0,    48,     0,   240,     0,     0,   202,
        0,     0,     0,     0,     0,     0,     0,   204,     0,   105,
-     134,   141,   142,   143,   136,   138,   144,   137,   157,   145,
+     134,   141,   143,   142,   136,   138,   144,   137,   157,   145,
      146,   147,   148,   140,   135,   150,   151,     0,   261,     0,
        0,    74,     0,     0,    77,     0,    35,    40,    23,     0,
       21,   103,   101,   127,   238,   126,     0,   111,   113,   118,
@@ -1322,7 +1322,7 @@ static const yytype_int16 yydefact[] =
      109,   202,     0,   247
 };
 
-  /* YYPGOTO[NTERM-NUM].  */
+  /* YYPGOTONTERM-NUM.  */
 static const yytype_int16 yypgoto[] =
 {
     -318,  -318,  -318,   422,  -318,   470,  -318,   217,  -318,   166,
@@ -1338,7 +1338,7 @@ static const yytype_int16 yypgoto[] =
      443,  -318,  -318,  -318,  -318,    80
 };
 
-  /* YYDEFGOTO[NTERM-NUM].  */
+  /* YYDEFGOTONTERM-NUM.  */
 static const yytype_int16 yydefgoto[] =
 {
       -1,    18,    19,    20,    21,    66,   209,   210,    22,    59,
@@ -1354,7 +1354,7 @@ static const yytype_int16 yydefgoto[] =
       57,   373,   415,   468,    64,   199
 };
 
-  /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
+  /* YYTABLEYYPACT[STATE-NUM] -- What to do in state STATE-NUM.  If
      positive, shift that token.  If negative, reduce the rule whose
      number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_int16 yytable[] =
@@ -1511,7 +1511,7 @@ static const yytype_int16 yycheck[] =
       -1,   161
 };
 
-  /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
+  /* YYSTOSSTATE-NUM -- The (internal number of the) accessing
      symbol of state STATE-NUM.  */
 static const yytype_int16 yystos[] =
 {
@@ -1565,7 +1565,7 @@ static const yytype_int16 yystos[] =
      229,     3,   247,   164
 };
 
-  /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
+  /* YYR1YYN -- Symbol number of symbol that rule YYN derives.  */
 static const yytype_int16 yyr1[] =
 {
        0,   169,   170,   171,   171,   172,   172,   172,   172,   172,
@@ -1597,7 +1597,7 @@ static const yytype_int16 yyr1[] =
      273,   274,   274
 };
 
-  /* YYR2[YYN] -- Number of symbols on the right hand side of rule YYN.  */
+  /* YYR2YYN -- Number of symbols on the right hand side of rule YYN.  */
 static const yytype_int8 yyr2[] =
 {
        0,     2,     2,     1,     3,     2,     2,     1,     1,     1,
