@@ -16,12 +16,18 @@ namespace hsql {
 
   // Move constructor.
   SQLParserResult::SQLParserResult(SQLParserResult&& moved) {
+    *this = std::forward<SQLParserResult>(moved);
+  }
+
+  SQLParserResult &SQLParserResult::operator=(SQLParserResult&& moved)
+  {
     isValid_ = moved.isValid_;
     errorMsg_ = moved.errorMsg_;
     statements_ = std::move(moved.statements_);
 
     moved.errorMsg_ = nullptr;
     moved.reset();
+    return *this;
   }
 
   SQLParserResult::~SQLParserResult() {
