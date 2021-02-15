@@ -161,6 +161,19 @@ namespace hsql {
     }
   }
 
+  void printOrderBy(const std::vector<OrderDescription*>* expr, uintmax_t numIndent) {
+    if (!expr) return;
+    for (const auto& order_description : *expr) {
+      printExpression(order_description->expr, numIndent);
+      if (order_description->type == kOrderAsc) {
+          inprint("ascending", numIndent);
+      }
+      else {
+          inprint("descending", numIndent);
+      }
+    }
+  }
+
   void printSelectStatementInfo(const SelectStatement* stmt, uintmax_t numIndent) {
     inprint("SelectStatement", numIndent);
     inprint("Fields:", numIndent + 1);
@@ -203,9 +216,7 @@ namespace hsql {
 
         if (setOperation->resultOrder != nullptr) {
           inprint("SetResultOrderBy:", numIndent + 1);
-          printExpression(setOperation->resultOrder->at(0)->expr, numIndent + 2);
-          if (setOperation->resultOrder->at(0)->type == kOrderAsc) inprint("ascending", numIndent + 2);
-          else inprint("descending", numIndent + 2);
+          printOrderBy(setOperation->resultOrder, numIndent + 2);
         }
 
         if (setOperation->resultLimit != nullptr) {
@@ -224,9 +235,7 @@ namespace hsql {
 
     if (stmt->order != nullptr) {
       inprint("OrderBy:", numIndent + 1);
-      printExpression(stmt->order->at(0)->expr, numIndent + 2);
-      if (stmt->order->at(0)->type == kOrderAsc) inprint("ascending", numIndent + 2);
-      else inprint("descending", numIndent + 2);
+      printOrderBy(stmt->order, numIndent + 2);
     }
 
     if (stmt->limit != nullptr && stmt->limit->limit != nullptr) {
