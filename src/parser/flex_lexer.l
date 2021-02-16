@@ -12,6 +12,7 @@
 
 #include "../sql/Expr.h"
 #include "bison_parser.h"
+#include <climits>
 #include <stdio.h>
 #include <sstream>
 
@@ -208,14 +209,29 @@ COMMIT      TOKEN(COMMIT)
 
 [-+*/(){},.;<>=^%:?[\]|]	{ return yytext[0]; }
 
--?[0-9]+"."[0-9]* |
+[0-9]+"."[0-9]* |
 "."[0-9]*	{
 	yylval->fval = atof(yytext);
 	return SQL_FLOATVAL;
 }
 
--?[0-9]+	{
-	yylval->ival = atol(yytext);
+	/* 
+	 * Regularly, negative literals are treated as <unary minus> <positive literal>. This does not work for LLONG_MIN, as it has no 
+	 * positive equivalent. We thus match for LLONG_MIN specifically. This is not an issue for floats, where
+	 *   numeric_limits<double>::lowest() == -numeric_limits<double>::max();
+	 */
+-9223372036854775808 {
+	yylval->ival = LLONG_MIN;
+	return SQL_INTVAL;
+}
+
+[0-9]+ {
+	errno = 0;
+	yylval->ival = strtoll(yytext, nullptr, 0);
+	if (errno) {
+		return fprintf(stderr, "[SQL-Lexer-Error] Integer cannot be parsed - is it out of range?");
+		return 0;
+	}
 	return SQL_INTVAL;
 }
 
