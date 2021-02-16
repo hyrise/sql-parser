@@ -20,3 +20,5 @@
 !WITH a AS (WITH b AS (SELECT 1) SELECT 1) SELECT 1; # We do not support nested WITH clauses
 !WITH a AS (SELECT ) b AS (SELECT ) SELECT 1; # Missing comma between WITH descriptions
 !BEGIN TRANSACTION transName; # Transaction naming is currently not supported
+!SELECT -9223372036854775809; # Out of int64_t range
+!SELECT 9223372036854775808; # Out of int64_t range

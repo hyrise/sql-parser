@@ -1,4 +1,4 @@
-
+#include <climits>
 
 #include "thirdparty/microtest/microtest.h"
 #include "sql_asserts.h"
@@ -55,6 +55,69 @@ TEST(SelectExprTest) {
   ASSERT_STREQ(stmt->selectList->at(2)->exprList->at(1)->exprList->at(0)->getName(), "un");
 }
 
+TEST(SelectUnaryMinusTest) {
+  TEST_PARSE_SINGLE_SQL(
+    "SELECT 10 - 20, 10 + -20, 10 +-20, 10+-20, 9223372036854775807, -9223372036854775808, 10-5.2, 10+-5.2",
+    kStmtSelect,
+    SelectStatement,
+    result,
+    stmt);
+
+  ASSERT_EQ(stmt->selectList->size(), 8);
+
+  ASSERT_EQ(stmt->selectList->at(0)->type, kExprOperator);
+  ASSERT_EQ(stmt->selectList->at(0)->opType, kOpMinus);
+  ASSERT_EQ(stmt->selectList->at(0)->expr->type, kExprLiteralInt);
+  ASSERT_EQ(stmt->selectList->at(0)->expr->ival, 10);
+  ASSERT_EQ(stmt->selectList->at(0)->expr2->type, kExprLiteralInt);
+  ASSERT_EQ(stmt->selectList->at(0)->expr2->ival, 20);
+
+  ASSERT_EQ(stmt->selectList->at(1)->type, kExprOperator);
+  ASSERT_EQ(stmt->selectList->at(1)->opType, kOpPlus);
+  ASSERT_EQ(stmt->selectList->at(1)->expr->ival, 10);
+  ASSERT_EQ(stmt->selectList->at(1)->expr2->type, kExprOperator);
+  ASSERT_EQ(stmt->selectList->at(1)->expr2->opType, kOpUnaryMinus);
+  ASSERT_EQ(stmt->selectList->at(1)->expr2->expr->type, kExprLiteralInt);
+  ASSERT_EQ(stmt->selectList->at(1)->expr2->expr->ival, 20);
+
+  ASSERT_EQ(stmt->selectList->at(2)->type, kExprOperator);
+  ASSERT_EQ(stmt->selectList->at(2)->opType, kOpPlus);
+  ASSERT_EQ(stmt->selectList->at(2)->expr->ival, 10);
+  ASSERT_EQ(stmt->selectList->at(2)->expr2->type, kExprOperator);
+  ASSERT_EQ(stmt->selectList->at(2)->expr2->opType, kOpUnaryMinus);
+  ASSERT_EQ(stmt->selectList->at(2)->expr2->expr->type, kExprLiteralInt);
+  ASSERT_EQ(stmt->selectList->at(2)->expr2->expr->ival, 20);
+
+  ASSERT_EQ(stmt->selectList->at(3)->type, kExprOperator);
+  ASSERT_EQ(stmt->selectList->at(3)->opType, kOpPlus);
+  ASSERT_EQ(stmt->selectList->at(3)->expr->ival, 10);
+  ASSERT_EQ(stmt->selectList->at(3)->expr2->type, kExprOperator);
+  ASSERT_EQ(stmt->selectList->at(3)->expr2->opType, kOpUnaryMinus);
+  ASSERT_EQ(stmt->selectList->at(3)->expr2->expr->type, kExprLiteralInt);
+  ASSERT_EQ(stmt->selectList->at(3)->expr2->expr->ival, 20);
+
+  ASSERT_EQ(stmt->selectList->at(4)->type, kExprLiteralInt);
+  ASSERT_EQ(stmt->selectList->at(4)->ival, LLONG_MAX);
+
+  ASSERT_EQ(stmt->selectList->at(5)->type, kExprLiteralInt);
+  ASSERT_EQ(stmt->selectList->at(5)->ival, LLONG_MIN);
+
+  ASSERT_EQ(stmt->selectList->at(6)->type, kExprOperator);
+  ASSERT_EQ(stmt->selectList->at(6)->opType, kOpMinus);
+  ASSERT_EQ(stmt->selectList->at(6)->expr->type, kExprLiteralInt);
+  ASSERT_EQ(stmt->selectList->at(6)->expr->ival, 10);
+  ASSERT_EQ(stmt->selectList->at(6)->expr2->type, kExprLiteralFloat);
+  ASSERT_EQ(stmt->selectList->at(6)->expr2->fval, 5.2);
+
+  ASSERT_EQ(stmt->selectList->at(7)->type, kExprOperator);
+  ASSERT_EQ(stmt->selectList->at(7)->opType, kOpPlus);
+  ASSERT_EQ(stmt->selectList->at(7)->expr->ival, 10);
+  ASSERT_EQ(stmt->selectList->at(7)->expr2->type, kExprOperator);
+  ASSERT_EQ(stmt->selectList->at(7)->expr2->opType, kOpUnaryMinus);
+  ASSERT_EQ(stmt->selectList->at(7)->expr2->expr->type, kExprLiteralFloat);
+  ASSERT_EQ(stmt->selectList->at(7)->expr2->expr->fval, 5.2);
+}
+
 TEST(SelectSubstrTest) {
   TEST_PARSE_SINGLE_SQL(
           "SELECT SUBSTR(a, 3, 5) FROM students;",
@@ -100,8 +163,9 @@ TEST(SelectHavingTest) {
   ASSERT_EQ(group->columns->size(), 1);
   ASSERT_EQ(group->having->opType, kOpLess);
   ASSERT(group->having->expr->isType(kExprFunctionRef));
-  ASSERT(group->having->expr2->isType(kExprLiteralFloat));
-  ASSERT_EQ(group->having->expr2->fval, -2.0);
+  ASSERT(group->having->expr2->isType(kExprOperator));
+  ASSERT_EQ(group->having->expr2->opType, kOpUnaryMinus);
+  ASSERT_EQ(group->having->expr2->expr->fval, 2.0);
 }
 
 
@@ -164,7 +228,7 @@ TEST(OrderByTest) {
 
 TEST(SelectBetweenTest) {
   TEST_PARSE_SINGLE_SQL(
-    "SELECT grade, city FROM students WHERE grade BETWEEN -1 and c;",
+    "SELECT grade, city FROM students WHERE grade BETWEEN 1 and c;",
     kStmtSelect,
     SelectStatement,
     result,
@@ -181,7 +245,7 @@ TEST(SelectBetweenTest) {
 
   ASSERT_EQ(where->exprList->size(), 2);
   ASSERT(where->exprList->at(0)->isType(kExprLiteralInt));
-  ASSERT_EQ(where->exprList->at(0)->ival, -1);
+  ASSERT_EQ(where->exprList->at(0)->ival, 1);
   ASSERT(where->exprList->at(1)->isType(kExprColumnRef));
   ASSERT_STREQ(where->exprList->at(1)->getName(), "c");
 }
