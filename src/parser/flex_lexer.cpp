@@ -3193,7 +3193,7 @@ YY_RULE_SETUP
 case 154:
 YY_RULE_SETUP
 #line 249 "flex_lexer.l"
-{ BEGIN singlequotedstring; strbuf = std::stringstream{}; }
+{ BEGIN singlequotedstring; strbuf.clear(); strbuf.str(""); }  // Clear strbuf manually, see #170
 	YY_BREAK
 case 155:
 YY_RULE_SETUP
