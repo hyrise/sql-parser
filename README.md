@@ -66,9 +66,10 @@ We strongly encourage you to contribute to this project! If you want to contribu
 HYRISE sql-parser is licensed as open source after the MIT License which is declared in the LICENSE file of this project.
 
 
-## Contributers
+## Contributors
 
 The following people contributed to HYRISE sql-parser in various forms.
 
 * Pedro Flemming ([@torpedro](https://github.com/torpedro))
 * David Schwalb ([@schwald](https://github.com/schwald))
+* Markus Dreseler ([@mrks](https://github.com/mrks))
