@@ -18,6 +18,7 @@ enum ExprType {
     kExprLiteralString,
     kExprLiteralInt,
     kExprLiteralNull,
+    kExprLiteralDate,
     kExprStar,
     kExprParameter,
     kExprColumnRef,
@@ -149,6 +150,8 @@ struct Expr {
     static Expr* makeLiteral(bool val);
 
     static Expr* makeNullLiteral();
+
+    static Expr* makeDateLiteral(char* val);
 
     static Expr* makeColumnRef(char* name);
 

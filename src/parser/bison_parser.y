@@ -209,7 +209,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 %type <table>		    join_clause table_ref_name_no_alias
 %type <expr> 		    expr operand scalar_expr unary_expr binary_expr logic_expr exists_expr extract_expr cast_expr
 %type <expr>		    function_expr between_expr expr_alias param_expr
-%type <expr> 		    column_name literal int_literal num_literal string_literal bool_literal
+%type <expr> 		    column_name literal int_literal num_literal string_literal bool_literal date_literal
 %type <expr> 		    comp_expr opt_where join_condition opt_having case_expr case_list in_expr hint
 %type <expr> 		    array_expr array_index null_literal
 %type <limit>		    opt_limit opt_top
@@ -1031,6 +1031,7 @@ literal:
 	|	bool_literal
 	|	num_literal
 	|	null_literal
+	|	date_literal
 	|	param_expr
 	;
 
@@ -1054,6 +1055,10 @@ int_literal:
 
 null_literal:
 	    	NULL { $$ = Expr::makeNullLiteral(); }
+	;
+
+date_literal:
+		DATE STRING { $$ = Expr::makeDateLiteral($2); }
 	;
 
 param_expr:
