@@ -4342,7 +4342,7 @@ yyreduce:
 			int day{0}, month{0}, year{0}, chars_parsed{0};
 			// If the whole string is parsed, chars_parsed points to the terminating null byte after the last character
 			if (sscanf((yyvsp[0].sval), "%4d-%2d-%2d%n", &day, &month, &year, &chars_parsed) != 3 || (yyvsp[0].sval)[chars_parsed] != 0) {
-			    yyerror(&yyloc, result, scanner, "Found incorrect date format. Expected format: YYYY-MM-DD");
+				yyerror(&yyloc, result, scanner, "Found incorrect date format. Expected format: YYYY-MM-DD");
 				YYERROR;
 			}
 			(yyval.expr) = Expr::makeDateLiteral((yyvsp[0].sval));
