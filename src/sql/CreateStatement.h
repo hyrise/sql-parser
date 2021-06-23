@@ -23,7 +23,8 @@ namespace hsql {
   enum CreateType {
     kCreateTable,
     kCreateTableFromTbl, // Hyrise file format
-    kCreateView
+    kCreateView,
+    kCreateIndex
   };
 
   // Represents SQL Create statements.
@@ -37,6 +38,7 @@ namespace hsql {
     char* filePath;   // default: nullptr
     char* schema;     // default: nullptr
     char* tableName;  // default: nullptr
+    char* indexName;  // default: nullptr
     std::vector<ColumnDefinition*>* columns; // default: nullptr
     std::vector<char*>* viewColumns;
     SelectStatement* select;
