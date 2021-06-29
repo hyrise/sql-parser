@@ -202,6 +202,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 %type <drop_stmt>	    drop_statement
 %type <show_stmt>	    show_statement
 %type <table_name>      table_name
+%type <sval>		opt_index_name
 %type <sval> 		    file_path prepare_target_query
 %type <bval> 		    opt_not_exists opt_exists opt_distinct opt_column_nullable opt_all
 %type <uval>		    opt_join_type
@@ -526,6 +527,13 @@ create_statement:
 			$$->tableName = $4.name;
 			$$->select = $6;
 		}
+	|	CREATE INDEX opt_index_name opt_not_exists ON table_name '(' ident_commalist ')' {
+			$$ = new CreateStatement(kCreateIndex);
+			$$->indexName = $3;
+			$$->ifNotExists = $4;
+			$$->tableName = $6.name;
+			$$->indexColumns = $8;
+         	}
 	|	CREATE VIEW opt_not_exists table_name opt_column_list AS select_statement {
 			$$ = new CreateStatement(kCreateView);
 			$$->ifNotExists = $3;
@@ -1123,6 +1131,11 @@ table_ref_name_no_alias:
 table_name:
 		IDENTIFIER                { $$.schema = nullptr; $$.name = $1;}
 	|	IDENTIFIER '.' IDENTIFIER { $$.schema = $1; $$.name = $3; }
+	;
+
+opt_index_name:
+		IDENTIFIER			{ $$ = $1;}
+	|	/* empty */			{ $$ = nullptr;}
 	;
 
 
