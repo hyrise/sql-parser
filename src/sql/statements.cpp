@@ -60,6 +60,9 @@ namespace hsql {
       case DataType::DATE:
         stream << "DATE";
         break;
+      case DataType::TIME:
+        stream << "TIME";
+        break;
     }
     return stream;
   }

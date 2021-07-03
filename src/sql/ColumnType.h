@@ -14,7 +14,8 @@ namespace hsql {
     VARCHAR,
     TEXT,
     DATETIME,
-    DATE
+    DATE,
+    TIME,
   };
 
   // Represents the type of a column, e.g., FLOAT or VARCHAR(10)

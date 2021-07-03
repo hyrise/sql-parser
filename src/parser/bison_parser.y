@@ -169,7 +169,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 %token DEALLOCATE PARAMETERS INTERSECT TEMPORARY TIMESTAMP
 %token DISTINCT NVARCHAR RESTRICT TRUNCATE ANALYZE BETWEEN
 %token CASCADE COLUMNS CONTROL DEFAULT EXECUTE EXPLAIN
-%token INTEGER NATURAL PREPARE PRIMARY SCHEMAS CHARACTER VARYING
+%token INTEGER NATURAL PREPARE PRIMARY SCHEMAS CHARACTER VARYING REAL DECIMAL
 %token SPATIAL VARCHAR VIRTUAL DESCRIBE BEFORE COLUMN CREATE DELETE DIRECT
 %token DOUBLE ESCAPE EXCEPT EXISTS EXTRACT CAST FORMAT GLOBAL HAVING IMPORT
 %token INSERT ISNULL OFFSET RENAME SCHEMA SELECT SORTED
@@ -566,11 +566,14 @@ column_type:
 	|	INTEGER { $$ = ColumnType{DataType::INT}; }
 	|	LONG { $$ = ColumnType{DataType::LONG}; }
 	|	FLOAT { $$ = ColumnType{DataType::FLOAT}; }
+	|   DECIMAL '(' INTVAL ',' INTVAL ')' { $$ = ColumnType{DataType::FLOAT}; }
 	|	DOUBLE { $$ = ColumnType{DataType::DOUBLE}; }
+	|	REAL { $$ = ColumnType{DataType::FLOAT}; }
 	|	VARCHAR '(' INTVAL ')' { $$ = ColumnType{DataType::VARCHAR, $3}; }
 	|	CHARACTER VARYING'(' INTVAL ')' { $$ = ColumnType{DataType::VARCHAR, $4}; }
 	|	CHAR '(' INTVAL ')' { $$ = ColumnType{DataType::CHAR, $3}; }
 	|	TEXT { $$ = ColumnType{DataType::TEXT}; }
+	|   TIME { $$ = ColumnType{DataType::TIME}; }
 	|	DATETIME { $$ = ColumnType{DataType::DATETIME}; }
 	|	DATE { $$ = ColumnType{DataType::DATE}; }
 	;
