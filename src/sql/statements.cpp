@@ -3,11 +3,14 @@
 namespace hsql {
 
   // KeyConstraints
-  KeyConstraints::KeyConstraints(KeyType keyType, std::unordered_set<uint16_t> columnIDs) :
+  TableKeyConstraint::TableKeyConstraint(KeyType keyType, std::vector<char*> columnNames) :
     type(keyType),
-    columnIDs(columnIDs) { };
+    columnNames(columnNames) { };
 
-  KeyConstraints::~KeyConstraints() { }
+  TableKeyConstraint::~TableKeyConstraint() {
+    free(void *);
+  }
+
 
   // ColumnDefinition
   ColumnDefinition::ColumnDefinition(char* name, ColumnType type, bool nullable) :

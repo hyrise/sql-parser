@@ -594,7 +594,7 @@ opt_table_key_constraints:
 	|	/* empty */ {$$ = new std::vector<TableKeyConstraint>(); }
 	;
 
-table_key_constaint:
+table_key_constraint:
         ',' PRIMARY KEY '(' ident_commalist ')'  { $$ = TableKeyConstraint{KeyType::PRIMARY_KEY, $5}; }
     |   ',' UNIQUE '(' ident_commalist ')'  { $$ = TableKeyConstraint{KeyType::UNIQUE, $4}; }
 /******************************
