@@ -98,11 +98,7 @@ namespace hsql {
     schema(nullptr),
     tableName(nullptr),
     columns(nullptr),
-<<<<<<< HEAD
     tableKeyConstraints(nullptr),
-=======
-    keyConstraints(nullptr),
->>>>>>> adds keyconstraint functionality
     viewColumns(nullptr),
     select(nullptr) {};
 
@@ -119,19 +115,11 @@ namespace hsql {
       delete columns;
     }
 
-<<<<<<< HEAD
     if (tableKeyConstraints != nullptr) {
       for (TableKeyConstraint* def : *tableKeyConstraints) {
         delete def;
       }
       delete tableKeyConstraints;
-=======
-    if (keyConstraints != nullptr) {
-      for (Keyconstraints* def : *keyConstraints) {
-        delete def;
-      }
-      delete keyConstraints;
->>>>>>> adds keyconstraint functionality
     }
 
     if (viewColumns != nullptr) {
