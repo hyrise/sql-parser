@@ -566,11 +566,11 @@ column_type:
 	|	INTEGER { $$ = ColumnType{DataType::INT}; }
 	|	LONG { $$ = ColumnType{DataType::LONG}; }
 	|	FLOAT { $$ = ColumnType{DataType::FLOAT}; }
-	|   DECIMAL '(' INTVAL ',' INTVAL ')' { $$ = ColumnType{DataType::FLOAT}; }
+	|   DECIMAL '(' INTVAL ',' INTVAL ')' { $$ = ColumnType{DataType::DECIMAL}; }
 	|	DOUBLE { $$ = ColumnType{DataType::DOUBLE}; }
-	|	REAL { $$ = ColumnType{DataType::FLOAT}; }
+	|	REAL { $$ = ColumnType{DataType::REAL}; }
 	|	VARCHAR '(' INTVAL ')' { $$ = ColumnType{DataType::VARCHAR, $3}; }
-	|	CHARACTER VARYING'(' INTVAL ')' { $$ = ColumnType{DataType::VARCHAR, $4}; }
+	|	CHARACTER VARYING'(' INTVAL ')' { $$ = ColumnType{DataType::VARCHAR_VARYING, $4}; }
 	|	CHAR '(' INTVAL ')' { $$ = ColumnType{DataType::CHAR, $3}; }
 	|	TEXT { $$ = ColumnType{DataType::TEXT}; }
 	|   TIME { $$ = ColumnType{DataType::TIME}; }
