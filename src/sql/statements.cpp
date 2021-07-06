@@ -2,6 +2,13 @@
 
 namespace hsql {
 
+  // KeyConstraints
+  KeyConstraints::KeyConstraints(KeyType keyType, std::unordered_set<uint16_t> columnIDs) :
+    type(keyType),
+    columnIDs(columnIDs) { };
+
+  KeyConstraints::~KeyConstraints() { }
+
   // ColumnDefinition
   ColumnDefinition::ColumnDefinition(char* name, ColumnType type, bool nullable) :
     name(name),
@@ -77,6 +84,7 @@ namespace hsql {
     schema(nullptr),
     tableName(nullptr),
     columns(nullptr),
+    keyConstraints(nullptr),
     viewColumns(nullptr),
     select(nullptr) {};
 
@@ -91,6 +99,13 @@ namespace hsql {
         delete def;
       }
       delete columns;
+    }
+
+    if (keyConstraints != nullptr) {
+      for (Keyconstraints* def : *keyConstraints) {
+        delete def;
+      }
+      delete keyConstraints;
     }
 
     if (viewColumns != nullptr) {
