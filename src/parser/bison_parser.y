@@ -122,6 +122,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 	hsql::DatetimeField datetime_field;
 	hsql::LimitDescription* limit;
 	hsql::ColumnDefinition* column_t;
+	hsql::TableKeyConstraint table_key_constraint_t;
 	hsql::ColumnType column_type_t;
 	hsql::ImportType import_type_t;
 	hsql::GroupByDescription* group_t;
@@ -138,6 +139,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 	std::vector<hsql::Expr*>* expr_vec;
 	std::vector<hsql::OrderDescription*>* order_vec;
 	std::vector<hsql::WithDescription*>* with_description_vec;
+	std::vector<hsql::TableKeyConstraint> table_key_constraint_vec;
 }
 
 
@@ -220,6 +222,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 %type <datetime_field>	datetime_field
 %type <column_t>	    column_def
 %type <column_type_t>   column_type
+%type <table_key_constraint_t> table_key_constraint
 %type <update_t>	    update_clause
 %type <group_t>		    opt_group
 %type <alias_t>		    opt_table_alias table_alias opt_alias alias
@@ -236,6 +239,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 %type <with_description_vec> 	opt_with_clause with_clause with_description_list
 %type <update_vec>		update_clause_commalist
 %type <column_vec>		column_def_commalist
+%type <table_key_constraint_vec> opt_table_key_constraints
 
 /******************************
  ** Token Precedence and Associativity
@@ -514,7 +518,7 @@ create_statement:
 			free($6);
 			$$->filePath = $8;
 		}
-	|	CREATE TABLE opt_not_exists table_name '(' column_def_commalist ')' {
+	|	CREATE TABLE opt_not_exists table_name '(' column_def_commalist opt_table_key_constraints ')' {
 			$$ = new CreateStatement(kCreateTable);
 			$$->ifNotExists = $3;
 			$$->schema = $4.schema;
@@ -584,6 +588,15 @@ opt_column_nullable:
 	|	/* empty */ { $$ = false; }
 	;
 
+opt_table_key_constraints:
+		table_key_constraint {$$ = new std::vector<TableKeyConstraint>(); $$->push_back($1); }
+	|	opt_table_key_constraints table_key_constraint {  $1->push_back($2); $$ = $1; }
+	|	/* empty */ {$$ = new std::vector<TableKeyConstraint>(); }
+	;
+
+table_key_constaint:
+        ',' PRIMARY KEY '(' ident_commalist ')'  { $$ = TableKeyConstraint{KeyType::PRIMARY_KEY, $5}; }
+    |   ',' UNIQUE '(' ident_commalist ')'  { $$ = TableKeyConstraint{KeyType::UNIQUE, $4}; }
 /******************************
  * Drop Statement
  * DROP TABLE students;
