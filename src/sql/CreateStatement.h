@@ -54,7 +54,11 @@ namespace hsql {
     char* indexName;  // default: nullptr
     std::vector<char*>* indexColumns;
     std::vector<ColumnDefinition*>* columns; // default: nullptr
+<<<<<<< HEAD
     std::vector<TableKeyConstraint*>* tableKeyConstraints; // default: nullptr
+=======
+    std::vector<KeyConstraints>* keyConstraints; // default: nullptr
+>>>>>>> adds keyconstraint functionality
     std::vector<char*>* viewColumns;
     SelectStatement* select;
   };
