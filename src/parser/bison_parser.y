@@ -122,11 +122,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 	hsql::DatetimeField datetime_field;
 	hsql::LimitDescription* limit;
 	hsql::ColumnDefinition* column_t;
-<<<<<<< HEAD
 	hsql::TableKeyConstraint* table_key_constraint_t;
-=======
-	hsql::TableKeyConstraint table_key_constraint_t;
->>>>>>>  added tablekeyconstraint to parser
 	hsql::ColumnType column_type_t;
 	hsql::ImportType import_type_t;
 	hsql::GroupByDescription* group_t;
@@ -594,7 +590,6 @@ opt_column_nullable:
 	;
 
 opt_table_key_constraints:
-<<<<<<< HEAD
 		table_key_constraint {$$ = new std::vector<TableKeyConstraint*>(); $$->push_back($1); }
 	|	opt_table_key_constraints table_key_constraint {  $1->push_back($2); $$ = $1; }
 	|	/* empty */ {$$ = new std::vector<TableKeyConstraint*>(); }
@@ -603,16 +598,7 @@ opt_table_key_constraints:
 table_key_constraint:
         ',' PRIMARY KEY '(' ident_commalist ')'  { $$ = new TableKeyConstraint(KeyType::PRIMARY_KEY, $5); }
     |   ',' UNIQUE '(' ident_commalist ')'  { $$ = new TableKeyConstraint(KeyType::UNIQUE, $4); }
-=======
-		table_key_constraint {$$ = new std::vector<TableKeyConstraint>(); $$->push_back($1); }
-	|	opt_table_key_constraints table_key_constraint {  $1->push_back($2); $$ = $1; }
-	|	/* empty */ {$$ = new std::vector<TableKeyConstraint>(); }
-	;
 
-table_key_constraint:
-        ',' PRIMARY KEY '(' ident_commalist ')'  { $$ = TableKeyConstraint{KeyType::PRIMARY_KEY, $5}; }
-    |   ',' UNIQUE '(' ident_commalist ')'  { $$ = TableKeyConstraint{KeyType::UNIQUE, $4}; }
->>>>>>>  added tablekeyconstraint to parser
 /******************************
  * Drop Statement
  * DROP TABLE students;
