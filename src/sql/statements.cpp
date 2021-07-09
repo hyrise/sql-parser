@@ -3,12 +3,15 @@
 namespace hsql {
 
   // KeyConstraints
-  TableKeyConstraint::TableKeyConstraint(KeyType keyType, std::vector<char*> columnNames) :
+  TableKeyConstraint::TableKeyConstraint(KeyType keyType, std::vector<char*>* columnNames) :
     type(keyType),
     columnNames(columnNames) { };
 
   TableKeyConstraint::~TableKeyConstraint() {
-    free(void *);
+    for (char* def : *columnNames) {
+      delete def;
+    }
+    delete columnNames;
   }
 
 
@@ -87,7 +90,7 @@ namespace hsql {
     schema(nullptr),
     tableName(nullptr),
     columns(nullptr),
-    keyConstraints(nullptr),
+    tableKeyConstraints(nullptr),
     viewColumns(nullptr),
     select(nullptr) {};
 
@@ -104,11 +107,11 @@ namespace hsql {
       delete columns;
     }
 
-    if (keyConstraints != nullptr) {
-      for (Keyconstraints* def : *keyConstraints) {
+    if (tableKeyConstraints != nullptr) {
+      for (TableKeyConstraint* def : *tableKeyConstraints) {
         delete def;
       }
-      delete keyConstraints;
+      delete tableKeyConstraints;
     }
 
     if (viewColumns != nullptr) {

@@ -122,7 +122,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 	hsql::DatetimeField datetime_field;
 	hsql::LimitDescription* limit;
 	hsql::ColumnDefinition* column_t;
-	hsql::TableKeyConstraint table_key_constraint_t;
+	hsql::TableKeyConstraint* table_key_constraint_t;
 	hsql::ColumnType column_type_t;
 	hsql::ImportType import_type_t;
 	hsql::GroupByDescription* group_t;
@@ -139,7 +139,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 	std::vector<hsql::Expr*>* expr_vec;
 	std::vector<hsql::OrderDescription*>* order_vec;
 	std::vector<hsql::WithDescription*>* with_description_vec;
-	std::vector<hsql::TableKeyConstraint> table_key_constraint_vec;
+	std::vector<hsql::TableKeyConstraint*>* table_key_constraint_vec;
 }
 
 
@@ -524,6 +524,7 @@ create_statement:
 			$$->schema = $4.schema;
 			$$->tableName = $4.name;
 			$$->columns = $6;
+			$$->tableKeyConstraints = $7;
 		}
 	|	CREATE TABLE opt_not_exists table_name AS select_statement {
 			$$ = new CreateStatement(kCreateTable);
@@ -589,14 +590,14 @@ opt_column_nullable:
 	;
 
 opt_table_key_constraints:
-		table_key_constraint {$$ = new std::vector<TableKeyConstraint>(); $$->push_back($1); }
+		table_key_constraint {$$ = new std::vector<TableKeyConstraint*>(); $$->push_back($1); }
 	|	opt_table_key_constraints table_key_constraint {  $1->push_back($2); $$ = $1; }
-	|	/* empty */ {$$ = new std::vector<TableKeyConstraint>(); }
+	|	/* empty */ {$$ = new std::vector<TableKeyConstraint*>(); }
 	;
 
 table_key_constraint:
-        ',' PRIMARY KEY '(' ident_commalist ')'  { $$ = TableKeyConstraint{KeyType::PRIMARY_KEY, $5}; }
-    |   ',' UNIQUE '(' ident_commalist ')'  { $$ = TableKeyConstraint{KeyType::UNIQUE, $4}; }
+        ',' PRIMARY KEY '(' ident_commalist ')'  { $$ = new TableKeyConstraint(KeyType::PRIMARY_KEY, $5); }
+    |   ',' UNIQUE '(' ident_commalist ')'  { $$ = new TableKeyConstraint(KeyType::UNIQUE, $4); }
 /******************************
  * Drop Statement
  * DROP TABLE students;
