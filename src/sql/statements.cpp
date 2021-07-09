@@ -3,9 +3,9 @@
 namespace hsql {
 
   // KeyConstraints
-  TableKeyConstraint::TableKeyConstraint(KeyType keyType, std::vector<char*>* columnNames) :
-    type(keyType),
-    columnNames(columnNames) { };
+  TableKeyConstraint::TableKeyConstraint(ConstraintType type, std::vector<char*>* columnNames) :
+    type(type),
+    columnNames(columnNames) {};
 
   TableKeyConstraint::~TableKeyConstraint() {
     for (char* def : *columnNames) {
@@ -16,10 +16,11 @@ namespace hsql {
 
 
   // ColumnDefinition
-  ColumnDefinition::ColumnDefinition(char* name, ColumnType type, bool nullable) :
+  ColumnDefinition::ColumnDefinition(char* name, ColumnType type, bool nullable, ConstraintType constraintType) :
     name(name),
     type(type),
-    nullable(nullable) {};
+    nullable(nullable),
+    constraintType(constraintType) {};
 
   ColumnDefinition::~ColumnDefinition() {
     free(name);

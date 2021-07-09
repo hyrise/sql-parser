@@ -123,6 +123,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 	hsql::LimitDescription* limit;
 	hsql::ColumnDefinition* column_t;
 	hsql::TableKeyConstraint* table_key_constraint_t;
+	hsql::ColumnConstraint column_constraint_t;
 	hsql::ColumnType column_type_t;
 	hsql::ImportType import_type_t;
 	hsql::GroupByDescription* group_t;
@@ -228,6 +229,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 %type <alias_t>		    opt_table_alias table_alias opt_alias alias
 %type <with_description_t>  with_description
 %type <set_operator_t>  set_operator set_type
+%type <column_constraint_t> opt_column_constraint
 
 // ImportType is used for compatibility reasons
 %type <import_type_t>	opt_file_type file_type
@@ -561,8 +563,8 @@ column_def_commalist:
 	;
 
 column_def:
-		IDENTIFIER column_type opt_column_nullable {
-			$$ = new ColumnDefinition($1, $2, $3);
+		IDENTIFIER column_type opt_column_nullable opt_column_constraint{
+			$$ = new ColumnDefinition($1, $2, $3, $4);
 		}
 	;
 
@@ -589,6 +591,12 @@ opt_column_nullable:
 	|	/* empty */ { $$ = false; }
 	;
 
+opt_column_constraint:
+        PRIMARY KEY { $$ = ConstraintType::PRIMARY_KEY }
+    |   UNIQUE { $$ = ConstraintType::UNIQUE }
+    |   /* empty */ { $$ = nullptr }
+    ;
+
 opt_table_key_constraints:
 		table_key_constraint {$$ = new std::vector<TableKeyConstraint*>(); $$->push_back($1); }
 	|	opt_table_key_constraints table_key_constraint {  $1->push_back($2); $$ = $1; }
@@ -596,8 +604,8 @@ opt_table_key_constraints:
 	;
 
 table_key_constraint:
-        ',' PRIMARY KEY '(' ident_commalist ')'  { $$ = new TableKeyConstraint(KeyType::PRIMARY_KEY, $5); }
-    |   ',' UNIQUE '(' ident_commalist ')'  { $$ = new TableKeyConstraint(KeyType::UNIQUE, $4); }
+        ',' PRIMARY KEY '(' ident_commalist ')'  { $$ = new TableKeyConstraint(ConstraintType::PRIMARY_KEY, $5); }
+    |   ',' UNIQUE '(' ident_commalist ')'  { $$ = new TableKeyConstraint(ConstraintType::UNIQUE, $4); }
 /******************************
  * Drop Statement
  * DROP TABLE students;
