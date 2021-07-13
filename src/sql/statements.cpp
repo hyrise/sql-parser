@@ -135,6 +135,20 @@ namespace hsql {
     free(name);
   }
 
+  // AlterStatement
+  AlterStatement::AlterStatement(AlterType type) :
+      SQLStatement(kStmtAlter),
+      type(type),
+      schema(nullptr),
+      name(nullptr),
+      column_name(nullptr) {}
+
+  AlterStatement::~AlterStatement() {
+    free(schema);
+    free(name);
+    free(column_name);
+}
+
   // TransactionStatement
   TransactionStatement::TransactionStatement(TransactionCommand command) :
     SQLStatement(kStmtTransaction),

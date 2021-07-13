@@ -108,6 +108,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 	hsql::DeleteStatement* 	delete_stmt;
 	hsql::UpdateStatement* 	update_stmt;
 	hsql::DropStatement*   	drop_stmt;
+	hsql::AlterStatement*   alter_stmt;
 	hsql::PrepareStatement* prep_stmt;
 	hsql::ExecuteStatement* exec_stmt;
 	hsql::ShowStatement*    show_stmt;
@@ -200,6 +201,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 %type <delete_stmt>     delete_statement truncate_statement
 %type <update_stmt>     update_statement
 %type <drop_stmt>	    drop_statement
+%type <alter_stmt>	    alter_statement
 %type <show_stmt>	    show_statement
 %type <table_name>      table_name
 %type <sval>		    opt_index_name
@@ -332,6 +334,7 @@ preparable_statement:
 	|	truncate_statement { $$ = $1; }
 	|	update_statement { $$ = $1; }
 	|	drop_statement { $$ = $1; }
+	|	alter_statement { $$ = $1; }
 	|	execute_statement { $$ = $1; }
 	|	transaction_statement { $$ = $1; }
 	;
@@ -618,6 +621,20 @@ drop_statement:
 opt_exists:
 		IF EXISTS   { $$ = true; }
 	|	/* empty */ { $$ = false; }
+	;
+
+/******************************
+ * ALTER Statement
+ * ALTER TABLE students DROP COLUMN name;
+ ******************************/
+
+alter_statement:
+		ALTER TABLE table_name DROP COLUMN column_name {
+			$$ = new AlterStatement(kAlterDropColumn);
+			$$->schema = $3.schema;
+			$$->name = $3.name;
+			$$->column_name = $6->name;
+		}
 	;
 
 /******************************

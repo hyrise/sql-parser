@@ -266,6 +266,7 @@ union HSQL_STYPE
 	hsql::DeleteStatement* 	delete_stmt;
 	hsql::UpdateStatement* 	update_stmt;
 	hsql::DropStatement*   	drop_stmt;
+	hsql::AlterStatement*   alter_stmt;
 	hsql::PrepareStatement* prep_stmt;
 	hsql::ExecuteStatement* exec_stmt;
 	hsql::ShowStatement*    show_stmt;
@@ -297,7 +298,7 @@ union HSQL_STYPE
 	std::vector<hsql::OrderDescription*>* order_vec;
 	std::vector<hsql::WithDescription*>* with_description_vec;
 
-#line 301 "bison_parser.h"
+#line 302 "bison_parser.h"
 
 };
 typedef union HSQL_STYPE HSQL_STYPE;
