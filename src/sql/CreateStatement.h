@@ -10,7 +10,7 @@
 namespace hsql {
   struct SelectStatement;
 
-  enum struct ConstraintType {PRIMARY_KEY, UNIQUE};
+  enum struct ConstraintType {PRIMARY_KEY, UNIQUE, NOT_SET};
 
   // Represents definition of a key constraint
   struct TableKeyConstraint {

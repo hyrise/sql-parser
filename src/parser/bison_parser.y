@@ -123,7 +123,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 	hsql::LimitDescription* limit;
 	hsql::ColumnDefinition* column_t;
 	hsql::TableKeyConstraint* table_key_constraint_t;
-	hsql::ColumnConstraint column_constraint_t;
+	hsql::ConstraintType column_constraint_t;
 	hsql::ColumnType column_type_t;
 	hsql::ImportType import_type_t;
 	hsql::GroupByDescription* group_t;
@@ -147,7 +147,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 /*********************************
  ** Destructor symbols
  *********************************/
-%destructor { } <fval> <ival> <uval> <bval> <order_type> <datetime_field> <column_type_t> <import_type_t>
+%destructor { } <fval> <ival> <uval> <bval> <order_type> <datetime_field> <column_type_t> <column_constraint_t> <import_type_t>
 %destructor { free( ($$.name) ); free( ($$.schema) ); } <table_name>
 %destructor { free( ($$) ); } <sval>
 %destructor {
@@ -592,9 +592,9 @@ opt_column_nullable:
 	;
 
 opt_column_constraint:
-        PRIMARY KEY { $$ = ConstraintType::PRIMARY_KEY }
-    |   UNIQUE { $$ = ConstraintType::UNIQUE }
-    |   /* empty */ { $$ = nullptr }
+        PRIMARY KEY { $$ = ConstraintType::PRIMARY_KEY; }
+    |   UNIQUE { $$ = ConstraintType::UNIQUE; }
+    |   /* empty */ { $$ = ConstraintType::NOT_SET; }
     ;
 
 opt_table_key_constraints:
