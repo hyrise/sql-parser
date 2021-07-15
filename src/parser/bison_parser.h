@@ -275,6 +275,7 @@ union HSQL_STYPE
 	hsql::LimitDescription* limit;
 	hsql::ColumnDefinition* column_t;
 	hsql::TableKeyConstraint* table_key_constraint_t;
+	hsql::ConstraintType column_constraint_t;
 	hsql::ColumnType column_type_t;
 	hsql::ImportType import_type_t;
 	hsql::GroupByDescription* group_t;
