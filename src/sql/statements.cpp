@@ -13,7 +13,6 @@ namespace hsql {
     }
     delete columnNames;
   }
-
   // ColumnDefinition
   ColumnDefinition::ColumnDefinition(char* name, ColumnType type, bool nullable) :
     name(name),

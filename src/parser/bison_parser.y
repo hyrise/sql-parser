@@ -598,7 +598,10 @@ opt_table_key_constraints:
 table_key_constraint:
         ',' PRIMARY KEY '(' ident_commalist ')'  { $$ = new TableKeyConstraint(KeyType::PRIMARY_KEY, $5); }
     |   ',' UNIQUE '(' ident_commalist ')'  { $$ = new TableKeyConstraint(KeyType::UNIQUE, $4); }
+<<<<<<< HEAD
 
+=======
+>>>>>>> b5663d5a2c6fa0722666dda054fb8bc1acb232a0
 /******************************
  * Drop Statement
  * DROP TABLE students;
