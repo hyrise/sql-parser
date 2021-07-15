@@ -51,6 +51,15 @@ namespace hsql {
       case DataType::VARCHAR:
         stream << "VARCHAR(" << column_type.length << ")";
         break;
+      case DataType::VARCHAR_VARYING:
+        stream << "VARCHAR_VARYING";
+        break;
+      case DataType::DECIMAL:
+        stream << "DECIMAL";
+        break;
+      case DataType::REAL:
+        stream << "REAL";
+        break;
       case DataType::TEXT:
         stream << "TEXT";
         break;
