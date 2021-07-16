@@ -182,6 +182,9 @@ namespace hsql {
 
   void printSelectStatementInfo(const SelectStatement* stmt, uintmax_t numIndent) {
     inprint("SelectStatement", numIndent);
+    if (stmt->selectDistinct) {
+      inprint("distinct", numIndent + 1);
+    }
     inprint("Fields:", numIndent + 1);
     for (Expr* expr : *stmt->selectList) printExpression(expr, numIndent + 2);
 
