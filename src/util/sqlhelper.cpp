@@ -301,6 +301,12 @@ namespace hsql {
     inprint("CreateStatement", numIndent);
     inprint(stmt->tableName, numIndent + 1);
     if (stmt->filePath) inprint(stmt->filePath, numIndent + 1);
+    if (stmt->columns) {
+      for (ColumnDefinition* column: *stmt->columns) {
+        inprint(column->name, numIndent + 2);
+        inprint(column->type, numIndent + 3);
+      }
+    }
   }
 
   void printInsertStatementInfo(const InsertStatement* stmt, uintmax_t numIndent) {
