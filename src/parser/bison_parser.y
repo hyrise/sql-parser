@@ -632,8 +632,8 @@ drop_statement:
 		}
 	|	DROP INDEX opt_exists index_name ON table_name {
     			$$ = new DropStatement(kDropIndex);
-    			$$->name = $5.name;
-    			$$->ifExists = $3
+    			$$->name = $6.name;
+    			$$->ifExists = $3;
     			$$->index_name = $4;
     		}
 	;
