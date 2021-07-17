@@ -535,10 +535,10 @@ create_statement:
 			$$->tableName = $4.name;
 			$$->select = $6;
 		}
-	|	CREATE INDEX opt_index_name opt_not_exists ON table_name '(' ident_commalist ')' {
+	|	CREATE INDEX opt_not_exists opt_index_name ON table_name '(' ident_commalist ')' {
 			$$ = new CreateStatement(kCreateIndex);
-			$$->indexName = $3;
-			$$->ifNotExists = $4;
+			$$->indexName = $4;
+			$$->ifNotExists = $3;
 			$$->tableName = $6.name;
 			$$->indexColumns = $8;
          	}
