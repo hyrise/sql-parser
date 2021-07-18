@@ -19,6 +19,7 @@ namespace hsql {
 
     AlterType type;
     char* schema;
+    bool if_exists;
     char* name;
     char* column_name;
   };

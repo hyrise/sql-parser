@@ -629,12 +629,18 @@ opt_exists:
  ******************************/
 
 alter_statement:
-		ALTER TABLE table_name DROP COLUMN column_name {
+		ALTER TABLE table_name DROP COLUMN opt_exists column_name {
 			$$ = new AlterStatement(kAlterDropColumn);
+			$$->if_exists = $6;
 			$$->schema = $3.schema;
 			$$->name = $3.name;
 			$$->column_name = $6->name;
 		}
+	;
+
+opt_exists:
+		IF EXISTS   { $$ = true; }
+	|	/* empty */ { $$ = false; }
 	;
 
 /******************************
