@@ -19,9 +19,6 @@ namespace hsql {
     DATETIME,
     DATE,
     TIME,
-    DECIMAL,
-    REAL,
-    VARCHAR_VARYING,
   };
 
   struct DecimalSpecification {
