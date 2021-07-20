@@ -288,6 +288,7 @@ union HSQL_STYPE
 	hsql::UpdateClause* update_t;
 	hsql::Alias* alias_t;
 	hsql::SetOperation* set_operator_t;
+	hsql::DecimalSpecification decimal_specification_t;
 
 	std::vector<hsql::SQLStatement*>* stmt_vec;
 
@@ -300,7 +301,7 @@ union HSQL_STYPE
 	std::vector<hsql::WithDescription*>* with_description_vec;
 	std::vector<hsql::TableKeyConstraint*>* table_key_constraint_vec;
 
-#line 304 "bison_parser.h"
+#line 305 "bison_parser.h"
 
 };
 typedef union HSQL_STYPE HSQL_STYPE;
