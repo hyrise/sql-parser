@@ -2,11 +2,23 @@
 
 namespace hsql {
 
+  // KeyConstraints
+  TableKeyConstraint::TableKeyConstraint(ConstraintType type, std::vector<char*>* columnNames) :
+    type(type),
+    columnNames(columnNames) {};
+
+  TableKeyConstraint::~TableKeyConstraint() {
+    for (char* def : *columnNames) {
+      delete def;
+    }
+    delete columnNames;
+  }
   // ColumnDefinition
-  ColumnDefinition::ColumnDefinition(char* name, ColumnType type, bool nullable) :
+  ColumnDefinition::ColumnDefinition(char* name, ColumnType type, bool nullable, ConstraintType constraintType) :
     name(name),
     type(type),
-    nullable(nullable) {};
+    nullable(nullable),
+    constraintType(constraintType) {};
 
   ColumnDefinition::~ColumnDefinition() {
     free(name);
@@ -60,6 +72,15 @@ namespace hsql {
       case DataType::VARCHAR:
         stream << "VARCHAR(" << column_type.length << ")";
         break;
+      case DataType::VARCHAR_VARYING:
+        stream << "VARCHAR_VARYING";
+        break;
+      case DataType::DECIMAL:
+        stream << "DECIMAL";
+        break;
+      case DataType::REAL:
+        stream << "REAL";
+        break;
       case DataType::TEXT:
         stream << "TEXT";
         break;
@@ -86,6 +107,7 @@ namespace hsql {
     schema(nullptr),
     tableName(nullptr),
     columns(nullptr),
+    tableKeyConstraints(nullptr),
     viewColumns(nullptr),
     select(nullptr) {};
 
@@ -100,6 +122,13 @@ namespace hsql {
         delete def;
       }
       delete columns;
+    }
+
+    if (tableKeyConstraints != nullptr) {
+      for (TableKeyConstraint* def : *tableKeyConstraints) {
+        delete def;
+      }
+      delete tableKeyConstraints;
     }
 
     if (viewColumns != nullptr) {

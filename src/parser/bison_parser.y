@@ -122,6 +122,8 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 	hsql::DatetimeField datetime_field;
 	hsql::LimitDescription* limit;
 	hsql::ColumnDefinition* column_t;
+	hsql::TableKeyConstraint* table_key_constraint_t;
+	hsql::ConstraintType column_constraint_t;
 	hsql::ColumnType column_type_t;
 	hsql::ImportType import_type_t;
 	hsql::GroupByDescription* group_t;
@@ -138,13 +140,14 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 	std::vector<hsql::Expr*>* expr_vec;
 	std::vector<hsql::OrderDescription*>* order_vec;
 	std::vector<hsql::WithDescription*>* with_description_vec;
+	std::vector<hsql::TableKeyConstraint*>* table_key_constraint_vec;
 }
 
 
 /*********************************
  ** Destructor symbols
  *********************************/
-%destructor { } <fval> <ival> <uval> <bval> <order_type> <datetime_field> <column_type_t> <import_type_t>
+%destructor { } <fval> <ival> <uval> <bval> <order_type> <datetime_field> <column_type_t> <column_constraint_t> <import_type_t>
 %destructor { free( ($$.name) ); free( ($$.schema) ); } <table_name>
 %destructor { free( ($$) ); } <sval>
 %destructor {
@@ -220,11 +223,13 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 %type <datetime_field>	datetime_field
 %type <column_t>	    column_def
 %type <column_type_t>   column_type
+%type <table_key_constraint_t> table_key_constraint
 %type <update_t>	    update_clause
 %type <group_t>		    opt_group
 %type <alias_t>		    opt_table_alias table_alias opt_alias alias
 %type <with_description_t>  with_description
 %type <set_operator_t>  set_operator set_type
+%type <column_constraint_t> opt_column_constraint
 
 // ImportType is used for compatibility reasons
 %type <import_type_t>	opt_file_type file_type
@@ -236,6 +241,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 %type <with_description_vec> 	opt_with_clause with_clause with_description_list
 %type <update_vec>		update_clause_commalist
 %type <column_vec>		column_def_commalist
+%type <table_key_constraint_vec> opt_table_key_constraints
 
 /******************************
  ** Token Precedence and Associativity
@@ -514,12 +520,13 @@ create_statement:
 			free($6);
 			$$->filePath = $8;
 		}
-	|	CREATE TABLE opt_not_exists table_name '(' column_def_commalist ')' {
+	|	CREATE TABLE opt_not_exists table_name '(' column_def_commalist opt_table_key_constraints ')' {
 			$$ = new CreateStatement(kCreateTable);
 			$$->ifNotExists = $3;
 			$$->schema = $4.schema;
 			$$->tableName = $4.name;
 			$$->columns = $6;
+			$$->tableKeyConstraints = $7;
 		}
 	|	CREATE TABLE opt_not_exists table_name AS select_statement {
 			$$ = new CreateStatement(kCreateTable);
@@ -528,10 +535,10 @@ create_statement:
 			$$->tableName = $4.name;
 			$$->select = $6;
 		}
-	|	CREATE INDEX opt_index_name opt_not_exists ON table_name '(' ident_commalist ')' {
+	|	CREATE INDEX opt_not_exists opt_index_name ON table_name '(' ident_commalist ')' {
 			$$ = new CreateStatement(kCreateIndex);
-			$$->indexName = $3;
-			$$->ifNotExists = $4;
+			$$->indexName = $4;
+			$$->ifNotExists = $3;
 			$$->tableName = $6.name;
 			$$->indexColumns = $8;
          	}
@@ -556,8 +563,8 @@ column_def_commalist:
 	;
 
 column_def:
-		IDENTIFIER column_type opt_column_nullable {
-			$$ = new ColumnDefinition($1, $2, $3);
+		IDENTIFIER column_type opt_column_nullable opt_column_constraint{
+			$$ = new ColumnDefinition($1, $2, $3, $4);
 		}
 	;
 
@@ -584,6 +591,21 @@ opt_column_nullable:
 	|	/* empty */ { $$ = false; }
 	;
 
+opt_column_constraint:
+        PRIMARY KEY { $$ = ConstraintType::PRIMARY_KEY; }
+    |   UNIQUE { $$ = ConstraintType::UNIQUE; }
+    |   /* empty */ { $$ = ConstraintType::NOT_SET; }
+    ;
+
+opt_table_key_constraints:
+		table_key_constraint {$$ = new std::vector<TableKeyConstraint*>(); $$->push_back($1); }
+	|	opt_table_key_constraints table_key_constraint {  $1->push_back($2); $$ = $1; }
+	|	/* empty */ {$$ = new std::vector<TableKeyConstraint*>(); }
+	;
+
+table_key_constraint:
+        ',' PRIMARY KEY '(' ident_commalist ')'  { $$ = new TableKeyConstraint(ConstraintType::PRIMARY_KEY, $5); }
+    |   ',' UNIQUE '(' ident_commalist ')'  { $$ = new TableKeyConstraint(ConstraintType::UNIQUE, $4); }
 /******************************
  * Drop Statement
  * DROP TABLE students;
@@ -608,10 +630,11 @@ drop_statement:
 			$$->ifExists = false;
 			$$->name = $3;
 		}
-	|	DROP INDEX index_name ON table_name {
+	|	DROP INDEX opt_exists index_name ON table_name {
     			$$ = new DropStatement(kDropIndex);
-    			$$->name = $5.name;
-    			$$->index_name = $3;
+    			$$->name = $6.name;
+    			$$->ifExists = $3;
+    			$$->index_name = $4;
     		}
 	;
 

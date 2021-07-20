@@ -19,6 +19,9 @@ namespace hsql {
     DATETIME,
     DATE,
     TIME,
+    DECIMAL,
+    REAL,
+    VARCHAR_VARYING,
   };
 
   // Represents the type of a column, e.g., FLOAT or VARCHAR(10)

@@ -10,14 +10,28 @@
 namespace hsql {
   struct SelectStatement;
 
+  enum struct ConstraintType {PRIMARY_KEY, UNIQUE, NOT_SET};
+
+  // Represents definition of a key constraint
+  struct TableKeyConstraint {
+
+    TableKeyConstraint(ConstraintType keyType, std::vector<char*>* columnNames);
+
+    virtual~TableKeyConstraint();
+
+    ConstraintType type;
+    std::vector<char*>* columnNames;
+  };
+
   // Represents definition of a table column
   struct ColumnDefinition {
-    ColumnDefinition(char* name, ColumnType type, bool nullable);
+    ColumnDefinition(char* name, ColumnType type, bool nullable, ConstraintType constraintType);
     virtual~ColumnDefinition();
 
     char* name;
     ColumnType type;
     bool nullable;
+    ConstraintType constraintType;
   };
 
   enum CreateType {
@@ -41,6 +55,7 @@ namespace hsql {
     char* indexName;  // default: nullptr
     std::vector<char*>* indexColumns;
     std::vector<ColumnDefinition*>* columns; // default: nullptr
+    std::vector<TableKeyConstraint*>* tableKeyConstraints; // default: nullptr
     std::vector<char*>* viewColumns;
     SelectStatement* select;
   };
