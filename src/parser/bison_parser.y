@@ -108,6 +108,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 	hsql::DeleteStatement* 	delete_stmt;
 	hsql::UpdateStatement* 	update_stmt;
 	hsql::DropStatement*   	drop_stmt;
+	hsql::AlterStatement*   alter_stmt;
 	hsql::PrepareStatement* prep_stmt;
 	hsql::ExecuteStatement* exec_stmt;
 	hsql::ShowStatement*    show_stmt;
@@ -130,6 +131,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 	hsql::UpdateClause* update_t;
 	hsql::Alias* alias_t;
 	hsql::SetOperation* set_operator_t;
+	hsql::DecimalSpecification decimal_specification_t;
 
 	std::vector<hsql::SQLStatement*>* stmt_vec;
 
@@ -147,7 +149,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 /*********************************
  ** Destructor symbols
  *********************************/
-%destructor { } <fval> <ival> <uval> <bval> <order_type> <datetime_field> <column_type_t> <column_constraint_t> <import_type_t>
+%destructor { } <fval> <ival> <uval> <bval> <order_type> <datetime_field> <column_type_t> <column_constraint_t> <import_type_t> <decimal_specification_t>
 %destructor { free( ($$.name) ); free( ($$.schema) ); } <table_name>
 %destructor { free( ($$) ); } <sval>
 %destructor {
@@ -203,12 +205,14 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 %type <delete_stmt>     delete_statement truncate_statement
 %type <update_stmt>     update_statement
 %type <drop_stmt>	    drop_statement
+%type <alter_stmt>	    alter_statement
 %type <show_stmt>	    show_statement
 %type <table_name>      table_name
 %type <sval>		    opt_index_name
 %type <sval>		    index_name
 %type <sval> 		    file_path prepare_target_query
 %type <bval> 		    opt_not_exists opt_exists opt_distinct opt_column_nullable opt_all
+%type <decimal_specification_t> opt_decimal_specification
 %type <uval>		    opt_join_type
 %type <table> 		    opt_from_clause from_clause table_ref table_ref_atomic table_ref_name nonjoin_table_ref_atomic
 %type <table>		    join_clause table_ref_name_no_alias
@@ -338,6 +342,7 @@ preparable_statement:
 	|	truncate_statement { $$ = $1; }
 	|	update_statement { $$ = $1; }
 	|	drop_statement { $$ = $1; }
+	|	alter_statement { $$ = $1; }
 	|	execute_statement { $$ = $1; }
 	|	transaction_statement { $$ = $1; }
 	;
@@ -573,7 +578,7 @@ column_type:
 	|	INTEGER { $$ = ColumnType{DataType::INT}; }
 	|	LONG { $$ = ColumnType{DataType::LONG}; }
 	|	FLOAT { $$ = ColumnType{DataType::FLOAT}; }
-	|   DECIMAL '(' INTVAL ',' INTVAL ')' { $$ = ColumnType{DataType::DECIMAL}; }
+	|   DECIMAL opt_decimal_specification { $$ = ColumnType{DataType::DECIMAL, 0, $2}; }
 	|	DOUBLE { $$ = ColumnType{DataType::DOUBLE}; }
 	|	REAL { $$ = ColumnType{DataType::REAL}; }
 	|	VARCHAR '(' INTVAL ')' { $$ = ColumnType{DataType::VARCHAR, $3}; }
@@ -584,6 +589,11 @@ column_type:
 	|	DATETIME { $$ = ColumnType{DataType::DATETIME}; }
 	|	DATE { $$ = ColumnType{DataType::DATE}; }
 	;
+
+opt_decimal_specification:
+        '(' INTVAL ',' INTVAL ')' { $$ = DecimalSpecification{$2, $4}; }
+    |   '(' INTVAL ')' { $$ = DecimalSpecification{$2, 0}; }
+    |   /* empty */ { $$ = DecimalSpecification{0, 0}; }
 
 opt_column_nullable:
 		NULL { $$ = true; }
@@ -641,6 +651,21 @@ drop_statement:
 opt_exists:
 		IF EXISTS   { $$ = true; }
 	|	/* empty */ { $$ = false; }
+	;
+
+/******************************
+ * ALTER Statement
+ * ALTER TABLE students DROP COLUMN name;
+ ******************************/
+
+alter_statement:
+		ALTER TABLE table_name DROP COLUMN opt_exists column_name {
+			$$ = new AlterStatement(kAlterDropColumn);
+			$$->if_exists = $6;
+			$$->schema = $3.schema;
+			$$->name = $3.name;
+			$$->column_name = $7->name;
+		}
 	;
 
 /******************************
