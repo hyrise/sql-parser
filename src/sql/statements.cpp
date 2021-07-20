@@ -62,6 +62,15 @@ namespace hsql {
       case DataType::DOUBLE:
         stream << "DOUBLE";
         break;
+      case DataType::DECIMAL:
+        stream << "DECIMAL";
+        break;
+      case DataType::REAL:
+        stream << "REAL";
+        break;
+      case DataType::VARCHAR_VARYING:
+        stream << "VARCHAR_VARYING(" << column_type.length << ")";
+        break;
       case DataType::CHAR:
         stream << "CHAR(" << column_type.length << ")";
         break;
@@ -159,6 +168,20 @@ namespace hsql {
     free(schema);
     free(name);
   }
+
+  // AlterStatement
+  AlterStatement::AlterStatement(AlterType type) :
+      SQLStatement(kStmtAlter),
+      type(type),
+      schema(nullptr),
+      name(nullptr),
+      column_name(nullptr) {}
+
+  AlterStatement::~AlterStatement() {
+    free(schema);
+    free(name);
+    free(column_name);
+}
 
   // TransactionStatement
   TransactionStatement::TransactionStatement(TransactionCommand command) :

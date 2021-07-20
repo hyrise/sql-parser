@@ -108,6 +108,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 	hsql::DeleteStatement* 	delete_stmt;
 	hsql::UpdateStatement* 	update_stmt;
 	hsql::DropStatement*   	drop_stmt;
+	hsql::AlterStatement*   alter_stmt;
 	hsql::PrepareStatement* prep_stmt;
 	hsql::ExecuteStatement* exec_stmt;
 	hsql::ShowStatement*    show_stmt;
@@ -204,6 +205,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 %type <delete_stmt>     delete_statement truncate_statement
 %type <update_stmt>     update_statement
 %type <drop_stmt>	    drop_statement
+%type <alter_stmt>	    alter_statement
 %type <show_stmt>	    show_statement
 %type <table_name>      table_name
 %type <sval>		    opt_index_name
@@ -340,6 +342,7 @@ preparable_statement:
 	|	truncate_statement { $$ = $1; }
 	|	update_statement { $$ = $1; }
 	|	drop_statement { $$ = $1; }
+	|	alter_statement { $$ = $1; }
 	|	execute_statement { $$ = $1; }
 	|	transaction_statement { $$ = $1; }
 	;
@@ -577,9 +580,9 @@ column_type:
 	|	FLOAT { $$ = ColumnType{DataType::FLOAT}; }
 	|   DECIMAL opt_decimal_specification { $$ = ColumnType{DataType::DECIMAL, 0, $2}; }
 	|	DOUBLE { $$ = ColumnType{DataType::DOUBLE}; }
-	|	REAL { $$ = ColumnType{DataType::FLOAT}; }
+	|	REAL { $$ = ColumnType{DataType::REAL}; }
 	|	VARCHAR '(' INTVAL ')' { $$ = ColumnType{DataType::VARCHAR, $3}; }
-	|	CHARACTER VARYING'(' INTVAL ')' { $$ = ColumnType{DataType::VARCHAR, $4}; }
+	|	CHARACTER VARYING'(' INTVAL ')' { $$ = ColumnType{DataType::VARCHAR_VARYING, $4}; }
 	|	CHAR '(' INTVAL ')' { $$ = ColumnType{DataType::CHAR, $3}; }
 	|	TEXT { $$ = ColumnType{DataType::TEXT}; }
 	|   TIME { $$ = ColumnType{DataType::TIME}; }
@@ -648,6 +651,21 @@ drop_statement:
 opt_exists:
 		IF EXISTS   { $$ = true; }
 	|	/* empty */ { $$ = false; }
+	;
+
+/******************************
+ * ALTER Statement
+ * ALTER TABLE students DROP COLUMN name;
+ ******************************/
+
+alter_statement:
+		ALTER TABLE table_name DROP COLUMN opt_exists column_name {
+			$$ = new AlterStatement(kAlterDropColumn);
+			$$->if_exists = $6;
+			$$->schema = $3.schema;
+			$$->name = $3.name;
+			$$->column_name = $7->name;
+		}
 	;
 
 /******************************

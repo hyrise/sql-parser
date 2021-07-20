@@ -266,6 +266,7 @@ union HSQL_STYPE
 	hsql::DeleteStatement* 	delete_stmt;
 	hsql::UpdateStatement* 	update_stmt;
 	hsql::DropStatement*   	drop_stmt;
+	hsql::AlterStatement*   alter_stmt;
 	hsql::PrepareStatement* prep_stmt;
 	hsql::ExecuteStatement* exec_stmt;
 	hsql::ShowStatement*    show_stmt;
@@ -280,15 +281,12 @@ union HSQL_STYPE
 	hsql::DatetimeField datetime_field;
 	hsql::LimitDescription* limit;
 	hsql::ColumnDefinition* column_t;
-	hsql::TableKeyConstraint* table_key_constraint_t;
-	hsql::ConstraintType column_constraint_t;
 	hsql::ColumnType column_type_t;
 	hsql::ImportType import_type_t;
 	hsql::GroupByDescription* group_t;
 	hsql::UpdateClause* update_t;
 	hsql::Alias* alias_t;
 	hsql::SetOperation* set_operator_t;
-	hsql::DecimalSpecification decimal_specification_t;
 
 	std::vector<hsql::SQLStatement*>* stmt_vec;
 
@@ -299,9 +297,8 @@ union HSQL_STYPE
 	std::vector<hsql::Expr*>* expr_vec;
 	std::vector<hsql::OrderDescription*>* order_vec;
 	std::vector<hsql::WithDescription*>* with_description_vec;
-	std::vector<hsql::TableKeyConstraint*>* table_key_constraint_vec;
 
-#line 305 "bison_parser.h"
+#line 302 "bison_parser.h"
 
 };
 typedef union HSQL_STYPE HSQL_STYPE;
