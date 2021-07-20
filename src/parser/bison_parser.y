@@ -634,13 +634,8 @@ alter_statement:
 			$$->if_exists = $6;
 			$$->schema = $3.schema;
 			$$->name = $3.name;
-			$$->column_name = $6->name;
+			$$->column_name = $7->name;
 		}
-	;
-
-opt_exists:
-		IF EXISTS   { $$ = true; }
-	|	/* empty */ { $$ = false; }
 	;
 
 /******************************
