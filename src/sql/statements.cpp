@@ -92,6 +92,9 @@ namespace hsql {
       case DataType::TIME:
         stream << "TIME";
         break;
+      case DataType::SMALLINT:
+        stream << "SMALLINT";
+        break;
     }
     return stream;
   }
