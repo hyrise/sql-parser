@@ -123,7 +123,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 	hsql::DatetimeField datetime_field;
 	hsql::LimitDescription* limit;
 	hsql::ColumnDefinition* column_t;
-	hsql::TableKeyConstraint* table_key_constraint_t;
+	hsql::TableConstraint* table_constraint_t;
 	hsql::ConstraintType column_constraint_t;
 	hsql::ColumnType column_type_t;
 	hsql::ImportType import_type_t;
@@ -131,7 +131,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 	hsql::UpdateClause* update_t;
 	hsql::Alias* alias_t;
 	hsql::SetOperation* set_operator_t;
-	hsql::DecimalSpecification decimal_specification_t;
+	hsql::ColumnSpecification column_specification_t;
 
 	std::vector<hsql::SQLStatement*>* stmt_vec;
 
@@ -142,14 +142,14 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 	std::vector<hsql::Expr*>* expr_vec;
 	std::vector<hsql::OrderDescription*>* order_vec;
 	std::vector<hsql::WithDescription*>* with_description_vec;
-	std::vector<hsql::TableKeyConstraint*>* table_key_constraint_vec;
+	std::vector<hsql::TableConstraint*>* table_constraint_vec;
 }
 
 
 /*********************************
  ** Destructor symbols
  *********************************/
-%destructor { } <fval> <ival> <uval> <bval> <order_type> <datetime_field> <column_type_t> <column_constraint_t> <import_type_t> <decimal_specification_t>
+%destructor { } <fval> <ival> <uval> <bval> <order_type> <datetime_field> <column_type_t> <column_constraint_t> <import_type_t> <column_specification_t>
 %destructor { free( ($$.name) ); free( ($$.schema) ); } <table_name>
 %destructor { free( ($$) ); } <sval>
 %destructor {
@@ -212,7 +212,8 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 %type <sval>		    index_name
 %type <sval> 		    file_path prepare_target_query
 %type <bval> 		    opt_not_exists opt_exists opt_distinct opt_column_nullable opt_all
-%type <decimal_specification_t> opt_decimal_specification
+%type <column_specification_t> opt_decimal_specification
+%type <column_specification_t> opt_time_specification
 %type <uval>		    opt_join_type
 %type <table> 		    opt_from_clause from_clause table_ref table_ref_atomic table_ref_name nonjoin_table_ref_atomic
 %type <table>		    join_clause table_ref_name_no_alias
@@ -227,7 +228,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 %type <datetime_field>	datetime_field
 %type <column_t>	    column_def
 %type <column_type_t>   column_type
-%type <table_key_constraint_t> table_key_constraint
+%type <table_constraint_t> table_constraint
 %type <update_t>	    update_clause
 %type <group_t>		    opt_group
 %type <alias_t>		    opt_table_alias table_alias opt_alias alias
@@ -245,7 +246,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 %type <with_description_vec> 	opt_with_clause with_clause with_description_list
 %type <update_vec>		update_clause_commalist
 %type <column_vec>		column_def_commalist
-%type <table_key_constraint_vec> opt_table_key_constraints
+%type <table_constraint_vec> opt_table_constraints
 
 /******************************
  ** Token Precedence and Associativity
@@ -525,13 +526,13 @@ create_statement:
 			free($6);
 			$$->filePath = $8;
 		}
-	|	CREATE TABLE opt_not_exists table_name '(' column_def_commalist opt_table_key_constraints ')' {
+	|	CREATE TABLE opt_not_exists table_name '(' column_def_commalist opt_table_constraints ')' {
 			$$ = new CreateStatement(kCreateTable);
 			$$->ifNotExists = $3;
 			$$->schema = $4.schema;
 			$$->tableName = $4.name;
 			$$->columns = $6;
-			$$->tableKeyConstraints = $7;
+			$$->tableConstraints = $7;
 		}
 	|	CREATE TABLE opt_not_exists table_name AS select_statement {
 			$$ = new CreateStatement(kCreateTable);
@@ -585,15 +586,21 @@ column_type:
 	|	CHARACTER VARYING'(' INTVAL ')' { $$ = ColumnType{DataType::VARCHAR_VARYING, $4}; }
 	|	CHAR '(' INTVAL ')' { $$ = ColumnType{DataType::CHAR, $3}; }
 	|	TEXT { $$ = ColumnType{DataType::TEXT}; }
-	|   TIME { $$ = ColumnType{DataType::TIME}; }
+	|   TIME opt_time_specification { $$ = ColumnType{DataType::TIME, 0, $2 }; }
 	|	DATETIME { $$ = ColumnType{DataType::DATETIME}; }
 	|	DATE { $$ = ColumnType{DataType::DATE}; }
 	;
 
+opt_time_specification:
+        '(' INTVAL ')'  { $$ = ColumnSpecification{$2}; }
+    |   /* empty */     { $$ = ColumnSpecification{}; }
+    ;
+
 opt_decimal_specification:
-        '(' INTVAL ',' INTVAL ')' { $$ = DecimalSpecification{$2, $4}; }
-    |   '(' INTVAL ')' { $$ = DecimalSpecification{$2, 0}; }
-    |   /* empty */ { $$ = DecimalSpecification{0, 0}; }
+        '(' INTVAL ',' INTVAL ')' { $$ = ColumnSpecification{$2, $4}; }
+    |   '(' INTVAL ')' { $$ = ColumnSpecification{$2}; }
+    |   /* empty */ { $$ = ColumnSpecification{}; }
+    ;
 
 opt_column_nullable:
 		NULL { $$ = true; }
@@ -607,15 +614,15 @@ opt_column_constraint:
     |   /* empty */ { $$ = ConstraintType::NOT_SET; }
     ;
 
-opt_table_key_constraints:
-		table_key_constraint {$$ = new std::vector<TableKeyConstraint*>(); $$->push_back($1); }
-	|	opt_table_key_constraints table_key_constraint {  $1->push_back($2); $$ = $1; }
-	|	/* empty */ {$$ = new std::vector<TableKeyConstraint*>(); }
+opt_table_constraints:
+		table_constraint {$$ = new std::vector<TableConstraint*>(); $$->push_back($1); }
+	|	opt_table_constraints table_constraint {  $1->push_back($2); $$ = $1; }
+	|	/* empty */ {$$ = new std::vector<TableConstraint*>(); }
 	;
 
-table_key_constraint:
-        ',' PRIMARY KEY '(' ident_commalist ')'  { $$ = new TableKeyConstraint(ConstraintType::PRIMARY_KEY, $5); }
-    |   ',' UNIQUE '(' ident_commalist ')'  { $$ = new TableKeyConstraint(ConstraintType::UNIQUE, $4); }
+table_constraint:
+        ',' PRIMARY KEY '(' ident_commalist ')'  { $$ = new TableConstraint(ConstraintType::PRIMARY_KEY, $5); }
+    |   ',' UNIQUE '(' ident_commalist ')'  { $$ = new TableConstraint(ConstraintType::UNIQUE, $4); }
 /******************************
  * Drop Statement
  * DROP TABLE students;
@@ -643,7 +650,7 @@ drop_statement:
 	|	DROP INDEX opt_exists index_name {
     			$$ = new DropStatement(kDropIndex);
     			$$->ifExists = $3;
-    			$$->index_name = $4;
+    			$$->indexName = $4;
     		}
 	;
 
@@ -660,10 +667,10 @@ opt_exists:
 alter_statement:
 		ALTER TABLE table_name DROP COLUMN opt_exists column_name {
 			$$ = new AlterStatement(kAlterDropColumn);
-			$$->if_exists = $6;
+			$$->ifExists = $6;
 			$$->schema = $3.schema;
 			$$->name = $3.name;
-			$$->column_name = $7->name;
+			$$->columnName = $7->name;
 		}
 	;
 

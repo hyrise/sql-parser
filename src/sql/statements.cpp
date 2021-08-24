@@ -3,11 +3,11 @@
 namespace hsql {
 
   // KeyConstraints
-  TableKeyConstraint::TableKeyConstraint(ConstraintType type, std::vector<char*>* columnNames) :
+  TableConstraint::TableConstraint(ConstraintType type, std::vector<char*>* columnNames) :
     type(type),
     columnNames(columnNames) {};
 
-  TableKeyConstraint::~TableKeyConstraint() {
+  TableConstraint::~TableConstraint() {
     for (char* def : *columnNames) {
       delete def;
     }
@@ -24,14 +24,17 @@ namespace hsql {
     free(name);
   }
 
-  ColumnType::ColumnType(DataType data_type, int64_t length, DecimalSpecification decimal_specification) :
+  ColumnType::ColumnType(DataType data_type, int64_t length, ColumnSpecification column_specification) :
     data_type(data_type),
     length(length),
-    decimal_specification(decimal_specification) {};
+    decimal_specification(column_specification) {};
 
-  DecimalSpecification::DecimalSpecification(int64_t precision, int64_t scale) :
+  ColumnSpecification::ColumnSpecification(int64_t precision, int64_t scale) :
     precision(precision),
     scale(scale) {};
+
+  ColumnSpecification::ColumnSpecification(int64_t precision) :
+    precision(precision), scale(0) {};
 
   bool operator==(const ColumnType& lhs, const ColumnType& rhs) {
     if (lhs.data_type != rhs.data_type) return false;
@@ -89,6 +92,9 @@ namespace hsql {
       case DataType::TIME:
         stream << "TIME";
         break;
+      case DataType::SMALLINT:
+        stream << "SMALLINT";
+        break;
     }
     return stream;
   }
@@ -103,7 +109,7 @@ namespace hsql {
     schema(nullptr),
     tableName(nullptr),
     columns(nullptr),
-    tableKeyConstraints(nullptr),
+    tableConstraints(nullptr),
     viewColumns(nullptr),
     select(nullptr) {};
 
@@ -120,11 +126,11 @@ namespace hsql {
       delete columns;
     }
 
-    if (tableKeyConstraints != nullptr) {
-      for (TableKeyConstraint* def : *tableKeyConstraints) {
+    if (tableConstraints != nullptr) {
+      for (TableConstraint* def : *tableConstraints) {
         delete def;
       }
-      delete tableKeyConstraints;
+      delete tableConstraints;
     }
 
     if (viewColumns != nullptr) {
@@ -166,12 +172,12 @@ namespace hsql {
       type(type),
       schema(nullptr),
       name(nullptr),
-      column_name(nullptr) {}
+      columnName(nullptr) {}
 
   AlterStatement::~AlterStatement() {
     free(schema);
     free(name);
-    free(column_name);
+    free(columnName);
 }
 
   // TransactionStatement
