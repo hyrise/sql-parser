@@ -131,7 +131,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 	hsql::UpdateClause* update_t;
 	hsql::Alias* alias_t;
 	hsql::SetOperation* set_operator_t;
-	hsql::DecimalSpecification decimal_specification_t;
+	hsql::ColumnSpecification column_specification_t;
 
 	std::vector<hsql::SQLStatement*>* stmt_vec;
 
@@ -149,7 +149,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 /*********************************
  ** Destructor symbols
  *********************************/
-%destructor { } <fval> <ival> <uval> <bval> <order_type> <datetime_field> <column_type_t> <column_constraint_t> <import_type_t> <decimal_specification_t>
+%destructor { } <fval> <ival> <uval> <bval> <order_type> <datetime_field> <column_type_t> <column_constraint_t> <import_type_t> <column_specification_t>
 %destructor { free( ($$.name) ); free( ($$.schema) ); } <table_name>
 %destructor { free( ($$) ); } <sval>
 %destructor {
@@ -212,7 +212,8 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 %type <sval>		    index_name
 %type <sval> 		    file_path prepare_target_query
 %type <bval> 		    opt_not_exists opt_exists opt_distinct opt_column_nullable opt_all
-%type <decimal_specification_t> opt_decimal_specification
+%type <column_specification_t> opt_decimal_specification
+%type <column_specification_t> opt_time_specification
 %type <uval>		    opt_join_type
 %type <table> 		    opt_from_clause from_clause table_ref table_ref_atomic table_ref_name nonjoin_table_ref_atomic
 %type <table>		    join_clause table_ref_name_no_alias
@@ -585,15 +586,21 @@ column_type:
 	|	CHARACTER VARYING'(' INTVAL ')' { $$ = ColumnType{DataType::VARCHAR_VARYING, $4}; }
 	|	CHAR '(' INTVAL ')' { $$ = ColumnType{DataType::CHAR, $3}; }
 	|	TEXT { $$ = ColumnType{DataType::TEXT}; }
-	|   TIME { $$ = ColumnType{DataType::TIME}; }
+	|   TIME opt_time_specification { $$ = ColumnType{DataType::TIME, 0, $2 }; }
 	|	DATETIME { $$ = ColumnType{DataType::DATETIME}; }
 	|	DATE { $$ = ColumnType{DataType::DATE}; }
 	;
 
+opt_time_specification:
+        '(' INTVAL ')'  { $$ = ColumnSpecification{$2}; }
+    |   /* empty */     { $$ = ColumnSpecification{}; }
+    ;
+
 opt_decimal_specification:
-        '(' INTVAL ',' INTVAL ')' { $$ = DecimalSpecification{$2, $4}; }
-    |   '(' INTVAL ')' { $$ = DecimalSpecification{$2, 0}; }
-    |   /* empty */ { $$ = DecimalSpecification{0, 0}; }
+        '(' INTVAL ',' INTVAL ')' { $$ = ColumnSpecification{$2, $4}; }
+    |   '(' INTVAL ')' { $$ = ColumnSpecification{$2}; }
+    |   /* empty */ { $$ = ColumnSpecification{}; }
+    ;
 
 opt_column_nullable:
 		NULL { $$ = true; }

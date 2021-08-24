@@ -289,7 +289,7 @@ union HSQL_STYPE
 	hsql::UpdateClause* update_t;
 	hsql::Alias* alias_t;
 	hsql::SetOperation* set_operator_t;
-	hsql::DecimalSpecification decimal_specification_t;
+	hsql::ColumnSpecification column_specification_t;
 
 	std::vector<hsql::SQLStatement*>* stmt_vec;
 
