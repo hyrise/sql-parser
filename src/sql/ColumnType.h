@@ -19,6 +19,7 @@ namespace hsql {
     DATETIME,
     DATE,
     TIME,
+    SMALLINT,
   };
 
   struct ColumnSpecification {
