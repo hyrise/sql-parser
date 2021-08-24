@@ -20,10 +20,6 @@ namespace hsql {
     nullable(nullable),
     constraintType(constraintType) {};
 
-  ColumnDefinition::~ColumnDefinition() {
-    free(name);
-  }
-
   ColumnType::ColumnType(DataType data_type, int64_t length, ColumnSpecification column_specification) :
     data_type(data_type),
     length(length),

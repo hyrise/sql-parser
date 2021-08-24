@@ -12,21 +12,26 @@ namespace hsql {
 
   enum struct ConstraintType {PRIMARY_KEY, UNIQUE, NOT_SET};
 
-  // Represents definition of a key constraint
-  struct TableConstraint {
+  // Superclass for both TableConstraint and Column Definition
+  struct TableElement {
+    virtual ~TableElement(){}
+  };
 
+  // Represents definition of a key constraint
+  struct TableConstraint : TableElement {
     TableConstraint(ConstraintType keyType, std::vector<char*>* columnNames);
 
-    virtual~TableConstraint();
+    ~TableConstraint() override;
 
     ConstraintType type;
     std::vector<char*>* columnNames;
   };
 
   // Represents definition of a table column
-  struct ColumnDefinition {
+  struct ColumnDefinition: TableElement {
     ColumnDefinition(char* name, ColumnType type, bool nullable, ConstraintType constraintType);
-    virtual~ColumnDefinition();
+
+    ColumnDefinition() ;
 
     char* name;
     ColumnType type;
@@ -46,6 +51,19 @@ namespace hsql {
   struct CreateStatement : SQLStatement {
     CreateStatement(CreateType type);
     ~CreateStatement() override;
+
+    void setColumnDefsAndConstraints(std::vector<TableElement*>* tableElements) {
+      columns = new std::vector<ColumnDefinition*>();
+      tableConstraints = new std::vector<TableConstraint*>();
+
+      for(auto tableElem: *tableElements) {
+        if(auto *colDef = dynamic_cast<ColumnDefinition*>(tableElem)) {
+          columns->emplace_back(colDef);
+        } else if(auto *tableConstraint = dynamic_cast<TableConstraint*>(tableElem)) {
+          tableConstraints->emplace_back(tableConstraint);
+        }
+      }
+    }
 
     CreateType type;
     bool ifNotExists; // default: false

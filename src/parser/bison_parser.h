@@ -282,6 +282,7 @@ union HSQL_STYPE
 	hsql::LimitDescription* limit;
 	hsql::ColumnDefinition* column_t;
 	hsql::TableConstraint* table_constraint_t;
+	hsql::TableElement* table_element_t;
 	hsql::ConstraintType column_constraint_t;
 	hsql::ColumnType column_type_t;
 	hsql::ImportType import_type_t;
@@ -295,12 +296,11 @@ union HSQL_STYPE
 
 	std::vector<char*>* str_vec;
 	std::vector<hsql::TableRef*>* table_vec;
-	std::vector<hsql::ColumnDefinition*>* column_vec;
 	std::vector<hsql::UpdateClause*>* update_vec;
 	std::vector<hsql::Expr*>* expr_vec;
 	std::vector<hsql::OrderDescription*>* order_vec;
 	std::vector<hsql::WithDescription*>* with_description_vec;
-	std::vector<hsql::TableConstraint*>* table_constraint_vec;
+	std::vector<hsql::TableElement*>* table_element_vec;
 
 #line 306 "bison_parser.h"
 

@@ -124,6 +124,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 	hsql::LimitDescription* limit;
 	hsql::ColumnDefinition* column_t;
 	hsql::TableConstraint* table_constraint_t;
+	hsql::TableElement* table_element_t;
 	hsql::ConstraintType column_constraint_t;
 	hsql::ColumnType column_type_t;
 	hsql::ImportType import_type_t;
@@ -137,12 +138,11 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 
 	std::vector<char*>* str_vec;
 	std::vector<hsql::TableRef*>* table_vec;
-	std::vector<hsql::ColumnDefinition*>* column_vec;
 	std::vector<hsql::UpdateClause*>* update_vec;
 	std::vector<hsql::Expr*>* expr_vec;
 	std::vector<hsql::OrderDescription*>* order_vec;
 	std::vector<hsql::WithDescription*>* with_description_vec;
-	std::vector<hsql::TableConstraint*>* table_constraint_vec;
+	std::vector<hsql::TableElement*>* table_element_vec;
 }
 
 
@@ -159,7 +159,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 		}
 	}
 	delete ($$);
-} <str_vec> <table_vec> <column_vec> <update_vec> <expr_vec> <order_vec> <stmt_vec>
+} <str_vec> <table_vec> <table_element_vec> <update_vec> <expr_vec> <order_vec> <stmt_vec>
 %destructor { delete ($$); } <*>
 
 
@@ -227,6 +227,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 %type <order_type>	    opt_order_type
 %type <datetime_field>	datetime_field
 %type <column_t>	    column_def
+%type <table_element_t> table_elem
 %type <column_type_t>   column_type
 %type <table_constraint_t> table_constraint
 %type <update_t>	    update_clause
@@ -245,8 +246,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 %type <order_vec>		opt_order order_list
 %type <with_description_vec> 	opt_with_clause with_clause with_description_list
 %type <update_vec>		update_clause_commalist
-%type <column_vec>		column_def_commalist
-%type <table_constraint_vec> opt_table_constraints
+%type <table_element_vec>  table_elem_commalist
 
 /******************************
  ** Token Precedence and Associativity
@@ -526,13 +526,12 @@ create_statement:
 			free($6);
 			$$->filePath = $8;
 		}
-	|	CREATE TABLE opt_not_exists table_name '(' column_def_commalist opt_table_constraints ')' {
+	|	CREATE TABLE opt_not_exists table_name '(' table_elem_commalist ')' {
 			$$ = new CreateStatement(kCreateTable);
 			$$->ifNotExists = $3;
 			$$->schema = $4.schema;
 			$$->tableName = $4.name;
-			$$->columns = $6;
-			$$->tableConstraints = $7;
+			$$->setColumnDefsAndConstraints($6);
 		}
 	|	CREATE TABLE opt_not_exists table_name AS select_statement {
 			$$ = new CreateStatement(kCreateTable);
@@ -563,10 +562,15 @@ opt_not_exists:
 	|	/* empty */ { $$ = false; }
 	;
 
-column_def_commalist:
-		column_def { $$ = new std::vector<ColumnDefinition*>(); $$->push_back($1); }
-	|	column_def_commalist ',' column_def { $1->push_back($3); $$ = $1; }
-	;
+table_elem_commalist:
+        table_elem { $$ = new std::vector<TableElement*>(); $$->push_back($1); }
+    |   table_elem_commalist ',' table_elem { $1->push_back($3); $$ = $1; }
+    ;
+
+table_elem:
+        column_def { $$ = $1; }
+    |   table_constraint { $$ = $1; }
+    ;
 
 column_def:
 		IDENTIFIER column_type opt_column_nullable opt_column_constraint{
@@ -614,15 +618,12 @@ opt_column_constraint:
     |   /* empty */ { $$ = ConstraintType::NOT_SET; }
     ;
 
-opt_table_constraints:
-		table_constraint {$$ = new std::vector<TableConstraint*>(); $$->push_back($1); }
-	|	opt_table_constraints table_constraint {  $1->push_back($2); $$ = $1; }
-	|	/* empty */ {$$ = new std::vector<TableConstraint*>(); }
-	;
-
 table_constraint:
-        ',' PRIMARY KEY '(' ident_commalist ')'  { $$ = new TableConstraint(ConstraintType::PRIMARY_KEY, $5); }
-    |   ',' UNIQUE '(' ident_commalist ')'  { $$ = new TableConstraint(ConstraintType::UNIQUE, $4); }
+        PRIMARY KEY '(' ident_commalist ')'  { $$ = new TableConstraint(ConstraintType::PRIMARY_KEY, $4); }
+    |   UNIQUE '(' ident_commalist ')'  { $$ = new TableConstraint(ConstraintType::UNIQUE, $3); }
+    ;
+
+
 /******************************
  * Drop Statement
  * DROP TABLE students;
