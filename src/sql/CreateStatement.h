@@ -14,17 +14,11 @@ namespace hsql {
 
   // Superclass for both TableConstraint and Column Definition
   struct TableElement {
-    enum {
-      TABLECONSTRAINT,
-      COLUMNDEF
-    } elemType;
-
     virtual ~TableElement(){}
   };
 
   // Represents definition of a key constraint
   struct TableConstraint : TableElement {
-    struct TableElement;
     TableConstraint(ConstraintType keyType, std::vector<char*>* columnNames);
 
     ~TableConstraint() override;
@@ -35,7 +29,6 @@ namespace hsql {
 
   // Represents definition of a table column
   struct ColumnDefinition: TableElement {
-    struct TableElement;
     ColumnDefinition(char* name, ColumnType type, bool nullable, ConstraintType constraintType);
 
     ColumnDefinition() ;
@@ -60,6 +53,9 @@ namespace hsql {
     ~CreateStatement() override;
 
     void setColumnDefsAndConstraints(std::vector<TableElement*>* tableElements) {
+      columns = new std::vector<ColumnDefinition*>();
+      tableConstraints = new std::vector<TableConstraint*>();
+
       for(auto tableElem: *tableElements) {
         if(auto *colDef = dynamic_cast<ColumnDefinition*>(tableElem)) {
           columns->emplace_back(colDef);
