@@ -3714,7 +3714,7 @@ yyreduce:
     			(yyval.drop_stmt) = new DropStatement(kDropIndex);
     			(yyval.drop_stmt)->name = (yyvsp[0].table_name).name;
     			(yyval.drop_stmt)->ifExists = (yyvsp[-3].bval);
-    			(yyval.drop_stmt)->index_name = (yyvsp[-2].sval);
+    			(yyval.drop_stmt)->indexName = (yyvsp[-2].sval);
     		}
 #line 3720 "bison_parser.cpp"
     break;
@@ -3735,10 +3735,10 @@ yyreduce:
 #line 662 "bison_parser.y"
                                                                           {
 			(yyval.alter_stmt) = new AlterStatement(kAlterDropColumn);
-			(yyval.alter_stmt)->if_exists = (yyvsp[-1].bval);
+			(yyval.alter_stmt)->ifExists = (yyvsp[-1].bval);
 			(yyval.alter_stmt)->schema = (yyvsp[-4].table_name).schema;
 			(yyval.alter_stmt)->name = (yyvsp[-4].table_name).name;
-			(yyval.alter_stmt)->column_name = (yyvsp[0].expr)->name;
+			(yyval.alter_stmt)->columnName = (yyvsp[0].expr)->name;
 		}
 #line 3744 "bison_parser.cpp"
     break;

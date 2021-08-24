@@ -166,12 +166,12 @@ namespace hsql {
       type(type),
       schema(nullptr),
       name(nullptr),
-      column_name(nullptr) {}
+      columnName(nullptr) {}
 
   AlterStatement::~AlterStatement() {
     free(schema);
     free(name);
-    free(column_name);
+    free(columnName);
 }
 
   // TransactionStatement

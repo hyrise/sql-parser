@@ -644,7 +644,7 @@ drop_statement:
     			$$ = new DropStatement(kDropIndex);
     			$$->name = $6.name;
     			$$->ifExists = $3;
-    			$$->index_name = $4;
+    			$$->indexName = $4;
     		}
 	;
 
@@ -661,10 +661,10 @@ opt_exists:
 alter_statement:
 		ALTER TABLE table_name DROP COLUMN opt_exists column_name {
 			$$ = new AlterStatement(kAlterDropColumn);
-			$$->if_exists = $6;
+			$$->ifExists = $6;
 			$$->schema = $3.schema;
 			$$->name = $3.name;
-			$$->column_name = $7->name;
+			$$->columnName = $7->name;
 		}
 	;
 
