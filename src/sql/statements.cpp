@@ -163,18 +163,27 @@ namespace hsql {
     free(name);
   }
 
-  // AlterStatement
-  AlterStatement::AlterStatement(AlterType type) :
+  // AlterStatement and supportive classes
+
+  AlterAction::AlterAction(ActionType type) : type(type){};
+
+  DropColumnAction::DropColumnAction(char* column_name) :
+      AlterAction(DROPCOLUMN),
+      columnName(column_name),
+      ifExists(false)
+   {};
+
+  AlterStatement::AlterStatement(char* name, AlterAction* action) :
       SQLStatement(kStmtAlter),
-      type(type),
       schema(nullptr),
-      name(nullptr),
-      columnName(nullptr) {}
+      ifTableExists(false),
+      name(name),
+      action(action){}
 
   AlterStatement::~AlterStatement() {
     free(schema);
     free(name);
-    free(columnName);
+    free(action);
 }
 
   // TransactionStatement
