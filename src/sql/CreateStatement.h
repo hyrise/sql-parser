@@ -10,14 +10,14 @@
 namespace hsql {
   struct SelectStatement;
 
-  enum struct ConstraintType {PRIMARY_KEY, UNIQUE, NOT_SET};
+  enum struct ConstraintType {PRIMARY_KEY, UNIQUE, NOTNULL, NOT_SET, _NULL};
 
   // Superclass for both TableConstraint and Column Definition
   struct TableElement {
     virtual ~TableElement(){}
   };
 
-  // Represents definition of a key constraint
+  // Represents definition of a table constraint
   struct TableConstraint : TableElement {
     TableConstraint(ConstraintType keyType, std::vector<char*>* columnNames);
 
@@ -29,14 +29,28 @@ namespace hsql {
 
   // Represents definition of a table column
   struct ColumnDefinition: TableElement {
-    ColumnDefinition(char* name, ColumnType type, bool nullable, ConstraintType constraintType);
+    ColumnDefinition(char* name, ColumnType type, std::vector<ConstraintType>* column_constraints);
 
-    ColumnDefinition() ;
+    void setNullableExplicit() {
+      nullable = false;
 
+      auto length = column_constraints->size();
+      for(unsigned long constraint_index = 0; constraint_index < length; constraint_index++) {
+        if(column_constraints->at(constraint_index) == ConstraintType::_NULL) {
+          nullable = true;
+          column_constraints->erase(column_constraints->cbegin() + constraint_index);
+        }
+
+        if(column_constraints->at(constraint_index) == ConstraintType::NOTNULL) {
+          column_constraints->erase(column_constraints->cbegin() + constraint_index);
+        }
+      }
+    }
+
+    std::vector<ConstraintType>* column_constraints;
     char* name;
     ColumnType type;
     bool nullable;
-    ConstraintType constraintType;
   };
 
   enum CreateType {

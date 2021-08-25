@@ -99,19 +99,19 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 	uintmax_t uval;
 	bool bval;
 
-	hsql::SQLStatement* statement;
-	hsql::SelectStatement* 	select_stmt;
-	hsql::ImportStatement* 	import_stmt;
-	hsql::ExportStatement* 	export_stmt;
-	hsql::CreateStatement* 	create_stmt;
-	hsql::InsertStatement* 	insert_stmt;
-	hsql::DeleteStatement* 	delete_stmt;
-	hsql::UpdateStatement* 	update_stmt;
-	hsql::DropStatement*   	drop_stmt;
-	hsql::AlterStatement*   alter_stmt;
-	hsql::PrepareStatement* prep_stmt;
-	hsql::ExecuteStatement* exec_stmt;
-	hsql::ShowStatement*    show_stmt;
+	hsql::SQLStatement*         statement;
+	hsql::SelectStatement* 	    select_stmt;
+	hsql::ImportStatement* 	    import_stmt;
+	hsql::ExportStatement* 	    export_stmt;
+	hsql::CreateStatement* 	    create_stmt;
+	hsql::InsertStatement* 	    insert_stmt;
+	hsql::DeleteStatement* 	    delete_stmt;
+	hsql::UpdateStatement* 	    update_stmt;
+	hsql::DropStatement*   	    drop_stmt;
+	hsql::AlterStatement*       alter_stmt;
+	hsql::PrepareStatement*     prep_stmt;
+	hsql::ExecuteStatement*     exec_stmt;
+	hsql::ShowStatement*        show_stmt;
 	hsql::TransactionStatement* transaction_stmt;
 
 	hsql::TableName table_name;
@@ -143,13 +143,14 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 	std::vector<hsql::OrderDescription*>* order_vec;
 	std::vector<hsql::WithDescription*>* with_description_vec;
 	std::vector<hsql::TableElement*>* table_element_vec;
+	std::vector<hsql::ConstraintType>* column_constraint_vec;
 }
 
 
 /*********************************
  ** Destructor symbols
  *********************************/
-%destructor { } <fval> <ival> <uval> <bval> <order_type> <datetime_field> <column_type_t> <column_constraint_t> <import_type_t> <column_specification_t>
+%destructor { } <fval> <ival> <uval> <bval> <order_type> <datetime_field> <column_type_t> <column_constraint_t> <import_type_t> <column_specification_t> <column_constraint_vec>
 %destructor { free( ($$.name) ); free( ($$.schema) ); } <table_name>
 %destructor { free( ($$) ); } <sval>
 %destructor {
@@ -211,7 +212,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 %type <sval>		    opt_index_name
 %type <sval>		    index_name
 %type <sval> 		    file_path prepare_target_query
-%type <bval> 		    opt_not_exists opt_exists opt_distinct opt_column_nullable opt_all
+%type <bval> 		    opt_not_exists opt_exists opt_distinct opt_all
 %type <column_specification_t> opt_decimal_specification
 %type <column_specification_t> opt_time_specification
 %type <uval>		    opt_join_type
@@ -235,7 +236,8 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 %type <alias_t>		    opt_table_alias table_alias opt_alias alias
 %type <with_description_t>  with_description
 %type <set_operator_t>  set_operator set_type
-%type <column_constraint_t> opt_column_constraint
+%type <column_constraint_t> column_constraint
+%type <column_constraint_vec> opt_column_constraints
 
 // ImportType is used for compatibility reasons
 %type <import_type_t>	opt_file_type file_type
@@ -573,8 +575,9 @@ table_elem:
     ;
 
 column_def:
-		IDENTIFIER column_type opt_column_nullable opt_column_constraint{
-			$$ = new ColumnDefinition($1, $2, $3, $4);
+		IDENTIFIER column_type opt_column_constraints{
+			$$ = new ColumnDefinition($1, $2, $3);
+			$$->setNullableExplicit();
 		}
 	;
 
@@ -606,16 +609,17 @@ opt_decimal_specification:
     |   /* empty */ { $$ = ColumnSpecification{}; }
     ;
 
-opt_column_nullable:
-		NULL { $$ = true; }
-	|	NOT NULL { $$ = false; }
-	|	/* empty */ { $$ = false; }
-	;
+opt_column_constraints:
+        column_constraint   { $$ = new std::vector<ConstraintType>(); $$->push_back($1); }
+    |   opt_column_constraints column_constraint { $1->push_back($2); $$ = $1; }
+    |   /* empty */         { $$ = new std::vector<ConstraintType>(); }
+    ;
 
-opt_column_constraint:
+column_constraint:
         PRIMARY KEY { $$ = ConstraintType::PRIMARY_KEY; }
     |   UNIQUE { $$ = ConstraintType::UNIQUE; }
-    |   /* empty */ { $$ = ConstraintType::NOT_SET; }
+    |   NULL { $$ = ConstraintType::_NULL; }
+    |   NOT NULL { $$ = ConstraintType::NOTNULL; }
     ;
 
 table_constraint:

@@ -39,7 +39,7 @@ namespace hsql {
                ColumnSpecification column_specification = ColumnSpecification{});
     DataType data_type;
     int64_t length;  // Used for, e.g., VARCHAR(10)
-    ColumnSpecification decimal_specification; // used for, e.g.,  DECIMAL(6, 4)
+    ColumnSpecification columnSpecification; // used for, e.g. DECIMAL (6, 4) or TIME (5)
   };
 
   bool operator==(const ColumnType& lhs, const ColumnType& rhs);
