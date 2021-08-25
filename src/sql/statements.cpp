@@ -13,17 +13,18 @@ namespace hsql {
     }
     delete columnNames;
   }
+
   // ColumnDefinition
-  ColumnDefinition::ColumnDefinition(char* name, ColumnType type, bool nullable, ConstraintType constraintType) :
-    name(name),
-    type(type),
-    nullable(nullable),
-    constraintType(constraintType) {};
+  ColumnDefinition::ColumnDefinition(char* name, ColumnType type, std::vector<ConstraintType>* column_constraints) :
+      column_constraints(column_constraints),
+      name(name),
+      type(type),
+      nullable(false)
+    {};
 
   ColumnType::ColumnType(DataType data_type, int64_t length, ColumnSpecification column_specification) :
     data_type(data_type),
-    length(length),
-    decimal_specification(column_specification) {};
+    length(length), columnSpecification(column_specification) {};
 
   ColumnSpecification::ColumnSpecification(int64_t precision, int64_t scale) :
     precision(precision),

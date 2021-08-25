@@ -257,19 +257,19 @@ union HSQL_STYPE
 	uintmax_t uval;
 	bool bval;
 
-	hsql::SQLStatement* statement;
-	hsql::SelectStatement* 	select_stmt;
-	hsql::ImportStatement* 	import_stmt;
-	hsql::ExportStatement* 	export_stmt;
-	hsql::CreateStatement* 	create_stmt;
-	hsql::InsertStatement* 	insert_stmt;
-	hsql::DeleteStatement* 	delete_stmt;
-	hsql::UpdateStatement* 	update_stmt;
-	hsql::DropStatement*   	drop_stmt;
-	hsql::AlterStatement*   alter_stmt;
-	hsql::PrepareStatement* prep_stmt;
-	hsql::ExecuteStatement* exec_stmt;
-	hsql::ShowStatement*    show_stmt;
+	hsql::SQLStatement*         statement;
+	hsql::SelectStatement* 	    select_stmt;
+	hsql::ImportStatement* 	    import_stmt;
+	hsql::ExportStatement* 	    export_stmt;
+	hsql::CreateStatement* 	    create_stmt;
+	hsql::InsertStatement* 	    insert_stmt;
+	hsql::DeleteStatement* 	    delete_stmt;
+	hsql::UpdateStatement* 	    update_stmt;
+	hsql::DropStatement*   	    drop_stmt;
+	hsql::AlterStatement*       alter_stmt;
+	hsql::PrepareStatement*     prep_stmt;
+	hsql::ExecuteStatement*     exec_stmt;
+	hsql::ShowStatement*        show_stmt;
 	hsql::TransactionStatement* transaction_stmt;
 
 	hsql::TableName table_name;
@@ -301,8 +301,9 @@ union HSQL_STYPE
 	std::vector<hsql::OrderDescription*>* order_vec;
 	std::vector<hsql::WithDescription*>* with_description_vec;
 	std::vector<hsql::TableElement*>* table_element_vec;
+	std::vector<hsql::ConstraintType>* column_constraint_vec;
 
-#line 306 "bison_parser.h"
+#line 307 "bison_parser.h"
 
 };
 typedef union HSQL_STYPE HSQL_STYPE;
