@@ -836,3 +836,16 @@ TEST(CastAsDate) {
   ASSERT_STREQ("CAST", stmt->selectList->front()->name);
   ASSERT_EQ(DataType::DATE, stmt->selectList->front()->columnType.data_type);
 }
+
+TEST(DateLiteral) {
+  TEST_PARSE_SINGLE_SQL(
+       "SELECT * FROM t WHERE a = DATE '1996-12-31'",
+        kStmtSelect,
+        SelectStatement,
+        result,
+        stmt);
+  ASSERT_TRUE(result.isValid());
+  stmt = (SelectStatement*) result.getStatement(0);
+  ASSERT_EQ(stmt->whereClause->opType, kOpEquals);
+  ASSERT_STREQ(stmt->whereClause->expr2->name, "1996-12-31");
+}

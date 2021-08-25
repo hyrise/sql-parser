@@ -22,3 +22,8 @@
 !BEGIN TRANSACTION transName; # Transaction naming is currently not supported
 !SELECT -9223372036854775809; # Out of int64_t range
 !SELECT 9223372036854775808; # Out of int64_t range
+!SELECT * FROM t WHERE a = DATE 'anystring';
+!SELECT * FROM t WHERE a = DATE '1996-12-310';
+!SELECT * FROM t WHERE a = DATE '1996-120-31';
+!SELECT * FROM t WHERE a = DATE '19960-12-31';
+!SELECT * FROM t WHERE a = DATE 'asdf-gh-jkl';

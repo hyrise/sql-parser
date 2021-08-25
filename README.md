@@ -6,7 +6,7 @@ C++ SQL Parser
 This is a SQL Parser for C++. It parses the given SQL query into C++ objects.
 It has been developed for integration in [Hyrise](https://github.com/hyrise/hyrise), but can be used perfectly well in other environments as well.
 
-In March 2015 we've also written a short paper outlining discussing some development details and the integration into our database Hyrise. You can find the paper [here](http://torpedro.com/paper/HyriseSQL-03-2015.pdf).
+In March 2015 we've also written a short paper outlining discussing some development details and the integration into our database Hyrise. You can find the paper [here](docs/technical_documentation.pdf).
 
 
 ## Usage
@@ -66,9 +66,10 @@ We strongly encourage you to contribute to this project! If you want to contribu
 HYRISE sql-parser is licensed as open source after the MIT License which is declared in the LICENSE file of this project.
 
 
-## Contributers
+## Contributors
 
 The following people contributed to HYRISE sql-parser in various forms.
 
 * Pedro Flemming ([@torpedro](https://github.com/torpedro))
 * David Schwalb ([@schwald](https://github.com/schwald))
+* Markus Dreseler ([@mrks](https://github.com/mrks))
