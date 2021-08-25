@@ -133,6 +133,8 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 	hsql::Alias* alias_t;
 	hsql::SetOperation* set_operator_t;
 	hsql::ColumnSpecification column_specification_t;
+	hsql::AlterAction* alter_action_t;
+	hsql::DropColumnAction* drop_action_t;
 
 	std::vector<hsql::SQLStatement*>* stmt_vec;
 
@@ -238,6 +240,8 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 %type <set_operator_t>  set_operator set_type
 %type <column_constraint_t> column_constraint
 %type <column_constraint_vec> opt_column_constraints
+%type <alter_action_t>  alter_action
+%type <drop_action_t>  drop_action
 
 // ImportType is used for compatibility reasons
 %type <import_type_t>	opt_file_type file_type
@@ -671,14 +675,22 @@ opt_exists:
  ******************************/
 
 alter_statement:
-		ALTER TABLE table_name DROP COLUMN opt_exists column_name {
-			$$ = new AlterStatement(kAlterDropColumn);
-			$$->ifExists = $6;
-			$$->schema = $3.schema;
-			$$->name = $3.name;
-			$$->columnName = $7->name;
+		ALTER TABLE opt_exists table_name alter_action {
+			$$ = new AlterStatement($4.name, $5);
+			$$->ifTableExists = $3;
+			$$->schema = $4.schema;
 		}
 	;
+
+alter_action:
+        drop_action {$$ = $1;}
+
+drop_action:
+        DROP COLUMN opt_exists column_name {
+            $$ = new DropColumnAction($4->name);
+            $$->ifExists = $3;
+        }
+    ;
 
 /******************************
  * Delete Statement / Truncate statement

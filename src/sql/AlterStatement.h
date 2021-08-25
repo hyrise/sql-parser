@@ -6,23 +6,33 @@
 // Note: Implementations of constructors and destructors can be found in statements.cpp.
 namespace hsql {
 
-  enum AlterType {
-    kAlterDropColumn,
+  enum ActionType {
+    DROPCOLUMN,
   };
+
+  struct AlterAction {
+      AlterAction(ActionType type);
+      ActionType type;
+  };
+
+  struct DropColumnAction : AlterAction {
+    DropColumnAction(char* column_name);
+    char* columnName;
+    bool ifExists;
+  };
+
 
   // Represents SQL Alter Table statements.
   // Example "ALTER TABLE students DROP COLUMN name;"
   struct AlterStatement : SQLStatement {
 
-    AlterStatement(AlterType type);
+    AlterStatement(char* name, AlterAction* action);
     ~AlterStatement() override;
 
-    AlterType type;
     char* schema;
-    bool ifExists;
+    bool ifTableExists;
     char* name;
-    char* columnName;
+    AlterAction* action;
   };
-
 } // namespace hsql
 #endif

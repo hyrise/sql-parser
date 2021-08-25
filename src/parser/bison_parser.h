@@ -291,6 +291,8 @@ union HSQL_STYPE
 	hsql::Alias* alias_t;
 	hsql::SetOperation* set_operator_t;
 	hsql::ColumnSpecification column_specification_t;
+	hsql::AlterAction* alter_action_t;
+	hsql::DropColumnAction* drop_action_t;
 
 	std::vector<hsql::SQLStatement*>* stmt_vec;
 
@@ -303,7 +305,7 @@ union HSQL_STYPE
 	std::vector<hsql::TableElement*>* table_element_vec;
 	std::vector<hsql::ConstraintType>* column_constraint_vec;
 
-#line 307 "bison_parser.h"
+#line 309 "bison_parser.h"
 
 };
 typedef union HSQL_STYPE HSQL_STYPE;
