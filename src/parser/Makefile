@@ -17,7 +17,7 @@ endif
 all: bison_parser.cpp flex_lexer.cpp
 
 bison_parser.cpp: bison_parser.y
-	$(BISON) bison_parser.y --output=bison_parser.cpp --defines=bison_parser.h --verbose
+	$(BISON) bison_parser.y --output=bison_parser.cpp --defines=bison_parser.h --verbose -Wcounterexamples
 
 flex_lexer.cpp: flex_lexer.l
 	$(FLEX) flex_lexer.l
