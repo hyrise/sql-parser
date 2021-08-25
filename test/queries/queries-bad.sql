@@ -27,3 +27,4 @@
 !SELECT * FROM t WHERE a = DATE '1996-120-31';
 !SELECT * FROM t WHERE a = DATE '19960-12-31';
 !SELECT * FROM t WHERE a = DATE 'asdf-gh-jkl';
+!DROP INDEX myindex ON mytable; # ON is not supported by postgres

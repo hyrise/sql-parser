@@ -34,14 +34,11 @@ namespace hsql {
     void setNullableExplicit() {
       nullable = false;
 
-      auto length = column_constraints->size();
-      for(unsigned long constraint_index = 0; constraint_index < length; constraint_index++) {
+      for(unsigned long constraint_index = 0; constraint_index < column_constraints->size(); constraint_index++) {
         if(column_constraints->at(constraint_index) == ConstraintType::_NULL) {
           nullable = true;
           column_constraints->erase(column_constraints->cbegin() + constraint_index);
-        }
-
-        if(column_constraints->at(constraint_index) == ConstraintType::NOTNULL) {
+        } else if(column_constraints->at(constraint_index) == ConstraintType::NOTNULL) {
           column_constraints->erase(column_constraints->cbegin() + constraint_index);
         }
       }
