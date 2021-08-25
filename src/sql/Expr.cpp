@@ -134,6 +134,12 @@ Expr* Expr::makeNullLiteral() {
     return e;
 }
 
+Expr* Expr::makeDateLiteral(char* string) {
+    Expr* e = new Expr(kExprLiteralDate);
+    e->name = string;
+    return e;
+}
+
 Expr* Expr::makeColumnRef(char* name) {
     Expr* e = new Expr(kExprColumnRef);
     e->name = name;
