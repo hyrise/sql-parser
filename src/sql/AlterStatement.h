@@ -11,8 +11,9 @@ namespace hsql {
   };
 
   struct AlterAction {
-      AlterAction(ActionType type);
-      ActionType type;
+    AlterAction(ActionType type);
+    ActionType type;
+    virtual ~AlterAction() = default;
   };
 
   struct DropColumnAction : AlterAction {
