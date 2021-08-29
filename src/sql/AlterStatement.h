@@ -13,13 +13,15 @@ namespace hsql {
   struct AlterAction {
     AlterAction(ActionType type);
     ActionType type;
-    virtual ~AlterAction() = default;
+    virtual ~AlterAction();
   };
 
   struct DropColumnAction : AlterAction {
     DropColumnAction(char* column_name);
     char* columnName;
     bool ifExists;
+
+    ~DropColumnAction() override;
   };
 
 

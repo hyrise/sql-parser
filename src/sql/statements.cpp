@@ -1,4 +1,5 @@
 #include "statements.h"
+#include "AlterStatement.h"
 
 namespace hsql {
 
@@ -165,13 +166,19 @@ namespace hsql {
 
   // AlterStatement and supportive classes
 
-  AlterAction::AlterAction(ActionType type) : type(type){};
+  AlterAction::AlterAction(ActionType type) : type(type){}
+
+  AlterAction::~AlterAction() = default;
 
   DropColumnAction::DropColumnAction(char* column_name) :
       AlterAction(DROPCOLUMN),
       columnName(column_name),
       ifExists(false)
    {};
+
+  DropColumnAction::~DropColumnAction() {
+    free(columnName);
+  }
 
   AlterStatement::AlterStatement(char* name, AlterAction* action) :
       SQLStatement(kStmtAlter),
