@@ -190,7 +190,6 @@ namespace hsql {
   AlterStatement::~AlterStatement() {
     free(schema);
     free(name);
-    free(action);
 }
 
   // TransactionStatement
