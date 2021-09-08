@@ -9,9 +9,9 @@ namespace hsql {
     columnNames(columnNames) {};
 
   TableConstraint::~TableConstraint() {
-    for (char* def : *columnNames) {
-      delete def;
-    }
+    //for (char* def : *columnNames) {
+      //delete def;
+    //}
     delete columnNames;
   }
 
