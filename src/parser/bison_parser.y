@@ -239,6 +239,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 %type <with_description_t>  with_description
 %type <set_operator_t>  set_operator set_type
 %type <column_constraint_t> column_constraint
+%type <column_constraint_vec> column_constraint_list
 %type <column_constraint_vec> opt_column_constraints
 %type <alter_action_t>  alter_action
 %type <drop_action_t>  drop_action
@@ -614,10 +615,13 @@ opt_decimal_specification:
     ;
 
 opt_column_constraints:
-        column_constraint   { $$ = new std::vector<ConstraintType>(); $$->push_back($1); }
-    |   opt_column_constraints column_constraint { $1->push_back($2); $$ = $1; }
+        column_constraint_list   { $$ = $1; }
     |   /* empty */         { $$ = new std::vector<ConstraintType>(); }
     ;
+
+column_constraint_list:
+        column_constraint   { $$ = new std::vector<ConstraintType>(); $$->push_back($1); }
+    |   column_constraint_list column_constraint { $1->push_back($2); $$ = $1; }
 
 column_constraint:
         PRIMARY KEY { $$ = ConstraintType::PRIMARY_KEY; }
