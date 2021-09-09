@@ -30,18 +30,22 @@ fi
 #################################################
 # Running memory leak checks.
 printf "\n${GREEN}Running memory leak checks...${NC}\n"
-valgrind --leak-check=full --error-exitcode=200 --log-fd=3 \
+if valgrind --leak-check=full --error-exitcode=200 --log-fd=3 \
   bin/tests -f "test/queries/queries-good.sql" -f "test/queries/queries-bad.sql" \
-  3>&1 >/dev/null 2>/dev/null
-MEM_LEAK_RET=$?
-
-if [ $MEM_LEAK_RET -ne 200 ]; then
-	printf "${GREEN}Memory leak check succeeded!${NC}\n"
-	MEM_LEAK_RET=0
+  3>&1>/dev/null;
+then
+  MEM_LEAK_RET=$?
+  if [ $MEM_LEAK_RET -ne 200 ]; then
+	  printf "${GREEN}Memory leak check succeeded!${NC}\n"
+	  MEM_LEAK_RET=0
+  else
+	  MEM_LEAK_RET=1
+	  RET=1
+	  printf "${RED}Memory leak check failed!${NC}\n"
+  fi
 else
-	MEM_LEAK_RET=1
-	RET=1
-	printf "${RED}Memory leak check failed!${NC}\n"
+  MEM_LEAK_RET=1
+  printf "${RED}Memory leak check could not be executed!${NC}\n"
 fi
 
 #################################################
