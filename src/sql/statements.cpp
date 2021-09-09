@@ -9,19 +9,23 @@ namespace hsql {
     columnNames(columnNames) {};
 
   TableConstraint::~TableConstraint() {
-    //for (char* def : *columnNames) {
-      //delete def;
-    //}
+    for (char* def : *columnNames) {
+      delete def;
+    }
     delete columnNames;
   }
 
   // ColumnDefinition
   ColumnDefinition::ColumnDefinition(char* name, ColumnType type, std::vector<ConstraintType>* column_constraints) :
-      column_constraints(column_constraints),
-      name(name),
-      type(type),
-      nullable(false)
-    {};
+    column_constraints(column_constraints),
+    name(name),
+    type(type),
+    nullable(false) {};
+
+  ColumnDefinition::~ColumnDefinition() {
+    delete name;
+    delete column_constraints;
+  }
 
   ColumnType::ColumnType(DataType data_type, int64_t length, ColumnSpecification column_specification) :
     data_type(data_type),
@@ -106,6 +110,8 @@ namespace hsql {
     filePath(nullptr),
     schema(nullptr),
     tableName(nullptr),
+    indexName(nullptr),
+    indexColumns(nullptr),
     columns(nullptr),
     tableConstraints(nullptr),
     viewColumns(nullptr),
@@ -115,6 +121,7 @@ namespace hsql {
     free(filePath);
     free(schema);
     free(tableName);
+    free(indexName);
     delete select;
 
     if (columns != nullptr) {
@@ -131,9 +138,16 @@ namespace hsql {
       delete tableConstraints;
     }
 
+    if (indexColumns != nullptr) {
+      for (char* column : *indexColumns) {
+        delete column;
+      }
+      delete indexColumns;
+    }
+
     if (viewColumns != nullptr) {
       for (char* column : *viewColumns) {
-        free(column);
+        delete column;
       }
       delete viewColumns;
     }
@@ -157,11 +171,15 @@ namespace hsql {
     SQLStatement(kStmtDrop),
     type(type),
     schema(nullptr),
-    name(nullptr) {}
+    name(nullptr),
+    indexName(nullptr) {}
 
   DropStatement::~DropStatement() {
     free(schema);
     free(name);
+    if (indexName != nullptr) {
+      delete indexName;
+    }
   }
 
   // AlterStatement and supportive classes
@@ -190,6 +208,7 @@ namespace hsql {
   AlterStatement::~AlterStatement() {
     free(schema);
     free(name);
+    delete action;
 }
 
   // TransactionStatement

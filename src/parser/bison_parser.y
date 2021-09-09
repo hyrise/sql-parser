@@ -539,6 +539,7 @@ create_statement:
 			$$->schema = $4.schema;
 			$$->tableName = $4.name;
 			$$->setColumnDefsAndConstraints($6);
+			delete $6;
 		}
 	|	CREATE TABLE opt_not_exists table_name AS select_statement {
 			$$ = new CreateStatement(kCreateTable);
@@ -690,8 +691,8 @@ alter_action:
         drop_action {$$ = $1;}
 
 drop_action:
-        DROP COLUMN opt_exists column_name {
-            $$ = new DropColumnAction($4->name);
+        DROP COLUMN opt_exists IDENTIFIER {
+            $$ = new DropColumnAction($4);
             $$->ifExists = $3;
         }
     ;
