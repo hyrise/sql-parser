@@ -10,7 +10,7 @@ namespace hsql {
 
   TableConstraint::~TableConstraint() {
     for (char* def : *columnNames) {
-      delete def;
+      free(def);
     }
     delete columnNames;
   }
@@ -23,7 +23,7 @@ namespace hsql {
     nullable(false) {};
 
   ColumnDefinition::~ColumnDefinition() {
-    delete name;
+    free(name);
     delete column_constraints;
   }
 
@@ -140,14 +140,14 @@ namespace hsql {
 
     if (indexColumns != nullptr) {
       for (char* column : *indexColumns) {
-        delete column;
+        free(column);
       }
       delete indexColumns;
     }
 
     if (viewColumns != nullptr) {
       for (char* column : *viewColumns) {
-        delete column;
+        free(column);
       }
       delete viewColumns;
     }
@@ -177,9 +177,7 @@ namespace hsql {
   DropStatement::~DropStatement() {
     free(schema);
     free(name);
-    if (indexName != nullptr) {
-      delete indexName;
-    }
+    free(indexName);
   }
 
   // AlterStatement and supportive classes
