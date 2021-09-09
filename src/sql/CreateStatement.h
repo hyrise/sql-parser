@@ -31,6 +31,8 @@ namespace hsql {
   struct ColumnDefinition: TableElement {
     ColumnDefinition(char* name, ColumnType type, std::vector<ConstraintType>* column_constraints);
 
+    ~ColumnDefinition() override;
+
     void setNullableExplicit() {
       nullable = false;
 
@@ -82,7 +84,7 @@ namespace hsql {
     char* schema;     // default: nullptr
     char* tableName;  // default: nullptr
     char* indexName;  // default: nullptr
-    std::vector<char*>* indexColumns;
+    std::vector<char*>* indexColumns; // default: nullptr
     std::vector<ColumnDefinition*>* columns; // default: nullptr
     std::vector<TableConstraint*>* tableConstraints; // default: nullptr
     std::vector<char*>* viewColumns;
