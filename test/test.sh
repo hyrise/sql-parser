@@ -45,6 +45,7 @@ then
   fi
 else
   MEM_LEAK_RET=1
+  RET=1
   printf "${RED}Memory leak check could not be executed!${NC}\n"
 fi
 
