@@ -46,14 +46,8 @@ elif [ $MEM_LEAK_RET -eq 200 ]; then
 elif [ $MEM_LEAK_RET -eq 127 ]; then
   printf "${RED}Memory leak check failed: command 'valgrind' not found!${NC}\n"
 else
-  printf "${RED}Memory leak check failes: error code ${MEM_LEAK_RET}!${NC}\n"
+  printf "${RED}Memory leak check failed: error code ${MEM_LEAK_RET}!${NC}\n"
 fi
-
-#else
-#  MEM_LEAK_RET=1
-#  RET=1
-#  printf "${RED}Memory leak check could not be executed!${NC}\n"
-#fi
 
 #################################################
 # Checking if the grammar is conflict free.
