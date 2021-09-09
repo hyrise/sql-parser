@@ -42,11 +42,11 @@ if [ $MEM_LEAK_RET -eq 0 ]; then
   MEM_LEAK_RET=0
   RET=0
 elif [ $MEM_LEAK_RET -eq 200 ]; then
-	printf "${RED}Memory leak check failed!${NC}\n"
+  printf "${RED}Memory leak check failed!${NC}\n"
 elif [ $MEM_LEAK_RET -eq 127 ]; then
-	printf "${RED}Memory leak check failed: command 'valgrind' not found!${NC}\n"
+  printf "${RED}Memory leak check failed: command 'valgrind' not found!${NC}\n"
 else
-	printf "${RED}Memory leak check failes: error code ${MEM_LEAK_RET}!${NC}\n"
+  printf "${RED}Memory leak check failes: error code ${MEM_LEAK_RET}!${NC}\n"
 fi
 
 #else
