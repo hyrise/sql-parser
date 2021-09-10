@@ -154,8 +154,6 @@ struct Expr {
 
     static Expr* makeDateLiteral(char* val);
 
-    static Expr* makeInterval(int64_t val, DatetimeField datetimeField);
-
     static Expr* makeColumnRef(char* name);
 
     static Expr* makeColumnRef(char* table, char* name);
@@ -184,6 +182,8 @@ struct Expr {
     static Expr* makeExtract(DatetimeField datetimeField1, Expr* expr);
 
     static Expr* makeCast(Expr* expr, ColumnType columnType);
+
+    static Expr* makeInterval(int64_t duration, DatetimeField unit);
 };
 
 // Zero initializes an Expr object and assigns it to a space in the heap

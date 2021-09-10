@@ -915,7 +915,7 @@ operand:
 	|	extract_expr
 	|	cast_expr
 	|	array_expr
-	|   interval_expression
+	|	interval_expression
 	|	'(' select_no_paren ')' { $$ = Expr::makeSelect($2); }
 	;
 
@@ -1030,6 +1030,16 @@ between_expr:
 		operand BETWEEN operand AND operand { $$ = Expr::makeBetween($1, $3, $5); }
 	;
 
+interval_expression:
+		INTERVAL int_literal duration_field { $$ = Expr::makeInterval($2->ival, $3); delete $2; }
+	|	int_literal duration_field { $$ = Expr::makeInterval($1->ival, $2); delete $1; }
+	;
+
+duration_field:
+		datetime_field
+	|	datetime_field_plural
+	;
+
 column_name:
 		IDENTIFIER { $$ = Expr::makeColumnRef($1); }
 	|	IDENTIFIER '.' IDENTIFIER { $$ = Expr::makeColumnRef($1, $3); }
@@ -1079,16 +1089,6 @@ date_literal:
 			}
 			$$ = Expr::makeDateLiteral($2);
 		}
-	;
-
-interval_expression:
-		INTERVAL INTVAL duration_field { $$ = Expr::makeInterval($2, $3); }
-	|	INTVAL duration_field { $$ = Expr::makeInterval($1, $2); }
-	;
-
-duration_field:
-		datetime_field
-	|	datetime_field_plural
 	;
 
 param_expr:
