@@ -181,10 +181,9 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 %token VIEW WHEN WITH ADD ALL AND ASC END FOR INT KEY
 %token NOT OFF SET TOP AS BY IF IN IS OF ON OR TO
 %token ARRAY CONCAT ILIKE SECOND MINUTE HOUR DAY MONTH YEAR
-%token SECONDS MINUTES HOURS DAYS MONTHS YEARS
+%token SECONDS MINUTES HOURS DAYS MONTHS YEARS INTERVAL
 %token TRUE FALSE
 %token TRANSACTION BEGIN COMMIT ROLLBACK
-%token INTERVAL
 
 /*********************************
  ** Non-Terminal types (http://www.gnu.org/software/bison/manual/html_node/Type-Decl.html)
@@ -1086,7 +1085,6 @@ interval_expression:
 		INTERVAL INTVAL duration_field { $$ = Expr::makeInterval($2, $3); }
 	|	INTVAL duration_field { $$ = Expr::makeInterval($1, $2); }
 	;
-
 
 duration_field:
 		datetime_field
