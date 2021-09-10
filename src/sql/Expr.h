@@ -19,6 +19,7 @@ enum ExprType {
     kExprLiteralInt,
     kExprLiteralNull,
     kExprLiteralDate,
+    kExprInterval,
     kExprStar,
     kExprParameter,
     kExprColumnRef,
@@ -29,7 +30,7 @@ enum ExprType {
     kExprArray,
     kExprArrayIndex,
     kExprExtract,
-    kExprCast    
+    kExprCast
 };
 
 // Operator types. These are important for expressions of type kExprOperator.
@@ -152,6 +153,8 @@ struct Expr {
     static Expr* makeNullLiteral();
 
     static Expr* makeDateLiteral(char* val);
+
+    static Expr* makeInterval(int64_t val, DatetimeField datetimeField);
 
     static Expr* makeColumnRef(char* name);
 

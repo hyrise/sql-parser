@@ -1,8 +1,8 @@
-/* A Bison parser, made by GNU Bison 3.7.6.  */
+/* A Bison parser, made by GNU Bison 3.7.  */
 
 /* Bison interface for Yacc-like parsers in C
 
-   Copyright (C) 1984, 1989-1990, 2000-2015, 2018-2021 Free Software Foundation,
+   Copyright (C) 1984, 1989-1990, 2000-2015, 2018-2020 Free Software Foundation,
    Inc.
 
    This program is free software: you can redistribute it and/or modify
@@ -16,7 +16,7 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
+   along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
 /* As a special exception, you may create a larger work that contains
    part or all of the Bison parser skeleton and distribute that work
@@ -223,20 +223,27 @@ extern int hsql_debug;
     SQL_DAY = 390,                 /* DAY  */
     SQL_MONTH = 391,               /* MONTH  */
     SQL_YEAR = 392,                /* YEAR  */
-    SQL_TRUE = 393,                /* TRUE  */
-    SQL_FALSE = 394,               /* FALSE  */
-    SQL_TRANSACTION = 395,         /* TRANSACTION  */
-    SQL_BEGIN = 396,               /* BEGIN  */
-    SQL_COMMIT = 397,              /* COMMIT  */
-    SQL_ROLLBACK = 398,            /* ROLLBACK  */
-    SQL_EQUALS = 399,              /* EQUALS  */
-    SQL_NOTEQUALS = 400,           /* NOTEQUALS  */
-    SQL_LESS = 401,                /* LESS  */
-    SQL_GREATER = 402,             /* GREATER  */
-    SQL_LESSEQ = 403,              /* LESSEQ  */
-    SQL_GREATEREQ = 404,           /* GREATEREQ  */
-    SQL_NOTNULL = 405,             /* NOTNULL  */
-    SQL_UMINUS = 406               /* UMINUS  */
+    SQL_SECONDS = 393,             /* SECONDS  */
+    SQL_MINUTES = 394,             /* MINUTES  */
+    SQL_HOURS = 395,               /* HOURS  */
+    SQL_DAYS = 396,                /* DAYS  */
+    SQL_MONTHS = 397,              /* MONTHS  */
+    SQL_YEARS = 398,               /* YEARS  */
+    SQL_TRUE = 399,                /* TRUE  */
+    SQL_FALSE = 400,               /* FALSE  */
+    SQL_TRANSACTION = 401,         /* TRANSACTION  */
+    SQL_BEGIN = 402,               /* BEGIN  */
+    SQL_COMMIT = 403,              /* COMMIT  */
+    SQL_ROLLBACK = 404,            /* ROLLBACK  */
+    SQL_INTERVAL = 405,            /* INTERVAL  */
+    SQL_EQUALS = 406,              /* EQUALS  */
+    SQL_NOTEQUALS = 407,           /* NOTEQUALS  */
+    SQL_LESS = 408,                /* LESS  */
+    SQL_GREATER = 409,             /* GREATER  */
+    SQL_LESSEQ = 410,              /* LESSEQ  */
+    SQL_GREATEREQ = 411,           /* GREATEREQ  */
+    SQL_NOTNULL = 412,             /* NOTNULL  */
+    SQL_UMINUS = 413               /* UMINUS  */
   };
   typedef enum hsql_tokentype hsql_token_kind_t;
 #endif
@@ -293,7 +300,7 @@ union HSQL_STYPE
 	std::vector<hsql::OrderDescription*>* order_vec;
 	std::vector<hsql::WithDescription*>* with_description_vec;
 
-#line 297 "bison_parser.h"
+#line 304 "bison_parser.h"
 
 };
 typedef union HSQL_STYPE HSQL_STYPE;

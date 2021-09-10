@@ -181,8 +181,10 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 %token VIEW WHEN WITH ADD ALL AND ASC END FOR INT KEY
 %token NOT OFF SET TOP AS BY IF IN IS OF ON OR TO
 %token ARRAY CONCAT ILIKE SECOND MINUTE HOUR DAY MONTH YEAR
+%token SECONDS MINUTES HOURS DAYS MONTHS YEARS
 %token TRUE FALSE
 %token TRANSACTION BEGIN COMMIT ROLLBACK
+%token INTERVAL
 
 /*********************************
  ** Non-Terminal types (http://www.gnu.org/software/bison/manual/html_node/Type-Decl.html)
@@ -208,14 +210,14 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 %type <table> 		    opt_from_clause from_clause table_ref table_ref_atomic table_ref_name nonjoin_table_ref_atomic
 %type <table>		    join_clause table_ref_name_no_alias
 %type <expr> 		    expr operand scalar_expr unary_expr binary_expr logic_expr exists_expr extract_expr cast_expr
-%type <expr>		    function_expr between_expr expr_alias param_expr
+%type <expr>		    function_expr between_expr expr_alias param_expr interval_expression
 %type <expr> 		    column_name literal int_literal num_literal string_literal bool_literal date_literal
 %type <expr> 		    comp_expr opt_where join_condition opt_having case_expr case_list in_expr hint
 %type <expr> 		    array_expr array_index null_literal
 %type <limit>		    opt_limit opt_top
 %type <order>		    order_desc
 %type <order_type>	    opt_order_type
-%type <datetime_field>	datetime_field
+%type <datetime_field>	datetime_field duration_field datetime_field_plural
 %type <column_t>	    column_def
 %type <column_type_t>   column_type
 %type <update_t>	    update_clause
@@ -914,6 +916,7 @@ operand:
 	|	extract_expr
 	|	cast_expr
 	|	array_expr
+	|   interval_expression
 	|	'(' select_no_paren ')' { $$ = Expr::makeSelect($2); }
 	;
 
@@ -1007,6 +1010,15 @@ datetime_field:
     |   YEAR { $$ = kDatetimeYear; }
     ;
 
+datetime_field_plural:
+        SECONDS { $$ = kDatetimeSecond; }
+    |   MINUTES { $$ = kDatetimeMinute; }
+    |   HOURS { $$ = kDatetimeHour; }
+    |   DAYS { $$ = kDatetimeDay; }
+    |   MONTHS { $$ = kDatetimeMonth; }
+    |   YEARS { $$ = kDatetimeYear; }
+    ;
+
 array_expr:
 	  	ARRAY '[' expr_list ']' { $$ = Expr::makeArray($3); }
 	;
@@ -1054,7 +1066,7 @@ int_literal:
 	;
 
 null_literal:
-	    	NULL { $$ = Expr::makeNullLiteral(); }
+	    NULL { $$ = Expr::makeNullLiteral(); }
 	;
 
 date_literal:
@@ -1069,6 +1081,17 @@ date_literal:
 			$$ = Expr::makeDateLiteral($2);
 		}
 	;
+
+interval_expression:
+		INTERVAL INTVAL duration_field { $$ = Expr::makeInterval($2, $3); }
+	|	INTVAL duration_field { $$ = Expr::makeInterval($1, $2); }
+	;
+
+
+duration_field:
+        datetime_field
+    |	datetime_field_plural
+    ;
 
 param_expr:
 		'?' {

@@ -140,6 +140,14 @@ Expr* Expr::makeDateLiteral(char* string) {
     return e;
 }
 
+Expr* Expr::makeInterval(int64_t val, DatetimeField datetimeField) {
+    Expr* e = new Expr(kExprInterval);
+    e->ival = val;
+    e->datetimeField = datetimeField;
+    e->name = strdup("INTERVAL");
+    return e;
+}
+
 Expr* Expr::makeColumnRef(char* name) {
     Expr* e = new Expr(kExprColumnRef);
     e->name = name;

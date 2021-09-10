@@ -127,6 +127,11 @@ namespace hsql {
     case kExprLiteralNull:
       inprint("NULL", numIndent);
       break;
+    case kExprInterval:
+      inprint(expr->name, numIndent);
+      inprint(expr->ival, numIndent + 1);
+      inprint(expr->datetimeField, numIndent + 1);
+      break;
     case kExprFunctionRef:
       inprint(expr->name, numIndent);
       for (Expr* e : *expr->exprList) printExpression(e, numIndent + 1);
