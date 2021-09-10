@@ -1089,9 +1089,9 @@ interval_expression:
 
 
 duration_field:
-        datetime_field
-    |	datetime_field_plural
-    ;
+		datetime_field
+	|	datetime_field_plural
+	;
 
 param_expr:
 		'?' {
