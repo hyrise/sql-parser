@@ -205,7 +205,6 @@ BEGIN       TOKEN(BEGIN)
 ROLLBACK    TOKEN(ROLLBACK)
 COMMIT      TOKEN(COMMIT)
 INTERVAL    TOKEN(INTERVAL)
-DAYS        TOKEN(DAYS)
 
                 /* Allow =/== see https://sqlite.org/lang_expr.html#collateop */
 "=="		TOKEN(EQUALS)
