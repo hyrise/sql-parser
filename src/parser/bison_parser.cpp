@@ -4374,16 +4374,16 @@ yyreduce:
   case 210: /* interval_expression: INTERVAL STRING duration_field  */
 #line 1035 "bison_parser.y"
                                                {
-	        int duration{0}, chars_parsed{0};
-	        // If the whole string is parsed, chars_parsed points to the terminating null byte after the last character
+			int duration{0}, chars_parsed{0};
+			// If the whole string is parsed, chars_parsed points to the terminating null byte after the last character
 			if (sscanf((yyvsp[-1].sval), "%d%n", &duration, &chars_parsed) != 1 || (yyvsp[-1].sval)[chars_parsed] != 0) {
 				free((yyvsp[-1].sval));
 				yyerror(&yyloc, result, scanner, "Found incorrect duration format. Expected format: INTEGER");
 				YYERROR;
 			}
 			free((yyvsp[-1].sval));
-	        (yyval.expr) = Expr::makeInterval(duration, (yyvsp[0].datetime_field));
-	    }
+			(yyval.expr) = Expr::makeInterval(duration, (yyvsp[0].datetime_field));
+		}
 #line 4388 "bison_parser.cpp"
     break;
 
@@ -4393,7 +4393,7 @@ yyreduce:
 			int duration{0}, chars_parsed{0};
 			char unit_string[8];
 			hsql::DatetimeField unit;
-	        // If the whole string is parsed, chars_parsed points to the terminating null byte after the last character
+			// If the whole string is parsed, chars_parsed points to the terminating null byte after the last character
 			if (sscanf((yyvsp[0].sval), "%d %7s%n", &duration, unit_string, &chars_parsed) != 2 || (yyvsp[0].sval)[chars_parsed] != 0) {
 				free((yyvsp[0].sval));
 				yyerror(&yyloc, result, scanner, "Found incorrect interval format. Expected format: INTEGER INTERVAL_QUALIIFIER");
@@ -4416,8 +4416,8 @@ yyreduce:
 				yyerror(&yyloc, result, scanner, "Interval qualifier is unknown.");
 				YYERROR;
 			}
-	        (yyval.expr) = Expr::makeInterval(duration, unit);
-	    }
+			(yyval.expr) = Expr::makeInterval(duration, unit);
+		}
 #line 4422 "bison_parser.cpp"
     break;
 

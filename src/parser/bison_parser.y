@@ -1033,21 +1033,21 @@ between_expr:
 interval_expression:
 		int_literal duration_field { $$ = Expr::makeInterval($1->ival, $2); delete $1; }
 	|	INTERVAL STRING duration_field {
-	        int duration{0}, chars_parsed{0};
-	        // If the whole string is parsed, chars_parsed points to the terminating null byte after the last character
+			int duration{0}, chars_parsed{0};
+			// If the whole string is parsed, chars_parsed points to the terminating null byte after the last character
 			if (sscanf($2, "%d%n", &duration, &chars_parsed) != 1 || $2[chars_parsed] != 0) {
 				free($2);
 				yyerror(&yyloc, result, scanner, "Found incorrect duration format. Expected format: INTEGER");
 				YYERROR;
 			}
 			free($2);
-	        $$ = Expr::makeInterval(duration, $3);
-	    }
+			$$ = Expr::makeInterval(duration, $3);
+		}
 	|   INTERVAL STRING {
 			int duration{0}, chars_parsed{0};
 			char unit_string[8];
 			hsql::DatetimeField unit;
-	        // If the whole string is parsed, chars_parsed points to the terminating null byte after the last character
+			// If the whole string is parsed, chars_parsed points to the terminating null byte after the last character
 			if (sscanf($2, "%d %7s%n", &duration, unit_string, &chars_parsed) != 2 || $2[chars_parsed] != 0) {
 				free($2);
 				yyerror(&yyloc, result, scanner, "Found incorrect interval format. Expected format: INTEGER INTERVAL_QUALIIFIER");
@@ -1070,8 +1070,8 @@ interval_expression:
 				yyerror(&yyloc, result, scanner, "Interval qualifier is unknown.");
 				YYERROR;
 			}
-	        $$ = Expr::makeInterval(duration, unit);
-	    }
+			$$ = Expr::makeInterval(duration, unit);
+		}
 	;
 
 duration_field:
