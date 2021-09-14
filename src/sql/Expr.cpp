@@ -140,6 +140,14 @@ Expr* Expr::makeDateLiteral(char* string) {
     return e;
 }
 
+Expr* Expr::makeIntervalLiteral(int64_t duration, DatetimeField unit) {
+    Expr* e = new Expr(kExprLiteralInterval);
+    e->name = strdup("INTERVAL");
+    e->ival = duration;
+    e->datetimeField = unit;
+    return e;
+}
+
 Expr* Expr::makeColumnRef(char* name) {
     Expr* e = new Expr(kExprColumnRef);
     e->name = name;
@@ -239,20 +247,13 @@ Expr* Expr::makeCast(Expr* expr, ColumnType columnType) {
     return e;
 }
 
-Expr* Expr::makeInterval(int64_t duration, DatetimeField unit) {
-    Expr* e = new Expr(kExprInterval);
-    e->name = strdup("INTERVAL");
-    e->ival = duration;
-    e->datetimeField = unit;
-    return e;
-}
-
 bool Expr::isType(ExprType exprType) const { return exprType == type; }
 
 bool Expr::isLiteral() const {
     return isType(kExprLiteralInt) || isType(kExprLiteralFloat) ||
            isType(kExprLiteralString) || isType(kExprParameter) ||
-           isType(kExprLiteralNull);
+           isType(kExprLiteralNull) || isType(kExprLiteralDate) ||
+           isType(kExprLiteralInterval);
 }
 
 bool Expr::hasAlias() const { return alias != nullptr; }

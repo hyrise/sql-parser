@@ -127,7 +127,7 @@ namespace hsql {
     case kExprLiteralNull:
       inprint("NULL", numIndent);
       break;
-    case kExprInterval:
+    case kExprLiteralInterval:
       inprint(expr->name, numIndent);
       inprint(expr->ival, numIndent + 1);
       inprint(expr->datetimeField, numIndent + 1);

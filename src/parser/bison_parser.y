@@ -209,8 +209,8 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 %type <table> 		    opt_from_clause from_clause table_ref table_ref_atomic table_ref_name nonjoin_table_ref_atomic
 %type <table>		    join_clause table_ref_name_no_alias
 %type <expr> 		    expr operand scalar_expr unary_expr binary_expr logic_expr exists_expr extract_expr cast_expr
-%type <expr>		    function_expr between_expr expr_alias param_expr interval_expression
-%type <expr> 		    column_name literal int_literal num_literal string_literal bool_literal date_literal
+%type <expr>		    function_expr between_expr expr_alias param_expr
+%type <expr> 		    column_name literal int_literal num_literal string_literal bool_literal date_literal interval_literal
 %type <expr> 		    comp_expr opt_where join_condition opt_having case_expr case_list in_expr hint
 %type <expr> 		    array_expr array_index null_literal
 %type <limit>		    opt_limit opt_top
@@ -915,7 +915,6 @@ operand:
 	|	extract_expr
 	|	cast_expr
 	|	array_expr
-	|	interval_expression
 	|	'(' select_no_paren ')' { $$ = Expr::makeSelect($2); }
 	;
 
@@ -1018,6 +1017,11 @@ datetime_field_plural:
     |   YEARS { $$ = kDatetimeYear; }
     ;
 
+duration_field:
+		datetime_field
+	|	datetime_field_plural
+	;
+
 array_expr:
 	  	ARRAY '[' expr_list ']' { $$ = Expr::makeArray($3); }
 	;
@@ -1028,55 +1032,6 @@ array_index:
 
 between_expr:
 		operand BETWEEN operand AND operand { $$ = Expr::makeBetween($1, $3, $5); }
-	;
-
-interval_expression:
-		int_literal duration_field { $$ = Expr::makeInterval($1->ival, $2); delete $1; }
-	|	INTERVAL STRING duration_field {
-			int duration{0}, chars_parsed{0};
-			// If the whole string is parsed, chars_parsed points to the terminating null byte after the last character
-			if (sscanf($2, "%d%n", &duration, &chars_parsed) != 1 || $2[chars_parsed] != 0) {
-				free($2);
-				yyerror(&yyloc, result, scanner, "Found incorrect duration format. Expected format: INTEGER");
-				YYERROR;
-			}
-			free($2);
-			$$ = Expr::makeInterval(duration, $3);
-		}
-	|   INTERVAL STRING {
-			int duration{0}, chars_parsed{0};
-			char unit_string[8];
-			hsql::DatetimeField unit;
-			// If the whole string is parsed, chars_parsed points to the terminating null byte after the last character
-			if (sscanf($2, "%d %7s%n", &duration, unit_string, &chars_parsed) != 2 || $2[chars_parsed] != 0) {
-				free($2);
-				yyerror(&yyloc, result, scanner, "Found incorrect interval format. Expected format: INTEGER INTERVAL_QUALIIFIER");
-				YYERROR;
-			}
-			free($2);
-			if (strcasecmp(unit_string, "second") == 0 || strcasecmp(unit_string, "seconds") == 0) {
-				unit = kDatetimeSecond;
-			} else if (strcasecmp(unit_string, "minute") == 0 || strcasecmp(unit_string, "minutes") == 0) {
-				unit = kDatetimeMinute;
-			} else if (strcasecmp(unit_string, "hour") == 0 || strcasecmp(unit_string, "hours") == 0) {
-				unit = kDatetimeHour;
-			} else if (strcasecmp(unit_string, "day") == 0 || strcasecmp(unit_string, "days") == 0) {
-				unit = kDatetimeDay;
-			} else if (strcasecmp(unit_string, "month") == 0 || strcasecmp(unit_string, "months") == 0) {
-				unit = kDatetimeMonth;
-			} else if (strcasecmp(unit_string, "year") == 0 || strcasecmp(unit_string, "years") == 0) {
-				unit = kDatetimeYear;
-			} else {
-				yyerror(&yyloc, result, scanner, "Interval qualifier is unknown.");
-				YYERROR;
-			}
-			$$ = Expr::makeInterval(duration, unit);
-		}
-	;
-
-duration_field:
-		datetime_field
-	|	datetime_field_plural
 	;
 
 column_name:
@@ -1092,6 +1047,7 @@ literal:
 	|	num_literal
 	|	null_literal
 	|	date_literal
+	|	interval_literal
 	|	param_expr
 	;
 
@@ -1127,6 +1083,50 @@ date_literal:
 				YYERROR;
 			}
 			$$ = Expr::makeDateLiteral($2);
+		}
+	;
+
+interval_literal:
+		int_literal duration_field { $$ = Expr::makeIntervalLiteral($1->ival, $2); delete $1; }
+	|	INTERVAL STRING datetime_field {
+			int duration{0}, chars_parsed{0};
+			// If the whole string is parsed, chars_parsed points to the terminating null byte after the last character
+			if (sscanf($2, "%d%n", &duration, &chars_parsed) != 1 || $2[chars_parsed] != 0) {
+				free($2);
+				yyerror(&yyloc, result, scanner, "Found incorrect duration format. Expected format: INTEGER");
+				YYERROR;
+			}
+			free($2);
+			$$ = Expr::makeIntervalLiteral(duration, $3);
+		}
+	|   INTERVAL STRING {
+			int duration{0}, chars_parsed{0};
+			char unit_string[8];
+			hsql::DatetimeField unit;
+			// If the whole string is parsed, chars_parsed points to the terminating null byte after the last character
+			if (sscanf($2, "%d %7s%n", &duration, unit_string, &chars_parsed) != 2 || $2[chars_parsed] != 0) {
+				free($2);
+				yyerror(&yyloc, result, scanner, "Found incorrect interval format. Expected format: INTEGER INTERVAL_QUALIIFIER");
+				YYERROR;
+			}
+			free($2);
+			if (strcasecmp(unit_string, "second") == 0 || strcasecmp(unit_string, "seconds") == 0) {
+				unit = kDatetimeSecond;
+			} else if (strcasecmp(unit_string, "minute") == 0 || strcasecmp(unit_string, "minutes") == 0) {
+				unit = kDatetimeMinute;
+			} else if (strcasecmp(unit_string, "hour") == 0 || strcasecmp(unit_string, "hours") == 0) {
+				unit = kDatetimeHour;
+			} else if (strcasecmp(unit_string, "day") == 0 || strcasecmp(unit_string, "days") == 0) {
+				unit = kDatetimeDay;
+			} else if (strcasecmp(unit_string, "month") == 0 || strcasecmp(unit_string, "months") == 0) {
+				unit = kDatetimeMonth;
+			} else if (strcasecmp(unit_string, "year") == 0 || strcasecmp(unit_string, "years") == 0) {
+				unit = kDatetimeYear;
+			} else {
+				yyerror(&yyloc, result, scanner, "Interval qualifier is unknown.");
+				YYERROR;
+			}
+			$$ = Expr::makeIntervalLiteral(duration, unit);
 		}
 	;
 

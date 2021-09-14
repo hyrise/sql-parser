@@ -850,13 +850,13 @@ TEST(DateLiteral) {
   ASSERT_STREQ(stmt->whereClause->expr2->name, "1996-12-31");
 }
 
-TEST(Interval) {
+TEST(IntervalLiteral) {
   SelectStatement* stmt;
-  Expr* interval_expression;
+  Expr* interval_literal;
   TEST_PARSE_SQL_QUERY("SELECT a + 1 year FROM t;"
                        "SELECT * FROM t where a = (cast ('2000-01-01' as date) + 30 days);"
-                       "SELECT * FROM t where a = 1 - interval '1 second';"
-                       "SELECT * FROM t where a = 1 - interval '2' seconds;",
+                       "SELECT * FROM t where a = 1 - interval '1' second;"
+                       "SELECT * FROM t where a = 1 - interval '2 seconds';",
                        result, 4);
 
   stmt = (SelectStatement*) result.getStatement(0);
@@ -864,11 +864,11 @@ TEST(Interval) {
   ASSERT_EQ(stmt->selectList->size(), 1u);
   ASSERT_EQ(stmt->selectList->at(0)->type, kExprOperator);
   ASSERT_TRUE(stmt->selectList->at(0)->expr2);
-  interval_expression = stmt->selectList->at(0)->expr2;
-  ASSERT_EQ(interval_expression->name, std::string("INTERVAL"));
-  ASSERT_EQ(interval_expression->datetimeField, kDatetimeYear);
-  ASSERT_EQ(interval_expression->ival, 1);
-  ASSERT_EQ(interval_expression->type, kExprInterval);
+  interval_literal = stmt->selectList->at(0)->expr2;
+  ASSERT_EQ(interval_literal->name, std::string("INTERVAL"));
+  ASSERT_EQ(interval_literal->datetimeField, kDatetimeYear);
+  ASSERT_EQ(interval_literal->ival, 1);
+  ASSERT_EQ(interval_literal->type, kExprLiteralInterval);
 
   stmt = (SelectStatement*) result.getStatement(1);
   ASSERT_TRUE(stmt->whereClause);
@@ -879,11 +879,11 @@ TEST(Interval) {
   ASSERT_TRUE(stmt->whereClause->expr2->type = kExprOperator);
   ASSERT_TRUE(stmt->whereClause->expr2->opType = kOpPlus);
   ASSERT_TRUE(stmt->whereClause->expr2->expr2);
-  interval_expression = stmt->whereClause->expr2->expr2;
-  ASSERT_EQ(interval_expression->name, std::string("INTERVAL"));
-  ASSERT_EQ(interval_expression->datetimeField, kDatetimeDay);
-  ASSERT_EQ(interval_expression->ival, 30);
-  ASSERT_EQ(interval_expression->type, kExprInterval);
+  interval_literal = stmt->whereClause->expr2->expr2;
+  ASSERT_EQ(interval_literal->name, std::string("INTERVAL"));
+  ASSERT_EQ(interval_literal->datetimeField, kDatetimeDay);
+  ASSERT_EQ(interval_literal->ival, 30);
+  ASSERT_EQ(interval_literal->type, kExprLiteralInterval);
 
   stmt = (SelectStatement*) result.getStatement(2);
   ASSERT_TRUE(stmt->whereClause);
@@ -893,11 +893,11 @@ TEST(Interval) {
   ASSERT_TRUE(stmt->whereClause->expr2->type = kExprOperator);
   ASSERT_TRUE(stmt->whereClause->expr2->opType = kOpMinus);
   ASSERT_TRUE(stmt->whereClause->expr2->expr2);
-  interval_expression = stmt->whereClause->expr2->expr2;
-  ASSERT_EQ(interval_expression->name, std::string("INTERVAL"));
-  ASSERT_EQ(interval_expression->datetimeField, kDatetimeSecond);
-  ASSERT_EQ(interval_expression->ival, 1);
-  ASSERT_EQ(interval_expression->type, kExprInterval);
+  interval_literal = stmt->whereClause->expr2->expr2;
+  ASSERT_EQ(interval_literal->name, std::string("INTERVAL"));
+  ASSERT_EQ(interval_literal->datetimeField, kDatetimeSecond);
+  ASSERT_EQ(interval_literal->ival, 1);
+  ASSERT_EQ(interval_literal->type, kExprLiteralInterval);
 
   stmt = (SelectStatement*) result.getStatement(3);
   ASSERT_TRUE(stmt->whereClause);
@@ -907,9 +907,9 @@ TEST(Interval) {
   ASSERT_TRUE(stmt->whereClause->expr2->type = kExprOperator);
   ASSERT_TRUE(stmt->whereClause->expr2->opType = kOpMinus);
   ASSERT_TRUE(stmt->whereClause->expr2->expr2);
-  interval_expression = stmt->whereClause->expr2->expr2;
-  ASSERT_EQ(interval_expression->name, std::string("INTERVAL"));
-  ASSERT_EQ(interval_expression->datetimeField, kDatetimeSecond);
-  ASSERT_EQ(interval_expression->ival, 2);
-  ASSERT_EQ(interval_expression->type, kExprInterval);
+  interval_literal = stmt->whereClause->expr2->expr2;
+  ASSERT_EQ(interval_literal->name, std::string("INTERVAL"));
+  ASSERT_EQ(interval_literal->datetimeField, kDatetimeSecond);
+  ASSERT_EQ(interval_literal->ival, 2);
+  ASSERT_EQ(interval_literal->type, kExprLiteralInterval);
 }
