@@ -855,8 +855,9 @@ TEST(Interval) {
   Expr* interval_expression;
   TEST_PARSE_SQL_QUERY("SELECT a + 1 year FROM t;"
                        "SELECT * FROM t where a = (cast ('2000-01-01' as date) + 30 days);"
-                       "SELECT * FROM t where a = 1 - interval 1 second;",
-                       result, 3);
+                       "SELECT * FROM t where a = 1 - interval '1 second';"
+                       "SELECT * FROM t where a = 1 - interval '2' seconds;",
+                       result, 4);
 
   stmt = (SelectStatement*) result.getStatement(0);
   ASSERT_TRUE(stmt->selectList);
@@ -896,5 +897,19 @@ TEST(Interval) {
   ASSERT_EQ(interval_expression->name, std::string("INTERVAL"));
   ASSERT_EQ(interval_expression->datetimeField, kDatetimeSecond);
   ASSERT_EQ(interval_expression->ival, 1);
+  ASSERT_EQ(interval_expression->type, kExprInterval);
+
+  stmt = (SelectStatement*) result.getStatement(3);
+  ASSERT_TRUE(stmt->whereClause);
+  ASSERT_TRUE(stmt->whereClause->type = kExprOperator);
+  ASSERT_TRUE(stmt->whereClause->opType = kOpEquals);
+  ASSERT_TRUE(stmt->whereClause->expr2);
+  ASSERT_TRUE(stmt->whereClause->expr2->type = kExprOperator);
+  ASSERT_TRUE(stmt->whereClause->expr2->opType = kOpMinus);
+  ASSERT_TRUE(stmt->whereClause->expr2->expr2);
+  interval_expression = stmt->whereClause->expr2->expr2;
+  ASSERT_EQ(interval_expression->name, std::string("INTERVAL"));
+  ASSERT_EQ(interval_expression->datetimeField, kDatetimeSecond);
+  ASSERT_EQ(interval_expression->ival, 2);
   ASSERT_EQ(interval_expression->type, kExprInterval);
 }

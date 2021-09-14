@@ -1031,8 +1031,47 @@ between_expr:
 	;
 
 interval_expression:
-		INTERVAL int_literal duration_field { $$ = Expr::makeInterval($2->ival, $3); delete $2; }
-	|	int_literal duration_field { $$ = Expr::makeInterval($1->ival, $2); delete $1; }
+		int_literal duration_field { $$ = Expr::makeInterval($1->ival, $2); delete $1; }
+	|	INTERVAL STRING duration_field {
+	        int duration{0}, chars_parsed{0};
+	        // If the whole string is parsed, chars_parsed points to the terminating null byte after the last character
+			if (sscanf($2, "%d%n", &duration, &chars_parsed) != 1 || $2[chars_parsed] != 0) {
+				free($2);
+				yyerror(&yyloc, result, scanner, "Found incorrect duration format. Expected format: INTEGER");
+				YYERROR;
+			}
+			free($2);
+	        $$ = Expr::makeInterval(duration, $3);
+	    }
+	|   INTERVAL STRING {
+			int duration{0}, chars_parsed{0};
+			char unit_string[8];
+			hsql::DatetimeField unit;
+	        // If the whole string is parsed, chars_parsed points to the terminating null byte after the last character
+			if (sscanf($2, "%d %7s%n", &duration, unit_string, &chars_parsed) != 2 || $2[chars_parsed] != 0) {
+				free($2);
+				yyerror(&yyloc, result, scanner, "Found incorrect interval format. Expected format: INTEGER INTERVAL_QUALIIFIER");
+				YYERROR;
+			}
+			free($2);
+			if (strcasecmp(unit_string, "second") == 0 || strcasecmp(unit_string, "seconds") == 0) {
+				unit = kDatetimeSecond;
+			} else if (strcasecmp(unit_string, "minute") == 0 || strcasecmp(unit_string, "minutes") == 0) {
+				unit = kDatetimeMinute;
+			} else if (strcasecmp(unit_string, "hour") == 0 || strcasecmp(unit_string, "hours") == 0) {
+				unit = kDatetimeHour;
+			} else if (strcasecmp(unit_string, "day") == 0 || strcasecmp(unit_string, "days") == 0) {
+				unit = kDatetimeDay;
+			} else if (strcasecmp(unit_string, "month") == 0 || strcasecmp(unit_string, "months") == 0) {
+				unit = kDatetimeMonth;
+			} else if (strcasecmp(unit_string, "year") == 0 || strcasecmp(unit_string, "years") == 0) {
+				unit = kDatetimeYear;
+			} else {
+				yyerror(&yyloc, result, scanner, "Interval qualifier is unknown.");
+				YYERROR;
+			}
+	        $$ = Expr::makeInterval(duration, unit);
+	    }
 	;
 
 duration_field:
