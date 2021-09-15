@@ -16,6 +16,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <iostream>
 
 using namespace hsql;
 
@@ -216,7 +217,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 %type <limit>		    opt_limit opt_top
 %type <order>		    order_desc
 %type <order_type>	    opt_order_type
-%type <datetime_field>	datetime_field duration_field datetime_field_plural
+%type <datetime_field>	datetime_field datetime_field_plural duration_field opt_datetime_field
 %type <column_t>	    column_def
 %type <column_type_t>   column_type
 %type <update_t>	    update_clause
@@ -1070,7 +1071,7 @@ int_literal:
 	;
 
 null_literal:
-	    NULL { $$ = Expr::makeNullLiteral(); }
+		NULL { $$ = Expr::makeNullLiteral(); }
 	;
 
 date_literal:
@@ -1088,46 +1089,46 @@ date_literal:
 
 interval_literal:
 		int_literal duration_field { $$ = Expr::makeIntervalLiteral($1->ival, $2); delete $1; }
-	|	INTERVAL STRING datetime_field {
-			int duration{0}, chars_parsed{0};
-			// If the whole string is parsed, chars_parsed points to the terminating null byte after the last character
-			if (sscanf($2, "%d%n", &duration, &chars_parsed) != 1 || $2[chars_parsed] != 0) {
-				free($2);
-				yyerror(&yyloc, result, scanner, "Found incorrect duration format. Expected format: INTEGER");
-				YYERROR;
-			}
-			free($2);
-			$$ = Expr::makeIntervalLiteral(duration, $3);
-		}
-	|   INTERVAL STRING {
+	|   INTERVAL STRING opt_datetime_field {
 			int duration{0}, chars_parsed{0};
 			char unit_string[8];
-			hsql::DatetimeField unit;
+			DatetimeField unit = $3;
+			std::cout << unit << std::endl;
 			// If the whole string is parsed, chars_parsed points to the terminating null byte after the last character
-			if (sscanf($2, "%d %7s%n", &duration, unit_string, &chars_parsed) != 2 || $2[chars_parsed] != 0) {
-				free($2);
+			int num_matches = sscanf($2, "%d%n %7s%n", &duration, &chars_parsed, unit_string, &chars_parsed);
+			bool reached_end = $2[chars_parsed] == 0;
+			free($2);
+
+			if (num_matches < 1 || !reached_end || (num_matches > 1 && unit != kDatetimeNone) || (num_matches == 1 && unit == kDatetimeNone)) {
 				yyerror(&yyloc, result, scanner, "Found incorrect interval format. Expected format: INTEGER INTERVAL_QUALIIFIER");
 				YYERROR;
 			}
-			free($2);
-			if (strcasecmp(unit_string, "second") == 0 || strcasecmp(unit_string, "seconds") == 0) {
-				unit = kDatetimeSecond;
-			} else if (strcasecmp(unit_string, "minute") == 0 || strcasecmp(unit_string, "minutes") == 0) {
-				unit = kDatetimeMinute;
-			} else if (strcasecmp(unit_string, "hour") == 0 || strcasecmp(unit_string, "hours") == 0) {
-				unit = kDatetimeHour;
-			} else if (strcasecmp(unit_string, "day") == 0 || strcasecmp(unit_string, "days") == 0) {
-				unit = kDatetimeDay;
-			} else if (strcasecmp(unit_string, "month") == 0 || strcasecmp(unit_string, "months") == 0) {
-				unit = kDatetimeMonth;
-			} else if (strcasecmp(unit_string, "year") == 0 || strcasecmp(unit_string, "years") == 0) {
-				unit = kDatetimeYear;
-			} else {
-				yyerror(&yyloc, result, scanner, "Interval qualifier is unknown.");
-				YYERROR;
+
+			if (num_matches > 1) {
+				if (strcasecmp(unit_string, "second") == 0 || strcasecmp(unit_string, "seconds") == 0) {
+					unit = kDatetimeSecond;
+				} else if (strcasecmp(unit_string, "minute") == 0 || strcasecmp(unit_string, "minutes") == 0) {
+					unit = kDatetimeMinute;
+				} else if (strcasecmp(unit_string, "hour") == 0 || strcasecmp(unit_string, "hours") == 0) {
+					unit = kDatetimeHour;
+				} else if (strcasecmp(unit_string, "day") == 0 || strcasecmp(unit_string, "days") == 0) {
+					unit = kDatetimeDay;
+				} else if (strcasecmp(unit_string, "month") == 0 || strcasecmp(unit_string, "months") == 0) {
+					unit = kDatetimeMonth;
+				} else if (strcasecmp(unit_string, "year") == 0 || strcasecmp(unit_string, "years") == 0) {
+					unit = kDatetimeYear;
+				} else {
+					yyerror(&yyloc, result, scanner, ("Interval qualifier '" + std::string{unit_string} + "' is unknown.").c_str());
+					YYERROR;
+				}
 			}
 			$$ = Expr::makeIntervalLiteral(duration, unit);
 		}
+	;
+
+opt_datetime_field:
+		datetime_field
+	|	/* empty */	{ $$ = kDatetimeNone; }
 	;
 
 param_expr:
