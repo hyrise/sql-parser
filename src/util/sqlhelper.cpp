@@ -93,7 +93,8 @@ namespace hsql {
     printExpression(expr->expr, numIndent + 1);
     if (expr->expr2 != nullptr) {
         printExpression(expr->expr2, numIndent + 1);
-    } else if (expr->exprList != nullptr) {
+    }
+    if (expr->exprList != nullptr) {
         for (Expr* e : *expr->exprList) printExpression(e, numIndent + 1);
     }
   }

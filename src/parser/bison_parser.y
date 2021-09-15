@@ -16,7 +16,6 @@
 
 #include <stdio.h>
 #include <string.h>
-#include <iostream>
 
 using namespace hsql;
 
@@ -1093,7 +1092,6 @@ interval_literal:
 			int duration{0}, chars_parsed{0};
 			char unit_string[8];
 			DatetimeField unit = $3;
-			std::cout << unit << std::endl;
 			// If the whole string is parsed, chars_parsed points to the terminating null byte after the last character
 			int num_matches = sscanf($2, "%d%n %7s%n", &duration, &chars_parsed, unit_string, &chars_parsed);
 			bool reached_end = $2[chars_parsed] == 0;
@@ -1118,7 +1116,7 @@ interval_literal:
 				} else if (strcasecmp(unit_string, "year") == 0 || strcasecmp(unit_string, "years") == 0) {
 					unit = kDatetimeYear;
 				} else {
-					yyerror(&yyloc, result, scanner, ("Interval qualifier '" + std::string{unit_string} + "' is unknown.").c_str());
+					yyerror(&yyloc, result, scanner, "Interval qualifier is unknown.");
 					YYERROR;
 				}
 			}
