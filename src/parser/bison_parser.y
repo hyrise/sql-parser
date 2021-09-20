@@ -1101,7 +1101,7 @@ interval_literal:
 		}
 	|   INTERVAL STRING {
 			int duration{0}, chars_parsed{0};
-			// 'Seconds' and 'minutes' are the longest accepted interval qualifiers (7 chars) + null byte
+			// 'seconds' and 'minutes' are the longest accepted interval qualifiers (7 chars) + null byte
 			char unit_string[8];
 			// If the whole string is parsed, chars_parsed points to the terminating null byte after the last character
 			if (sscanf($2, "%d %7s%n", &duration, unit_string, &chars_parsed) != 2 || $2[chars_parsed] != 0) {
