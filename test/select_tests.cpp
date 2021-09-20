@@ -890,7 +890,8 @@ TEST(IntervalLiteral) {
                                                                     {kDatetimeDay, "day"},
                                                                     {kDatetimeMonth, "month"},
                                                                     {kDatetimeYear, "year"}};
-  for (const auto& [unit, unit_string] : interval_units) {
+  for (const auto& it : interval_units) {
+    const auto& unit_string = it.second;
     const auto unit_string_plural = unit_string + "s";
     TEST_PARSE_SQL_QUERY("SELECT * FROM t where a = 1 + 5 " + unit_string + ";"
                        "SELECT * FROM t where a = 1 + 5 " + unit_string_plural + ";"
@@ -902,7 +903,7 @@ TEST(IntervalLiteral) {
       stmt = (SelectStatement*) statement;
       interval_literal = stmt->whereClause->expr2->expr2;
       ASSERT_EQ(interval_literal->name, std::string("INTERVAL"));
-      ASSERT_EQ(interval_literal->datetimeField, unit);
+      ASSERT_EQ(interval_literal->datetimeField, it.first);
       ASSERT_EQ(interval_literal->ival, 5);
       ASSERT_EQ(interval_literal->type, kExprLiteralInterval);
     }
