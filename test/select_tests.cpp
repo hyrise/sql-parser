@@ -1,4 +1,5 @@
 #include <climits>
+#include <map>
 
 #include "thirdparty/microtest/microtest.h"
 #include "sql_asserts.h"
@@ -854,10 +855,8 @@ TEST(IntervalLiteral) {
   SelectStatement* stmt;
   Expr* interval_literal;
   TEST_PARSE_SQL_QUERY("SELECT a + 1 year FROM t;"
-                       "SELECT * FROM t where a = (cast ('2000-01-01' as date) + 30 days);"
-                       "SELECT * FROM t where a = 1 - interval '1' second;"
-                       "SELECT * FROM t where a = 1 - interval '2 seconds';",
-                       result, 4);
+                       "SELECT * FROM t where a = cast ('2000-01-01' as date) - 30 days;",
+                       result, 2);
 
   stmt = (SelectStatement*) result.getStatement(0);
   ASSERT_TRUE(stmt->selectList);
@@ -885,31 +884,27 @@ TEST(IntervalLiteral) {
   ASSERT_EQ(interval_literal->ival, 30);
   ASSERT_EQ(interval_literal->type, kExprLiteralInterval);
 
-  stmt = (SelectStatement*) result.getStatement(2);
-  ASSERT_TRUE(stmt->whereClause);
-  ASSERT_TRUE(stmt->whereClause->type = kExprOperator);
-  ASSERT_TRUE(stmt->whereClause->opType = kOpEquals);
-  ASSERT_TRUE(stmt->whereClause->expr2);
-  ASSERT_TRUE(stmt->whereClause->expr2->type = kExprOperator);
-  ASSERT_TRUE(stmt->whereClause->expr2->opType = kOpMinus);
-  ASSERT_TRUE(stmt->whereClause->expr2->expr2);
-  interval_literal = stmt->whereClause->expr2->expr2;
-  ASSERT_EQ(interval_literal->name, std::string("INTERVAL"));
-  ASSERT_EQ(interval_literal->datetimeField, kDatetimeSecond);
-  ASSERT_EQ(interval_literal->ival, 1);
-  ASSERT_EQ(interval_literal->type, kExprLiteralInterval);
-
-  stmt = (SelectStatement*) result.getStatement(3);
-  ASSERT_TRUE(stmt->whereClause);
-  ASSERT_TRUE(stmt->whereClause->type = kExprOperator);
-  ASSERT_TRUE(stmt->whereClause->opType = kOpEquals);
-  ASSERT_TRUE(stmt->whereClause->expr2);
-  ASSERT_TRUE(stmt->whereClause->expr2->type = kExprOperator);
-  ASSERT_TRUE(stmt->whereClause->expr2->opType = kOpMinus);
-  ASSERT_TRUE(stmt->whereClause->expr2->expr2);
-  interval_literal = stmt->whereClause->expr2->expr2;
-  ASSERT_EQ(interval_literal->name, std::string("INTERVAL"));
-  ASSERT_EQ(interval_literal->datetimeField, kDatetimeSecond);
-  ASSERT_EQ(interval_literal->ival, 2);
-  ASSERT_EQ(interval_literal->type, kExprLiteralInterval);
+  const auto interval_units = std::map<DatetimeField, std::string>{{kDatetimeSecond, "second"},
+                                                                    {kDatetimeMinute, "minute"},
+                                                                    {kDatetimeHour, "hour"},
+                                                                    {kDatetimeDay, "day"},
+                                                                    {kDatetimeMonth, "month"},
+                                                                    {kDatetimeYear, "year"}};
+  for (const auto& [unit, unit_string] : interval_units) {
+    const auto unit_string_plural = unit_string + "s";
+    TEST_PARSE_SQL_QUERY("SELECT * FROM t where a = 1 + 5 " + unit_string + ";"
+                       "SELECT * FROM t where a = 1 + 5 " + unit_string_plural + ";"
+                       "SELECT * FROM t where a = 1 + interval '5'" + unit_string + ";"
+                       "SELECT * FROM t where a = 1 + interval '5 "  + unit_string + "';"
+                       "SELECT * FROM t where a = 1 + interval '5 "  + unit_string_plural + "';",
+                       result, 5);
+    for (const auto& statement : result.getStatements()) {
+      stmt = (SelectStatement*) statement;
+      interval_literal = stmt->whereClause->expr2->expr2;
+      ASSERT_EQ(interval_literal->name, std::string("INTERVAL"));
+      ASSERT_EQ(interval_literal->datetimeField, unit);
+      ASSERT_EQ(interval_literal->ival, 5);
+      ASSERT_EQ(interval_literal->type, kExprLiteralInterval);
+    }
+  }
 }
