@@ -704,7 +704,6 @@ TEST(Extract) {
   ASSERT_TRUE(stmt->selectList);
   ASSERT_EQ(stmt->selectList->size(), 1u);
   ASSERT_EQ(stmt->selectList->at(0)->type, kExprExtract);
-  ASSERT_EQ(stmt->selectList->at(0)->name, std::string("EXTRACT"));
   ASSERT_EQ(stmt->selectList->at(0)->datetimeField, kDatetimeYear);
   ASSERT_TRUE(stmt->selectList->at(0)->expr);
   ASSERT_EQ(stmt->selectList->at(0)->expr->type, kExprColumnRef);
@@ -713,7 +712,6 @@ TEST(Extract) {
   ASSERT_TRUE(stmt->selectList);
   ASSERT_EQ(stmt->selectList->size(), 2u);
   ASSERT_EQ(stmt->selectList->at(1)->type, kExprExtract);
-  ASSERT_EQ(stmt->selectList->at(1)->name, std::string("EXTRACT"));
   ASSERT_EQ(stmt->selectList->at(1)->datetimeField, kDatetimeMonth);
   ASSERT_TRUE(stmt->selectList->at(1)->expr);
   ASSERT_EQ(stmt->selectList->at(1)->expr->type, kExprColumnRef);
@@ -724,7 +722,6 @@ TEST(Extract) {
   ASSERT_TRUE(stmt->whereClause);
   ASSERT_TRUE(stmt->whereClause->expr);
   ASSERT_EQ(stmt->whereClause->expr->type, kExprExtract);
-  ASSERT_EQ(stmt->whereClause->expr->name, std::string("EXTRACT"));
   ASSERT_EQ(stmt->whereClause->expr->datetimeField, kDatetimeMinute);
 }
 
@@ -743,7 +740,6 @@ TEST(CastExpression) {
 
   ASSERT_EQ(stmt->selectList->size(), 1u);
   ASSERT_EQ(stmt->selectList->at(0)->type, kExprCast);
-  ASSERT_EQ(stmt->selectList->at(0)->name, std::string("CAST"));
   ASSERT_EQ(stmt->selectList->at(0)->columnType, ColumnType(DataType::INT));
   ASSERT_EQ(stmt->selectList->at(0)->expr->type, kExprLiteralInt);
 }
@@ -833,9 +829,9 @@ TEST(CastAsDate) {
     stmt);
 
   ASSERT_TRUE(result.isValid());
-  ASSERT_EQ(1, stmt->selectList->size());
-  ASSERT_STREQ("CAST", stmt->selectList->front()->name);
-  ASSERT_EQ(DataType::DATE, stmt->selectList->front()->columnType.data_type);
+  ASSERT_EQ(stmt->selectList->size(), 1);
+  ASSERT_EQ(stmt->selectList->front()->type, kExprCast);
+  ASSERT_EQ(stmt->selectList->front()->columnType.data_type, DataType::DATE);
 }
 
 TEST(DateLiteral) {
@@ -864,7 +860,6 @@ TEST(IntervalLiteral) {
   ASSERT_EQ(stmt->selectList->at(0)->type, kExprOperator);
   ASSERT_TRUE(stmt->selectList->at(0)->expr2);
   interval_literal = stmt->selectList->at(0)->expr2;
-  ASSERT_EQ(interval_literal->name, std::string("INTERVAL"));
   ASSERT_EQ(interval_literal->datetimeField, kDatetimeYear);
   ASSERT_EQ(interval_literal->ival, 1);
   ASSERT_EQ(interval_literal->type, kExprLiteralInterval);
@@ -879,7 +874,6 @@ TEST(IntervalLiteral) {
   ASSERT_TRUE(stmt->whereClause->expr2->opType = kOpPlus);
   ASSERT_TRUE(stmt->whereClause->expr2->expr2);
   interval_literal = stmt->whereClause->expr2->expr2;
-  ASSERT_EQ(interval_literal->name, std::string("INTERVAL"));
   ASSERT_EQ(interval_literal->datetimeField, kDatetimeDay);
   ASSERT_EQ(interval_literal->ival, 30);
   ASSERT_EQ(interval_literal->type, kExprLiteralInterval);
@@ -906,7 +900,6 @@ TEST(IntervalLiteral) {
     for (const auto& statement : result.getStatements()) {
       stmt = (SelectStatement*) statement;
       interval_literal = stmt->whereClause->expr2->expr2;
-      ASSERT_EQ(interval_literal->name, std::string("INTERVAL"));
       ASSERT_EQ(interval_literal->datetimeField, it.first);
       ASSERT_EQ(interval_literal->ival, 5);
       ASSERT_EQ(interval_literal->type, kExprLiteralInterval);

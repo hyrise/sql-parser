@@ -142,7 +142,6 @@ Expr* Expr::makeDateLiteral(char* string) {
 
 Expr* Expr::makeIntervalLiteral(int64_t duration, DatetimeField unit) {
     Expr* e = new Expr(kExprLiteralInterval);
-    e->name = strdup("INTERVAL");
     e->ival = duration;
     e->datetimeField = unit;
     return e;
@@ -233,7 +232,6 @@ Expr* Expr::makeInOperator(Expr* expr, SelectStatement* select) {
 
 Expr* Expr::makeExtract(DatetimeField datetimeField, Expr* expr) {
     Expr* e = new Expr(kExprExtract);
-    e->name = strdup("EXTRACT");
     e->datetimeField = datetimeField;
     e->expr = expr;
     return e;
@@ -241,7 +239,6 @@ Expr* Expr::makeExtract(DatetimeField datetimeField, Expr* expr) {
 
 Expr* Expr::makeCast(Expr* expr, ColumnType columnType) {
     Expr* e = new Expr(kExprCast);
-    e->name = strdup("CAST");
     e->columnType = columnType;
     e->expr = expr;
     return e;

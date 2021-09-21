@@ -538,10 +538,9 @@ TEST(CastAsType) {
         stmt);
 
   ASSERT_TRUE(result.isValid());
-  ASSERT_EQ(1, stmt->selectList->size());
-  ASSERT_STREQ("CAST", stmt->selectList->front()->name);
-  ASSERT_EQ(DataType::VARCHAR, stmt->selectList->front()->columnType.data_type);
-  ASSERT_EQ(8, stmt->selectList->front()->columnType.length);
+  ASSERT_EQ(stmt->selectList->size(), 1);
+  ASSERT_EQ(stmt->selectList->front()->columnType.data_type, DataType::VARCHAR);
+  ASSERT_EQ(stmt->selectList->front()->columnType.length, 8);
 }
 
 TEST_MAIN();

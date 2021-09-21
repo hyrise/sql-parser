@@ -128,7 +128,7 @@ namespace hsql {
       inprint("NULL", numIndent);
       break;
     case kExprLiteralInterval:
-      inprint(expr->name, numIndent);
+      inprint("INTERVAL", numIndent);
       inprint(expr->ival, numIndent + 1);
       inprint(expr->datetimeField, numIndent + 1);
       break;
@@ -137,12 +137,12 @@ namespace hsql {
       for (Expr* e : *expr->exprList) printExpression(e, numIndent + 1);
       break;
     case kExprExtract:
-      inprint(expr->name, numIndent);
+      inprint("EXTRACT", numIndent);
       inprint(expr->datetimeField, numIndent + 1);
       printExpression(expr->expr, numIndent + 1);
       break;
     case kExprCast:
-      inprint(expr->name, numIndent);
+      inprint("CAST", numIndent);
       inprint(expr->columnType, numIndent + 1);
       printExpression(expr->expr, numIndent + 1);
       break;
