@@ -1,4 +1,5 @@
 #include <climits>
+#include <map>
 
 #include "thirdparty/microtest/microtest.h"
 #include "sql_asserts.h"
@@ -120,11 +121,11 @@ TEST(SelectUnaryMinusTest) {
 
 TEST(SelectSubstrTest) {
   TEST_PARSE_SINGLE_SQL(
-          "SELECT SUBSTR(a, 3, 5) FROM students;",
-          kStmtSelect,
-          SelectStatement,
-          result,
-          stmt);
+    "SELECT SUBSTR(a, 3, 5) FROM students;",
+    kStmtSelect,
+    SelectStatement,
+    result,
+    stmt);
 
   ASSERT_NULL(stmt->whereClause);
   ASSERT_NULL(stmt->groupBy);
@@ -450,7 +451,7 @@ TEST(SelectAliasAbsent) {
     result,
     stmt);
 
-    ASSERT_NULL(stmt->fromTable->alias);
+  ASSERT_NULL(stmt->fromTable->alias);
 }
 
 TEST(SelectAliasSimple) {
@@ -461,10 +462,10 @@ TEST(SelectAliasSimple) {
     result,
     stmt);
 
-    Alias* alias = stmt->fromTable->alias;
-    ASSERT_NOTNULL(alias);
-    ASSERT_STREQ(alias->name, "s1");
-    ASSERT_NULL(alias->columns);
+  Alias* alias = stmt->fromTable->alias;
+  ASSERT_NOTNULL(alias);
+  ASSERT_STREQ(alias->name, "s1");
+  ASSERT_NULL(alias->columns);
 }
 
 TEST(SelectAliasWithColumns) {
@@ -475,16 +476,16 @@ TEST(SelectAliasWithColumns) {
     result,
     stmt);
 
-    Alias* alias = stmt->fromTable->alias;
-    ASSERT_NOTNULL(alias);
+  Alias* alias = stmt->fromTable->alias;
+  ASSERT_NOTNULL(alias);
 
-    ASSERT_NOTNULL(alias->name);
-    ASSERT_STREQ(alias->name, "s1");
+  ASSERT_NOTNULL(alias->name);
+  ASSERT_STREQ(alias->name, "s1");
 
-    ASSERT_NOTNULL(alias->columns);
-    ASSERT_EQ(alias->columns->size(), 2);
-    ASSERT_STREQ(alias->columns->at(0), "id");
-    ASSERT_STREQ(alias->columns->at(1), "city");
+  ASSERT_NOTNULL(alias->columns);
+  ASSERT_EQ(alias->columns->size(), 2);
+  ASSERT_STREQ(alias->columns->at(0), "id");
+  ASSERT_STREQ(alias->columns->at(1), "city");
 }
 
 TEST(Operators) {
@@ -611,7 +612,7 @@ TEST(SetLimitOffset) {
                     select top 10 a from t1; \
                     select top 20 a from t1 limit 10; \
                     select a from t1 limit (SELECT MAX(b) FROM t1) offset (SELECT MIN(b) FROM t1);",
-        result, 14);
+                       result, 14);
 
   stmt = (SelectStatement*) result.getStatement(0);
   ASSERT_EQ(stmt->limit->limit->type, kExprLiteralInt);
@@ -703,7 +704,6 @@ TEST(Extract) {
   ASSERT_TRUE(stmt->selectList);
   ASSERT_EQ(stmt->selectList->size(), 1u);
   ASSERT_EQ(stmt->selectList->at(0)->type, kExprExtract);
-  ASSERT_EQ(stmt->selectList->at(0)->name, std::string("EXTRACT"));
   ASSERT_EQ(stmt->selectList->at(0)->datetimeField, kDatetimeYear);
   ASSERT_TRUE(stmt->selectList->at(0)->expr);
   ASSERT_EQ(stmt->selectList->at(0)->expr->type, kExprColumnRef);
@@ -712,7 +712,6 @@ TEST(Extract) {
   ASSERT_TRUE(stmt->selectList);
   ASSERT_EQ(stmt->selectList->size(), 2u);
   ASSERT_EQ(stmt->selectList->at(1)->type, kExprExtract);
-  ASSERT_EQ(stmt->selectList->at(1)->name, std::string("EXTRACT"));
   ASSERT_EQ(stmt->selectList->at(1)->datetimeField, kDatetimeMonth);
   ASSERT_TRUE(stmt->selectList->at(1)->expr);
   ASSERT_EQ(stmt->selectList->at(1)->expr->type, kExprColumnRef);
@@ -723,7 +722,6 @@ TEST(Extract) {
   ASSERT_TRUE(stmt->whereClause);
   ASSERT_TRUE(stmt->whereClause->expr);
   ASSERT_EQ(stmt->whereClause->expr->type, kExprExtract);
-  ASSERT_EQ(stmt->whereClause->expr->name, std::string("EXTRACT"));
   ASSERT_EQ(stmt->whereClause->expr->datetimeField, kDatetimeMinute);
 }
 
@@ -742,7 +740,6 @@ TEST(CastExpression) {
 
   ASSERT_EQ(stmt->selectList->size(), 1u);
   ASSERT_EQ(stmt->selectList->at(0)->type, kExprCast);
-  ASSERT_EQ(stmt->selectList->at(0)->name, std::string("CAST"));
   ASSERT_EQ(stmt->selectList->at(0)->columnType, ColumnType(DataType::INT));
   ASSERT_EQ(stmt->selectList->at(0)->expr->type, kExprLiteralInt);
 }
@@ -825,27 +822,87 @@ TEST(WithClauseDouble) {
 
 TEST(CastAsDate) {
   TEST_PARSE_SINGLE_SQL(
-       "SELECT CAST(ID AS DATE) FROM TEST",
-        kStmtSelect,
-        SelectStatement,
-        result,
-        stmt);
+    "SELECT CAST(ID AS DATE) FROM TEST",
+    kStmtSelect,
+    SelectStatement,
+    result,
+    stmt);
 
   ASSERT_TRUE(result.isValid());
-  ASSERT_EQ(1, stmt->selectList->size());
-  ASSERT_STREQ("CAST", stmt->selectList->front()->name);
-  ASSERT_EQ(DataType::DATE, stmt->selectList->front()->columnType.data_type);
+  ASSERT_EQ(stmt->selectList->size(), 1);
+  ASSERT_EQ(stmt->selectList->front()->type, kExprCast);
+  ASSERT_EQ(stmt->selectList->front()->columnType.data_type, DataType::DATE);
 }
 
 TEST(DateLiteral) {
   TEST_PARSE_SINGLE_SQL(
-       "SELECT * FROM t WHERE a = DATE '1996-12-31'",
-        kStmtSelect,
-        SelectStatement,
-        result,
-        stmt);
+    "SELECT * FROM t WHERE a = DATE '1996-12-31'",
+    kStmtSelect,
+    SelectStatement,
+    result,
+    stmt);
   ASSERT_TRUE(result.isValid());
   stmt = (SelectStatement*) result.getStatement(0);
   ASSERT_EQ(stmt->whereClause->opType, kOpEquals);
   ASSERT_STREQ(stmt->whereClause->expr2->name, "1996-12-31");
+}
+
+TEST(IntervalLiteral) {
+  SelectStatement* stmt;
+  Expr* interval_literal;
+  TEST_PARSE_SQL_QUERY("SELECT a + 1 year FROM t;"
+                       "SELECT * FROM t where a = cast ('2000-01-01' as date) - 30 days;",
+                       result, 2);
+
+  stmt = (SelectStatement*) result.getStatement(0);
+  ASSERT_TRUE(stmt->selectList);
+  ASSERT_EQ(stmt->selectList->size(), 1u);
+  ASSERT_EQ(stmt->selectList->at(0)->type, kExprOperator);
+  ASSERT_TRUE(stmt->selectList->at(0)->expr2);
+  interval_literal = stmt->selectList->at(0)->expr2;
+  ASSERT_EQ(interval_literal->datetimeField, kDatetimeYear);
+  ASSERT_EQ(interval_literal->ival, 1);
+  ASSERT_EQ(interval_literal->type, kExprLiteralInterval);
+
+  stmt = (SelectStatement*) result.getStatement(1);
+  ASSERT_TRUE(stmt->whereClause);
+  ASSERT_TRUE(stmt->whereClause->expr);
+  ASSERT_TRUE(stmt->whereClause->type = kExprOperator);
+  ASSERT_TRUE(stmt->whereClause->opType = kOpEquals);
+  ASSERT_TRUE(stmt->whereClause->expr2);
+  ASSERT_TRUE(stmt->whereClause->expr2->type = kExprOperator);
+  ASSERT_TRUE(stmt->whereClause->expr2->opType = kOpPlus);
+  ASSERT_TRUE(stmt->whereClause->expr2->expr2);
+  interval_literal = stmt->whereClause->expr2->expr2;
+  ASSERT_EQ(interval_literal->datetimeField, kDatetimeDay);
+  ASSERT_EQ(interval_literal->ival, 30);
+  ASSERT_EQ(interval_literal->type, kExprLiteralInterval);
+
+  const auto interval_units = std::map<DatetimeField, std::string> {
+    {kDatetimeSecond, "second"},
+    {kDatetimeMinute, "minute"},
+    {kDatetimeHour, "hour"},
+    {kDatetimeDay, "day"},
+    {kDatetimeMonth, "month"},
+    {kDatetimeYear, "year"}
+  };
+
+  for (const auto& it : interval_units) {
+    const auto& unit_string = it.second;
+    const auto unit_string_plural = unit_string + "s";
+    TEST_PARSE_SQL_QUERY("SELECT * FROM t where a = 1 + 5 " + unit_string + ";"
+                         "SELECT * FROM t where a = 1 + 5 " + unit_string_plural + ";"
+                         "SELECT * FROM t where a = 1 + interval '5'" + unit_string + ";"
+                         "SELECT * FROM t where a = 1 + interval '5 "  + unit_string + "';"
+                         "SELECT * FROM t where a = 1 + interval '5 "  + unit_string_plural + "';",
+                         result, 5);
+
+    for (const auto& statement : result.getStatements()) {
+      stmt = (SelectStatement*) statement;
+      interval_literal = stmt->whereClause->expr2->expr2;
+      ASSERT_EQ(interval_literal->datetimeField, it.first);
+      ASSERT_EQ(interval_literal->ival, 5);
+      ASSERT_EQ(interval_literal->type, kExprLiteralInterval);
+    }
+  }
 }
