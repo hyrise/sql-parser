@@ -38,4 +38,4 @@
 !SELECT * FROM t WHERE a = DATE '2000-01-01' + x DAYS;
 !SELECT * FROM t WHERE a = DATE '2000-01-01' + INTERVAL 'x' DAY;
 !SELECT * FROM t WHERE a = DATE '2000-01-01' + INTERVAL '3.3 DAYS';
-!DROP INDEX myindex ON mytable; # ON is not supported by postgres TODO(Mrcl) verify that the standard does not support it and change "postgres" to "the sql standard"
+!DROP INDEX myindex ON mytable; # ON is not supported by postgres
