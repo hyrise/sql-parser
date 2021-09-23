@@ -38,4 +38,6 @@
 !SELECT * FROM t WHERE a = DATE '2000-01-01' + x DAYS;
 !SELECT * FROM t WHERE a = DATE '2000-01-01' + INTERVAL 'x' DAY;
 !SELECT * FROM t WHERE a = DATE '2000-01-01' + INTERVAL '3.3 DAYS';
-!DROP INDEX myindex ON mytable; # ON is not supported by postgres
+# ON is not supported by postgres. We follow postgres here since the sql-92 standard does not specify index
+# implementation details.
+!DROP INDEX myindex ON mytable;
