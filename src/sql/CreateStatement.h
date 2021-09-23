@@ -10,7 +10,13 @@
 namespace hsql {
   struct SelectStatement;
 
-  enum struct ConstraintType {PRIMARY_KEY, UNIQUE, NOTNULL, NOT_SET, _NULL};
+  enum struct ConstraintType {
+    None,
+    NotNull,
+    Null,
+    PrimaryKey,
+    Unique
+  };
 
   // Superclass for both TableConstraint and Column Definition
   struct TableElement {
@@ -37,10 +43,10 @@ namespace hsql {
       nullable = false;
 
       for(unsigned long constraint_index = 0; constraint_index < column_constraints->size(); constraint_index++) {
-        if(column_constraints->at(constraint_index) == ConstraintType::_NULL) {
+        if(column_constraints->at(constraint_index) == ConstraintType::Null) {
           nullable = true;
           column_constraints->erase(column_constraints->cbegin() + constraint_index);
-        } else if(column_constraints->at(constraint_index) == ConstraintType::NOTNULL) {
+        } else if(column_constraints->at(constraint_index) == ConstraintType::NotNull) {
           column_constraints->erase(column_constraints->cbegin() + constraint_index);
         }
       }

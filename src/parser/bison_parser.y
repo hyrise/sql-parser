@@ -625,15 +625,15 @@ column_constraint_list:
     |   column_constraint_list column_constraint { $1->push_back($2); $$ = $1; }
 
 column_constraint:
-        PRIMARY KEY { $$ = ConstraintType::PRIMARY_KEY; }
-    |   UNIQUE { $$ = ConstraintType::UNIQUE; }
-    |   NULL { $$ = ConstraintType::_NULL; }
-    |   NOT NULL { $$ = ConstraintType::NOTNULL; }
+        PRIMARY KEY { $$ = ConstraintType::PrimaryKey; }
+    |   UNIQUE { $$ = ConstraintType::Unique; }
+    |   NULL { $$ = ConstraintType::Null; }
+    |   NOT NULL { $$ = ConstraintType::NotNull; }
     ;
 
 table_constraint:
-        PRIMARY KEY '(' ident_commalist ')'  { $$ = new TableConstraint(ConstraintType::PRIMARY_KEY, $4); }
-    |   UNIQUE '(' ident_commalist ')'  { $$ = new TableConstraint(ConstraintType::UNIQUE, $3); }
+        PRIMARY KEY '(' ident_commalist ')'  { $$ = new TableConstraint(ConstraintType::PrimaryKey, $4); }
+    |   UNIQUE '(' ident_commalist ')'  { $$ = new TableConstraint(ConstraintType::Unique, $3); }
     ;
 
 

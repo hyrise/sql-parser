@@ -1,4 +1,4 @@
-/* A Bison parser, made by GNU Bison 3.7.6.  */
+/* A Bison parser, made by GNU Bison 3.8.1.  */
 
 /* Bison interface for Yacc-like parsers in C
 
@@ -329,6 +329,8 @@ struct HSQL_LTYPE
 
 
 
+
 int hsql_parse (hsql::SQLParserResult* result, yyscan_t scanner);
+
 
 #endif /* !YY_HSQL_BISON_PARSER_H_INCLUDED  */
