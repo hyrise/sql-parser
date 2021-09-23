@@ -227,20 +227,27 @@ extern int hsql_debug;
     SQL_DAY = 394,                 /* DAY  */
     SQL_MONTH = 395,               /* MONTH  */
     SQL_YEAR = 396,                /* YEAR  */
-    SQL_TRUE = 397,                /* TRUE  */
-    SQL_FALSE = 398,               /* FALSE  */
-    SQL_TRANSACTION = 399,         /* TRANSACTION  */
-    SQL_BEGIN = 400,               /* BEGIN  */
-    SQL_COMMIT = 401,              /* COMMIT  */
-    SQL_ROLLBACK = 402,            /* ROLLBACK  */
-    SQL_EQUALS = 403,              /* EQUALS  */
-    SQL_NOTEQUALS = 404,           /* NOTEQUALS  */
-    SQL_LESS = 405,                /* LESS  */
-    SQL_GREATER = 406,             /* GREATER  */
-    SQL_LESSEQ = 407,              /* LESSEQ  */
-    SQL_GREATEREQ = 408,           /* GREATEREQ  */
-    SQL_NOTNULL = 409,             /* NOTNULL  */
-    SQL_UMINUS = 410               /* UMINUS  */
+    SQL_SECONDS = 397,             /* SECONDS  */
+    SQL_MINUTES = 398,             /* MINUTES  */
+    SQL_HOURS = 399,               /* HOURS  */
+    SQL_DAYS = 400,                /* DAYS  */
+    SQL_MONTHS = 401,              /* MONTHS  */
+    SQL_YEARS = 402,               /* YEARS  */
+    SQL_INTERVAL = 403,            /* INTERVAL  */
+    SQL_TRUE = 404,                /* TRUE  */
+    SQL_FALSE = 405,               /* FALSE  */
+    SQL_TRANSACTION = 406,         /* TRANSACTION  */
+    SQL_BEGIN = 407,               /* BEGIN  */
+    SQL_COMMIT = 408,              /* COMMIT  */
+    SQL_ROLLBACK = 409,            /* ROLLBACK  */
+    SQL_EQUALS = 410,              /* EQUALS  */
+    SQL_NOTEQUALS = 411,           /* NOTEQUALS  */
+    SQL_LESS = 412,                /* LESS  */
+    SQL_GREATER = 413,             /* GREATER  */
+    SQL_LESSEQ = 414,              /* LESSEQ  */
+    SQL_GREATEREQ = 415,           /* GREATEREQ  */
+    SQL_NOTNULL = 416,             /* NOTNULL  */
+    SQL_UMINUS = 417               /* UMINUS  */
   };
   typedef enum hsql_tokentype hsql_token_kind_t;
 #endif
@@ -305,7 +312,7 @@ union HSQL_STYPE
 	std::vector<hsql::TableElement*>* table_element_vec;
 	std::vector<hsql::ConstraintType>* column_constraint_vec;
 
-#line 309 "bison_parser.h"
+#line 316 "bison_parser.h"
 
 };
 typedef union HSQL_STYPE HSQL_STYPE;
