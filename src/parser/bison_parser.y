@@ -126,6 +126,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 	hsql::Expr*               expr;
 	hsql::GroupByDescription* group_t;
 	hsql::ImportType          import_type_t;
+	hsql::JoinType            join_type;
 	hsql::LimitDescription*   limit;
 	hsql::OrderDescription*   order;
 	hsql::OrderType           order_type;
@@ -152,7 +153,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 /*********************************
  ** Destructor symbols
  *********************************/
-%destructor { } <fval> <ival> <uval> <bval> <order_type> <datetime_field> <column_type_t> <column_constraint_t> <import_type_t> <column_specification_t> <column_constraint_vec>
+%destructor { } <fval> <ival> <bval> <join_type> <order_type> <datetime_field> <column_type_t> <column_constraint_t> <import_type_t> <column_specification_t> <column_constraint_vec>
 %destructor { free( ($$.name) ); free( ($$.schema) ); } <table_name>
 %destructor { free( ($$) ); } <sval>
 %destructor {
@@ -218,7 +219,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 %type <bval>                   opt_not_exists opt_exists opt_distinct opt_all
 %type <column_specification_t> opt_decimal_specification
 %type <column_specification_t> opt_time_specification
-%type <uval>                   opt_join_type
+%type <join_type>              opt_join_type
 %type <table>                  opt_from_clause from_clause table_ref table_ref_atomic table_ref_name nonjoin_table_ref_atomic
 %type <table>                  join_clause table_ref_name_no_alias
 %type <expr>                   expr operand scalar_expr unary_expr binary_expr logic_expr exists_expr extract_expr cast_expr
