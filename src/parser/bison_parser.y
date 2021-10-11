@@ -214,7 +214,6 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 %type <show_stmt>              show_statement
 %type <table_name>             table_name
 %type <sval>                   opt_index_name
-%type <sval>                   index_name
 %type <sval>                   file_path prepare_target_query
 %type <bval>                   opt_not_exists opt_exists opt_distinct opt_all
 %type <column_specification_t> opt_decimal_specification
@@ -664,7 +663,7 @@ drop_statement:
 			$$->name = $3;
 		}
 
-	|	DROP INDEX opt_exists index_name {
+	|	DROP INDEX opt_exists IDENTIFIER {
     			$$ = new DropStatement(kDropIndex);
     			$$->ifExists = $3;
     			$$->indexName = $4;
@@ -1301,11 +1300,6 @@ opt_index_name:
 		IDENTIFIER			{ $$ = $1;}
 	|	/* empty */			{ $$ = nullptr;}
 	;
-
-index_name:
-		IDENTIFIER			{ $$ = $1;}
-	;
-
 
 table_alias:
 		alias
