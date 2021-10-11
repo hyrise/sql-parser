@@ -184,7 +184,7 @@ namespace hsql {
   AlterAction::~AlterAction() = default;
 
   DropColumnAction::DropColumnAction(char* column_name) :
-      AlterAction(DROPCOLUMN),
+      AlterAction(ActionType::DropColumn),
       columnName(column_name),
       ifExists(false)
    {};

@@ -133,7 +133,7 @@ TEST(AlterStatementDropActionTest) {
 
   auto dropAction = (const DropColumnAction*) stmt->action;
 
-  ASSERT_EQ(dropAction->type, hsql::ActionType::DROPCOLUMN);
+  ASSERT_EQ(dropAction->type, hsql::ActionType::DropColumn);
   ASSERT_STREQ(dropAction->columnName, "mycolumn");
 }
 

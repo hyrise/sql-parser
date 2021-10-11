@@ -7,7 +7,7 @@
 namespace hsql {
 
   enum ActionType {
-    DROPCOLUMN,
+    DropColumn,
   };
 
   struct AlterAction {
