@@ -3586,85 +3586,85 @@ yyreduce:
 
   case 57: /* column_type: INT  */
 #line 592 "bison_parser.y"
-                    { (yyval.column_type_t) = ColumnType{DataType::INT}; }
+            { (yyval.column_type_t) = ColumnType{DataType::INT}; }
 #line 3591 "bison_parser.cpp"
     break;
 
   case 58: /* column_type: INTEGER  */
 #line 593 "bison_parser.y"
-                        { (yyval.column_type_t) = ColumnType{DataType::INT}; }
+                { (yyval.column_type_t) = ColumnType{DataType::INT}; }
 #line 3597 "bison_parser.cpp"
     break;
 
   case 59: /* column_type: LONG  */
 #line 594 "bison_parser.y"
-                     { (yyval.column_type_t) = ColumnType{DataType::LONG}; }
+             { (yyval.column_type_t) = ColumnType{DataType::LONG}; }
 #line 3603 "bison_parser.cpp"
     break;
 
   case 60: /* column_type: FLOAT  */
 #line 595 "bison_parser.y"
-                      { (yyval.column_type_t) = ColumnType{DataType::FLOAT}; }
+              { (yyval.column_type_t) = ColumnType{DataType::FLOAT}; }
 #line 3609 "bison_parser.cpp"
     break;
 
   case 61: /* column_type: DECIMAL opt_decimal_specification  */
 #line 596 "bison_parser.y"
-                                              { (yyval.column_type_t) = ColumnType{DataType::DECIMAL, 0, (yyvsp[0].column_specification_t)}; }
+                                          { (yyval.column_type_t) = ColumnType{DataType::DECIMAL, 0, (yyvsp[0].column_specification_t)}; }
 #line 3615 "bison_parser.cpp"
     break;
 
   case 62: /* column_type: DOUBLE  */
 #line 597 "bison_parser.y"
-                       { (yyval.column_type_t) = ColumnType{DataType::DOUBLE}; }
+               { (yyval.column_type_t) = ColumnType{DataType::DOUBLE}; }
 #line 3621 "bison_parser.cpp"
     break;
 
   case 63: /* column_type: REAL  */
 #line 598 "bison_parser.y"
-                     { (yyval.column_type_t) = ColumnType{DataType::REAL}; }
+             { (yyval.column_type_t) = ColumnType{DataType::REAL}; }
 #line 3627 "bison_parser.cpp"
     break;
 
   case 64: /* column_type: VARCHAR '(' INTVAL ')'  */
 #line 599 "bison_parser.y"
-                                       { (yyval.column_type_t) = ColumnType{DataType::VARCHAR, (yyvsp[-1].ival)}; }
+                               { (yyval.column_type_t) = ColumnType{DataType::VARCHAR, (yyvsp[-1].ival)}; }
 #line 3633 "bison_parser.cpp"
     break;
 
   case 65: /* column_type: CHARACTER VARYING '(' INTVAL ')'  */
 #line 600 "bison_parser.y"
-                                                { (yyval.column_type_t) = ColumnType{DataType::VARCHAR, (yyvsp[-1].ival)}; }
+                                        { (yyval.column_type_t) = ColumnType{DataType::VARCHAR, (yyvsp[-1].ival)}; }
 #line 3639 "bison_parser.cpp"
     break;
 
   case 66: /* column_type: CHAR '(' INTVAL ')'  */
 #line 601 "bison_parser.y"
-                                    { (yyval.column_type_t) = ColumnType{DataType::CHAR, (yyvsp[-1].ival)}; }
+                            { (yyval.column_type_t) = ColumnType{DataType::CHAR, (yyvsp[-1].ival)}; }
 #line 3645 "bison_parser.cpp"
     break;
 
   case 67: /* column_type: TEXT  */
 #line 602 "bison_parser.y"
-                     { (yyval.column_type_t) = ColumnType{DataType::TEXT}; }
+             { (yyval.column_type_t) = ColumnType{DataType::TEXT}; }
 #line 3651 "bison_parser.cpp"
     break;
 
   case 68: /* column_type: TIME opt_time_specification  */
 #line 603 "bison_parser.y"
-                                        { (yyval.column_type_t) = ColumnType{DataType::TIME, 0, (yyvsp[0].column_specification_t) }; }
+                                    { (yyval.column_type_t) = ColumnType{DataType::TIME, 0, (yyvsp[0].column_specification_t) }; }
 #line 3657 "bison_parser.cpp"
     break;
 
   case 69: /* column_type: DATETIME  */
 #line 604 "bison_parser.y"
-                         { (yyval.column_type_t) = ColumnType{DataType::DATETIME}; }
+                 { (yyval.column_type_t) = ColumnType{DataType::DATETIME}; }
 #line 3663 "bison_parser.cpp"
     break;
 
   case 70: /* column_type: DATE  */
 #line 605 "bison_parser.y"
-                     { (yyval.column_type_t) = ColumnType{DataType::DATE}; }
+             { (yyval.column_type_t) = ColumnType{DataType::DATE}; }
 #line 3669 "bison_parser.cpp"
     break;
 

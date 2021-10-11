@@ -589,21 +589,21 @@ column_def:
 	;
 
 column_type:
-		INT { $$ = ColumnType{DataType::INT}; }
-	|	INTEGER { $$ = ColumnType{DataType::INT}; }
-	|	LONG { $$ = ColumnType{DataType::LONG}; }
-	|	FLOAT { $$ = ColumnType{DataType::FLOAT}; }
-	|   DECIMAL opt_decimal_specification { $$ = ColumnType{DataType::DECIMAL, 0, $2}; }
-	|	DOUBLE { $$ = ColumnType{DataType::DOUBLE}; }
-	|	REAL { $$ = ColumnType{DataType::REAL}; }
-	|	VARCHAR '(' INTVAL ')' { $$ = ColumnType{DataType::VARCHAR, $3}; }
-	|	CHARACTER VARYING'(' INTVAL ')' { $$ = ColumnType{DataType::VARCHAR, $4}; }
-	|	CHAR '(' INTVAL ')' { $$ = ColumnType{DataType::CHAR, $3}; }
-	|	TEXT { $$ = ColumnType{DataType::TEXT}; }
-	|   TIME opt_time_specification { $$ = ColumnType{DataType::TIME, 0, $2 }; }
-	|	DATETIME { $$ = ColumnType{DataType::DATETIME}; }
-	|	DATE { $$ = ColumnType{DataType::DATE}; }
-	;
+        INT { $$ = ColumnType{DataType::INT}; }
+    |   INTEGER { $$ = ColumnType{DataType::INT}; }
+    |   LONG { $$ = ColumnType{DataType::LONG}; }
+    |   FLOAT { $$ = ColumnType{DataType::FLOAT}; }
+    |   DECIMAL opt_decimal_specification { $$ = ColumnType{DataType::DECIMAL, 0, $2}; }
+    |   DOUBLE { $$ = ColumnType{DataType::DOUBLE}; }
+    |   REAL { $$ = ColumnType{DataType::REAL}; }
+    |   VARCHAR '(' INTVAL ')' { $$ = ColumnType{DataType::VARCHAR, $3}; }
+    |   CHARACTER VARYING'(' INTVAL ')' { $$ = ColumnType{DataType::VARCHAR, $4}; }
+    |   CHAR '(' INTVAL ')' { $$ = ColumnType{DataType::CHAR, $3}; }
+    |   TEXT { $$ = ColumnType{DataType::TEXT}; }
+    |   TIME opt_time_specification { $$ = ColumnType{DataType::TIME, 0, $2 }; }
+    |   DATETIME { $$ = ColumnType{DataType::DATETIME}; }
+    |   DATE { $$ = ColumnType{DataType::DATE}; }
+    ;
 
 opt_time_specification:
         '(' INTVAL ')'  { $$ = ColumnSpecification{$2}; }
