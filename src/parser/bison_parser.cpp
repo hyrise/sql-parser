@@ -3645,7 +3645,7 @@ yyreduce:
 
   case 65: /* column_type: CHARACTER VARYING '(' INTVAL ')'  */
 #line 601 "bison_parser.y"
-                                                { (yyval.column_type_t) = ColumnType{DataType::VARCHAR_VARYING, (yyvsp[-1].ival)}; }
+                                                { (yyval.column_type_t) = ColumnType{DataType::VARCHAR, (yyvsp[-1].ival)}; }
 #line 3650 "bison_parser.cpp"
     break;
 

@@ -14,7 +14,6 @@ namespace hsql {
     REAL,
     CHAR,
     VARCHAR,
-    VARCHAR_VARYING,
     TEXT,
     DATETIME,
     DATE,

@@ -598,7 +598,7 @@ column_type:
 	|	DOUBLE { $$ = ColumnType{DataType::DOUBLE}; }
 	|	REAL { $$ = ColumnType{DataType::REAL}; }
 	|	VARCHAR '(' INTVAL ')' { $$ = ColumnType{DataType::VARCHAR, $3}; }
-	|	CHARACTER VARYING'(' INTVAL ')' { $$ = ColumnType{DataType::VARCHAR_VARYING, $4}; }
+	|	CHARACTER VARYING'(' INTVAL ')' { $$ = ColumnType{DataType::VARCHAR, $4}; }
 	|	CHAR '(' INTVAL ')' { $$ = ColumnType{DataType::CHAR, $3}; }
 	|	TEXT { $$ = ColumnType{DataType::TEXT}; }
 	|   TIME opt_time_specification { $$ = ColumnType{DataType::TIME, 0, $2 }; }
