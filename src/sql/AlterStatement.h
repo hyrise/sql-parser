@@ -24,7 +24,6 @@ namespace hsql {
     ~DropColumnAction() override;
   };
 
-
   // Represents SQL Alter Table statements.
   // Example "ALTER TABLE students DROP COLUMN name;"
   struct AlterStatement : SQLStatement {
@@ -38,4 +37,5 @@ namespace hsql {
     AlterAction* action;
   };
 } // namespace hsql
+
 #endif

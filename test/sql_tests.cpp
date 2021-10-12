@@ -191,8 +191,6 @@ TEST(DropIndexIfExistsTest) {
   ASSERT_EQ(stmt->ifExists, true);
 }
 
-
-
 TEST(DropTableStatementTest) {
   TEST_PARSE_SINGLE_SQL(
     "DROP TABLE students",
@@ -220,8 +218,6 @@ TEST(DropTableIfExistsStatementTest) {
   ASSERT_NOTNULL(stmt->name);
   ASSERT_STREQ(stmt->name, "students");
 }
-
-
 
 TEST(ReleaseStatementTest) {
   TEST_PARSE_SINGLE_SQL(
