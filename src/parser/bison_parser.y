@@ -93,58 +93,67 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
  ** Define all data-types (http://www.gnu.org/software/bison/manual/html_node/Union-Decl.html)
  *********************************/
 %union {
-	double fval;
-	int64_t ival;
-	char* sval;
+	bool      bval;
+	char*     sval;
+	double    fval;
+	int64_t   ival;
 	uintmax_t uval;
-	bool bval;
 
-	hsql::SQLStatement* statement;
-	hsql::SelectStatement* 	select_stmt;
-	hsql::ImportStatement* 	import_stmt;
-	hsql::ExportStatement* 	export_stmt;
-	hsql::CreateStatement* 	create_stmt;
-	hsql::InsertStatement* 	insert_stmt;
-	hsql::DeleteStatement* 	delete_stmt;
-	hsql::UpdateStatement* 	update_stmt;
-	hsql::DropStatement*   	drop_stmt;
-	hsql::PrepareStatement* prep_stmt;
-	hsql::ExecuteStatement* exec_stmt;
-	hsql::ShowStatement*    show_stmt;
+	// statements
+	hsql::AlterStatement*       alter_stmt;
+	hsql::CreateStatement* 	    create_stmt;
+	hsql::DeleteStatement* 	    delete_stmt;
+	hsql::DropStatement*   	    drop_stmt;
+	hsql::ExecuteStatement*     exec_stmt;
+	hsql::ExportStatement* 	    export_stmt;
+	hsql::ImportStatement* 	    import_stmt;
+	hsql::InsertStatement* 	    insert_stmt;
+	hsql::PrepareStatement*     prep_stmt;
+	hsql::SelectStatement* 	    select_stmt;
+	hsql::ShowStatement*        show_stmt;
+	hsql::SQLStatement*         statement;
 	hsql::TransactionStatement* transaction_stmt;
-
-	hsql::TableName table_name;
-	hsql::TableRef* table;
-	hsql::Expr* expr;
-	hsql::OrderDescription* order;
-	hsql::OrderType order_type;
-	hsql::WithDescription* with_description_t;
-	hsql::DatetimeField datetime_field;
-	hsql::LimitDescription* limit;
-	hsql::ColumnDefinition* column_t;
-	hsql::ColumnType column_type_t;
-	hsql::ImportType import_type_t;
+	hsql::UpdateStatement* 	    update_stmt;
+    
+	hsql::Alias*              alias_t;
+	hsql::AlterAction*        alter_action_t;
+	hsql::ColumnDefinition*   column_t;
+	hsql::ColumnSpecification column_specification_t;
+	hsql::ColumnType          column_type_t;
+	hsql::ConstraintType      column_constraint_t;
+	hsql::DatetimeField       datetime_field;
+	hsql::DropColumnAction*   drop_action_t;
+	hsql::Expr*               expr;
 	hsql::GroupByDescription* group_t;
-	hsql::UpdateClause* update_t;
-	hsql::Alias* alias_t;
-	hsql::SetOperation* set_operator_t;
+	hsql::ImportType          import_type_t;
+	hsql::JoinType            join_type;
+	hsql::LimitDescription*   limit;
+	hsql::OrderDescription*   order;
+	hsql::OrderType           order_type;
+	hsql::SetOperation*       set_operator_t;
+	hsql::TableConstraint*    table_constraint_t;
+	hsql::TableElement*       table_element_t;
+	hsql::TableName           table_name;
+	hsql::TableRef*           table;
+	hsql::UpdateClause*       update_t;
+	hsql::WithDescription*    with_description_t;
 
-	std::vector<hsql::SQLStatement*>* stmt_vec;
-
-	std::vector<char*>* str_vec;
-	std::vector<hsql::TableRef*>* table_vec;
-	std::vector<hsql::ColumnDefinition*>* column_vec;
-	std::vector<hsql::UpdateClause*>* update_vec;
-	std::vector<hsql::Expr*>* expr_vec;
+	std::vector<char*>*                   str_vec;
+	std::vector<hsql::ConstraintType>*    column_constraint_vec;
+	std::vector<hsql::Expr*>*             expr_vec;
 	std::vector<hsql::OrderDescription*>* order_vec;
-	std::vector<hsql::WithDescription*>* with_description_vec;
+	std::vector<hsql::SQLStatement*>*     stmt_vec;
+	std::vector<hsql::TableElement*>*     table_element_vec;
+	std::vector<hsql::TableRef*>*         table_vec;
+	std::vector<hsql::UpdateClause*>*     update_vec;
+	std::vector<hsql::WithDescription*>*  with_description_vec;
 }
 
 
 /*********************************
  ** Destructor symbols
  *********************************/
-%destructor { } <fval> <ival> <uval> <bval> <order_type> <datetime_field> <column_type_t> <import_type_t>
+%destructor { } <fval> <ival> <bval> <join_type> <order_type> <datetime_field> <column_type_t> <column_constraint_t> <import_type_t> <column_specification_t> <column_constraint_vec>
 %destructor { free( ($$.name) ); free( ($$.schema) ); } <table_name>
 %destructor { free( ($$) ); } <sval>
 %destructor {
@@ -154,7 +163,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 		}
 	}
 	delete ($$);
-} <str_vec> <table_vec> <column_vec> <update_vec> <expr_vec> <order_vec> <stmt_vec>
+} <str_vec> <table_vec> <table_element_vec> <update_vec> <expr_vec> <order_vec> <stmt_vec>
 %destructor { delete ($$); } <*>
 
 
@@ -169,7 +178,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 %token DEALLOCATE PARAMETERS INTERSECT TEMPORARY TIMESTAMP
 %token DISTINCT NVARCHAR RESTRICT TRUNCATE ANALYZE BETWEEN
 %token CASCADE COLUMNS CONTROL DEFAULT EXECUTE EXPLAIN
-%token INTEGER NATURAL PREPARE PRIMARY SCHEMAS
+%token INTEGER NATURAL PREPARE PRIMARY SCHEMAS CHARACTER VARYING REAL DECIMAL
 %token SPATIAL VARCHAR VIRTUAL DESCRIBE BEFORE COLUMN CREATE DELETE DIRECT
 %token DOUBLE ESCAPE EXCEPT EXISTS EXTRACT CAST FORMAT GLOBAL HAVING IMPORT
 %token INSERT ISNULL OFFSET RENAME SCHEMA SELECT SORTED
@@ -188,59 +197,70 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 /*********************************
  ** Non-Terminal types (http://www.gnu.org/software/bison/manual/html_node/Type-Decl.html)
  *********************************/
-%type <stmt_vec>	    statement_list
-%type <statement> 	    statement preparable_statement
-%type <exec_stmt>	    execute_statement
-%type <transaction_stmt>    transaction_statement
-%type <prep_stmt>	    prepare_statement
-%type <select_stmt>     select_statement select_with_paren select_no_paren select_clause select_within_set_operation select_within_set_operation_no_parentheses
-%type <import_stmt>     import_statement
-%type <export_stmt>     export_statement
-%type <create_stmt>     create_statement
-%type <insert_stmt>     insert_statement
-%type <delete_stmt>     delete_statement truncate_statement
-%type <update_stmt>     update_statement
-%type <drop_stmt>	    drop_statement
-%type <show_stmt>	    show_statement
-%type <table_name>      table_name
-%type <sval> 		    file_path prepare_target_query
-%type <bval> 		    opt_not_exists opt_exists opt_distinct opt_column_nullable opt_all
-%type <uval>		    opt_join_type
-%type <table> 		    opt_from_clause from_clause table_ref table_ref_atomic table_ref_name nonjoin_table_ref_atomic
-%type <table>		    join_clause table_ref_name_no_alias
-%type <expr> 		    expr operand scalar_expr unary_expr binary_expr logic_expr exists_expr extract_expr cast_expr
-%type <expr>		    function_expr between_expr expr_alias param_expr
-%type <expr> 		    column_name literal int_literal num_literal string_literal bool_literal date_literal interval_literal
-%type <expr> 		    comp_expr opt_where join_condition opt_having case_expr case_list in_expr hint
-%type <expr> 		    array_expr array_index null_literal
-%type <limit>		    opt_limit opt_top
-%type <order>		    order_desc
-%type <order_type>	    opt_order_type
-%type <datetime_field>	datetime_field datetime_field_plural duration_field
-%type <column_t>	    column_def
-%type <column_type_t>   column_type
-%type <update_t>	    update_clause
-%type <group_t>		    opt_group
-%type <alias_t>		    opt_table_alias table_alias opt_alias alias
-%type <with_description_t>  with_description
-%type <set_operator_t>  set_operator set_type
+%type <stmt_vec>               statement_list
+%type <statement>              statement preparable_statement
+%type <exec_stmt>              execute_statement
+%type <transaction_stmt>       transaction_statement
+%type <prep_stmt>              prepare_statement
+%type <select_stmt>            select_statement select_with_paren select_no_paren select_clause select_within_set_operation select_within_set_operation_no_parentheses
+%type <import_stmt>            import_statement
+%type <export_stmt>            export_statement
+%type <create_stmt>            create_statement
+%type <insert_stmt>            insert_statement
+%type <delete_stmt>            delete_statement truncate_statement
+%type <update_stmt>            update_statement
+%type <drop_stmt>              drop_statement
+%type <alter_stmt>             alter_statement
+%type <show_stmt>              show_statement
+%type <table_name>             table_name
+%type <sval>                   opt_index_name
+%type <sval>                   file_path prepare_target_query
+%type <bval>                   opt_not_exists opt_exists opt_distinct opt_all
+%type <column_specification_t> opt_decimal_specification
+%type <column_specification_t> opt_time_specification
+%type <join_type>              opt_join_type
+%type <table>                  opt_from_clause from_clause table_ref table_ref_atomic table_ref_name nonjoin_table_ref_atomic
+%type <table>                  join_clause table_ref_name_no_alias
+%type <expr>                   expr operand scalar_expr unary_expr binary_expr logic_expr exists_expr extract_expr cast_expr
+%type <expr>                   function_expr between_expr expr_alias param_expr
+%type <expr>                   column_name literal int_literal num_literal string_literal bool_literal date_literal interval_literal
+%type <expr>                   comp_expr opt_where join_condition opt_having case_expr case_list in_expr hint
+%type <expr>                   array_expr array_index null_literal
+%type <limit>                  opt_limit opt_top
+%type <order>                  order_desc
+%type <order_type>             opt_order_type
+%type <datetime_field>         datetime_field datetime_field_plural duration_field
+%type <column_t>               column_def
+%type <table_element_t>        table_elem
+%type <column_type_t>          column_type
+%type <table_constraint_t>     table_constraint
+%type <update_t>               update_clause
+%type <group_t>                opt_group
+%type <alias_t>                opt_table_alias table_alias opt_alias alias
+%type <with_description_t>     with_description
+%type <set_operator_t>         set_operator set_type
+%type <column_constraint_t>    column_constraint
+%type <column_constraint_vec>  column_constraint_list
+%type <column_constraint_vec>  opt_column_constraints
+%type <alter_action_t>         alter_action
+%type <drop_action_t>          drop_action
 
 // ImportType is used for compatibility reasons
-%type <import_type_t>	opt_file_type file_type
+%type <import_type_t>          opt_file_type file_type
 
-%type <str_vec>			ident_commalist opt_column_list
-%type <expr_vec> 		expr_list select_list opt_literal_list literal_list hint_list opt_hints
-%type <table_vec> 		table_ref_commalist
-%type <order_vec>		opt_order order_list
-%type <with_description_vec> 	opt_with_clause with_clause with_description_list
-%type <update_vec>		update_clause_commalist
-%type <column_vec>		column_def_commalist
+%type <str_vec>                ident_commalist opt_column_list
+%type <expr_vec>               expr_list select_list opt_literal_list literal_list hint_list opt_hints
+%type <table_vec>              table_ref_commalist
+%type <order_vec>              opt_order order_list
+%type <with_description_vec>   opt_with_clause with_clause with_description_list
+%type <update_vec>             update_clause_commalist
+%type <table_element_vec>      table_elem_commalist
 
 /******************************
  ** Token Precedence and Associativity
  ** Precedence: lowest to highest
  ******************************/
-%left		OR
+%left   	OR
 %left		AND
 %right		NOT
 %nonassoc	'=' EQUALS NOTEQUALS LIKE ILIKE
@@ -331,6 +351,7 @@ preparable_statement:
 	|	truncate_statement { $$ = $1; }
 	|	update_statement { $$ = $1; }
 	|	drop_statement { $$ = $1; }
+	|	alter_statement { $$ = $1; }
 	|	execute_statement { $$ = $1; }
 	|	transaction_statement { $$ = $1; }
 	;
@@ -513,12 +534,13 @@ create_statement:
 			free($6);
 			$$->filePath = $8;
 		}
-	|	CREATE TABLE opt_not_exists table_name '(' column_def_commalist ')' {
+	|	CREATE TABLE opt_not_exists table_name '(' table_elem_commalist ')' {
 			$$ = new CreateStatement(kCreateTable);
 			$$->ifNotExists = $3;
 			$$->schema = $4.schema;
 			$$->tableName = $4.name;
-			$$->columns = $6;
+			$$->setColumnDefsAndConstraints($6);
+			delete $6;
 		}
 	|	CREATE TABLE opt_not_exists table_name AS select_statement {
 			$$ = new CreateStatement(kCreateTable);
@@ -527,6 +549,13 @@ create_statement:
 			$$->tableName = $4.name;
 			$$->select = $6;
 		}
+	|	CREATE INDEX opt_not_exists opt_index_name ON table_name '(' ident_commalist ')' {
+			$$ = new CreateStatement(kCreateIndex);
+			$$->indexName = $4;
+			$$->ifNotExists = $3;
+			$$->tableName = $6.name;
+			$$->indexColumns = $8;
+         	}
 	|	CREATE VIEW opt_not_exists table_name opt_column_list AS select_statement {
 			$$ = new CreateStatement(kCreateView);
 			$$->ifNotExists = $3;
@@ -542,35 +571,72 @@ opt_not_exists:
 	|	/* empty */ { $$ = false; }
 	;
 
-column_def_commalist:
-		column_def { $$ = new std::vector<ColumnDefinition*>(); $$->push_back($1); }
-	|	column_def_commalist ',' column_def { $1->push_back($3); $$ = $1; }
-	;
+table_elem_commalist:
+        table_elem { $$ = new std::vector<TableElement*>(); $$->push_back($1); }
+    |   table_elem_commalist ',' table_elem { $1->push_back($3); $$ = $1; }
+    ;
+
+table_elem:
+        column_def { $$ = $1; }
+    |   table_constraint { $$ = $1; }
+    ;
 
 column_def:
-		IDENTIFIER column_type opt_column_nullable {
+		IDENTIFIER column_type opt_column_constraints{
 			$$ = new ColumnDefinition($1, $2, $3);
+			$$->setNullableExplicit();
 		}
 	;
 
 column_type:
-		INT { $$ = ColumnType{DataType::INT}; }
-	|	INTEGER { $$ = ColumnType{DataType::INT}; }
-	|	LONG { $$ = ColumnType{DataType::LONG}; }
-	|	FLOAT { $$ = ColumnType{DataType::FLOAT}; }
-	|	DOUBLE { $$ = ColumnType{DataType::DOUBLE}; }
-	|	VARCHAR '(' INTVAL ')' { $$ = ColumnType{DataType::VARCHAR, $3}; }
-	|	CHAR '(' INTVAL ')' { $$ = ColumnType{DataType::CHAR, $3}; }
-	|	TEXT { $$ = ColumnType{DataType::TEXT}; }
-	|	DATETIME { $$ = ColumnType{DataType::DATETIME}; }
-	|	DATE { $$ = ColumnType{DataType::DATE}; }
-	;
+        INT { $$ = ColumnType{DataType::INT}; }
+    |   INTEGER { $$ = ColumnType{DataType::INT}; }
+    |   LONG { $$ = ColumnType{DataType::LONG}; }
+    |   FLOAT { $$ = ColumnType{DataType::FLOAT}; }
+    |   DECIMAL opt_decimal_specification { $$ = ColumnType{DataType::DECIMAL, 0, $2}; }
+    |   DOUBLE { $$ = ColumnType{DataType::DOUBLE}; }
+    |   REAL { $$ = ColumnType{DataType::REAL}; }
+    |   VARCHAR '(' INTVAL ')' { $$ = ColumnType{DataType::VARCHAR, $3}; }
+    |   CHARACTER VARYING'(' INTVAL ')' { $$ = ColumnType{DataType::VARCHAR, $4}; }
+    |   CHAR '(' INTVAL ')' { $$ = ColumnType{DataType::CHAR, $3}; }
+    |   TEXT { $$ = ColumnType{DataType::TEXT}; }
+    |   TIME opt_time_specification { $$ = ColumnType{DataType::TIME, 0, $2 }; }
+    |   DATETIME { $$ = ColumnType{DataType::DATETIME}; }
+    |   DATE { $$ = ColumnType{DataType::DATE}; }
+    ;
 
-opt_column_nullable:
-		NULL { $$ = true; }
-	|	NOT NULL { $$ = false; }
-	|	/* empty */ { $$ = false; }
-	;
+opt_time_specification:
+        '(' INTVAL ')'  { $$ = ColumnSpecification{$2}; }
+    |   /* empty */     { $$ = ColumnSpecification{}; }
+    ;
+
+opt_decimal_specification:
+        '(' INTVAL ',' INTVAL ')' { $$ = ColumnSpecification{$2, $4}; }
+    |   '(' INTVAL ')' { $$ = ColumnSpecification{$2}; }
+    |   /* empty */ { $$ = ColumnSpecification{}; }
+    ;
+
+opt_column_constraints:
+        column_constraint_list   { $$ = $1; }
+    |   /* empty */         { $$ = new std::vector<ConstraintType>(); }
+    ;
+
+column_constraint_list:
+        column_constraint   { $$ = new std::vector<ConstraintType>(); $$->push_back($1); }
+    |   column_constraint_list column_constraint { $1->push_back($2); $$ = $1; }
+
+column_constraint:
+        PRIMARY KEY { $$ = ConstraintType::PrimaryKey; }
+    |   UNIQUE { $$ = ConstraintType::Unique; }
+    |   NULL { $$ = ConstraintType::Null; }
+    |   NOT NULL { $$ = ConstraintType::NotNull; }
+    ;
+
+table_constraint:
+        PRIMARY KEY '(' ident_commalist ')'  { $$ = new TableConstraint(ConstraintType::PrimaryKey, $4); }
+    |   UNIQUE '(' ident_commalist ')'  { $$ = new TableConstraint(ConstraintType::Unique, $3); }
+    ;
+
 
 /******************************
  * Drop Statement
@@ -596,12 +662,41 @@ drop_statement:
 			$$->ifExists = false;
 			$$->name = $3;
 		}
+
+	|	DROP INDEX opt_exists IDENTIFIER {
+    			$$ = new DropStatement(kDropIndex);
+    			$$->ifExists = $3;
+    			$$->indexName = $4;
+    		}
 	;
 
 opt_exists:
 		IF EXISTS   { $$ = true; }
 	|	/* empty */ { $$ = false; }
 	;
+
+/******************************
+ * ALTER Statement
+ * ALTER TABLE students DROP COLUMN name;
+ ******************************/
+
+alter_statement:
+		ALTER TABLE opt_exists table_name alter_action {
+			$$ = new AlterStatement($4.name, $5);
+			$$->ifTableExists = $3;
+			$$->schema = $4.schema;
+		}
+	;
+
+alter_action:
+        drop_action {$$ = $1;}
+
+drop_action:
+        DROP COLUMN opt_exists IDENTIFIER {
+            $$ = new DropColumnAction($4);
+            $$->ifExists = $3;
+        }
+    ;
 
 /******************************
  * Delete Statement / Truncate statement
@@ -1201,6 +1296,10 @@ table_name:
 	|	IDENTIFIER '.' IDENTIFIER { $$.schema = $1; $$.name = $3; }
 	;
 
+opt_index_name:
+		IDENTIFIER			{ $$ = $1;}
+	|	/* empty */			{ $$ = nullptr;}
+	;
 
 table_alias:
 		alias

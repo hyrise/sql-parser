@@ -26,7 +26,9 @@ SELECT a, SUM(b) FROM t2 GROUP BY a HAVING SUM(b) > 100;
 CREATE TABLE "table" FROM TBL FILE 'students.tbl'
 CREATE TABLE IF NOT EXISTS "table" FROM TBL FILE 'students.tbl'
 CREATE TABLE students (name TEXT, student_number INTEGER, city TEXT, grade DOUBLE)
+CREATE TABLE students (name TEXT, student_number INTEGER NOT NULL, city TEXT, grade DOUBLE PRIMARY KEY UNIQUE)
 CREATE TABLE teachers (name VARCHAR(30), student_number LONG, city CHAR(10), grade FLOAT)
+CREATE TABLE teachers (name VARCHAR(30), student_number LONG, PRIMARY KEY (name, student_number), city CHAR(10), grade FLOAT)
 CREATE TABLE students_2 AS SELECT * FROM students
 CREATE TABLE students_3 AS SELECT city, grade FROM students WHERE grade > 3.0
 # Multiple statements
@@ -45,10 +47,15 @@ UPDATE students SET grade = 1.3 WHERE name = 'Max Mustermann';
 UPDATE students SET grade = 1.3, name='Felix Fürstenberg' WHERE name = 'Max Mustermann';
 UPDATE students SET grade = 1.0;
 UPDATE some_schema.students SET grade = 1.0;
+# ALTER
+ALTER TABLE mytable DROP COLUMN IF EXISTS mycolumn;
+ALTER TABLE IF EXISTS mytable DROP COLUMN IF EXISTS mycolumn;
 # DROP
 DROP TABLE students;
 DROP TABLE IF EXISTS students;
 DROP VIEW IF EXISTS students;
+DROP INDEX myindex;
+DROP INDEX IF EXISTS myindex;
 # PREPARE
 PREPARE prep_inst FROM 'INSERT INTO test VALUES (?, ?, ?)';
 PREPARE prep2 FROM 'INSERT INTO test VALUES (?, 0, 0); INSERT INTO test VALUES (0, ?, 0); INSERT INTO test VALUES (0, 0, ?);';

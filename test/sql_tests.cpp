@@ -30,7 +30,7 @@ TEST(DeleteStatementTest) {
 
 TEST(CreateStatementTest) {
   SQLParserResult result;
-  SQLParser::parse("CREATE TABLE students (name VARCHAR(50), student_number INT, city INTEGER NULL, grade DOUBLE NOT NULL, comment TEXT)", &result);
+  SQLParser::parse("CREATE TABLE students (name VARCHAR(50), student_number INT, city INTEGER NULL, PRIMARY KEY(name, student_number), grade DOUBLE NOT NULL, comment TEXT UNIQUE PRIMARY KEY NOT NULL)", &result);
 
   ASSERT(result.isValid());
   ASSERT_EQ(result.size(), 1);
@@ -56,6 +56,9 @@ TEST(CreateStatementTest) {
   ASSERT_EQ(stmt->columns->at(2)->nullable, true);
   ASSERT_EQ(stmt->columns->at(3)->nullable, false);
   ASSERT_EQ(stmt->columns->at(4)->nullable, false);
+  ASSERT_EQ(stmt->columns->at(4)->column_constraints->size(), 2);
+  ASSERT_STREQ(stmt->tableConstraints->at(0)->columnNames->at(0), "name");
+  ASSERT_STREQ(stmt->tableConstraints->at(0)->columnNames->at(1), "student_number");
 }
 
 TEST(CreateAsSelectStatementTest) {
@@ -115,6 +118,77 @@ TEST(InsertStatementTest) {
 
   ASSERT_EQ(stmt->values->size(), 4);
   // TODO
+}
+
+TEST(AlterStatementDropActionTest) {
+  SQLParserResult result;
+  SQLParser::parse("ALTER TABLE mytable DROP COLUMN IF EXISTS mycolumn", &result);
+
+  ASSERT(result.isValid());
+  ASSERT_EQ(result.size(), 1);
+
+  const AlterStatement* stmt = (const AlterStatement*) result.getStatement(0);
+  ASSERT_STREQ(stmt->name, "mytable");
+  ASSERT_EQ(stmt->ifTableExists, false);
+
+  auto dropAction = (const DropColumnAction*) stmt->action;
+
+  ASSERT_EQ(dropAction->type, hsql::ActionType::DropColumn);
+  ASSERT_STREQ(dropAction->columnName, "mycolumn");
+}
+
+TEST(CreateIndexStatementTest) {
+  SQLParserResult result;
+  SQLParser::parse("CREATE INDEX myindex ON myTable (col1);", &result);
+
+  ASSERT(result.isValid());
+  ASSERT_EQ(result.size(), 1);
+
+  const CreateStatement* stmt = (const CreateStatement*) result.getStatement(0);
+  ASSERT_STREQ(stmt->indexName, "myindex");
+  ASSERT_STREQ(stmt->tableName, "myTable");
+  ASSERT_EQ(stmt->type, kCreateIndex);
+  ASSERT_EQ(stmt->ifNotExists, false);
+  ASSERT_EQ(stmt->indexColumns->size(), 1);
+}
+
+TEST(CreateIndexStatementIfNotExistsTest) {
+  SQLParserResult result;
+  SQLParser::parse("CREATE INDEX IF NOT EXISTS myindex ON myTable (col1, col2);", &result);
+
+  ASSERT(result.isValid());
+  ASSERT_EQ(result.size(), 1);
+
+  const CreateStatement* stmt = (const CreateStatement*) result.getStatement(0);
+  ASSERT_STREQ(stmt->indexName, "myindex");
+  ASSERT_STREQ(stmt->tableName, "myTable");
+  ASSERT_EQ(stmt->type, kCreateIndex);
+  ASSERT_EQ(stmt->ifNotExists, true);
+  ASSERT_EQ(stmt->indexColumns->size(), 2);
+}
+
+TEST(DropIndexTest) {
+  SQLParserResult result;
+  SQLParser::parse("DROP INDEX myindex", &result);
+
+  ASSERT(result.isValid());
+  ASSERT_EQ(result.size(), 1);
+
+  const DropStatement* stmt = (const DropStatement*) result.getStatement(0);
+  ASSERT_STREQ(stmt->indexName, "myindex");
+  ASSERT_EQ(stmt->ifExists, false);
+}
+
+TEST(DropIndexIfExistsTest) {
+  SQLParserResult result;
+  SQLParser::parse("DROP INDEX IF EXISTS myindex", &result);
+
+  ASSERT(result.isValid());
+  ASSERT_EQ(result.size(), 1);
+
+  const DropStatement* stmt = (const DropStatement*) result.getStatement(0);
+  ASSERT_STREQ(stmt->indexName, "myindex");
+  ASSERT_EQ(stmt->ifExists, true);
 }
 
 TEST(DropTableStatementTest) {

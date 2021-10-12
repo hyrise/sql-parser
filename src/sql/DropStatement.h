@@ -25,6 +25,7 @@ namespace hsql {
     bool ifExists;
     char* schema;
     char* name;
+    char* indexName;
   };
 
 } // namespace hsql

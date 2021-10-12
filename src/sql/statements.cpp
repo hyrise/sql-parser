@@ -1,20 +1,42 @@
 #include "statements.h"
+#include "AlterStatement.h"
 
 namespace hsql {
 
+  // KeyConstraints
+  TableConstraint::TableConstraint(ConstraintType type, std::vector<char*>* columnNames) :
+    type(type),
+    columnNames(columnNames) {};
+
+  TableConstraint::~TableConstraint() {
+    for (char* def : *columnNames) {
+      free(def);
+    }
+    delete columnNames;
+  }
+
   // ColumnDefinition
-  ColumnDefinition::ColumnDefinition(char* name, ColumnType type, bool nullable) :
+  ColumnDefinition::ColumnDefinition(char* name, ColumnType type, std::vector<ConstraintType>* column_constraints) :
+    column_constraints(column_constraints),
     name(name),
     type(type),
-    nullable(nullable) {};
+    nullable(false) {};
 
   ColumnDefinition::~ColumnDefinition() {
     free(name);
+    delete column_constraints;
   }
 
-  ColumnType::ColumnType(DataType data_type, int64_t length) :
+  ColumnType::ColumnType(DataType data_type, int64_t length, ColumnSpecification column_specification) :
     data_type(data_type),
-    length(length) {};
+    length(length), columnSpecification(column_specification) {};
+
+  ColumnSpecification::ColumnSpecification(int64_t precision, int64_t scale) :
+    precision(precision),
+    scale(scale) {};
+
+  ColumnSpecification::ColumnSpecification(int64_t precision) :
+    precision(precision), scale(0) {};
 
   bool operator==(const ColumnType& lhs, const ColumnType& rhs) {
     if (lhs.data_type != rhs.data_type) return false;
@@ -45,11 +67,17 @@ namespace hsql {
       case DataType::DOUBLE:
         stream << "DOUBLE";
         break;
+      case DataType::REAL:
+        stream << "REAL";
+        break;
       case DataType::CHAR:
         stream << "CHAR(" << column_type.length << ")";
         break;
       case DataType::VARCHAR:
         stream << "VARCHAR(" << column_type.length << ")";
+        break;
+      case DataType::DECIMAL:
+        stream << "DECIMAL";
         break;
       case DataType::TEXT:
         stream << "TEXT";
@@ -59,6 +87,12 @@ namespace hsql {
         break;
       case DataType::DATE:
         stream << "DATE";
+        break;
+      case DataType::TIME:
+        stream << "TIME";
+        break;
+      case DataType::SMALLINT:
+        stream << "SMALLINT";
         break;
     }
     return stream;
@@ -73,7 +107,10 @@ namespace hsql {
     filePath(nullptr),
     schema(nullptr),
     tableName(nullptr),
+    indexName(nullptr),
+    indexColumns(nullptr),
     columns(nullptr),
+    tableConstraints(nullptr),
     viewColumns(nullptr),
     select(nullptr) {};
 
@@ -81,6 +118,7 @@ namespace hsql {
     free(filePath);
     free(schema);
     free(tableName);
+    free(indexName);
     delete select;
 
     if (columns != nullptr) {
@@ -88,6 +126,20 @@ namespace hsql {
         delete def;
       }
       delete columns;
+    }
+
+    if (tableConstraints != nullptr) {
+      for (TableConstraint* def : *tableConstraints) {
+        delete def;
+      }
+      delete tableConstraints;
+    }
+
+    if (indexColumns != nullptr) {
+      for (char* column : *indexColumns) {
+        free(column);
+      }
+      delete indexColumns;
     }
 
     if (viewColumns != nullptr) {
@@ -116,12 +168,43 @@ namespace hsql {
     SQLStatement(kStmtDrop),
     type(type),
     schema(nullptr),
-    name(nullptr) {}
+    name(nullptr),
+    indexName(nullptr) {}
 
   DropStatement::~DropStatement() {
     free(schema);
     free(name);
+    free(indexName);
   }
+
+  // AlterStatement and supportive classes
+
+  AlterAction::AlterAction(ActionType type) : type(type){}
+
+  AlterAction::~AlterAction() = default;
+
+  DropColumnAction::DropColumnAction(char* column_name) :
+      AlterAction(ActionType::DropColumn),
+      columnName(column_name),
+      ifExists(false)
+   {};
+
+  DropColumnAction::~DropColumnAction() {
+    free(columnName);
+  }
+
+  AlterStatement::AlterStatement(char* name, AlterAction* action) :
+      SQLStatement(kStmtAlter),
+      schema(nullptr),
+      ifTableExists(false),
+      name(name),
+      action(action){}
+
+  AlterStatement::~AlterStatement() {
+    free(schema);
+    free(name);
+    delete action;
+}
 
   // TransactionStatement
   TransactionStatement::TransactionStatement(TransactionCommand command) :
