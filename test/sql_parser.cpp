@@ -4,9 +4,9 @@
 #include <map>
 #include <string>
 
-#include "sql_asserts.h"
 #include "SQLParser.h"
 #include "parser/bison_parser.h"
+#include "sql_asserts.h"
 
 using namespace hsql;
 
@@ -22,8 +22,9 @@ void test_tokens(const std::string& query, const std::vector<int16_t>& expected_
 }
 
 TEST(SQLParserTokenizeTest) {
-  test_tokens("SELECT * FROM test;", { SQL_SELECT, '*', SQL_FROM, SQL_IDENTIFIER, ';' });
-  test_tokens("SELECT a, 'b' FROM test WITH HINT;", { SQL_SELECT, SQL_IDENTIFIER, ',', SQL_STRING, SQL_FROM, SQL_IDENTIFIER, SQL_WITH, SQL_HINT, ';' });
+  test_tokens("SELECT * FROM test;", {SQL_SELECT, '*', SQL_FROM, SQL_IDENTIFIER, ';'});
+  test_tokens("SELECT a, 'b' FROM test WITH HINT;",
+              {SQL_SELECT, SQL_IDENTIFIER, ',', SQL_STRING, SQL_FROM, SQL_IDENTIFIER, SQL_WITH, SQL_HINT, ';'});
 }
 
 TEST(SQLParserTokenizeStringifyTest) {
@@ -41,4 +42,3 @@ TEST(SQLParserTokenizeStringifyTest) {
   ASSERT(query == cache[token_string]);
   ASSERT(&query != &cache[token_string]);
 }
-

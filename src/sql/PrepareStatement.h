@@ -5,18 +5,18 @@
 
 namespace hsql {
 
-  // Represents SQL Prepare statements.
-  // Example: PREPARE test FROM 'SELECT * FROM test WHERE a = ?;'
-  struct PrepareStatement : SQLStatement {
-    PrepareStatement();
-    ~PrepareStatement() override;
+// Represents SQL Prepare statements.
+// Example: PREPARE test FROM 'SELECT * FROM test WHERE a = ?;'
+struct PrepareStatement : SQLStatement {
+  PrepareStatement();
+  ~PrepareStatement() override;
 
-    char* name;
+  char* name;
 
-    // The query that is supposed to be prepared.
-    char* query;
-  };
+  // The query that is supposed to be prepared.
+  char* query;
+};
 
-} // namsepace hsql
+}  // namespace hsql
 
 #endif

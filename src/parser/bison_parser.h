@@ -48,32 +48,31 @@
 extern int hsql_debug;
 #endif
 /* "%code requires" blocks.  */
-#line 39 "bison_parser.y" /* yacc.c:1909  */
+#line 38 "bison_parser.y" /* yacc.c:1909  */
 
-// clang-format on
-// %code requires block
+  // clang-format on
+  // %code requires block
 
 #include "../sql/statements.h"
 #include "../SQLParserResult.h"
 #include "parser_typedef.h"
 
 // Auto update column and line number
-#define YY_USER_ACTION \
-    yylloc->first_line = yylloc->last_line; \
-    yylloc->first_column = yylloc->last_column; \
-    for(int i = 0; yytext[i] != '\0'; i++) { \
-      yylloc->total_column++; \
-      yylloc->string_length++; \
-        if(yytext[i] == '\n') { \
-            yylloc->last_line++; \
-            yylloc->last_column = 0; \
-        } \
-        else { \
-            yylloc->last_column++; \
-        } \
-    }
+#define YY_USER_ACTION                        \
+  yylloc->first_line = yylloc->last_line;     \
+  yylloc->first_column = yylloc->last_column; \
+  for (int i = 0; yytext[i] != '\0'; i++) {   \
+    yylloc->total_column++;                   \
+    yylloc->string_length++;                  \
+    if (yytext[i] == '\n') {                  \
+      yylloc->last_line++;                    \
+      yylloc->last_column = 0;                \
+    } else {                                  \
+      yylloc->last_column++;                  \
+    }                                         \
+  }
 
-#line 77 "bison_parser.h" /* yacc.c:1909  */
+#line 76 "bison_parser.h" /* yacc.c:1909  */
 
 /* Token type.  */
 #ifndef HSQL_TOKENTYPE
@@ -248,65 +247,65 @@ extern int hsql_debug;
 
 union HSQL_STYPE
 {
-#line 103 "bison_parser.y" /* yacc.c:1909  */
+#line 99 "bison_parser.y" /* yacc.c:1909  */
 
-// clang-format on
-  bool      bval;
-  char*     sval;
-  double    fval;
-  int64_t   ival;
+  // clang-format on
+  bool bval;
+  char* sval;
+  double fval;
+  int64_t ival;
   uintmax_t uval;
 
   // statements
-  hsql::AlterStatement*       alter_stmt;
-  hsql::CreateStatement*       create_stmt;
-  hsql::DeleteStatement*       delete_stmt;
-  hsql::DropStatement*         drop_stmt;
-  hsql::ExecuteStatement*     exec_stmt;
-  hsql::ExportStatement*       export_stmt;
-  hsql::ImportStatement*       import_stmt;
-  hsql::InsertStatement*       insert_stmt;
-  hsql::PrepareStatement*     prep_stmt;
-  hsql::SelectStatement*       select_stmt;
-  hsql::ShowStatement*        show_stmt;
-  hsql::SQLStatement*         statement;
+  hsql::AlterStatement* alter_stmt;
+  hsql::CreateStatement* create_stmt;
+  hsql::DeleteStatement* delete_stmt;
+  hsql::DropStatement* drop_stmt;
+  hsql::ExecuteStatement* exec_stmt;
+  hsql::ExportStatement* export_stmt;
+  hsql::ImportStatement* import_stmt;
+  hsql::InsertStatement* insert_stmt;
+  hsql::PrepareStatement* prep_stmt;
+  hsql::SelectStatement* select_stmt;
+  hsql::ShowStatement* show_stmt;
+  hsql::SQLStatement* statement;
   hsql::TransactionStatement* transaction_stmt;
-  hsql::UpdateStatement*       update_stmt;
+  hsql::UpdateStatement* update_stmt;
 
-  hsql::Alias*              alias_t;
-  hsql::AlterAction*        alter_action_t;
-  hsql::ColumnDefinition*   column_t;
+  hsql::Alias* alias_t;
+  hsql::AlterAction* alter_action_t;
+  hsql::ColumnDefinition* column_t;
   hsql::ColumnSpecification column_specification_t;
-  hsql::ColumnType          column_type_t;
-  hsql::ConstraintType      column_constraint_t;
-  hsql::DatetimeField       datetime_field;
-  hsql::DropColumnAction*   drop_action_t;
-  hsql::Expr*               expr;
+  hsql::ColumnType column_type_t;
+  hsql::ConstraintType column_constraint_t;
+  hsql::DatetimeField datetime_field;
+  hsql::DropColumnAction* drop_action_t;
+  hsql::Expr* expr;
   hsql::GroupByDescription* group_t;
-  hsql::ImportType          import_type_t;
-  hsql::JoinType            join_type;
-  hsql::LimitDescription*   limit;
-  hsql::OrderDescription*   order;
-  hsql::OrderType           order_type;
-  hsql::SetOperation*       set_operator_t;
-  hsql::TableConstraint*    table_constraint_t;
-  hsql::TableElement*       table_element_t;
-  hsql::TableName           table_name;
-  hsql::TableRef*           table;
-  hsql::UpdateClause*       update_t;
-  hsql::WithDescription*    with_description_t;
+  hsql::ImportType import_type_t;
+  hsql::JoinType join_type;
+  hsql::LimitDescription* limit;
+  hsql::OrderDescription* order;
+  hsql::OrderType order_type;
+  hsql::SetOperation* set_operator_t;
+  hsql::TableConstraint* table_constraint_t;
+  hsql::TableElement* table_element_t;
+  hsql::TableName table_name;
+  hsql::TableRef* table;
+  hsql::UpdateClause* update_t;
+  hsql::WithDescription* with_description_t;
 
-  std::vector<char*>*                   str_vec;
-  std::vector<hsql::ConstraintType>*    column_constraint_vec;
-  std::vector<hsql::Expr*>*             expr_vec;
+  std::vector<char*>* str_vec;
+  std::vector<hsql::ConstraintType>* column_constraint_vec;
+  std::vector<hsql::Expr*>* expr_vec;
   std::vector<hsql::OrderDescription*>* order_vec;
-  std::vector<hsql::SQLStatement*>*     stmt_vec;
-  std::vector<hsql::TableElement*>*     table_element_vec;
-  std::vector<hsql::TableRef*>*         table_vec;
-  std::vector<hsql::UpdateClause*>*     update_vec;
-  std::vector<hsql::WithDescription*>*  with_description_vec;
+  std::vector<hsql::SQLStatement*>* stmt_vec;
+  std::vector<hsql::TableElement*>* table_element_vec;
+  std::vector<hsql::TableRef*>* table_vec;
+  std::vector<hsql::UpdateClause*>* update_vec;
+  std::vector<hsql::WithDescription*>* with_description_vec;
 
-#line 310 "bison_parser.h" /* yacc.c:1909  */
+#line 309 "bison_parser.h" /* yacc.c:1909  */
 };
 
 typedef union HSQL_STYPE HSQL_STYPE;

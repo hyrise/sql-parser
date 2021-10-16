@@ -72,8 +72,8 @@
 /* Copy the first part of user declarations.  */
 #line 2 "bison_parser.y" /* yacc.c:339  */
 
-// clang-format on
-/**
+  // clang-format on
+  /**
  * bison_parser.y
  * defines bison_parser.h
  * outputs bison_parser.c
@@ -81,7 +81,7 @@
  * Grammar File Spec: http://dinosaur.compilertools.net/bison/bison_6.html
  *
  */
-/*********************************
+  /*********************************
  ** Section 1: C Declarations
  *********************************/
 
@@ -91,14 +91,14 @@
 #include <stdio.h>
 #include <string.h>
 
-using namespace hsql;
+  using namespace hsql;
 
-int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const char *msg) {
-  result->setIsValid(false);
-  result->setErrorDetails(strdup(msg), llocp->first_line, llocp->first_column);
-  return 0;
-}
-// clang-format off
+  int yyerror(YYLTYPE * llocp, SQLParserResult * result, yyscan_t scanner, const char* msg) {
+    result->setIsValid(false);
+    result->setErrorDetails(strdup(msg), llocp->first_line, llocp->first_column);
+    return 0;
+  }
+  // clang-format off
 
 #line 104 "bison_parser.cpp" /* yacc.c:339  */
 
@@ -138,32 +138,31 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 extern int hsql_debug;
 #endif
 /* "%code requires" blocks.  */
-#line 39 "bison_parser.y" /* yacc.c:355  */
+#line 38 "bison_parser.y" /* yacc.c:355  */
 
-// clang-format on
-// %code requires block
+  // clang-format on
+  // %code requires block
 
 #include "../sql/statements.h"
 #include "../SQLParserResult.h"
 #include "parser_typedef.h"
 
 // Auto update column and line number
-#define YY_USER_ACTION \
-    yylloc->first_line = yylloc->last_line; \
-    yylloc->first_column = yylloc->last_column; \
-    for(int i = 0; yytext[i] != '\0'; i++) { \
-      yylloc->total_column++; \
-      yylloc->string_length++; \
-        if(yytext[i] == '\n') { \
-            yylloc->last_line++; \
-            yylloc->last_column = 0; \
-        } \
-        else { \
-            yylloc->last_column++; \
-        } \
-    }
+#define YY_USER_ACTION                        \
+  yylloc->first_line = yylloc->last_line;     \
+  yylloc->first_column = yylloc->last_column; \
+  for (int i = 0; yytext[i] != '\0'; i++) {   \
+    yylloc->total_column++;                   \
+    yylloc->string_length++;                  \
+    if (yytext[i] == '\n') {                  \
+      yylloc->last_line++;                    \
+      yylloc->last_column = 0;                \
+    } else {                                  \
+      yylloc->last_column++;                  \
+    }                                         \
+  }
 
-#line 167 "bison_parser.cpp" /* yacc.c:355  */
+#line 166 "bison_parser.cpp" /* yacc.c:355  */
 
 /* Token type.  */
 #ifndef HSQL_TOKENTYPE
@@ -338,65 +337,65 @@ extern int hsql_debug;
 
 union HSQL_STYPE
 {
-#line 103 "bison_parser.y" /* yacc.c:355  */
+#line 99 "bison_parser.y" /* yacc.c:355  */
 
-// clang-format on
-  bool      bval;
-  char*     sval;
-  double    fval;
-  int64_t   ival;
+  // clang-format on
+  bool bval;
+  char* sval;
+  double fval;
+  int64_t ival;
   uintmax_t uval;
 
   // statements
-  hsql::AlterStatement*       alter_stmt;
-  hsql::CreateStatement*       create_stmt;
-  hsql::DeleteStatement*       delete_stmt;
-  hsql::DropStatement*         drop_stmt;
-  hsql::ExecuteStatement*     exec_stmt;
-  hsql::ExportStatement*       export_stmt;
-  hsql::ImportStatement*       import_stmt;
-  hsql::InsertStatement*       insert_stmt;
-  hsql::PrepareStatement*     prep_stmt;
-  hsql::SelectStatement*       select_stmt;
-  hsql::ShowStatement*        show_stmt;
-  hsql::SQLStatement*         statement;
+  hsql::AlterStatement* alter_stmt;
+  hsql::CreateStatement* create_stmt;
+  hsql::DeleteStatement* delete_stmt;
+  hsql::DropStatement* drop_stmt;
+  hsql::ExecuteStatement* exec_stmt;
+  hsql::ExportStatement* export_stmt;
+  hsql::ImportStatement* import_stmt;
+  hsql::InsertStatement* insert_stmt;
+  hsql::PrepareStatement* prep_stmt;
+  hsql::SelectStatement* select_stmt;
+  hsql::ShowStatement* show_stmt;
+  hsql::SQLStatement* statement;
   hsql::TransactionStatement* transaction_stmt;
-  hsql::UpdateStatement*       update_stmt;
+  hsql::UpdateStatement* update_stmt;
 
-  hsql::Alias*              alias_t;
-  hsql::AlterAction*        alter_action_t;
-  hsql::ColumnDefinition*   column_t;
+  hsql::Alias* alias_t;
+  hsql::AlterAction* alter_action_t;
+  hsql::ColumnDefinition* column_t;
   hsql::ColumnSpecification column_specification_t;
-  hsql::ColumnType          column_type_t;
-  hsql::ConstraintType      column_constraint_t;
-  hsql::DatetimeField       datetime_field;
-  hsql::DropColumnAction*   drop_action_t;
-  hsql::Expr*               expr;
+  hsql::ColumnType column_type_t;
+  hsql::ConstraintType column_constraint_t;
+  hsql::DatetimeField datetime_field;
+  hsql::DropColumnAction* drop_action_t;
+  hsql::Expr* expr;
   hsql::GroupByDescription* group_t;
-  hsql::ImportType          import_type_t;
-  hsql::JoinType            join_type;
-  hsql::LimitDescription*   limit;
-  hsql::OrderDescription*   order;
-  hsql::OrderType           order_type;
-  hsql::SetOperation*       set_operator_t;
-  hsql::TableConstraint*    table_constraint_t;
-  hsql::TableElement*       table_element_t;
-  hsql::TableName           table_name;
-  hsql::TableRef*           table;
-  hsql::UpdateClause*       update_t;
-  hsql::WithDescription*    with_description_t;
+  hsql::ImportType import_type_t;
+  hsql::JoinType join_type;
+  hsql::LimitDescription* limit;
+  hsql::OrderDescription* order;
+  hsql::OrderType order_type;
+  hsql::SetOperation* set_operator_t;
+  hsql::TableConstraint* table_constraint_t;
+  hsql::TableElement* table_element_t;
+  hsql::TableName table_name;
+  hsql::TableRef* table;
+  hsql::UpdateClause* update_t;
+  hsql::WithDescription* with_description_t;
 
-  std::vector<char*>*                   str_vec;
-  std::vector<hsql::ConstraintType>*    column_constraint_vec;
-  std::vector<hsql::Expr*>*             expr_vec;
+  std::vector<char*>* str_vec;
+  std::vector<hsql::ConstraintType>* column_constraint_vec;
+  std::vector<hsql::Expr*>* expr_vec;
   std::vector<hsql::OrderDescription*>* order_vec;
-  std::vector<hsql::SQLStatement*>*     stmt_vec;
-  std::vector<hsql::TableElement*>*     table_element_vec;
-  std::vector<hsql::TableRef*>*         table_vec;
-  std::vector<hsql::UpdateClause*>*     update_vec;
-  std::vector<hsql::WithDescription*>*  with_description_vec;
+  std::vector<hsql::SQLStatement*>* stmt_vec;
+  std::vector<hsql::TableElement*>* table_element_vec;
+  std::vector<hsql::TableRef*>* table_vec;
+  std::vector<hsql::UpdateClause*>* update_vec;
+  std::vector<hsql::WithDescription*>* with_description_vec;
 
-#line 400 "bison_parser.cpp" /* yacc.c:355  */
+#line 399 "bison_parser.cpp" /* yacc.c:355  */
 };
 
 typedef union HSQL_STYPE HSQL_STYPE;
@@ -426,7 +425,7 @@ int hsql_parse (hsql::SQLParserResult* result, yyscan_t scanner);
 
 /* Copy the second part of user declarations.  */
 
-#line 430 "bison_parser.cpp" /* yacc.c:358  */
+#line 429 "bison_parser.cpp" /* yacc.c:358  */
 
 #ifdef short
 # undef short
@@ -741,37 +740,37 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,   301,   301,   322,   328,   337,   341,   345,   348,   351,
-     358,   359,   360,   361,   362,   363,   364,   365,   366,   367,
-     376,   377,   382,   383,   387,   391,   403,   406,   409,   415,
-     416,   423,   430,   433,   437,   451,   457,   466,   483,   487,
-     490,   499,   513,   516,   521,   535,   548,   556,   563,   570,
-     581,   582,   586,   587,   591,   592,   596,   603,   604,   605,
-     606,   607,   608,   609,   610,   611,   612,   613,   614,   615,
-     616,   620,   621,   625,   626,   627,   631,   632,   636,   637,
-     640,   641,   642,   643,   647,   648,   659,   665,   671,   677,
-     685,   686,   695,   703,   706,   718,   727,   740,   747,   758,
-     759,   769,   778,   779,   783,   795,   799,   803,   817,   818,
-     821,   822,   833,   834,   838,   848,   861,   868,   872,   876,
-     883,   886,   892,   904,   905,   909,   913,   914,   918,   923,
-     924,   928,   933,   937,   938,   942,   943,   947,   948,   952,
-     956,   957,   958,   964,   965,   969,   970,   971,   972,   973,
-     974,   981,   982,   986,   987,   991,   992,   996,  1006,  1007,
-    1008,  1009,  1010,  1014,  1015,  1016,  1017,  1018,  1019,  1020,
-    1021,  1022,  1023,  1024,  1028,  1029,  1033,  1034,  1035,  1036,
-    1037,  1041,  1042,  1043,  1044,  1045,  1046,  1047,  1048,  1049,
-    1050,  1051,  1055,  1056,  1060,  1061,  1062,  1063,  1069,  1070,
-    1071,  1072,  1076,  1077,  1081,  1082,  1086,  1087,  1088,  1089,
-    1090,  1091,  1092,  1096,  1097,  1101,  1105,  1109,  1110,  1111,
-    1112,  1113,  1114,  1118,  1119,  1120,  1121,  1122,  1123,  1127,
-    1128,  1132,  1136,  1140,  1144,  1145,  1146,  1147,  1151,  1152,
-    1153,  1154,  1155,  1156,  1157,  1161,  1165,  1166,  1170,  1171,
-    1175,  1179,  1183,  1196,  1197,  1208,  1242,  1254,  1255,  1265,
-    1266,  1270,  1271,  1280,  1281,  1286,  1297,  1306,  1307,  1311,
-    1312,  1316,  1317,  1322,  1323,  1328,  1329,  1334,  1335,  1344,
-    1345,  1349,  1353,  1357,  1364,  1377,  1385,  1395,  1414,  1415,
-    1416,  1417,  1418,  1419,  1420,  1421,  1422,  1423,  1428,  1437,
-    1438,  1443,  1444
+       0,   294,   294,   313,   319,   326,   330,   334,   335,   336,
+     338,   339,   340,   341,   342,   343,   344,   345,   346,   347,
+     353,   354,   356,   360,   365,   369,   379,   380,   381,   383,
+     383,   389,   395,   397,   401,   412,   418,   425,   440,   445,
+     446,   452,   464,   465,   470,   481,   494,   502,   509,   516,
+     525,   526,   528,   532,   537,   538,   540,   545,   546,   547,
+     548,   549,   550,   551,   552,   553,   554,   555,   556,   557,
+     558,   560,   561,   563,   564,   565,   567,   568,   570,   574,
+     579,   580,   581,   582,   584,   585,   593,   599,   605,   611,
+     617,   618,   625,   631,   633,   643,   650,   661,   668,   676,
+     677,   684,   691,   695,   700,   710,   714,   718,   730,   730,
+     732,   733,   742,   743,   745,   755,   766,   771,   775,   779,
+     784,   785,   787,   797,   798,   800,   802,   803,   805,   807,
+     808,   810,   815,   817,   818,   820,   821,   823,   827,   832,
+     834,   835,   836,   840,   841,   843,   844,   845,   846,   847,
+     848,   853,   857,   862,   863,   865,   869,   874,   882,   882,
+     882,   882,   882,   884,   885,   885,   885,   885,   885,   885,
+     885,   885,   886,   886,   890,   890,   892,   893,   894,   895,
+     896,   898,   898,   899,   900,   901,   902,   903,   904,   905,
+     906,   907,   909,   910,   912,   913,   914,   915,   919,   920,
+     921,   922,   924,   925,   927,   928,   930,   931,   932,   933,
+     934,   935,   936,   938,   939,   941,   943,   945,   946,   947,
+     948,   949,   950,   952,   953,   954,   955,   956,   957,   959,
+     959,   961,   963,   965,   967,   968,   969,   970,   972,   972,
+     972,   972,   972,   972,   972,   974,   976,   977,   979,   980,
+     982,   984,   986,   997,  1001,  1012,  1044,  1053,  1053,  1060,
+    1060,  1062,  1062,  1069,  1073,  1078,  1086,  1092,  1096,  1101,
+    1102,  1104,  1104,  1106,  1106,  1108,  1109,  1111,  1111,  1117,
+    1117,  1119,  1121,  1125,  1130,  1140,  1147,  1155,  1171,  1172,
+    1173,  1174,  1175,  1176,  1177,  1178,  1179,  1180,  1182,  1188,
+    1188,  1191,  1195
 };
 #endif
 
@@ -1849,821 +1848,821 @@ yydestruct (const char *yymsg, int yytype, YYSTYPE *yyvaluep, YYLTYPE *yylocatio
   switch (yytype)
     {
           case 3: /* IDENTIFIER  */
-#line 168 "bison_parser.y" /* yacc.c:1257  */
+#line 163 "bison_parser.y" /* yacc.c:1257  */
       { free( (((*yyvaluep).sval)) ); }
-#line 1855 "bison_parser.cpp" /* yacc.c:1257  */
+#line 1854 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 4: /* STRING  */
-#line 168 "bison_parser.y" /* yacc.c:1257  */
+#line 163 "bison_parser.y" /* yacc.c:1257  */
       { free( (((*yyvaluep).sval)) ); }
-#line 1861 "bison_parser.cpp" /* yacc.c:1257  */
+#line 1860 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 5: /* FLOATVAL  */
-#line 166 "bison_parser.y" /* yacc.c:1257  */
+#line 161 "bison_parser.y" /* yacc.c:1257  */
       { }
-#line 1867 "bison_parser.cpp" /* yacc.c:1257  */
+#line 1866 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 6: /* INTVAL  */
-#line 166 "bison_parser.y" /* yacc.c:1257  */
+#line 161 "bison_parser.y" /* yacc.c:1257  */
       { }
-#line 1873 "bison_parser.cpp" /* yacc.c:1257  */
+#line 1872 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 182: /* statement_list  */
-#line 169 "bison_parser.y" /* yacc.c:1257  */
+#line 164 "bison_parser.y" /* yacc.c:1257  */
       {
-  if ((((*yyvaluep).stmt_vec)) != nullptr) {
-    for (auto ptr : *(((*yyvaluep).stmt_vec))) {
-      delete ptr;
+      if ((((*yyvaluep).stmt_vec)) != nullptr) {
+        for (auto ptr : *(((*yyvaluep).stmt_vec))) {
+          delete ptr;
+        }
+      }
+      delete (((*yyvaluep).stmt_vec));
     }
-  }
-  delete (((*yyvaluep).stmt_vec));
-}
-#line 1886 "bison_parser.cpp" /* yacc.c:1257  */
+#line 1885 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 183: /* statement  */
-#line 177 "bison_parser.y" /* yacc.c:1257  */
+#line 172 "bison_parser.y" /* yacc.c:1257  */
       { delete (((*yyvaluep).statement)); }
-#line 1892 "bison_parser.cpp" /* yacc.c:1257  */
+#line 1891 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 184: /* preparable_statement  */
-#line 177 "bison_parser.y" /* yacc.c:1257  */
+#line 172 "bison_parser.y" /* yacc.c:1257  */
       { delete (((*yyvaluep).statement)); }
-#line 1898 "bison_parser.cpp" /* yacc.c:1257  */
+#line 1897 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 185: /* opt_hints  */
-#line 169 "bison_parser.y" /* yacc.c:1257  */
+#line 164 "bison_parser.y" /* yacc.c:1257  */
       {
-  if ((((*yyvaluep).expr_vec)) != nullptr) {
-    for (auto ptr : *(((*yyvaluep).expr_vec))) {
-      delete ptr;
+      if ((((*yyvaluep).expr_vec)) != nullptr) {
+        for (auto ptr : *(((*yyvaluep).expr_vec))) {
+          delete ptr;
+        }
+      }
+      delete (((*yyvaluep).expr_vec));
     }
-  }
-  delete (((*yyvaluep).expr_vec));
-}
-#line 1911 "bison_parser.cpp" /* yacc.c:1257  */
+#line 1910 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 186: /* hint_list  */
-#line 169 "bison_parser.y" /* yacc.c:1257  */
+#line 164 "bison_parser.y" /* yacc.c:1257  */
       {
-  if ((((*yyvaluep).expr_vec)) != nullptr) {
-    for (auto ptr : *(((*yyvaluep).expr_vec))) {
-      delete ptr;
+      if ((((*yyvaluep).expr_vec)) != nullptr) {
+        for (auto ptr : *(((*yyvaluep).expr_vec))) {
+          delete ptr;
+        }
+      }
+      delete (((*yyvaluep).expr_vec));
     }
-  }
-  delete (((*yyvaluep).expr_vec));
-}
-#line 1924 "bison_parser.cpp" /* yacc.c:1257  */
+#line 1923 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 187: /* hint  */
-#line 177 "bison_parser.y" /* yacc.c:1257  */
+#line 172 "bison_parser.y" /* yacc.c:1257  */
       { delete (((*yyvaluep).expr)); }
-#line 1930 "bison_parser.cpp" /* yacc.c:1257  */
+#line 1929 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 188: /* transaction_statement  */
-#line 177 "bison_parser.y" /* yacc.c:1257  */
+#line 172 "bison_parser.y" /* yacc.c:1257  */
       { delete (((*yyvaluep).transaction_stmt)); }
-#line 1936 "bison_parser.cpp" /* yacc.c:1257  */
+#line 1935 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 190: /* prepare_statement  */
-#line 177 "bison_parser.y" /* yacc.c:1257  */
+#line 172 "bison_parser.y" /* yacc.c:1257  */
       { delete (((*yyvaluep).prep_stmt)); }
-#line 1942 "bison_parser.cpp" /* yacc.c:1257  */
+#line 1941 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 191: /* prepare_target_query  */
-#line 168 "bison_parser.y" /* yacc.c:1257  */
+#line 163 "bison_parser.y" /* yacc.c:1257  */
       { free( (((*yyvaluep).sval)) ); }
-#line 1948 "bison_parser.cpp" /* yacc.c:1257  */
+#line 1947 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 192: /* execute_statement  */
-#line 177 "bison_parser.y" /* yacc.c:1257  */
+#line 172 "bison_parser.y" /* yacc.c:1257  */
       { delete (((*yyvaluep).exec_stmt)); }
-#line 1954 "bison_parser.cpp" /* yacc.c:1257  */
+#line 1953 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 193: /* import_statement  */
-#line 177 "bison_parser.y" /* yacc.c:1257  */
+#line 172 "bison_parser.y" /* yacc.c:1257  */
       { delete (((*yyvaluep).import_stmt)); }
-#line 1960 "bison_parser.cpp" /* yacc.c:1257  */
+#line 1959 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 194: /* file_type  */
-#line 166 "bison_parser.y" /* yacc.c:1257  */
+#line 161 "bison_parser.y" /* yacc.c:1257  */
       { }
-#line 1966 "bison_parser.cpp" /* yacc.c:1257  */
+#line 1965 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 195: /* file_path  */
-#line 168 "bison_parser.y" /* yacc.c:1257  */
+#line 163 "bison_parser.y" /* yacc.c:1257  */
       { free( (((*yyvaluep).sval)) ); }
-#line 1972 "bison_parser.cpp" /* yacc.c:1257  */
+#line 1971 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 196: /* opt_file_type  */
-#line 166 "bison_parser.y" /* yacc.c:1257  */
+#line 161 "bison_parser.y" /* yacc.c:1257  */
       { }
-#line 1978 "bison_parser.cpp" /* yacc.c:1257  */
+#line 1977 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 197: /* export_statement  */
-#line 177 "bison_parser.y" /* yacc.c:1257  */
+#line 172 "bison_parser.y" /* yacc.c:1257  */
       { delete (((*yyvaluep).export_stmt)); }
-#line 1984 "bison_parser.cpp" /* yacc.c:1257  */
+#line 1983 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 198: /* show_statement  */
-#line 177 "bison_parser.y" /* yacc.c:1257  */
+#line 172 "bison_parser.y" /* yacc.c:1257  */
       { delete (((*yyvaluep).show_stmt)); }
-#line 1990 "bison_parser.cpp" /* yacc.c:1257  */
+#line 1989 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 199: /* create_statement  */
-#line 177 "bison_parser.y" /* yacc.c:1257  */
+#line 172 "bison_parser.y" /* yacc.c:1257  */
       { delete (((*yyvaluep).create_stmt)); }
-#line 1996 "bison_parser.cpp" /* yacc.c:1257  */
+#line 1995 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 200: /* opt_not_exists  */
-#line 166 "bison_parser.y" /* yacc.c:1257  */
+#line 161 "bison_parser.y" /* yacc.c:1257  */
       { }
-#line 2002 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2001 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 201: /* table_elem_commalist  */
-#line 169 "bison_parser.y" /* yacc.c:1257  */
+#line 164 "bison_parser.y" /* yacc.c:1257  */
       {
-  if ((((*yyvaluep).table_element_vec)) != nullptr) {
-    for (auto ptr : *(((*yyvaluep).table_element_vec))) {
-      delete ptr;
+      if ((((*yyvaluep).table_element_vec)) != nullptr) {
+        for (auto ptr : *(((*yyvaluep).table_element_vec))) {
+          delete ptr;
+        }
+      }
+      delete (((*yyvaluep).table_element_vec));
     }
-  }
-  delete (((*yyvaluep).table_element_vec));
-}
-#line 2015 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2014 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 202: /* table_elem  */
-#line 177 "bison_parser.y" /* yacc.c:1257  */
+#line 172 "bison_parser.y" /* yacc.c:1257  */
       { delete (((*yyvaluep).table_element_t)); }
-#line 2021 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2020 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 203: /* column_def  */
-#line 177 "bison_parser.y" /* yacc.c:1257  */
+#line 172 "bison_parser.y" /* yacc.c:1257  */
       { delete (((*yyvaluep).column_t)); }
-#line 2027 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2026 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 204: /* column_type  */
-#line 166 "bison_parser.y" /* yacc.c:1257  */
+#line 161 "bison_parser.y" /* yacc.c:1257  */
       { }
-#line 2033 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2032 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 205: /* opt_time_specification  */
-#line 166 "bison_parser.y" /* yacc.c:1257  */
+#line 161 "bison_parser.y" /* yacc.c:1257  */
       { }
-#line 2039 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2038 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 206: /* opt_decimal_specification  */
-#line 166 "bison_parser.y" /* yacc.c:1257  */
+#line 161 "bison_parser.y" /* yacc.c:1257  */
       { }
-#line 2045 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2044 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 207: /* opt_column_constraints  */
-#line 166 "bison_parser.y" /* yacc.c:1257  */
+#line 161 "bison_parser.y" /* yacc.c:1257  */
       { }
-#line 2051 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2050 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 208: /* column_constraint_list  */
-#line 166 "bison_parser.y" /* yacc.c:1257  */
+#line 161 "bison_parser.y" /* yacc.c:1257  */
       { }
-#line 2057 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2056 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 209: /* column_constraint  */
-#line 166 "bison_parser.y" /* yacc.c:1257  */
+#line 161 "bison_parser.y" /* yacc.c:1257  */
       { }
-#line 2063 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2062 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 210: /* table_constraint  */
-#line 177 "bison_parser.y" /* yacc.c:1257  */
+#line 172 "bison_parser.y" /* yacc.c:1257  */
       { delete (((*yyvaluep).table_constraint_t)); }
-#line 2069 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2068 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 211: /* drop_statement  */
-#line 177 "bison_parser.y" /* yacc.c:1257  */
+#line 172 "bison_parser.y" /* yacc.c:1257  */
       { delete (((*yyvaluep).drop_stmt)); }
-#line 2075 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2074 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 212: /* opt_exists  */
-#line 166 "bison_parser.y" /* yacc.c:1257  */
+#line 161 "bison_parser.y" /* yacc.c:1257  */
       { }
-#line 2081 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2080 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 213: /* alter_statement  */
-#line 177 "bison_parser.y" /* yacc.c:1257  */
+#line 172 "bison_parser.y" /* yacc.c:1257  */
       { delete (((*yyvaluep).alter_stmt)); }
-#line 2087 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2086 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 214: /* alter_action  */
-#line 177 "bison_parser.y" /* yacc.c:1257  */
+#line 172 "bison_parser.y" /* yacc.c:1257  */
       { delete (((*yyvaluep).alter_action_t)); }
-#line 2093 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2092 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 215: /* drop_action  */
-#line 177 "bison_parser.y" /* yacc.c:1257  */
+#line 172 "bison_parser.y" /* yacc.c:1257  */
       { delete (((*yyvaluep).drop_action_t)); }
-#line 2099 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2098 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 216: /* delete_statement  */
-#line 177 "bison_parser.y" /* yacc.c:1257  */
+#line 172 "bison_parser.y" /* yacc.c:1257  */
       { delete (((*yyvaluep).delete_stmt)); }
-#line 2105 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2104 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 217: /* truncate_statement  */
-#line 177 "bison_parser.y" /* yacc.c:1257  */
+#line 172 "bison_parser.y" /* yacc.c:1257  */
       { delete (((*yyvaluep).delete_stmt)); }
-#line 2111 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2110 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 218: /* insert_statement  */
-#line 177 "bison_parser.y" /* yacc.c:1257  */
+#line 172 "bison_parser.y" /* yacc.c:1257  */
       { delete (((*yyvaluep).insert_stmt)); }
-#line 2117 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2116 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 219: /* opt_column_list  */
-#line 169 "bison_parser.y" /* yacc.c:1257  */
+#line 164 "bison_parser.y" /* yacc.c:1257  */
       {
-  if ((((*yyvaluep).str_vec)) != nullptr) {
-    for (auto ptr : *(((*yyvaluep).str_vec))) {
-      delete ptr;
+      if ((((*yyvaluep).str_vec)) != nullptr) {
+        for (auto ptr : *(((*yyvaluep).str_vec))) {
+          delete ptr;
+        }
+      }
+      delete (((*yyvaluep).str_vec));
     }
-  }
-  delete (((*yyvaluep).str_vec));
-}
-#line 2130 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2129 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 220: /* update_statement  */
-#line 177 "bison_parser.y" /* yacc.c:1257  */
+#line 172 "bison_parser.y" /* yacc.c:1257  */
       { delete (((*yyvaluep).update_stmt)); }
-#line 2136 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2135 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 221: /* update_clause_commalist  */
-#line 169 "bison_parser.y" /* yacc.c:1257  */
+#line 164 "bison_parser.y" /* yacc.c:1257  */
       {
-  if ((((*yyvaluep).update_vec)) != nullptr) {
-    for (auto ptr : *(((*yyvaluep).update_vec))) {
-      delete ptr;
+      if ((((*yyvaluep).update_vec)) != nullptr) {
+        for (auto ptr : *(((*yyvaluep).update_vec))) {
+          delete ptr;
+        }
+      }
+      delete (((*yyvaluep).update_vec));
     }
-  }
-  delete (((*yyvaluep).update_vec));
-}
-#line 2149 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2148 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 222: /* update_clause  */
-#line 177 "bison_parser.y" /* yacc.c:1257  */
+#line 172 "bison_parser.y" /* yacc.c:1257  */
       { delete (((*yyvaluep).update_t)); }
-#line 2155 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2154 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 223: /* select_statement  */
-#line 177 "bison_parser.y" /* yacc.c:1257  */
+#line 172 "bison_parser.y" /* yacc.c:1257  */
       { delete (((*yyvaluep).select_stmt)); }
-#line 2161 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2160 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 224: /* select_within_set_operation  */
-#line 177 "bison_parser.y" /* yacc.c:1257  */
+#line 172 "bison_parser.y" /* yacc.c:1257  */
       { delete (((*yyvaluep).select_stmt)); }
-#line 2167 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2166 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 225: /* select_within_set_operation_no_parentheses  */
-#line 177 "bison_parser.y" /* yacc.c:1257  */
+#line 172 "bison_parser.y" /* yacc.c:1257  */
       { delete (((*yyvaluep).select_stmt)); }
-#line 2173 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2172 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 226: /* select_with_paren  */
-#line 177 "bison_parser.y" /* yacc.c:1257  */
+#line 172 "bison_parser.y" /* yacc.c:1257  */
       { delete (((*yyvaluep).select_stmt)); }
-#line 2179 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2178 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 227: /* select_no_paren  */
-#line 177 "bison_parser.y" /* yacc.c:1257  */
+#line 172 "bison_parser.y" /* yacc.c:1257  */
       { delete (((*yyvaluep).select_stmt)); }
-#line 2185 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2184 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 228: /* set_operator  */
-#line 177 "bison_parser.y" /* yacc.c:1257  */
+#line 172 "bison_parser.y" /* yacc.c:1257  */
       { delete (((*yyvaluep).set_operator_t)); }
-#line 2191 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2190 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 229: /* set_type  */
-#line 177 "bison_parser.y" /* yacc.c:1257  */
+#line 172 "bison_parser.y" /* yacc.c:1257  */
       { delete (((*yyvaluep).set_operator_t)); }
-#line 2197 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2196 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 230: /* opt_all  */
-#line 166 "bison_parser.y" /* yacc.c:1257  */
+#line 161 "bison_parser.y" /* yacc.c:1257  */
       { }
-#line 2203 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2202 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 231: /* select_clause  */
-#line 177 "bison_parser.y" /* yacc.c:1257  */
+#line 172 "bison_parser.y" /* yacc.c:1257  */
       { delete (((*yyvaluep).select_stmt)); }
-#line 2209 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2208 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 232: /* opt_distinct  */
-#line 166 "bison_parser.y" /* yacc.c:1257  */
+#line 161 "bison_parser.y" /* yacc.c:1257  */
       { }
-#line 2215 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2214 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 233: /* select_list  */
-#line 169 "bison_parser.y" /* yacc.c:1257  */
+#line 164 "bison_parser.y" /* yacc.c:1257  */
       {
-  if ((((*yyvaluep).expr_vec)) != nullptr) {
-    for (auto ptr : *(((*yyvaluep).expr_vec))) {
-      delete ptr;
+      if ((((*yyvaluep).expr_vec)) != nullptr) {
+        for (auto ptr : *(((*yyvaluep).expr_vec))) {
+          delete ptr;
+        }
+      }
+      delete (((*yyvaluep).expr_vec));
     }
-  }
-  delete (((*yyvaluep).expr_vec));
-}
-#line 2228 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2227 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 234: /* opt_from_clause  */
-#line 177 "bison_parser.y" /* yacc.c:1257  */
+#line 172 "bison_parser.y" /* yacc.c:1257  */
       { delete (((*yyvaluep).table)); }
-#line 2234 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2233 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 235: /* from_clause  */
-#line 177 "bison_parser.y" /* yacc.c:1257  */
+#line 172 "bison_parser.y" /* yacc.c:1257  */
       { delete (((*yyvaluep).table)); }
-#line 2240 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2239 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 236: /* opt_where  */
-#line 177 "bison_parser.y" /* yacc.c:1257  */
+#line 172 "bison_parser.y" /* yacc.c:1257  */
       { delete (((*yyvaluep).expr)); }
-#line 2246 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2245 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 237: /* opt_group  */
-#line 177 "bison_parser.y" /* yacc.c:1257  */
+#line 172 "bison_parser.y" /* yacc.c:1257  */
       { delete (((*yyvaluep).group_t)); }
-#line 2252 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2251 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 238: /* opt_having  */
-#line 177 "bison_parser.y" /* yacc.c:1257  */
+#line 172 "bison_parser.y" /* yacc.c:1257  */
       { delete (((*yyvaluep).expr)); }
-#line 2258 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2257 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 239: /* opt_order  */
-#line 169 "bison_parser.y" /* yacc.c:1257  */
+#line 164 "bison_parser.y" /* yacc.c:1257  */
       {
-  if ((((*yyvaluep).order_vec)) != nullptr) {
-    for (auto ptr : *(((*yyvaluep).order_vec))) {
-      delete ptr;
+      if ((((*yyvaluep).order_vec)) != nullptr) {
+        for (auto ptr : *(((*yyvaluep).order_vec))) {
+          delete ptr;
+        }
+      }
+      delete (((*yyvaluep).order_vec));
     }
-  }
-  delete (((*yyvaluep).order_vec));
-}
-#line 2271 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2270 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 240: /* order_list  */
-#line 169 "bison_parser.y" /* yacc.c:1257  */
+#line 164 "bison_parser.y" /* yacc.c:1257  */
       {
-  if ((((*yyvaluep).order_vec)) != nullptr) {
-    for (auto ptr : *(((*yyvaluep).order_vec))) {
-      delete ptr;
+      if ((((*yyvaluep).order_vec)) != nullptr) {
+        for (auto ptr : *(((*yyvaluep).order_vec))) {
+          delete ptr;
+        }
+      }
+      delete (((*yyvaluep).order_vec));
     }
-  }
-  delete (((*yyvaluep).order_vec));
-}
-#line 2284 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2283 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 241: /* order_desc  */
-#line 177 "bison_parser.y" /* yacc.c:1257  */
+#line 172 "bison_parser.y" /* yacc.c:1257  */
       { delete (((*yyvaluep).order)); }
-#line 2290 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2289 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 242: /* opt_order_type  */
-#line 166 "bison_parser.y" /* yacc.c:1257  */
+#line 161 "bison_parser.y" /* yacc.c:1257  */
       { }
-#line 2296 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2295 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 243: /* opt_top  */
-#line 177 "bison_parser.y" /* yacc.c:1257  */
+#line 172 "bison_parser.y" /* yacc.c:1257  */
       { delete (((*yyvaluep).limit)); }
-#line 2302 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2301 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 244: /* opt_limit  */
-#line 177 "bison_parser.y" /* yacc.c:1257  */
+#line 172 "bison_parser.y" /* yacc.c:1257  */
       { delete (((*yyvaluep).limit)); }
-#line 2308 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2307 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 245: /* expr_list  */
-#line 169 "bison_parser.y" /* yacc.c:1257  */
+#line 164 "bison_parser.y" /* yacc.c:1257  */
       {
-  if ((((*yyvaluep).expr_vec)) != nullptr) {
-    for (auto ptr : *(((*yyvaluep).expr_vec))) {
-      delete ptr;
+      if ((((*yyvaluep).expr_vec)) != nullptr) {
+        for (auto ptr : *(((*yyvaluep).expr_vec))) {
+          delete ptr;
+        }
+      }
+      delete (((*yyvaluep).expr_vec));
     }
-  }
-  delete (((*yyvaluep).expr_vec));
-}
-#line 2321 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2320 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 246: /* opt_literal_list  */
-#line 169 "bison_parser.y" /* yacc.c:1257  */
+#line 164 "bison_parser.y" /* yacc.c:1257  */
       {
-  if ((((*yyvaluep).expr_vec)) != nullptr) {
-    for (auto ptr : *(((*yyvaluep).expr_vec))) {
-      delete ptr;
+      if ((((*yyvaluep).expr_vec)) != nullptr) {
+        for (auto ptr : *(((*yyvaluep).expr_vec))) {
+          delete ptr;
+        }
+      }
+      delete (((*yyvaluep).expr_vec));
     }
-  }
-  delete (((*yyvaluep).expr_vec));
-}
-#line 2334 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2333 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 247: /* literal_list  */
-#line 169 "bison_parser.y" /* yacc.c:1257  */
+#line 164 "bison_parser.y" /* yacc.c:1257  */
       {
-  if ((((*yyvaluep).expr_vec)) != nullptr) {
-    for (auto ptr : *(((*yyvaluep).expr_vec))) {
-      delete ptr;
+      if ((((*yyvaluep).expr_vec)) != nullptr) {
+        for (auto ptr : *(((*yyvaluep).expr_vec))) {
+          delete ptr;
+        }
+      }
+      delete (((*yyvaluep).expr_vec));
     }
-  }
-  delete (((*yyvaluep).expr_vec));
-}
-#line 2347 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2346 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 248: /* expr_alias  */
-#line 177 "bison_parser.y" /* yacc.c:1257  */
+#line 172 "bison_parser.y" /* yacc.c:1257  */
       { delete (((*yyvaluep).expr)); }
-#line 2353 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2352 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 249: /* expr  */
-#line 177 "bison_parser.y" /* yacc.c:1257  */
+#line 172 "bison_parser.y" /* yacc.c:1257  */
       { delete (((*yyvaluep).expr)); }
-#line 2359 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2358 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 250: /* operand  */
-#line 177 "bison_parser.y" /* yacc.c:1257  */
+#line 172 "bison_parser.y" /* yacc.c:1257  */
       { delete (((*yyvaluep).expr)); }
-#line 2365 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2364 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 251: /* scalar_expr  */
-#line 177 "bison_parser.y" /* yacc.c:1257  */
+#line 172 "bison_parser.y" /* yacc.c:1257  */
       { delete (((*yyvaluep).expr)); }
-#line 2371 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2370 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 252: /* unary_expr  */
-#line 177 "bison_parser.y" /* yacc.c:1257  */
+#line 172 "bison_parser.y" /* yacc.c:1257  */
       { delete (((*yyvaluep).expr)); }
-#line 2377 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2376 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 253: /* binary_expr  */
-#line 177 "bison_parser.y" /* yacc.c:1257  */
+#line 172 "bison_parser.y" /* yacc.c:1257  */
       { delete (((*yyvaluep).expr)); }
-#line 2383 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2382 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 254: /* logic_expr  */
-#line 177 "bison_parser.y" /* yacc.c:1257  */
+#line 172 "bison_parser.y" /* yacc.c:1257  */
       { delete (((*yyvaluep).expr)); }
-#line 2389 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2388 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 255: /* in_expr  */
-#line 177 "bison_parser.y" /* yacc.c:1257  */
+#line 172 "bison_parser.y" /* yacc.c:1257  */
       { delete (((*yyvaluep).expr)); }
-#line 2395 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2394 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 256: /* case_expr  */
-#line 177 "bison_parser.y" /* yacc.c:1257  */
+#line 172 "bison_parser.y" /* yacc.c:1257  */
       { delete (((*yyvaluep).expr)); }
-#line 2401 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2400 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 257: /* case_list  */
-#line 177 "bison_parser.y" /* yacc.c:1257  */
+#line 172 "bison_parser.y" /* yacc.c:1257  */
       { delete (((*yyvaluep).expr)); }
-#line 2407 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2406 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 258: /* exists_expr  */
-#line 177 "bison_parser.y" /* yacc.c:1257  */
+#line 172 "bison_parser.y" /* yacc.c:1257  */
       { delete (((*yyvaluep).expr)); }
-#line 2413 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2412 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 259: /* comp_expr  */
-#line 177 "bison_parser.y" /* yacc.c:1257  */
+#line 172 "bison_parser.y" /* yacc.c:1257  */
       { delete (((*yyvaluep).expr)); }
-#line 2419 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2418 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 260: /* function_expr  */
-#line 177 "bison_parser.y" /* yacc.c:1257  */
+#line 172 "bison_parser.y" /* yacc.c:1257  */
       { delete (((*yyvaluep).expr)); }
-#line 2425 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2424 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 261: /* extract_expr  */
-#line 177 "bison_parser.y" /* yacc.c:1257  */
+#line 172 "bison_parser.y" /* yacc.c:1257  */
       { delete (((*yyvaluep).expr)); }
-#line 2431 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2430 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 262: /* cast_expr  */
-#line 177 "bison_parser.y" /* yacc.c:1257  */
+#line 172 "bison_parser.y" /* yacc.c:1257  */
       { delete (((*yyvaluep).expr)); }
-#line 2437 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2436 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 263: /* datetime_field  */
-#line 166 "bison_parser.y" /* yacc.c:1257  */
+#line 161 "bison_parser.y" /* yacc.c:1257  */
       { }
-#line 2443 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2442 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 264: /* datetime_field_plural  */
-#line 166 "bison_parser.y" /* yacc.c:1257  */
+#line 161 "bison_parser.y" /* yacc.c:1257  */
       { }
-#line 2449 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2448 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 265: /* duration_field  */
-#line 166 "bison_parser.y" /* yacc.c:1257  */
+#line 161 "bison_parser.y" /* yacc.c:1257  */
       { }
-#line 2455 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2454 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 266: /* array_expr  */
-#line 177 "bison_parser.y" /* yacc.c:1257  */
+#line 172 "bison_parser.y" /* yacc.c:1257  */
       { delete (((*yyvaluep).expr)); }
-#line 2461 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2460 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 267: /* array_index  */
-#line 177 "bison_parser.y" /* yacc.c:1257  */
+#line 172 "bison_parser.y" /* yacc.c:1257  */
       { delete (((*yyvaluep).expr)); }
-#line 2467 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2466 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 268: /* between_expr  */
-#line 177 "bison_parser.y" /* yacc.c:1257  */
+#line 172 "bison_parser.y" /* yacc.c:1257  */
       { delete (((*yyvaluep).expr)); }
-#line 2473 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2472 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 269: /* column_name  */
-#line 177 "bison_parser.y" /* yacc.c:1257  */
+#line 172 "bison_parser.y" /* yacc.c:1257  */
       { delete (((*yyvaluep).expr)); }
-#line 2479 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2478 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 270: /* literal  */
-#line 177 "bison_parser.y" /* yacc.c:1257  */
+#line 172 "bison_parser.y" /* yacc.c:1257  */
       { delete (((*yyvaluep).expr)); }
-#line 2485 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2484 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 271: /* string_literal  */
-#line 177 "bison_parser.y" /* yacc.c:1257  */
+#line 172 "bison_parser.y" /* yacc.c:1257  */
       { delete (((*yyvaluep).expr)); }
-#line 2491 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2490 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 272: /* bool_literal  */
-#line 177 "bison_parser.y" /* yacc.c:1257  */
+#line 172 "bison_parser.y" /* yacc.c:1257  */
       { delete (((*yyvaluep).expr)); }
-#line 2497 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2496 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 273: /* num_literal  */
-#line 177 "bison_parser.y" /* yacc.c:1257  */
+#line 172 "bison_parser.y" /* yacc.c:1257  */
       { delete (((*yyvaluep).expr)); }
-#line 2503 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2502 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 274: /* int_literal  */
-#line 177 "bison_parser.y" /* yacc.c:1257  */
+#line 172 "bison_parser.y" /* yacc.c:1257  */
       { delete (((*yyvaluep).expr)); }
-#line 2509 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2508 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 275: /* null_literal  */
-#line 177 "bison_parser.y" /* yacc.c:1257  */
+#line 172 "bison_parser.y" /* yacc.c:1257  */
       { delete (((*yyvaluep).expr)); }
-#line 2515 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2514 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 276: /* date_literal  */
-#line 177 "bison_parser.y" /* yacc.c:1257  */
+#line 172 "bison_parser.y" /* yacc.c:1257  */
       { delete (((*yyvaluep).expr)); }
-#line 2521 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2520 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 277: /* interval_literal  */
-#line 177 "bison_parser.y" /* yacc.c:1257  */
+#line 172 "bison_parser.y" /* yacc.c:1257  */
       { delete (((*yyvaluep).expr)); }
-#line 2527 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2526 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 278: /* param_expr  */
-#line 177 "bison_parser.y" /* yacc.c:1257  */
+#line 172 "bison_parser.y" /* yacc.c:1257  */
       { delete (((*yyvaluep).expr)); }
-#line 2533 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2532 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 279: /* table_ref  */
-#line 177 "bison_parser.y" /* yacc.c:1257  */
+#line 172 "bison_parser.y" /* yacc.c:1257  */
       { delete (((*yyvaluep).table)); }
-#line 2539 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2538 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 280: /* table_ref_atomic  */
-#line 177 "bison_parser.y" /* yacc.c:1257  */
+#line 172 "bison_parser.y" /* yacc.c:1257  */
       { delete (((*yyvaluep).table)); }
-#line 2545 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2544 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 281: /* nonjoin_table_ref_atomic  */
-#line 177 "bison_parser.y" /* yacc.c:1257  */
+#line 172 "bison_parser.y" /* yacc.c:1257  */
       { delete (((*yyvaluep).table)); }
-#line 2551 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2550 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 282: /* table_ref_commalist  */
-#line 169 "bison_parser.y" /* yacc.c:1257  */
+#line 164 "bison_parser.y" /* yacc.c:1257  */
       {
-  if ((((*yyvaluep).table_vec)) != nullptr) {
-    for (auto ptr : *(((*yyvaluep).table_vec))) {
-      delete ptr;
+      if ((((*yyvaluep).table_vec)) != nullptr) {
+        for (auto ptr : *(((*yyvaluep).table_vec))) {
+          delete ptr;
+        }
+      }
+      delete (((*yyvaluep).table_vec));
     }
-  }
-  delete (((*yyvaluep).table_vec));
-}
-#line 2564 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2563 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 283: /* table_ref_name  */
-#line 177 "bison_parser.y" /* yacc.c:1257  */
+#line 172 "bison_parser.y" /* yacc.c:1257  */
       { delete (((*yyvaluep).table)); }
-#line 2570 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2569 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 284: /* table_ref_name_no_alias  */
-#line 177 "bison_parser.y" /* yacc.c:1257  */
+#line 172 "bison_parser.y" /* yacc.c:1257  */
       { delete (((*yyvaluep).table)); }
-#line 2576 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2575 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 285: /* table_name  */
-#line 167 "bison_parser.y" /* yacc.c:1257  */
+#line 162 "bison_parser.y" /* yacc.c:1257  */
       { free( (((*yyvaluep).table_name).name) ); free( (((*yyvaluep).table_name).schema) ); }
-#line 2582 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2581 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 286: /* opt_index_name  */
-#line 168 "bison_parser.y" /* yacc.c:1257  */
+#line 163 "bison_parser.y" /* yacc.c:1257  */
       { free( (((*yyvaluep).sval)) ); }
-#line 2588 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2587 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 287: /* table_alias  */
-#line 177 "bison_parser.y" /* yacc.c:1257  */
+#line 172 "bison_parser.y" /* yacc.c:1257  */
       { delete (((*yyvaluep).alias_t)); }
-#line 2594 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2593 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 288: /* opt_table_alias  */
-#line 177 "bison_parser.y" /* yacc.c:1257  */
+#line 172 "bison_parser.y" /* yacc.c:1257  */
       { delete (((*yyvaluep).alias_t)); }
-#line 2600 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2599 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 289: /* alias  */
-#line 177 "bison_parser.y" /* yacc.c:1257  */
+#line 172 "bison_parser.y" /* yacc.c:1257  */
       { delete (((*yyvaluep).alias_t)); }
-#line 2606 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2605 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 290: /* opt_alias  */
-#line 177 "bison_parser.y" /* yacc.c:1257  */
+#line 172 "bison_parser.y" /* yacc.c:1257  */
       { delete (((*yyvaluep).alias_t)); }
-#line 2612 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2611 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 291: /* opt_with_clause  */
-#line 177 "bison_parser.y" /* yacc.c:1257  */
+#line 172 "bison_parser.y" /* yacc.c:1257  */
       { delete (((*yyvaluep).with_description_vec)); }
-#line 2618 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2617 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 292: /* with_clause  */
-#line 177 "bison_parser.y" /* yacc.c:1257  */
+#line 172 "bison_parser.y" /* yacc.c:1257  */
       { delete (((*yyvaluep).with_description_vec)); }
-#line 2624 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2623 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 293: /* with_description_list  */
-#line 177 "bison_parser.y" /* yacc.c:1257  */
+#line 172 "bison_parser.y" /* yacc.c:1257  */
       { delete (((*yyvaluep).with_description_vec)); }
-#line 2630 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2629 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 294: /* with_description  */
-#line 177 "bison_parser.y" /* yacc.c:1257  */
+#line 172 "bison_parser.y" /* yacc.c:1257  */
       { delete (((*yyvaluep).with_description_t)); }
-#line 2636 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2635 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 295: /* join_clause  */
-#line 177 "bison_parser.y" /* yacc.c:1257  */
+#line 172 "bison_parser.y" /* yacc.c:1257  */
       { delete (((*yyvaluep).table)); }
-#line 2642 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2641 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 296: /* opt_join_type  */
-#line 166 "bison_parser.y" /* yacc.c:1257  */
+#line 161 "bison_parser.y" /* yacc.c:1257  */
       { }
-#line 2648 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2647 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 297: /* join_condition  */
-#line 177 "bison_parser.y" /* yacc.c:1257  */
+#line 172 "bison_parser.y" /* yacc.c:1257  */
       { delete (((*yyvaluep).expr)); }
-#line 2654 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2653 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
     case 299: /* ident_commalist  */
-#line 169 "bison_parser.y" /* yacc.c:1257  */
+#line 164 "bison_parser.y" /* yacc.c:1257  */
       {
-  if ((((*yyvaluep).str_vec)) != nullptr) {
-    for (auto ptr : *(((*yyvaluep).str_vec))) {
-      delete ptr;
+      if ((((*yyvaluep).str_vec)) != nullptr) {
+        for (auto ptr : *(((*yyvaluep).str_vec))) {
+          delete ptr;
+        }
+      }
+      delete (((*yyvaluep).str_vec));
     }
-  }
-  delete (((*yyvaluep).str_vec));
-}
-#line 2667 "bison_parser.cpp" /* yacc.c:1257  */
+#line 2666 "bison_parser.cpp" /* yacc.c:1257  */
         break;
 
 
@@ -2771,7 +2770,7 @@ YYLTYPE yylloc = yyloc_default;
   yychar = YYEMPTY; /* Cause a token to be read.  */
 
 /* User initialization code.  */
-#line 79 "bison_parser.y" /* yacc.c:1429  */
+#line 77 "bison_parser.y" /* yacc.c:1429  */
 {
   // Initialize
   yylloc.first_column = 0;
@@ -2782,7 +2781,7 @@ YYLTYPE yylloc = yyloc_default;
   yylloc.string_length = 0;
 }
 
-#line 2786 "bison_parser.cpp" /* yacc.c:1429  */
+#line 2785 "bison_parser.cpp" /* yacc.c:1429  */
   yylsp[0] = yylloc;
   goto yysetstate;
 
@@ -2969,1932 +2968,1980 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 301 "bison_parser.y" /* yacc.c:1646  */
+#line 294 "bison_parser.y" /* yacc.c:1646  */
     {
-      for (SQLStatement* stmt : *(yyvsp[-1].stmt_vec)) {
-        // Transfers ownership of the statement.
-        result->addStatement(stmt);
-      }
+  for (SQLStatement* stmt : *(yyvsp[-1].stmt_vec)) {
+    // Transfers ownership of the statement.
+    result->addStatement(stmt);
+  }
 
-      unsigned param_id = 0;
-      for (void* param : yyloc.param_list) {
-        if (param != nullptr) {
-          Expr* expr = (Expr*) param;
-          expr->ival = param_id;
-          result->addParameter(expr);
-          ++param_id;
-        }
-      }
-      delete (yyvsp[-1].stmt_vec);
+  unsigned param_id = 0;
+  for (void* param : yyloc.param_list) {
+    if (param != nullptr) {
+      Expr* expr = (Expr*)param;
+      expr->ival = param_id;
+      result->addParameter(expr);
+      ++param_id;
     }
-#line 2991 "bison_parser.cpp" /* yacc.c:1646  */
+  }
+    delete (yyvsp[-1].stmt_vec);
+  }
+#line 2990 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 3:
-#line 322 "bison_parser.y" /* yacc.c:1646  */
+#line 313 "bison_parser.y" /* yacc.c:1646  */
     {
-      (yyvsp[0].statement)->stringLength = yylloc.string_length;
-      yylloc.string_length = 0;
-      (yyval.stmt_vec) = new std::vector<SQLStatement*>();
-      (yyval.stmt_vec)->push_back((yyvsp[0].statement));
-    }
-#line 3002 "bison_parser.cpp" /* yacc.c:1646  */
+  (yyvsp[0].statement)->stringLength = yylloc.string_length;
+  yylloc.string_length = 0;
+  (yyval.stmt_vec) = new std::vector<SQLStatement*>();
+  (yyval.stmt_vec)->push_back((yyvsp[0].statement));
+}
+#line 3001 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 4:
-#line 328 "bison_parser.y" /* yacc.c:1646  */
+#line 319 "bison_parser.y" /* yacc.c:1646  */
     {
-      (yyvsp[0].statement)->stringLength = yylloc.string_length;
-      yylloc.string_length = 0;
-      (yyvsp[-2].stmt_vec)->push_back((yyvsp[0].statement));
-      (yyval.stmt_vec) = (yyvsp[-2].stmt_vec);
-    }
-#line 3013 "bison_parser.cpp" /* yacc.c:1646  */
+  (yyvsp[0].statement)->stringLength = yylloc.string_length;
+  yylloc.string_length = 0;
+  (yyvsp[-2].stmt_vec)->push_back((yyvsp[0].statement));
+  (yyval.stmt_vec) = (yyvsp[-2].stmt_vec);
+}
+#line 3012 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 5:
-#line 337 "bison_parser.y" /* yacc.c:1646  */
+#line 326 "bison_parser.y" /* yacc.c:1646  */
     {
-      (yyval.statement) = (yyvsp[-1].prep_stmt);
-      (yyval.statement)->hints = (yyvsp[0].expr_vec);
-    }
-#line 3022 "bison_parser.cpp" /* yacc.c:1646  */
+  (yyval.statement) = (yyvsp[-1].prep_stmt);
+  (yyval.statement)->hints = (yyvsp[0].expr_vec);
+}
+#line 3021 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 6:
-#line 341 "bison_parser.y" /* yacc.c:1646  */
+#line 330 "bison_parser.y" /* yacc.c:1646  */
     {
-      (yyval.statement) = (yyvsp[-1].statement);
-      (yyval.statement)->hints = (yyvsp[0].expr_vec);
-    }
-#line 3031 "bison_parser.cpp" /* yacc.c:1646  */
+  (yyval.statement) = (yyvsp[-1].statement);
+  (yyval.statement)->hints = (yyvsp[0].expr_vec);
+}
+#line 3030 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 7:
-#line 345 "bison_parser.y" /* yacc.c:1646  */
-    {
-      (yyval.statement) = (yyvsp[0].show_stmt);
-    }
-#line 3039 "bison_parser.cpp" /* yacc.c:1646  */
+#line 334 "bison_parser.y" /* yacc.c:1646  */
+    { (yyval.statement) = (yyvsp[0].show_stmt); }
+#line 3036 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 8:
-#line 348 "bison_parser.y" /* yacc.c:1646  */
-    {
-      (yyval.statement) = (yyvsp[0].import_stmt);
-     }
-#line 3047 "bison_parser.cpp" /* yacc.c:1646  */
+#line 335 "bison_parser.y" /* yacc.c:1646  */
+    { (yyval.statement) = (yyvsp[0].import_stmt); }
+#line 3042 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 9:
-#line 351 "bison_parser.y" /* yacc.c:1646  */
-    {
-      (yyval.statement) = (yyvsp[0].export_stmt);
-     }
-#line 3055 "bison_parser.cpp" /* yacc.c:1646  */
+#line 336 "bison_parser.y" /* yacc.c:1646  */
+    { (yyval.statement) = (yyvsp[0].export_stmt); }
+#line 3048 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 10:
-#line 358 "bison_parser.y" /* yacc.c:1646  */
+#line 338 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.statement) = (yyvsp[0].select_stmt); }
-#line 3061 "bison_parser.cpp" /* yacc.c:1646  */
+#line 3054 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 11:
-#line 359 "bison_parser.y" /* yacc.c:1646  */
+#line 339 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.statement) = (yyvsp[0].create_stmt); }
-#line 3067 "bison_parser.cpp" /* yacc.c:1646  */
+#line 3060 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 12:
-#line 360 "bison_parser.y" /* yacc.c:1646  */
+#line 340 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.statement) = (yyvsp[0].insert_stmt); }
-#line 3073 "bison_parser.cpp" /* yacc.c:1646  */
+#line 3066 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 13:
-#line 361 "bison_parser.y" /* yacc.c:1646  */
+#line 341 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.statement) = (yyvsp[0].delete_stmt); }
-#line 3079 "bison_parser.cpp" /* yacc.c:1646  */
+#line 3072 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 14:
-#line 362 "bison_parser.y" /* yacc.c:1646  */
+#line 342 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.statement) = (yyvsp[0].delete_stmt); }
-#line 3085 "bison_parser.cpp" /* yacc.c:1646  */
+#line 3078 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 15:
-#line 363 "bison_parser.y" /* yacc.c:1646  */
+#line 343 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.statement) = (yyvsp[0].update_stmt); }
-#line 3091 "bison_parser.cpp" /* yacc.c:1646  */
+#line 3084 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 16:
-#line 364 "bison_parser.y" /* yacc.c:1646  */
+#line 344 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.statement) = (yyvsp[0].drop_stmt); }
-#line 3097 "bison_parser.cpp" /* yacc.c:1646  */
+#line 3090 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 17:
-#line 365 "bison_parser.y" /* yacc.c:1646  */
+#line 345 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.statement) = (yyvsp[0].alter_stmt); }
-#line 3103 "bison_parser.cpp" /* yacc.c:1646  */
+#line 3096 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 18:
-#line 366 "bison_parser.y" /* yacc.c:1646  */
+#line 346 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.statement) = (yyvsp[0].exec_stmt); }
-#line 3109 "bison_parser.cpp" /* yacc.c:1646  */
+#line 3102 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 19:
-#line 367 "bison_parser.y" /* yacc.c:1646  */
+#line 347 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.statement) = (yyvsp[0].transaction_stmt); }
-#line 3115 "bison_parser.cpp" /* yacc.c:1646  */
+#line 3108 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 20:
-#line 376 "bison_parser.y" /* yacc.c:1646  */
+#line 353 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.expr_vec) = (yyvsp[-1].expr_vec); }
-#line 3121 "bison_parser.cpp" /* yacc.c:1646  */
+#line 3114 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 21:
-#line 377 "bison_parser.y" /* yacc.c:1646  */
+#line 354 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.expr_vec) = nullptr; }
-#line 3127 "bison_parser.cpp" /* yacc.c:1646  */
+#line 3120 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 22:
-#line 382 "bison_parser.y" /* yacc.c:1646  */
-    { (yyval.expr_vec) = new std::vector<Expr*>(); (yyval.expr_vec)->push_back((yyvsp[0].expr)); }
-#line 3133 "bison_parser.cpp" /* yacc.c:1646  */
+#line 356 "bison_parser.y" /* yacc.c:1646  */
+    {
+  (yyval.expr_vec) = new std::vector<Expr*>();
+  (yyval.expr_vec)->push_back((yyvsp[0].expr));
+}
+#line 3129 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 23:
-#line 383 "bison_parser.y" /* yacc.c:1646  */
-    { (yyvsp[-2].expr_vec)->push_back((yyvsp[0].expr)); (yyval.expr_vec) = (yyvsp[-2].expr_vec); }
-#line 3139 "bison_parser.cpp" /* yacc.c:1646  */
+#line 360 "bison_parser.y" /* yacc.c:1646  */
+    {
+  (yyvsp[-2].expr_vec)->push_back((yyvsp[0].expr));
+  (yyval.expr_vec) = (yyvsp[-2].expr_vec);
+}
+#line 3138 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 24:
-#line 387 "bison_parser.y" /* yacc.c:1646  */
+#line 365 "bison_parser.y" /* yacc.c:1646  */
     {
-      (yyval.expr) = Expr::make(kExprHint);
-      (yyval.expr)->name = (yyvsp[0].sval);
-    }
-#line 3148 "bison_parser.cpp" /* yacc.c:1646  */
+  (yyval.expr) = Expr::make(kExprHint);
+  (yyval.expr)->name = (yyvsp[0].sval);
+}
+#line 3147 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 25:
-#line 391 "bison_parser.y" /* yacc.c:1646  */
+#line 369 "bison_parser.y" /* yacc.c:1646  */
     {
-      (yyval.expr) = Expr::make(kExprHint);
-      (yyval.expr)->name = (yyvsp[-3].sval);
-      (yyval.expr)->exprList = (yyvsp[-1].expr_vec);
-    }
-#line 3158 "bison_parser.cpp" /* yacc.c:1646  */
+  (yyval.expr) = Expr::make(kExprHint);
+  (yyval.expr)->name = (yyvsp[-3].sval);
+  (yyval.expr)->exprList = (yyvsp[-1].expr_vec);
+}
+#line 3157 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 26:
-#line 403 "bison_parser.y" /* yacc.c:1646  */
-    {
-            (yyval.transaction_stmt) = new TransactionStatement(kBeginTransaction);
-        }
-#line 3166 "bison_parser.cpp" /* yacc.c:1646  */
+#line 379 "bison_parser.y" /* yacc.c:1646  */
+    { (yyval.transaction_stmt) = new TransactionStatement(kBeginTransaction); }
+#line 3163 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 27:
-#line 406 "bison_parser.y" /* yacc.c:1646  */
-    {
-            (yyval.transaction_stmt) = new TransactionStatement(kRollbackTransaction);
-        }
-#line 3174 "bison_parser.cpp" /* yacc.c:1646  */
+#line 380 "bison_parser.y" /* yacc.c:1646  */
+    { (yyval.transaction_stmt) = new TransactionStatement(kRollbackTransaction); }
+#line 3169 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 28:
-#line 409 "bison_parser.y" /* yacc.c:1646  */
-    {
-            (yyval.transaction_stmt) = new TransactionStatement(kCommitTransaction);
-        }
-#line 3182 "bison_parser.cpp" /* yacc.c:1646  */
+#line 381 "bison_parser.y" /* yacc.c:1646  */
+    { (yyval.transaction_stmt) = new TransactionStatement(kCommitTransaction); }
+#line 3175 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 31:
-#line 423 "bison_parser.y" /* yacc.c:1646  */
+#line 389 "bison_parser.y" /* yacc.c:1646  */
     {
-      (yyval.prep_stmt) = new PrepareStatement();
-      (yyval.prep_stmt)->name = (yyvsp[-2].sval);
-      (yyval.prep_stmt)->query = (yyvsp[0].sval);
-    }
-#line 3192 "bison_parser.cpp" /* yacc.c:1646  */
+  (yyval.prep_stmt) = new PrepareStatement();
+  (yyval.prep_stmt)->name = (yyvsp[-2].sval);
+  (yyval.prep_stmt)->query = (yyvsp[0].sval);
+}
+#line 3185 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 33:
-#line 433 "bison_parser.y" /* yacc.c:1646  */
+#line 397 "bison_parser.y" /* yacc.c:1646  */
     {
-      (yyval.exec_stmt) = new ExecuteStatement();
-      (yyval.exec_stmt)->name = (yyvsp[0].sval);
-    }
-#line 3201 "bison_parser.cpp" /* yacc.c:1646  */
+  (yyval.exec_stmt) = new ExecuteStatement();
+  (yyval.exec_stmt)->name = (yyvsp[0].sval);
+}
+#line 3194 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 34:
-#line 437 "bison_parser.y" /* yacc.c:1646  */
+#line 401 "bison_parser.y" /* yacc.c:1646  */
     {
-      (yyval.exec_stmt) = new ExecuteStatement();
-      (yyval.exec_stmt)->name = (yyvsp[-3].sval);
-      (yyval.exec_stmt)->parameters = (yyvsp[-1].expr_vec);
-    }
-#line 3211 "bison_parser.cpp" /* yacc.c:1646  */
+  (yyval.exec_stmt) = new ExecuteStatement();
+  (yyval.exec_stmt)->name = (yyvsp[-3].sval);
+  (yyval.exec_stmt)->parameters = (yyvsp[-1].expr_vec);
+}
+#line 3204 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 35:
-#line 451 "bison_parser.y" /* yacc.c:1646  */
+#line 412 "bison_parser.y" /* yacc.c:1646  */
     {
-      (yyval.import_stmt) = new ImportStatement((yyvsp[-4].import_type_t));
-      (yyval.import_stmt)->filePath = (yyvsp[-2].sval);
-      (yyval.import_stmt)->schema = (yyvsp[0].table_name).schema;
-      (yyval.import_stmt)->tableName = (yyvsp[0].table_name).name;
-    }
-#line 3222 "bison_parser.cpp" /* yacc.c:1646  */
+  (yyval.import_stmt) = new ImportStatement((yyvsp[-4].import_type_t));
+  (yyval.import_stmt)->filePath = (yyvsp[-2].sval);
+  (yyval.import_stmt)->schema = (yyvsp[0].table_name).schema;
+  (yyval.import_stmt)->tableName = (yyvsp[0].table_name).name;
+}
+#line 3215 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 36:
-#line 457 "bison_parser.y" /* yacc.c:1646  */
+#line 418 "bison_parser.y" /* yacc.c:1646  */
     {
-      (yyval.import_stmt) = new ImportStatement((yyvsp[0].import_type_t));
-      (yyval.import_stmt)->filePath = (yyvsp[-1].sval);
-      (yyval.import_stmt)->schema = (yyvsp[-3].table_name).schema;
-      (yyval.import_stmt)->tableName = (yyvsp[-3].table_name).name;
-    }
-#line 3233 "bison_parser.cpp" /* yacc.c:1646  */
+  (yyval.import_stmt) = new ImportStatement((yyvsp[0].import_type_t));
+  (yyval.import_stmt)->filePath = (yyvsp[-1].sval);
+  (yyval.import_stmt)->schema = (yyvsp[-3].table_name).schema;
+  (yyval.import_stmt)->tableName = (yyvsp[-3].table_name).name;
+}
+#line 3226 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 37:
-#line 466 "bison_parser.y" /* yacc.c:1646  */
+#line 425 "bison_parser.y" /* yacc.c:1646  */
     {
-      if (strcasecmp((yyvsp[0].sval), "csv") == 0) {
-        (yyval.import_type_t) = kImportCSV;
-      } else if (strcasecmp((yyvsp[0].sval), "tbl") == 0) {
-        (yyval.import_type_t) = kImportTbl;
-      } else if (strcasecmp((yyvsp[0].sval), "binary") == 0 || strcasecmp((yyvsp[0].sval), "bin") == 0) {
-        (yyval.import_type_t) = kImportBinary;
-      } else {
-        free((yyvsp[0].sval));
-        yyerror(&yyloc, result, scanner, "File type is unknown.");
-        YYERROR;
-      }
-      free((yyvsp[0].sval));
-    }
-#line 3252 "bison_parser.cpp" /* yacc.c:1646  */
+  if (strcasecmp((yyvsp[0].sval), "csv") == 0) {
+    (yyval.import_type_t) = kImportCSV;
+  } else if (strcasecmp((yyvsp[0].sval), "tbl") == 0) {
+    (yyval.import_type_t) = kImportTbl;
+  } else if (strcasecmp((yyvsp[0].sval), "binary") == 0 || strcasecmp((yyvsp[0].sval), "bin") == 0) {
+    (yyval.import_type_t) = kImportBinary;
+  } else {
+    free((yyvsp[0].sval));
+    yyerror(&yyloc, result, scanner, "File type is unknown.");
+    YYERROR;
+  }
+  free((yyvsp[0].sval));
+}
+#line 3245 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 38:
-#line 483 "bison_parser.y" /* yacc.c:1646  */
-    { (yyval.sval) = strdup((yyvsp[0].expr)->name); delete (yyvsp[0].expr); }
-#line 3258 "bison_parser.cpp" /* yacc.c:1646  */
+#line 440 "bison_parser.y" /* yacc.c:1646  */
+    {
+  (yyval.sval) = strdup((yyvsp[0].expr)->name);
+  delete (yyvsp[0].expr);
+}
+#line 3254 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 39:
-#line 487 "bison_parser.y" /* yacc.c:1646  */
-    {
-      (yyval.import_type_t) = (yyvsp[0].import_type_t);
-    }
-#line 3266 "bison_parser.cpp" /* yacc.c:1646  */
+#line 445 "bison_parser.y" /* yacc.c:1646  */
+    { (yyval.import_type_t) = (yyvsp[0].import_type_t); }
+#line 3260 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 40:
-#line 490 "bison_parser.y" /* yacc.c:1646  */
+#line 446 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.import_type_t) = kImportAuto; }
-#line 3272 "bison_parser.cpp" /* yacc.c:1646  */
+#line 3266 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 41:
-#line 499 "bison_parser.y" /* yacc.c:1646  */
+#line 452 "bison_parser.y" /* yacc.c:1646  */
     {
-      (yyval.export_stmt) = new ExportStatement((yyvsp[0].import_type_t));
-      (yyval.export_stmt)->filePath = (yyvsp[-1].sval);
-      (yyval.export_stmt)->schema = (yyvsp[-3].table_name).schema;
-      (yyval.export_stmt)->tableName = (yyvsp[-3].table_name).name;
-    }
-#line 3283 "bison_parser.cpp" /* yacc.c:1646  */
+  (yyval.export_stmt) = new ExportStatement((yyvsp[0].import_type_t));
+  (yyval.export_stmt)->filePath = (yyvsp[-1].sval);
+  (yyval.export_stmt)->schema = (yyvsp[-3].table_name).schema;
+  (yyval.export_stmt)->tableName = (yyvsp[-3].table_name).name;
+}
+#line 3277 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 42:
-#line 513 "bison_parser.y" /* yacc.c:1646  */
-    {
-      (yyval.show_stmt) = new ShowStatement(kShowTables);
-    }
-#line 3291 "bison_parser.cpp" /* yacc.c:1646  */
+#line 464 "bison_parser.y" /* yacc.c:1646  */
+    { (yyval.show_stmt) = new ShowStatement(kShowTables); }
+#line 3283 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 43:
-#line 516 "bison_parser.y" /* yacc.c:1646  */
+#line 465 "bison_parser.y" /* yacc.c:1646  */
     {
-      (yyval.show_stmt) = new ShowStatement(kShowColumns);
-      (yyval.show_stmt)->schema = (yyvsp[0].table_name).schema;
-      (yyval.show_stmt)->name = (yyvsp[0].table_name).name;
-    }
-#line 3301 "bison_parser.cpp" /* yacc.c:1646  */
+  (yyval.show_stmt) = new ShowStatement(kShowColumns);
+  (yyval.show_stmt)->schema = (yyvsp[0].table_name).schema;
+  (yyval.show_stmt)->name = (yyvsp[0].table_name).name;
+}
+#line 3293 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 44:
-#line 521 "bison_parser.y" /* yacc.c:1646  */
+#line 470 "bison_parser.y" /* yacc.c:1646  */
     {
-      (yyval.show_stmt) = new ShowStatement(kShowColumns);
-      (yyval.show_stmt)->schema = (yyvsp[0].table_name).schema;
-      (yyval.show_stmt)->name = (yyvsp[0].table_name).name;
-    }
-#line 3311 "bison_parser.cpp" /* yacc.c:1646  */
+  (yyval.show_stmt) = new ShowStatement(kShowColumns);
+  (yyval.show_stmt)->schema = (yyvsp[0].table_name).schema;
+  (yyval.show_stmt)->name = (yyvsp[0].table_name).name;
+}
+#line 3303 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 45:
-#line 535 "bison_parser.y" /* yacc.c:1646  */
+#line 481 "bison_parser.y" /* yacc.c:1646  */
     {
-      (yyval.create_stmt) = new CreateStatement(kCreateTableFromTbl);
-      (yyval.create_stmt)->ifNotExists = (yyvsp[-5].bval);
-      (yyval.create_stmt)->schema = (yyvsp[-4].table_name).schema;
-      (yyval.create_stmt)->tableName = (yyvsp[-4].table_name).name;
-      if (strcasecmp((yyvsp[-2].sval), "tbl") != 0) {
-        free((yyvsp[-2].sval));
-        yyerror(&yyloc, result, scanner, "File type is unknown.");
-         YYERROR;
-      }
-      free((yyvsp[-2].sval));
-      (yyval.create_stmt)->filePath = (yyvsp[0].sval);
-    }
-#line 3329 "bison_parser.cpp" /* yacc.c:1646  */
+  (yyval.create_stmt) = new CreateStatement(kCreateTableFromTbl);
+  (yyval.create_stmt)->ifNotExists = (yyvsp[-5].bval);
+  (yyval.create_stmt)->schema = (yyvsp[-4].table_name).schema;
+  (yyval.create_stmt)->tableName = (yyvsp[-4].table_name).name;
+  if (strcasecmp((yyvsp[-2].sval), "tbl") != 0) {
+    free((yyvsp[-2].sval));
+    yyerror(&yyloc, result, scanner, "File type is unknown.");
+    YYERROR;
+  }
+  free((yyvsp[-2].sval));
+  (yyval.create_stmt)->filePath = (yyvsp[0].sval);
+}
+#line 3321 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 46:
-#line 548 "bison_parser.y" /* yacc.c:1646  */
+#line 494 "bison_parser.y" /* yacc.c:1646  */
     {
-      (yyval.create_stmt) = new CreateStatement(kCreateTable);
-      (yyval.create_stmt)->ifNotExists = (yyvsp[-4].bval);
-      (yyval.create_stmt)->schema = (yyvsp[-3].table_name).schema;
-      (yyval.create_stmt)->tableName = (yyvsp[-3].table_name).name;
-      (yyval.create_stmt)->setColumnDefsAndConstraints((yyvsp[-1].table_element_vec));
-      delete (yyvsp[-1].table_element_vec);
-    }
-#line 3342 "bison_parser.cpp" /* yacc.c:1646  */
+  (yyval.create_stmt) = new CreateStatement(kCreateTable);
+  (yyval.create_stmt)->ifNotExists = (yyvsp[-4].bval);
+  (yyval.create_stmt)->schema = (yyvsp[-3].table_name).schema;
+  (yyval.create_stmt)->tableName = (yyvsp[-3].table_name).name;
+  (yyval.create_stmt)->setColumnDefsAndConstraints((yyvsp[-1].table_element_vec));
+  delete (yyvsp[-1].table_element_vec);
+}
+#line 3334 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 47:
-#line 556 "bison_parser.y" /* yacc.c:1646  */
+#line 502 "bison_parser.y" /* yacc.c:1646  */
     {
-      (yyval.create_stmt) = new CreateStatement(kCreateTable);
-      (yyval.create_stmt)->ifNotExists = (yyvsp[-3].bval);
-      (yyval.create_stmt)->schema = (yyvsp[-2].table_name).schema;
-      (yyval.create_stmt)->tableName = (yyvsp[-2].table_name).name;
-      (yyval.create_stmt)->select = (yyvsp[0].select_stmt);
-    }
-#line 3354 "bison_parser.cpp" /* yacc.c:1646  */
+  (yyval.create_stmt) = new CreateStatement(kCreateTable);
+  (yyval.create_stmt)->ifNotExists = (yyvsp[-3].bval);
+  (yyval.create_stmt)->schema = (yyvsp[-2].table_name).schema;
+  (yyval.create_stmt)->tableName = (yyvsp[-2].table_name).name;
+  (yyval.create_stmt)->select = (yyvsp[0].select_stmt);
+}
+#line 3346 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 48:
-#line 563 "bison_parser.y" /* yacc.c:1646  */
+#line 509 "bison_parser.y" /* yacc.c:1646  */
     {
-      (yyval.create_stmt) = new CreateStatement(kCreateIndex);
-      (yyval.create_stmt)->indexName = (yyvsp[-5].sval);
-      (yyval.create_stmt)->ifNotExists = (yyvsp[-6].bval);
-      (yyval.create_stmt)->tableName = (yyvsp[-3].table_name).name;
-      (yyval.create_stmt)->indexColumns = (yyvsp[-1].str_vec);
-           }
-#line 3366 "bison_parser.cpp" /* yacc.c:1646  */
+  (yyval.create_stmt) = new CreateStatement(kCreateIndex);
+  (yyval.create_stmt)->indexName = (yyvsp[-5].sval);
+  (yyval.create_stmt)->ifNotExists = (yyvsp[-6].bval);
+  (yyval.create_stmt)->tableName = (yyvsp[-3].table_name).name;
+  (yyval.create_stmt)->indexColumns = (yyvsp[-1].str_vec);
+}
+#line 3358 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 49:
-#line 570 "bison_parser.y" /* yacc.c:1646  */
+#line 516 "bison_parser.y" /* yacc.c:1646  */
     {
-      (yyval.create_stmt) = new CreateStatement(kCreateView);
-      (yyval.create_stmt)->ifNotExists = (yyvsp[-4].bval);
-      (yyval.create_stmt)->schema = (yyvsp[-3].table_name).schema;
-      (yyval.create_stmt)->tableName = (yyvsp[-3].table_name).name;
-      (yyval.create_stmt)->viewColumns = (yyvsp[-2].str_vec);
-      (yyval.create_stmt)->select = (yyvsp[0].select_stmt);
-    }
-#line 3379 "bison_parser.cpp" /* yacc.c:1646  */
+  (yyval.create_stmt) = new CreateStatement(kCreateView);
+  (yyval.create_stmt)->ifNotExists = (yyvsp[-4].bval);
+  (yyval.create_stmt)->schema = (yyvsp[-3].table_name).schema;
+  (yyval.create_stmt)->tableName = (yyvsp[-3].table_name).name;
+  (yyval.create_stmt)->viewColumns = (yyvsp[-2].str_vec);
+  (yyval.create_stmt)->select = (yyvsp[0].select_stmt);
+}
+#line 3371 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 50:
-#line 581 "bison_parser.y" /* yacc.c:1646  */
+#line 525 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.bval) = true; }
-#line 3385 "bison_parser.cpp" /* yacc.c:1646  */
+#line 3377 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 51:
-#line 582 "bison_parser.y" /* yacc.c:1646  */
+#line 526 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.bval) = false; }
-#line 3391 "bison_parser.cpp" /* yacc.c:1646  */
+#line 3383 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 52:
-#line 586 "bison_parser.y" /* yacc.c:1646  */
-    { (yyval.table_element_vec) = new std::vector<TableElement*>(); (yyval.table_element_vec)->push_back((yyvsp[0].table_element_t)); }
-#line 3397 "bison_parser.cpp" /* yacc.c:1646  */
+#line 528 "bison_parser.y" /* yacc.c:1646  */
+    {
+  (yyval.table_element_vec) = new std::vector<TableElement*>();
+  (yyval.table_element_vec)->push_back((yyvsp[0].table_element_t));
+}
+#line 3392 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 53:
-#line 587 "bison_parser.y" /* yacc.c:1646  */
-    { (yyvsp[-2].table_element_vec)->push_back((yyvsp[0].table_element_t)); (yyval.table_element_vec) = (yyvsp[-2].table_element_vec); }
-#line 3403 "bison_parser.cpp" /* yacc.c:1646  */
+#line 532 "bison_parser.y" /* yacc.c:1646  */
+    {
+  (yyvsp[-2].table_element_vec)->push_back((yyvsp[0].table_element_t));
+  (yyval.table_element_vec) = (yyvsp[-2].table_element_vec);
+}
+#line 3401 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 54:
-#line 591 "bison_parser.y" /* yacc.c:1646  */
+#line 537 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.table_element_t) = (yyvsp[0].column_t); }
-#line 3409 "bison_parser.cpp" /* yacc.c:1646  */
+#line 3407 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 55:
-#line 592 "bison_parser.y" /* yacc.c:1646  */
+#line 538 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.table_element_t) = (yyvsp[0].table_constraint_t); }
-#line 3415 "bison_parser.cpp" /* yacc.c:1646  */
+#line 3413 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 56:
-#line 596 "bison_parser.y" /* yacc.c:1646  */
+#line 540 "bison_parser.y" /* yacc.c:1646  */
     {
-      (yyval.column_t) = new ColumnDefinition((yyvsp[-2].sval), (yyvsp[-1].column_type_t), (yyvsp[0].column_constraint_vec));
-      (yyval.column_t)->setNullableExplicit();
-    }
-#line 3424 "bison_parser.cpp" /* yacc.c:1646  */
+  (yyval.column_t) = new ColumnDefinition((yyvsp[-2].sval), (yyvsp[-1].column_type_t), (yyvsp[0].column_constraint_vec));
+  (yyval.column_t)->setNullableExplicit();
+}
+#line 3422 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 57:
-#line 603 "bison_parser.y" /* yacc.c:1646  */
+#line 545 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.column_type_t) = ColumnType{DataType::INT}; }
-#line 3430 "bison_parser.cpp" /* yacc.c:1646  */
+#line 3428 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 58:
-#line 604 "bison_parser.y" /* yacc.c:1646  */
+#line 546 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.column_type_t) = ColumnType{DataType::INT}; }
-#line 3436 "bison_parser.cpp" /* yacc.c:1646  */
+#line 3434 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 59:
-#line 605 "bison_parser.y" /* yacc.c:1646  */
+#line 547 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.column_type_t) = ColumnType{DataType::LONG}; }
-#line 3442 "bison_parser.cpp" /* yacc.c:1646  */
+#line 3440 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 60:
-#line 606 "bison_parser.y" /* yacc.c:1646  */
+#line 548 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.column_type_t) = ColumnType{DataType::FLOAT}; }
-#line 3448 "bison_parser.cpp" /* yacc.c:1646  */
+#line 3446 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 61:
-#line 607 "bison_parser.y" /* yacc.c:1646  */
+#line 549 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.column_type_t) = ColumnType{DataType::DECIMAL, 0, (yyvsp[0].column_specification_t)}; }
-#line 3454 "bison_parser.cpp" /* yacc.c:1646  */
+#line 3452 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 62:
-#line 608 "bison_parser.y" /* yacc.c:1646  */
+#line 550 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.column_type_t) = ColumnType{DataType::DOUBLE}; }
-#line 3460 "bison_parser.cpp" /* yacc.c:1646  */
+#line 3458 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 63:
-#line 609 "bison_parser.y" /* yacc.c:1646  */
+#line 551 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.column_type_t) = ColumnType{DataType::REAL}; }
-#line 3466 "bison_parser.cpp" /* yacc.c:1646  */
+#line 3464 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 64:
-#line 610 "bison_parser.y" /* yacc.c:1646  */
+#line 552 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.column_type_t) = ColumnType{DataType::VARCHAR, (yyvsp[-1].ival)}; }
-#line 3472 "bison_parser.cpp" /* yacc.c:1646  */
+#line 3470 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 65:
-#line 611 "bison_parser.y" /* yacc.c:1646  */
+#line 553 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.column_type_t) = ColumnType{DataType::VARCHAR, (yyvsp[-1].ival)}; }
-#line 3478 "bison_parser.cpp" /* yacc.c:1646  */
+#line 3476 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 66:
-#line 612 "bison_parser.y" /* yacc.c:1646  */
+#line 554 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.column_type_t) = ColumnType{DataType::CHAR, (yyvsp[-1].ival)}; }
-#line 3484 "bison_parser.cpp" /* yacc.c:1646  */
+#line 3482 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 67:
-#line 613 "bison_parser.y" /* yacc.c:1646  */
+#line 555 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.column_type_t) = ColumnType{DataType::TEXT}; }
-#line 3490 "bison_parser.cpp" /* yacc.c:1646  */
+#line 3488 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 68:
-#line 614 "bison_parser.y" /* yacc.c:1646  */
-    { (yyval.column_type_t) = ColumnType{DataType::TIME, 0, (yyvsp[0].column_specification_t) }; }
-#line 3496 "bison_parser.cpp" /* yacc.c:1646  */
+#line 556 "bison_parser.y" /* yacc.c:1646  */
+    { (yyval.column_type_t) = ColumnType{DataType::TIME, 0, (yyvsp[0].column_specification_t)}; }
+#line 3494 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 69:
-#line 615 "bison_parser.y" /* yacc.c:1646  */
+#line 557 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.column_type_t) = ColumnType{DataType::DATETIME}; }
-#line 3502 "bison_parser.cpp" /* yacc.c:1646  */
+#line 3500 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 70:
-#line 616 "bison_parser.y" /* yacc.c:1646  */
+#line 558 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.column_type_t) = ColumnType{DataType::DATE}; }
-#line 3508 "bison_parser.cpp" /* yacc.c:1646  */
+#line 3506 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 71:
-#line 620 "bison_parser.y" /* yacc.c:1646  */
+#line 560 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.column_specification_t) = ColumnSpecification{(yyvsp[-1].ival)}; }
-#line 3514 "bison_parser.cpp" /* yacc.c:1646  */
+#line 3512 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 72:
-#line 621 "bison_parser.y" /* yacc.c:1646  */
+#line 561 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.column_specification_t) = ColumnSpecification{}; }
-#line 3520 "bison_parser.cpp" /* yacc.c:1646  */
+#line 3518 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 73:
-#line 625 "bison_parser.y" /* yacc.c:1646  */
+#line 563 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.column_specification_t) = ColumnSpecification{(yyvsp[-3].ival), (yyvsp[-1].ival)}; }
-#line 3526 "bison_parser.cpp" /* yacc.c:1646  */
+#line 3524 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 74:
-#line 626 "bison_parser.y" /* yacc.c:1646  */
+#line 564 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.column_specification_t) = ColumnSpecification{(yyvsp[-1].ival)}; }
-#line 3532 "bison_parser.cpp" /* yacc.c:1646  */
+#line 3530 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 75:
-#line 627 "bison_parser.y" /* yacc.c:1646  */
+#line 565 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.column_specification_t) = ColumnSpecification{}; }
-#line 3538 "bison_parser.cpp" /* yacc.c:1646  */
+#line 3536 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 76:
-#line 631 "bison_parser.y" /* yacc.c:1646  */
+#line 567 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.column_constraint_vec) = (yyvsp[0].column_constraint_vec); }
-#line 3544 "bison_parser.cpp" /* yacc.c:1646  */
+#line 3542 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 77:
-#line 632 "bison_parser.y" /* yacc.c:1646  */
+#line 568 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.column_constraint_vec) = new std::vector<ConstraintType>(); }
-#line 3550 "bison_parser.cpp" /* yacc.c:1646  */
+#line 3548 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 78:
-#line 636 "bison_parser.y" /* yacc.c:1646  */
-    { (yyval.column_constraint_vec) = new std::vector<ConstraintType>(); (yyval.column_constraint_vec)->push_back((yyvsp[0].column_constraint_t)); }
-#line 3556 "bison_parser.cpp" /* yacc.c:1646  */
+#line 570 "bison_parser.y" /* yacc.c:1646  */
+    {
+  (yyval.column_constraint_vec) = new std::vector<ConstraintType>();
+  (yyval.column_constraint_vec)->push_back((yyvsp[0].column_constraint_t));
+}
+#line 3557 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 79:
-#line 637 "bison_parser.y" /* yacc.c:1646  */
-    { (yyvsp[-1].column_constraint_vec)->push_back((yyvsp[0].column_constraint_t)); (yyval.column_constraint_vec) = (yyvsp[-1].column_constraint_vec); }
-#line 3562 "bison_parser.cpp" /* yacc.c:1646  */
+#line 574 "bison_parser.y" /* yacc.c:1646  */
+    {
+  (yyvsp[-1].column_constraint_vec)->push_back((yyvsp[0].column_constraint_t));
+  (yyval.column_constraint_vec) = (yyvsp[-1].column_constraint_vec);
+}
+#line 3566 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 80:
-#line 640 "bison_parser.y" /* yacc.c:1646  */
+#line 579 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.column_constraint_t) = ConstraintType::PrimaryKey; }
-#line 3568 "bison_parser.cpp" /* yacc.c:1646  */
+#line 3572 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 81:
-#line 641 "bison_parser.y" /* yacc.c:1646  */
+#line 580 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.column_constraint_t) = ConstraintType::Unique; }
-#line 3574 "bison_parser.cpp" /* yacc.c:1646  */
+#line 3578 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 82:
-#line 642 "bison_parser.y" /* yacc.c:1646  */
+#line 581 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.column_constraint_t) = ConstraintType::Null; }
-#line 3580 "bison_parser.cpp" /* yacc.c:1646  */
+#line 3584 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 83:
-#line 643 "bison_parser.y" /* yacc.c:1646  */
+#line 582 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.column_constraint_t) = ConstraintType::NotNull; }
-#line 3586 "bison_parser.cpp" /* yacc.c:1646  */
+#line 3590 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 84:
-#line 647 "bison_parser.y" /* yacc.c:1646  */
+#line 584 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.table_constraint_t) = new TableConstraint(ConstraintType::PrimaryKey, (yyvsp[-1].str_vec)); }
-#line 3592 "bison_parser.cpp" /* yacc.c:1646  */
+#line 3596 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 85:
-#line 648 "bison_parser.y" /* yacc.c:1646  */
+#line 585 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.table_constraint_t) = new TableConstraint(ConstraintType::Unique, (yyvsp[-1].str_vec)); }
-#line 3598 "bison_parser.cpp" /* yacc.c:1646  */
+#line 3602 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 86:
-#line 659 "bison_parser.y" /* yacc.c:1646  */
+#line 593 "bison_parser.y" /* yacc.c:1646  */
     {
-      (yyval.drop_stmt) = new DropStatement(kDropTable);
-      (yyval.drop_stmt)->ifExists = (yyvsp[-1].bval);
-      (yyval.drop_stmt)->schema = (yyvsp[0].table_name).schema;
-      (yyval.drop_stmt)->name = (yyvsp[0].table_name).name;
-    }
-#line 3609 "bison_parser.cpp" /* yacc.c:1646  */
+  (yyval.drop_stmt) = new DropStatement(kDropTable);
+  (yyval.drop_stmt)->ifExists = (yyvsp[-1].bval);
+  (yyval.drop_stmt)->schema = (yyvsp[0].table_name).schema;
+  (yyval.drop_stmt)->name = (yyvsp[0].table_name).name;
+}
+#line 3613 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 87:
-#line 665 "bison_parser.y" /* yacc.c:1646  */
+#line 599 "bison_parser.y" /* yacc.c:1646  */
     {
-      (yyval.drop_stmt) = new DropStatement(kDropView);
-      (yyval.drop_stmt)->ifExists = (yyvsp[-1].bval);
-      (yyval.drop_stmt)->schema = (yyvsp[0].table_name).schema;
-      (yyval.drop_stmt)->name = (yyvsp[0].table_name).name;
-    }
-#line 3620 "bison_parser.cpp" /* yacc.c:1646  */
+  (yyval.drop_stmt) = new DropStatement(kDropView);
+  (yyval.drop_stmt)->ifExists = (yyvsp[-1].bval);
+  (yyval.drop_stmt)->schema = (yyvsp[0].table_name).schema;
+  (yyval.drop_stmt)->name = (yyvsp[0].table_name).name;
+}
+#line 3624 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 88:
-#line 671 "bison_parser.y" /* yacc.c:1646  */
+#line 605 "bison_parser.y" /* yacc.c:1646  */
     {
-      (yyval.drop_stmt) = new DropStatement(kDropPreparedStatement);
-      (yyval.drop_stmt)->ifExists = false;
-      (yyval.drop_stmt)->name = (yyvsp[0].sval);
-    }
-#line 3630 "bison_parser.cpp" /* yacc.c:1646  */
+  (yyval.drop_stmt) = new DropStatement(kDropPreparedStatement);
+  (yyval.drop_stmt)->ifExists = false;
+  (yyval.drop_stmt)->name = (yyvsp[0].sval);
+}
+#line 3634 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 89:
-#line 677 "bison_parser.y" /* yacc.c:1646  */
+#line 611 "bison_parser.y" /* yacc.c:1646  */
     {
-          (yyval.drop_stmt) = new DropStatement(kDropIndex);
-          (yyval.drop_stmt)->ifExists = (yyvsp[-1].bval);
-          (yyval.drop_stmt)->indexName = (yyvsp[0].sval);
-        }
-#line 3640 "bison_parser.cpp" /* yacc.c:1646  */
+  (yyval.drop_stmt) = new DropStatement(kDropIndex);
+  (yyval.drop_stmt)->ifExists = (yyvsp[-1].bval);
+  (yyval.drop_stmt)->indexName = (yyvsp[0].sval);
+}
+#line 3644 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 90:
-#line 685 "bison_parser.y" /* yacc.c:1646  */
+#line 617 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.bval) = true; }
-#line 3646 "bison_parser.cpp" /* yacc.c:1646  */
+#line 3650 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 91:
-#line 686 "bison_parser.y" /* yacc.c:1646  */
+#line 618 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.bval) = false; }
-#line 3652 "bison_parser.cpp" /* yacc.c:1646  */
+#line 3656 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 92:
-#line 695 "bison_parser.y" /* yacc.c:1646  */
+#line 625 "bison_parser.y" /* yacc.c:1646  */
     {
-      (yyval.alter_stmt) = new AlterStatement((yyvsp[-1].table_name).name, (yyvsp[0].alter_action_t));
-      (yyval.alter_stmt)->ifTableExists = (yyvsp[-2].bval);
-      (yyval.alter_stmt)->schema = (yyvsp[-1].table_name).schema;
-    }
-#line 3662 "bison_parser.cpp" /* yacc.c:1646  */
+  (yyval.alter_stmt) = new AlterStatement((yyvsp[-1].table_name).name, (yyvsp[0].alter_action_t));
+  (yyval.alter_stmt)->ifTableExists = (yyvsp[-2].bval);
+  (yyval.alter_stmt)->schema = (yyvsp[-1].table_name).schema;
+}
+#line 3666 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 93:
-#line 703 "bison_parser.y" /* yacc.c:1646  */
-    {(yyval.alter_action_t) = (yyvsp[0].drop_action_t);}
-#line 3668 "bison_parser.cpp" /* yacc.c:1646  */
+#line 631 "bison_parser.y" /* yacc.c:1646  */
+    { (yyval.alter_action_t) = (yyvsp[0].drop_action_t); }
+#line 3672 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 94:
-#line 706 "bison_parser.y" /* yacc.c:1646  */
+#line 633 "bison_parser.y" /* yacc.c:1646  */
     {
-            (yyval.drop_action_t) = new DropColumnAction((yyvsp[0].sval));
-            (yyval.drop_action_t)->ifExists = (yyvsp[-1].bval);
-        }
-#line 3677 "bison_parser.cpp" /* yacc.c:1646  */
+  (yyval.drop_action_t) = new DropColumnAction((yyvsp[0].sval));
+  (yyval.drop_action_t)->ifExists = (yyvsp[-1].bval);
+}
+#line 3681 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 95:
-#line 718 "bison_parser.y" /* yacc.c:1646  */
+#line 643 "bison_parser.y" /* yacc.c:1646  */
     {
-      (yyval.delete_stmt) = new DeleteStatement();
-      (yyval.delete_stmt)->schema = (yyvsp[-1].table_name).schema;
-      (yyval.delete_stmt)->tableName = (yyvsp[-1].table_name).name;
-      (yyval.delete_stmt)->expr = (yyvsp[0].expr);
-    }
-#line 3688 "bison_parser.cpp" /* yacc.c:1646  */
+  (yyval.delete_stmt) = new DeleteStatement();
+  (yyval.delete_stmt)->schema = (yyvsp[-1].table_name).schema;
+  (yyval.delete_stmt)->tableName = (yyvsp[-1].table_name).name;
+  (yyval.delete_stmt)->expr = (yyvsp[0].expr);
+}
+#line 3692 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 96:
-#line 727 "bison_parser.y" /* yacc.c:1646  */
+#line 650 "bison_parser.y" /* yacc.c:1646  */
     {
-      (yyval.delete_stmt) = new DeleteStatement();
-      (yyval.delete_stmt)->schema = (yyvsp[0].table_name).schema;
-      (yyval.delete_stmt)->tableName = (yyvsp[0].table_name).name;
-    }
-#line 3698 "bison_parser.cpp" /* yacc.c:1646  */
+  (yyval.delete_stmt) = new DeleteStatement();
+  (yyval.delete_stmt)->schema = (yyvsp[0].table_name).schema;
+  (yyval.delete_stmt)->tableName = (yyvsp[0].table_name).name;
+}
+#line 3702 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 97:
-#line 740 "bison_parser.y" /* yacc.c:1646  */
+#line 661 "bison_parser.y" /* yacc.c:1646  */
     {
-      (yyval.insert_stmt) = new InsertStatement(kInsertValues);
-      (yyval.insert_stmt)->schema = (yyvsp[-5].table_name).schema;
-      (yyval.insert_stmt)->tableName = (yyvsp[-5].table_name).name;
-      (yyval.insert_stmt)->columns = (yyvsp[-4].str_vec);
-      (yyval.insert_stmt)->values = (yyvsp[-1].expr_vec);
-    }
-#line 3710 "bison_parser.cpp" /* yacc.c:1646  */
+  (yyval.insert_stmt) = new InsertStatement(kInsertValues);
+  (yyval.insert_stmt)->schema = (yyvsp[-5].table_name).schema;
+  (yyval.insert_stmt)->tableName = (yyvsp[-5].table_name).name;
+  (yyval.insert_stmt)->columns = (yyvsp[-4].str_vec);
+  (yyval.insert_stmt)->values = (yyvsp[-1].expr_vec);
+}
+#line 3714 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 98:
-#line 747 "bison_parser.y" /* yacc.c:1646  */
+#line 668 "bison_parser.y" /* yacc.c:1646  */
     {
-      (yyval.insert_stmt) = new InsertStatement(kInsertSelect);
-      (yyval.insert_stmt)->schema = (yyvsp[-2].table_name).schema;
-      (yyval.insert_stmt)->tableName = (yyvsp[-2].table_name).name;
-      (yyval.insert_stmt)->columns = (yyvsp[-1].str_vec);
-      (yyval.insert_stmt)->select = (yyvsp[0].select_stmt);
-    }
-#line 3722 "bison_parser.cpp" /* yacc.c:1646  */
+  (yyval.insert_stmt) = new InsertStatement(kInsertSelect);
+  (yyval.insert_stmt)->schema = (yyvsp[-2].table_name).schema;
+  (yyval.insert_stmt)->tableName = (yyvsp[-2].table_name).name;
+  (yyval.insert_stmt)->columns = (yyvsp[-1].str_vec);
+  (yyval.insert_stmt)->select = (yyvsp[0].select_stmt);
+}
+#line 3726 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 99:
-#line 758 "bison_parser.y" /* yacc.c:1646  */
+#line 676 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.str_vec) = (yyvsp[-1].str_vec); }
-#line 3728 "bison_parser.cpp" /* yacc.c:1646  */
+#line 3732 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 100:
-#line 759 "bison_parser.y" /* yacc.c:1646  */
+#line 677 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.str_vec) = nullptr; }
-#line 3734 "bison_parser.cpp" /* yacc.c:1646  */
+#line 3738 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 101:
-#line 769 "bison_parser.y" /* yacc.c:1646  */
+#line 684 "bison_parser.y" /* yacc.c:1646  */
     {
-    (yyval.update_stmt) = new UpdateStatement();
-    (yyval.update_stmt)->table = (yyvsp[-3].table);
-    (yyval.update_stmt)->updates = (yyvsp[-1].update_vec);
-    (yyval.update_stmt)->where = (yyvsp[0].expr);
-  }
-#line 3745 "bison_parser.cpp" /* yacc.c:1646  */
+  (yyval.update_stmt) = new UpdateStatement();
+  (yyval.update_stmt)->table = (yyvsp[-3].table);
+  (yyval.update_stmt)->updates = (yyvsp[-1].update_vec);
+  (yyval.update_stmt)->where = (yyvsp[0].expr);
+}
+#line 3749 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 102:
-#line 778 "bison_parser.y" /* yacc.c:1646  */
-    { (yyval.update_vec) = new std::vector<UpdateClause*>(); (yyval.update_vec)->push_back((yyvsp[0].update_t)); }
-#line 3751 "bison_parser.cpp" /* yacc.c:1646  */
+#line 691 "bison_parser.y" /* yacc.c:1646  */
+    {
+  (yyval.update_vec) = new std::vector<UpdateClause*>();
+  (yyval.update_vec)->push_back((yyvsp[0].update_t));
+}
+#line 3758 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 103:
-#line 779 "bison_parser.y" /* yacc.c:1646  */
-    { (yyvsp[-2].update_vec)->push_back((yyvsp[0].update_t)); (yyval.update_vec) = (yyvsp[-2].update_vec); }
-#line 3757 "bison_parser.cpp" /* yacc.c:1646  */
-    break;
-
-  case 104:
-#line 783 "bison_parser.y" /* yacc.c:1646  */
+#line 695 "bison_parser.y" /* yacc.c:1646  */
     {
-      (yyval.update_t) = new UpdateClause();
-      (yyval.update_t)->column = (yyvsp[-2].sval);
-      (yyval.update_t)->value = (yyvsp[0].expr);
-    }
+  (yyvsp[-2].update_vec)->push_back((yyvsp[0].update_t));
+  (yyval.update_vec) = (yyvsp[-2].update_vec);
+}
 #line 3767 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
-  case 105:
-#line 795 "bison_parser.y" /* yacc.c:1646  */
+  case 104:
+#line 700 "bison_parser.y" /* yacc.c:1646  */
     {
-      (yyval.select_stmt) = (yyvsp[0].select_stmt);
-      (yyval.select_stmt)->withDescriptions = (yyvsp[-1].with_description_vec);
-    }
-#line 3776 "bison_parser.cpp" /* yacc.c:1646  */
+  (yyval.update_t) = new UpdateClause();
+  (yyval.update_t)->column = (yyvsp[-2].sval);
+  (yyval.update_t)->value = (yyvsp[0].expr);
+}
+#line 3777 "bison_parser.cpp" /* yacc.c:1646  */
+    break;
+
+  case 105:
+#line 710 "bison_parser.y" /* yacc.c:1646  */
+    {
+  (yyval.select_stmt) = (yyvsp[0].select_stmt);
+  (yyval.select_stmt)->withDescriptions = (yyvsp[-1].with_description_vec);
+}
+#line 3786 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 106:
-#line 799 "bison_parser.y" /* yacc.c:1646  */
+#line 714 "bison_parser.y" /* yacc.c:1646  */
     {
-      (yyval.select_stmt) = (yyvsp[0].select_stmt);
-      (yyval.select_stmt)->withDescriptions = (yyvsp[-1].with_description_vec);
-    }
-#line 3785 "bison_parser.cpp" /* yacc.c:1646  */
+  (yyval.select_stmt) = (yyvsp[0].select_stmt);
+  (yyval.select_stmt)->withDescriptions = (yyvsp[-1].with_description_vec);
+}
+#line 3795 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 107:
-#line 803 "bison_parser.y" /* yacc.c:1646  */
+#line 718 "bison_parser.y" /* yacc.c:1646  */
     {
-      (yyval.select_stmt) = (yyvsp[-4].select_stmt);
-      if ((yyval.select_stmt)->setOperations == nullptr) {
-        (yyval.select_stmt)->setOperations = new std::vector<SetOperation*>();
-      }
-      (yyval.select_stmt)->setOperations->push_back((yyvsp[-3].set_operator_t));
-      (yyval.select_stmt)->setOperations->back()->nestedSelectStatement = (yyvsp[-2].select_stmt);
-      (yyval.select_stmt)->setOperations->back()->resultOrder = (yyvsp[-1].order_vec);
-      (yyval.select_stmt)->setOperations->back()->resultLimit = (yyvsp[0].limit);
-      (yyval.select_stmt)->withDescriptions = (yyvsp[-5].with_description_vec);
-    }
-#line 3801 "bison_parser.cpp" /* yacc.c:1646  */
+  (yyval.select_stmt) = (yyvsp[-4].select_stmt);
+  if ((yyval.select_stmt)->setOperations == nullptr) {
+    (yyval.select_stmt)->setOperations = new std::vector<SetOperation*>();
+  }
+  (yyval.select_stmt)->setOperations->push_back((yyvsp[-3].set_operator_t));
+  (yyval.select_stmt)->setOperations->back()->nestedSelectStatement = (yyvsp[-2].select_stmt);
+  (yyval.select_stmt)->setOperations->back()->resultOrder = (yyvsp[-1].order_vec);
+  (yyval.select_stmt)->setOperations->back()->resultLimit = (yyvsp[0].limit);
+  (yyval.select_stmt)->withDescriptions = (yyvsp[-5].with_description_vec);
+}
+#line 3811 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 110:
-#line 821 "bison_parser.y" /* yacc.c:1646  */
+#line 732 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.select_stmt) = (yyvsp[0].select_stmt); }
-#line 3807 "bison_parser.cpp" /* yacc.c:1646  */
+#line 3817 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 111:
-#line 822 "bison_parser.y" /* yacc.c:1646  */
+#line 733 "bison_parser.y" /* yacc.c:1646  */
     {
-    (yyval.select_stmt) = (yyvsp[-2].select_stmt);
-    if ((yyval.select_stmt)->setOperations == nullptr) {
-      (yyval.select_stmt)->setOperations = new std::vector<SetOperation*>();
-    }
-    (yyval.select_stmt)->setOperations->push_back((yyvsp[-1].set_operator_t));
-    (yyval.select_stmt)->setOperations->back()->nestedSelectStatement = (yyvsp[0].select_stmt);
+  (yyval.select_stmt) = (yyvsp[-2].select_stmt);
+  if ((yyval.select_stmt)->setOperations == nullptr) {
+    (yyval.select_stmt)->setOperations = new std::vector<SetOperation*>();
   }
-#line 3820 "bison_parser.cpp" /* yacc.c:1646  */
+  (yyval.select_stmt)->setOperations->push_back((yyvsp[-1].set_operator_t));
+  (yyval.select_stmt)->setOperations->back()->nestedSelectStatement = (yyvsp[0].select_stmt);
+}
+#line 3830 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 112:
-#line 833 "bison_parser.y" /* yacc.c:1646  */
+#line 742 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.select_stmt) = (yyvsp[-1].select_stmt); }
-#line 3826 "bison_parser.cpp" /* yacc.c:1646  */
+#line 3836 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 113:
-#line 834 "bison_parser.y" /* yacc.c:1646  */
+#line 743 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.select_stmt) = (yyvsp[-1].select_stmt); }
-#line 3832 "bison_parser.cpp" /* yacc.c:1646  */
+#line 3842 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 114:
-#line 838 "bison_parser.y" /* yacc.c:1646  */
+#line 745 "bison_parser.y" /* yacc.c:1646  */
     {
-      (yyval.select_stmt) = (yyvsp[-2].select_stmt);
-      (yyval.select_stmt)->order = (yyvsp[-1].order_vec);
+  (yyval.select_stmt) = (yyvsp[-2].select_stmt);
+  (yyval.select_stmt)->order = (yyvsp[-1].order_vec);
 
-      // Limit could have been set by TOP.
-      if ((yyvsp[0].limit) != nullptr) {
-        delete (yyval.select_stmt)->limit;
-        (yyval.select_stmt)->limit = (yyvsp[0].limit);
-      }
-    }
-#line 3847 "bison_parser.cpp" /* yacc.c:1646  */
+  // Limit could have been set by TOP.
+  if ((yyvsp[0].limit) != nullptr) {
+    delete (yyval.select_stmt)->limit;
+    (yyval.select_stmt)->limit = (yyvsp[0].limit);
+  }
+}
+#line 3857 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 115:
-#line 848 "bison_parser.y" /* yacc.c:1646  */
+#line 755 "bison_parser.y" /* yacc.c:1646  */
     {
-      (yyval.select_stmt) = (yyvsp[-4].select_stmt);
-      if ((yyval.select_stmt)->setOperations == nullptr) {
-        (yyval.select_stmt)->setOperations = new std::vector<SetOperation*>();
-      }
-      (yyval.select_stmt)->setOperations->push_back((yyvsp[-3].set_operator_t));
-      (yyval.select_stmt)->setOperations->back()->nestedSelectStatement = (yyvsp[-2].select_stmt);
-      (yyval.select_stmt)->setOperations->back()->resultOrder = (yyvsp[-1].order_vec);
-      (yyval.select_stmt)->setOperations->back()->resultLimit = (yyvsp[0].limit);
-    }
-#line 3862 "bison_parser.cpp" /* yacc.c:1646  */
+  (yyval.select_stmt) = (yyvsp[-4].select_stmt);
+  if ((yyval.select_stmt)->setOperations == nullptr) {
+    (yyval.select_stmt)->setOperations = new std::vector<SetOperation*>();
+  }
+  (yyval.select_stmt)->setOperations->push_back((yyvsp[-3].set_operator_t));
+  (yyval.select_stmt)->setOperations->back()->nestedSelectStatement = (yyvsp[-2].select_stmt);
+  (yyval.select_stmt)->setOperations->back()->resultOrder = (yyvsp[-1].order_vec);
+  (yyval.select_stmt)->setOperations->back()->resultLimit = (yyvsp[0].limit);
+}
+#line 3872 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 116:
-#line 861 "bison_parser.y" /* yacc.c:1646  */
+#line 766 "bison_parser.y" /* yacc.c:1646  */
     {
-    (yyval.set_operator_t) = (yyvsp[-1].set_operator_t);
-    (yyval.set_operator_t)->isAll = (yyvsp[0].bval);
-    }
-#line 3871 "bison_parser.cpp" /* yacc.c:1646  */
+  (yyval.set_operator_t) = (yyvsp[-1].set_operator_t);
+  (yyval.set_operator_t)->isAll = (yyvsp[0].bval);
+}
+#line 3881 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 117:
-#line 868 "bison_parser.y" /* yacc.c:1646  */
+#line 771 "bison_parser.y" /* yacc.c:1646  */
     {
-    (yyval.set_operator_t) = new SetOperation();
-    (yyval.set_operator_t)->setType = SetType::kSetUnion;
-    }
-#line 3880 "bison_parser.cpp" /* yacc.c:1646  */
+  (yyval.set_operator_t) = new SetOperation();
+  (yyval.set_operator_t)->setType = SetType::kSetUnion;
+}
+#line 3890 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 118:
-#line 872 "bison_parser.y" /* yacc.c:1646  */
+#line 775 "bison_parser.y" /* yacc.c:1646  */
     {
-    (yyval.set_operator_t) = new SetOperation();
-    (yyval.set_operator_t)->setType = SetType::kSetIntersect;
-  }
-#line 3889 "bison_parser.cpp" /* yacc.c:1646  */
+  (yyval.set_operator_t) = new SetOperation();
+  (yyval.set_operator_t)->setType = SetType::kSetIntersect;
+}
+#line 3899 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 119:
-#line 876 "bison_parser.y" /* yacc.c:1646  */
+#line 779 "bison_parser.y" /* yacc.c:1646  */
     {
-    (yyval.set_operator_t) = new SetOperation();
-    (yyval.set_operator_t)->setType = SetType::kSetExcept;
-  }
-#line 3898 "bison_parser.cpp" /* yacc.c:1646  */
+  (yyval.set_operator_t) = new SetOperation();
+  (yyval.set_operator_t)->setType = SetType::kSetExcept;
+}
+#line 3908 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 120:
-#line 883 "bison_parser.y" /* yacc.c:1646  */
-    {
-      (yyval.bval) = true;
-    }
-#line 3906 "bison_parser.cpp" /* yacc.c:1646  */
-    break;
-
-  case 121:
-#line 886 "bison_parser.y" /* yacc.c:1646  */
-    {
-    (yyval.bval) = false;
-  }
+#line 784 "bison_parser.y" /* yacc.c:1646  */
+    { (yyval.bval) = true; }
 #line 3914 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
-  case 122:
-#line 892 "bison_parser.y" /* yacc.c:1646  */
-    {
-      (yyval.select_stmt) = new SelectStatement();
-      (yyval.select_stmt)->limit = (yyvsp[-5].limit);
-      (yyval.select_stmt)->selectDistinct = (yyvsp[-4].bval);
-      (yyval.select_stmt)->selectList = (yyvsp[-3].expr_vec);
-      (yyval.select_stmt)->fromTable = (yyvsp[-2].table);
-      (yyval.select_stmt)->whereClause = (yyvsp[-1].expr);
-      (yyval.select_stmt)->groupBy = (yyvsp[0].group_t);
-    }
-#line 3928 "bison_parser.cpp" /* yacc.c:1646  */
+  case 121:
+#line 785 "bison_parser.y" /* yacc.c:1646  */
+    { (yyval.bval) = false; }
+#line 3920 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
-  case 123:
-#line 904 "bison_parser.y" /* yacc.c:1646  */
-    { (yyval.bval) = true; }
+  case 122:
+#line 787 "bison_parser.y" /* yacc.c:1646  */
+    {
+  (yyval.select_stmt) = new SelectStatement();
+  (yyval.select_stmt)->limit = (yyvsp[-5].limit);
+  (yyval.select_stmt)->selectDistinct = (yyvsp[-4].bval);
+  (yyval.select_stmt)->selectList = (yyvsp[-3].expr_vec);
+  (yyval.select_stmt)->fromTable = (yyvsp[-2].table);
+  (yyval.select_stmt)->whereClause = (yyvsp[-1].expr);
+  (yyval.select_stmt)->groupBy = (yyvsp[0].group_t);
+}
 #line 3934 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
-  case 124:
-#line 905 "bison_parser.y" /* yacc.c:1646  */
-    { (yyval.bval) = false; }
+  case 123:
+#line 797 "bison_parser.y" /* yacc.c:1646  */
+    { (yyval.bval) = true; }
 #line 3940 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
-  case 126:
-#line 913 "bison_parser.y" /* yacc.c:1646  */
-    { (yyval.table) = (yyvsp[0].table); }
+  case 124:
+#line 798 "bison_parser.y" /* yacc.c:1646  */
+    { (yyval.bval) = false; }
 #line 3946 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
-  case 127:
-#line 914 "bison_parser.y" /* yacc.c:1646  */
-    { (yyval.table) = nullptr; }
+  case 126:
+#line 802 "bison_parser.y" /* yacc.c:1646  */
+    { (yyval.table) = (yyvsp[0].table); }
 #line 3952 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
-  case 128:
-#line 918 "bison_parser.y" /* yacc.c:1646  */
-    { (yyval.table) = (yyvsp[0].table); }
+  case 127:
+#line 803 "bison_parser.y" /* yacc.c:1646  */
+    { (yyval.table) = nullptr; }
 #line 3958 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
-  case 129:
-#line 923 "bison_parser.y" /* yacc.c:1646  */
-    { (yyval.expr) = (yyvsp[0].expr); }
+  case 128:
+#line 805 "bison_parser.y" /* yacc.c:1646  */
+    { (yyval.table) = (yyvsp[0].table); }
 #line 3964 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
-  case 130:
-#line 924 "bison_parser.y" /* yacc.c:1646  */
-    { (yyval.expr) = nullptr; }
+  case 129:
+#line 807 "bison_parser.y" /* yacc.c:1646  */
+    { (yyval.expr) = (yyvsp[0].expr); }
 #line 3970 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
-  case 131:
-#line 928 "bison_parser.y" /* yacc.c:1646  */
-    {
-      (yyval.group_t) = new GroupByDescription();
-      (yyval.group_t)->columns = (yyvsp[-1].expr_vec);
-      (yyval.group_t)->having = (yyvsp[0].expr);
-    }
-#line 3980 "bison_parser.cpp" /* yacc.c:1646  */
+  case 130:
+#line 808 "bison_parser.y" /* yacc.c:1646  */
+    { (yyval.expr) = nullptr; }
+#line 3976 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
-  case 132:
-#line 933 "bison_parser.y" /* yacc.c:1646  */
-    { (yyval.group_t) = nullptr; }
+  case 131:
+#line 810 "bison_parser.y" /* yacc.c:1646  */
+    {
+  (yyval.group_t) = new GroupByDescription();
+  (yyval.group_t)->columns = (yyvsp[-1].expr_vec);
+  (yyval.group_t)->having = (yyvsp[0].expr);
+}
 #line 3986 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
-  case 133:
-#line 937 "bison_parser.y" /* yacc.c:1646  */
-    { (yyval.expr) = (yyvsp[0].expr); }
+  case 132:
+#line 815 "bison_parser.y" /* yacc.c:1646  */
+    { (yyval.group_t) = nullptr; }
 #line 3992 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
-  case 134:
-#line 938 "bison_parser.y" /* yacc.c:1646  */
-    { (yyval.expr) = nullptr; }
+  case 133:
+#line 817 "bison_parser.y" /* yacc.c:1646  */
+    { (yyval.expr) = (yyvsp[0].expr); }
 #line 3998 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
-  case 135:
-#line 942 "bison_parser.y" /* yacc.c:1646  */
-    { (yyval.order_vec) = (yyvsp[0].order_vec); }
+  case 134:
+#line 818 "bison_parser.y" /* yacc.c:1646  */
+    { (yyval.expr) = nullptr; }
 #line 4004 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
-  case 136:
-#line 943 "bison_parser.y" /* yacc.c:1646  */
-    { (yyval.order_vec) = nullptr; }
+  case 135:
+#line 820 "bison_parser.y" /* yacc.c:1646  */
+    { (yyval.order_vec) = (yyvsp[0].order_vec); }
 #line 4010 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
-  case 137:
-#line 947 "bison_parser.y" /* yacc.c:1646  */
-    { (yyval.order_vec) = new std::vector<OrderDescription*>(); (yyval.order_vec)->push_back((yyvsp[0].order)); }
+  case 136:
+#line 821 "bison_parser.y" /* yacc.c:1646  */
+    { (yyval.order_vec) = nullptr; }
 #line 4016 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
+  case 137:
+#line 823 "bison_parser.y" /* yacc.c:1646  */
+    {
+  (yyval.order_vec) = new std::vector<OrderDescription*>();
+  (yyval.order_vec)->push_back((yyvsp[0].order));
+}
+#line 4025 "bison_parser.cpp" /* yacc.c:1646  */
+    break;
+
   case 138:
-#line 948 "bison_parser.y" /* yacc.c:1646  */
-    { (yyvsp[-2].order_vec)->push_back((yyvsp[0].order)); (yyval.order_vec) = (yyvsp[-2].order_vec); }
-#line 4022 "bison_parser.cpp" /* yacc.c:1646  */
-    break;
-
-  case 139:
-#line 952 "bison_parser.y" /* yacc.c:1646  */
-    { (yyval.order) = new OrderDescription((yyvsp[0].order_type), (yyvsp[-1].expr)); }
-#line 4028 "bison_parser.cpp" /* yacc.c:1646  */
-    break;
-
-  case 140:
-#line 956 "bison_parser.y" /* yacc.c:1646  */
-    { (yyval.order_type) = kOrderAsc; }
+#line 827 "bison_parser.y" /* yacc.c:1646  */
+    {
+  (yyvsp[-2].order_vec)->push_back((yyvsp[0].order));
+  (yyval.order_vec) = (yyvsp[-2].order_vec);
+}
 #line 4034 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
-  case 141:
-#line 957 "bison_parser.y" /* yacc.c:1646  */
-    { (yyval.order_type) = kOrderDesc; }
+  case 139:
+#line 832 "bison_parser.y" /* yacc.c:1646  */
+    { (yyval.order) = new OrderDescription((yyvsp[0].order_type), (yyvsp[-1].expr)); }
 #line 4040 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
-  case 142:
-#line 958 "bison_parser.y" /* yacc.c:1646  */
+  case 140:
+#line 834 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.order_type) = kOrderAsc; }
 #line 4046 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
-  case 143:
-#line 964 "bison_parser.y" /* yacc.c:1646  */
-    { (yyval.limit) = new LimitDescription((yyvsp[0].expr), nullptr); }
+  case 141:
+#line 835 "bison_parser.y" /* yacc.c:1646  */
+    { (yyval.order_type) = kOrderDesc; }
 #line 4052 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
-  case 144:
-#line 965 "bison_parser.y" /* yacc.c:1646  */
-    { (yyval.limit) = nullptr; }
+  case 142:
+#line 836 "bison_parser.y" /* yacc.c:1646  */
+    { (yyval.order_type) = kOrderAsc; }
 #line 4058 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
-  case 145:
-#line 969 "bison_parser.y" /* yacc.c:1646  */
+  case 143:
+#line 840 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.limit) = new LimitDescription((yyvsp[0].expr), nullptr); }
 #line 4064 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
-  case 146:
-#line 970 "bison_parser.y" /* yacc.c:1646  */
-    { (yyval.limit) = new LimitDescription(nullptr, (yyvsp[0].expr)); }
+  case 144:
+#line 841 "bison_parser.y" /* yacc.c:1646  */
+    { (yyval.limit) = nullptr; }
 #line 4070 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
-  case 147:
-#line 971 "bison_parser.y" /* yacc.c:1646  */
-    { (yyval.limit) = new LimitDescription((yyvsp[-2].expr), (yyvsp[0].expr)); }
+  case 145:
+#line 843 "bison_parser.y" /* yacc.c:1646  */
+    { (yyval.limit) = new LimitDescription((yyvsp[0].expr), nullptr); }
 #line 4076 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
-  case 148:
-#line 972 "bison_parser.y" /* yacc.c:1646  */
-    { (yyval.limit) = new LimitDescription(nullptr, nullptr); }
+  case 146:
+#line 844 "bison_parser.y" /* yacc.c:1646  */
+    { (yyval.limit) = new LimitDescription(nullptr, (yyvsp[0].expr)); }
 #line 4082 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
-  case 149:
-#line 973 "bison_parser.y" /* yacc.c:1646  */
-    { (yyval.limit) = new LimitDescription(nullptr, (yyvsp[0].expr)); }
+  case 147:
+#line 845 "bison_parser.y" /* yacc.c:1646  */
+    { (yyval.limit) = new LimitDescription((yyvsp[-2].expr), (yyvsp[0].expr)); }
 #line 4088 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
-  case 150:
-#line 974 "bison_parser.y" /* yacc.c:1646  */
-    { (yyval.limit) = nullptr; }
+  case 148:
+#line 846 "bison_parser.y" /* yacc.c:1646  */
+    { (yyval.limit) = new LimitDescription(nullptr, nullptr); }
 #line 4094 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
-  case 151:
-#line 981 "bison_parser.y" /* yacc.c:1646  */
-    { (yyval.expr_vec) = new std::vector<Expr*>(); (yyval.expr_vec)->push_back((yyvsp[0].expr)); }
+  case 149:
+#line 847 "bison_parser.y" /* yacc.c:1646  */
+    { (yyval.limit) = new LimitDescription(nullptr, (yyvsp[0].expr)); }
 #line 4100 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
-  case 152:
-#line 982 "bison_parser.y" /* yacc.c:1646  */
-    { (yyvsp[-2].expr_vec)->push_back((yyvsp[0].expr)); (yyval.expr_vec) = (yyvsp[-2].expr_vec); }
+  case 150:
+#line 848 "bison_parser.y" /* yacc.c:1646  */
+    { (yyval.limit) = nullptr; }
 #line 4106 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
-  case 153:
-#line 986 "bison_parser.y" /* yacc.c:1646  */
-    { (yyval.expr_vec) = (yyvsp[0].expr_vec); }
-#line 4112 "bison_parser.cpp" /* yacc.c:1646  */
+  case 151:
+#line 853 "bison_parser.y" /* yacc.c:1646  */
+    {
+  (yyval.expr_vec) = new std::vector<Expr*>();
+  (yyval.expr_vec)->push_back((yyvsp[0].expr));
+}
+#line 4115 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
-  case 154:
-#line 987 "bison_parser.y" /* yacc.c:1646  */
-    { (yyval.expr_vec) = nullptr; }
-#line 4118 "bison_parser.cpp" /* yacc.c:1646  */
-    break;
-
-  case 155:
-#line 991 "bison_parser.y" /* yacc.c:1646  */
-    { (yyval.expr_vec) = new std::vector<Expr*>(); (yyval.expr_vec)->push_back((yyvsp[0].expr)); }
+  case 152:
+#line 857 "bison_parser.y" /* yacc.c:1646  */
+    {
+  (yyvsp[-2].expr_vec)->push_back((yyvsp[0].expr));
+  (yyval.expr_vec) = (yyvsp[-2].expr_vec);
+}
 #line 4124 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
-  case 156:
-#line 992 "bison_parser.y" /* yacc.c:1646  */
-    { (yyvsp[-2].expr_vec)->push_back((yyvsp[0].expr)); (yyval.expr_vec) = (yyvsp[-2].expr_vec); }
+  case 153:
+#line 862 "bison_parser.y" /* yacc.c:1646  */
+    { (yyval.expr_vec) = (yyvsp[0].expr_vec); }
 #line 4130 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
-  case 157:
-#line 996 "bison_parser.y" /* yacc.c:1646  */
+  case 154:
+#line 863 "bison_parser.y" /* yacc.c:1646  */
+    { (yyval.expr_vec) = nullptr; }
+#line 4136 "bison_parser.cpp" /* yacc.c:1646  */
+    break;
+
+  case 155:
+#line 865 "bison_parser.y" /* yacc.c:1646  */
     {
-      (yyval.expr) = (yyvsp[-1].expr);
-      if ((yyvsp[0].alias_t)) {
-        (yyval.expr)->alias = strdup((yyvsp[0].alias_t)->name);
-        delete (yyvsp[0].alias_t);
-      }
-    }
-#line 4142 "bison_parser.cpp" /* yacc.c:1646  */
+  (yyval.expr_vec) = new std::vector<Expr*>();
+  (yyval.expr_vec)->push_back((yyvsp[0].expr));
+}
+#line 4145 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
-  case 163:
-#line 1014 "bison_parser.y" /* yacc.c:1646  */
-    { (yyval.expr) = (yyvsp[-1].expr); }
-#line 4148 "bison_parser.cpp" /* yacc.c:1646  */
-    break;
-
-  case 173:
-#line 1024 "bison_parser.y" /* yacc.c:1646  */
-    { (yyval.expr) = Expr::makeSelect((yyvsp[-1].select_stmt)); }
+  case 156:
+#line 869 "bison_parser.y" /* yacc.c:1646  */
+    {
+  (yyvsp[-2].expr_vec)->push_back((yyvsp[0].expr));
+  (yyval.expr_vec) = (yyvsp[-2].expr_vec);
+}
 #line 4154 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
-  case 176:
-#line 1033 "bison_parser.y" /* yacc.c:1646  */
-    { (yyval.expr) = Expr::makeOpUnary(kOpUnaryMinus, (yyvsp[0].expr)); }
-#line 4160 "bison_parser.cpp" /* yacc.c:1646  */
-    break;
-
-  case 177:
-#line 1034 "bison_parser.y" /* yacc.c:1646  */
-    { (yyval.expr) = Expr::makeOpUnary(kOpNot, (yyvsp[0].expr)); }
+  case 157:
+#line 874 "bison_parser.y" /* yacc.c:1646  */
+    {
+  (yyval.expr) = (yyvsp[-1].expr);
+  if ((yyvsp[0].alias_t)) {
+    (yyval.expr)->alias = strdup((yyvsp[0].alias_t)->name);
+    delete (yyvsp[0].alias_t);
+  }
+}
 #line 4166 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
-  case 178:
-#line 1035 "bison_parser.y" /* yacc.c:1646  */
-    { (yyval.expr) = Expr::makeOpUnary(kOpIsNull, (yyvsp[-1].expr)); }
+  case 163:
+#line 884 "bison_parser.y" /* yacc.c:1646  */
+    { (yyval.expr) = (yyvsp[-1].expr); }
 #line 4172 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
+  case 173:
+#line 886 "bison_parser.y" /* yacc.c:1646  */
+    {
+  (yyval.expr) = Expr::makeSelect((yyvsp[-1].select_stmt));
+}
+#line 4180 "bison_parser.cpp" /* yacc.c:1646  */
+    break;
+
+  case 176:
+#line 892 "bison_parser.y" /* yacc.c:1646  */
+    { (yyval.expr) = Expr::makeOpUnary(kOpUnaryMinus, (yyvsp[0].expr)); }
+#line 4186 "bison_parser.cpp" /* yacc.c:1646  */
+    break;
+
+  case 177:
+#line 893 "bison_parser.y" /* yacc.c:1646  */
+    { (yyval.expr) = Expr::makeOpUnary(kOpNot, (yyvsp[0].expr)); }
+#line 4192 "bison_parser.cpp" /* yacc.c:1646  */
+    break;
+
+  case 178:
+#line 894 "bison_parser.y" /* yacc.c:1646  */
+    { (yyval.expr) = Expr::makeOpUnary(kOpIsNull, (yyvsp[-1].expr)); }
+#line 4198 "bison_parser.cpp" /* yacc.c:1646  */
+    break;
+
   case 179:
-#line 1036 "bison_parser.y" /* yacc.c:1646  */
+#line 895 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.expr) = Expr::makeOpUnary(kOpIsNull, (yyvsp[-2].expr)); }
-#line 4178 "bison_parser.cpp" /* yacc.c:1646  */
+#line 4204 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 180:
-#line 1037 "bison_parser.y" /* yacc.c:1646  */
+#line 896 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.expr) = Expr::makeOpUnary(kOpNot, Expr::makeOpUnary(kOpIsNull, (yyvsp[-3].expr))); }
-#line 4184 "bison_parser.cpp" /* yacc.c:1646  */
+#line 4210 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 182:
-#line 1042 "bison_parser.y" /* yacc.c:1646  */
+#line 898 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.expr) = Expr::makeOpBinary((yyvsp[-2].expr), kOpMinus, (yyvsp[0].expr)); }
-#line 4190 "bison_parser.cpp" /* yacc.c:1646  */
+#line 4216 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 183:
-#line 1043 "bison_parser.y" /* yacc.c:1646  */
+#line 899 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.expr) = Expr::makeOpBinary((yyvsp[-2].expr), kOpPlus, (yyvsp[0].expr)); }
-#line 4196 "bison_parser.cpp" /* yacc.c:1646  */
+#line 4222 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 184:
-#line 1044 "bison_parser.y" /* yacc.c:1646  */
+#line 900 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.expr) = Expr::makeOpBinary((yyvsp[-2].expr), kOpSlash, (yyvsp[0].expr)); }
-#line 4202 "bison_parser.cpp" /* yacc.c:1646  */
+#line 4228 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 185:
-#line 1045 "bison_parser.y" /* yacc.c:1646  */
+#line 901 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.expr) = Expr::makeOpBinary((yyvsp[-2].expr), kOpAsterisk, (yyvsp[0].expr)); }
-#line 4208 "bison_parser.cpp" /* yacc.c:1646  */
+#line 4234 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 186:
-#line 1046 "bison_parser.y" /* yacc.c:1646  */
+#line 902 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.expr) = Expr::makeOpBinary((yyvsp[-2].expr), kOpPercentage, (yyvsp[0].expr)); }
-#line 4214 "bison_parser.cpp" /* yacc.c:1646  */
+#line 4240 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 187:
-#line 1047 "bison_parser.y" /* yacc.c:1646  */
+#line 903 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.expr) = Expr::makeOpBinary((yyvsp[-2].expr), kOpCaret, (yyvsp[0].expr)); }
-#line 4220 "bison_parser.cpp" /* yacc.c:1646  */
+#line 4246 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 188:
-#line 1048 "bison_parser.y" /* yacc.c:1646  */
+#line 904 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.expr) = Expr::makeOpBinary((yyvsp[-2].expr), kOpLike, (yyvsp[0].expr)); }
-#line 4226 "bison_parser.cpp" /* yacc.c:1646  */
+#line 4252 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 189:
-#line 1049 "bison_parser.y" /* yacc.c:1646  */
+#line 905 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.expr) = Expr::makeOpBinary((yyvsp[-3].expr), kOpNotLike, (yyvsp[0].expr)); }
-#line 4232 "bison_parser.cpp" /* yacc.c:1646  */
+#line 4258 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 190:
-#line 1050 "bison_parser.y" /* yacc.c:1646  */
+#line 906 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.expr) = Expr::makeOpBinary((yyvsp[-2].expr), kOpILike, (yyvsp[0].expr)); }
-#line 4238 "bison_parser.cpp" /* yacc.c:1646  */
+#line 4264 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 191:
-#line 1051 "bison_parser.y" /* yacc.c:1646  */
+#line 907 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.expr) = Expr::makeOpBinary((yyvsp[-2].expr), kOpConcat, (yyvsp[0].expr)); }
-#line 4244 "bison_parser.cpp" /* yacc.c:1646  */
+#line 4270 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 192:
-#line 1055 "bison_parser.y" /* yacc.c:1646  */
+#line 909 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.expr) = Expr::makeOpBinary((yyvsp[-2].expr), kOpAnd, (yyvsp[0].expr)); }
-#line 4250 "bison_parser.cpp" /* yacc.c:1646  */
+#line 4276 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 193:
-#line 1056 "bison_parser.y" /* yacc.c:1646  */
+#line 910 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.expr) = Expr::makeOpBinary((yyvsp[-2].expr), kOpOr, (yyvsp[0].expr)); }
-#line 4256 "bison_parser.cpp" /* yacc.c:1646  */
+#line 4282 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 194:
-#line 1060 "bison_parser.y" /* yacc.c:1646  */
+#line 912 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.expr) = Expr::makeInOperator((yyvsp[-4].expr), (yyvsp[-1].expr_vec)); }
-#line 4262 "bison_parser.cpp" /* yacc.c:1646  */
+#line 4288 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 195:
-#line 1061 "bison_parser.y" /* yacc.c:1646  */
+#line 913 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.expr) = Expr::makeOpUnary(kOpNot, Expr::makeInOperator((yyvsp[-5].expr), (yyvsp[-1].expr_vec))); }
-#line 4268 "bison_parser.cpp" /* yacc.c:1646  */
+#line 4294 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 196:
-#line 1062 "bison_parser.y" /* yacc.c:1646  */
+#line 914 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.expr) = Expr::makeInOperator((yyvsp[-4].expr), (yyvsp[-1].select_stmt)); }
-#line 4274 "bison_parser.cpp" /* yacc.c:1646  */
+#line 4300 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 197:
-#line 1063 "bison_parser.y" /* yacc.c:1646  */
+#line 915 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.expr) = Expr::makeOpUnary(kOpNot, Expr::makeInOperator((yyvsp[-5].expr), (yyvsp[-1].select_stmt))); }
-#line 4280 "bison_parser.cpp" /* yacc.c:1646  */
+#line 4306 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 198:
-#line 1069 "bison_parser.y" /* yacc.c:1646  */
+#line 919 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.expr) = Expr::makeCase((yyvsp[-2].expr), (yyvsp[-1].expr), nullptr); }
-#line 4286 "bison_parser.cpp" /* yacc.c:1646  */
+#line 4312 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 199:
-#line 1070 "bison_parser.y" /* yacc.c:1646  */
+#line 920 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.expr) = Expr::makeCase((yyvsp[-4].expr), (yyvsp[-3].expr), (yyvsp[-1].expr)); }
-#line 4292 "bison_parser.cpp" /* yacc.c:1646  */
+#line 4318 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 200:
-#line 1071 "bison_parser.y" /* yacc.c:1646  */
+#line 921 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.expr) = Expr::makeCase(nullptr, (yyvsp[-1].expr), nullptr); }
-#line 4298 "bison_parser.cpp" /* yacc.c:1646  */
+#line 4324 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 201:
-#line 1072 "bison_parser.y" /* yacc.c:1646  */
+#line 922 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.expr) = Expr::makeCase(nullptr, (yyvsp[-3].expr), (yyvsp[-1].expr)); }
-#line 4304 "bison_parser.cpp" /* yacc.c:1646  */
+#line 4330 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 202:
-#line 1076 "bison_parser.y" /* yacc.c:1646  */
+#line 924 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.expr) = Expr::makeCaseList(Expr::makeCaseListElement((yyvsp[-2].expr), (yyvsp[0].expr))); }
-#line 4310 "bison_parser.cpp" /* yacc.c:1646  */
+#line 4336 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 203:
-#line 1077 "bison_parser.y" /* yacc.c:1646  */
+#line 925 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.expr) = Expr::caseListAppend((yyvsp[-4].expr), Expr::makeCaseListElement((yyvsp[-2].expr), (yyvsp[0].expr))); }
-#line 4316 "bison_parser.cpp" /* yacc.c:1646  */
+#line 4342 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 204:
-#line 1081 "bison_parser.y" /* yacc.c:1646  */
+#line 927 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.expr) = Expr::makeExists((yyvsp[-1].select_stmt)); }
-#line 4322 "bison_parser.cpp" /* yacc.c:1646  */
+#line 4348 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 205:
-#line 1082 "bison_parser.y" /* yacc.c:1646  */
+#line 928 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.expr) = Expr::makeOpUnary(kOpNot, Expr::makeExists((yyvsp[-1].select_stmt))); }
-#line 4328 "bison_parser.cpp" /* yacc.c:1646  */
+#line 4354 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 206:
-#line 1086 "bison_parser.y" /* yacc.c:1646  */
+#line 930 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.expr) = Expr::makeOpBinary((yyvsp[-2].expr), kOpEquals, (yyvsp[0].expr)); }
-#line 4334 "bison_parser.cpp" /* yacc.c:1646  */
+#line 4360 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 207:
-#line 1087 "bison_parser.y" /* yacc.c:1646  */
+#line 931 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.expr) = Expr::makeOpBinary((yyvsp[-2].expr), kOpEquals, (yyvsp[0].expr)); }
-#line 4340 "bison_parser.cpp" /* yacc.c:1646  */
+#line 4366 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 208:
-#line 1088 "bison_parser.y" /* yacc.c:1646  */
+#line 932 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.expr) = Expr::makeOpBinary((yyvsp[-2].expr), kOpNotEquals, (yyvsp[0].expr)); }
-#line 4346 "bison_parser.cpp" /* yacc.c:1646  */
+#line 4372 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 209:
-#line 1089 "bison_parser.y" /* yacc.c:1646  */
+#line 933 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.expr) = Expr::makeOpBinary((yyvsp[-2].expr), kOpLess, (yyvsp[0].expr)); }
-#line 4352 "bison_parser.cpp" /* yacc.c:1646  */
+#line 4378 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 210:
-#line 1090 "bison_parser.y" /* yacc.c:1646  */
+#line 934 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.expr) = Expr::makeOpBinary((yyvsp[-2].expr), kOpGreater, (yyvsp[0].expr)); }
-#line 4358 "bison_parser.cpp" /* yacc.c:1646  */
+#line 4384 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 211:
-#line 1091 "bison_parser.y" /* yacc.c:1646  */
+#line 935 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.expr) = Expr::makeOpBinary((yyvsp[-2].expr), kOpLessEq, (yyvsp[0].expr)); }
-#line 4364 "bison_parser.cpp" /* yacc.c:1646  */
+#line 4390 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 212:
-#line 1092 "bison_parser.y" /* yacc.c:1646  */
+#line 936 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.expr) = Expr::makeOpBinary((yyvsp[-2].expr), kOpGreaterEq, (yyvsp[0].expr)); }
-#line 4370 "bison_parser.cpp" /* yacc.c:1646  */
+#line 4396 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 213:
-#line 1096 "bison_parser.y" /* yacc.c:1646  */
+#line 938 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.expr) = Expr::makeFunctionRef((yyvsp[-2].sval), new std::vector<Expr*>(), false); }
-#line 4376 "bison_parser.cpp" /* yacc.c:1646  */
+#line 4402 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 214:
-#line 1097 "bison_parser.y" /* yacc.c:1646  */
+#line 939 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.expr) = Expr::makeFunctionRef((yyvsp[-4].sval), (yyvsp[-1].expr_vec), (yyvsp[-2].bval)); }
-#line 4382 "bison_parser.cpp" /* yacc.c:1646  */
+#line 4408 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 215:
-#line 1101 "bison_parser.y" /* yacc.c:1646  */
+#line 941 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.expr) = Expr::makeExtract((yyvsp[-3].datetime_field), (yyvsp[-1].expr)); }
-#line 4388 "bison_parser.cpp" /* yacc.c:1646  */
+#line 4414 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 216:
-#line 1105 "bison_parser.y" /* yacc.c:1646  */
+#line 943 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.expr) = Expr::makeCast((yyvsp[-3].expr), (yyvsp[-1].column_type_t)); }
-#line 4394 "bison_parser.cpp" /* yacc.c:1646  */
+#line 4420 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 217:
-#line 1109 "bison_parser.y" /* yacc.c:1646  */
+#line 945 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.datetime_field) = kDatetimeSecond; }
-#line 4400 "bison_parser.cpp" /* yacc.c:1646  */
+#line 4426 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 218:
-#line 1110 "bison_parser.y" /* yacc.c:1646  */
+#line 946 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.datetime_field) = kDatetimeMinute; }
-#line 4406 "bison_parser.cpp" /* yacc.c:1646  */
+#line 4432 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 219:
-#line 1111 "bison_parser.y" /* yacc.c:1646  */
+#line 947 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.datetime_field) = kDatetimeHour; }
-#line 4412 "bison_parser.cpp" /* yacc.c:1646  */
+#line 4438 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 220:
-#line 1112 "bison_parser.y" /* yacc.c:1646  */
+#line 948 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.datetime_field) = kDatetimeDay; }
-#line 4418 "bison_parser.cpp" /* yacc.c:1646  */
+#line 4444 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 221:
-#line 1113 "bison_parser.y" /* yacc.c:1646  */
+#line 949 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.datetime_field) = kDatetimeMonth; }
-#line 4424 "bison_parser.cpp" /* yacc.c:1646  */
+#line 4450 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 222:
-#line 1114 "bison_parser.y" /* yacc.c:1646  */
+#line 950 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.datetime_field) = kDatetimeYear; }
-#line 4430 "bison_parser.cpp" /* yacc.c:1646  */
+#line 4456 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 223:
-#line 1118 "bison_parser.y" /* yacc.c:1646  */
+#line 952 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.datetime_field) = kDatetimeSecond; }
-#line 4436 "bison_parser.cpp" /* yacc.c:1646  */
+#line 4462 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 224:
-#line 1119 "bison_parser.y" /* yacc.c:1646  */
+#line 953 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.datetime_field) = kDatetimeMinute; }
-#line 4442 "bison_parser.cpp" /* yacc.c:1646  */
+#line 4468 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 225:
-#line 1120 "bison_parser.y" /* yacc.c:1646  */
+#line 954 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.datetime_field) = kDatetimeHour; }
-#line 4448 "bison_parser.cpp" /* yacc.c:1646  */
+#line 4474 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 226:
-#line 1121 "bison_parser.y" /* yacc.c:1646  */
+#line 955 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.datetime_field) = kDatetimeDay; }
-#line 4454 "bison_parser.cpp" /* yacc.c:1646  */
+#line 4480 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 227:
-#line 1122 "bison_parser.y" /* yacc.c:1646  */
+#line 956 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.datetime_field) = kDatetimeMonth; }
-#line 4460 "bison_parser.cpp" /* yacc.c:1646  */
+#line 4486 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 228:
-#line 1123 "bison_parser.y" /* yacc.c:1646  */
+#line 957 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.datetime_field) = kDatetimeYear; }
-#line 4466 "bison_parser.cpp" /* yacc.c:1646  */
+#line 4492 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 231:
-#line 1132 "bison_parser.y" /* yacc.c:1646  */
+#line 961 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.expr) = Expr::makeArray((yyvsp[-1].expr_vec)); }
-#line 4472 "bison_parser.cpp" /* yacc.c:1646  */
+#line 4498 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 232:
-#line 1136 "bison_parser.y" /* yacc.c:1646  */
+#line 963 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.expr) = Expr::makeArrayIndex((yyvsp[-3].expr), (yyvsp[-1].expr)->ival); }
-#line 4478 "bison_parser.cpp" /* yacc.c:1646  */
+#line 4504 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 233:
-#line 1140 "bison_parser.y" /* yacc.c:1646  */
+#line 965 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.expr) = Expr::makeBetween((yyvsp[-4].expr), (yyvsp[-2].expr), (yyvsp[0].expr)); }
-#line 4484 "bison_parser.cpp" /* yacc.c:1646  */
+#line 4510 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 234:
-#line 1144 "bison_parser.y" /* yacc.c:1646  */
+#line 967 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.expr) = Expr::makeColumnRef((yyvsp[0].sval)); }
-#line 4490 "bison_parser.cpp" /* yacc.c:1646  */
+#line 4516 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 235:
-#line 1145 "bison_parser.y" /* yacc.c:1646  */
+#line 968 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.expr) = Expr::makeColumnRef((yyvsp[-2].sval), (yyvsp[0].sval)); }
-#line 4496 "bison_parser.cpp" /* yacc.c:1646  */
+#line 4522 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 236:
-#line 1146 "bison_parser.y" /* yacc.c:1646  */
+#line 969 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.expr) = Expr::makeStar(); }
-#line 4502 "bison_parser.cpp" /* yacc.c:1646  */
+#line 4528 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 237:
-#line 1147 "bison_parser.y" /* yacc.c:1646  */
+#line 970 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.expr) = Expr::makeStar((yyvsp[-2].sval)); }
-#line 4508 "bison_parser.cpp" /* yacc.c:1646  */
+#line 4534 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 245:
-#line 1161 "bison_parser.y" /* yacc.c:1646  */
+#line 974 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.expr) = Expr::makeLiteral((yyvsp[0].sval)); }
-#line 4514 "bison_parser.cpp" /* yacc.c:1646  */
+#line 4540 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 246:
-#line 1165 "bison_parser.y" /* yacc.c:1646  */
+#line 976 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.expr) = Expr::makeLiteral(true); }
-#line 4520 "bison_parser.cpp" /* yacc.c:1646  */
+#line 4546 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 247:
-#line 1166 "bison_parser.y" /* yacc.c:1646  */
+#line 977 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.expr) = Expr::makeLiteral(false); }
-#line 4526 "bison_parser.cpp" /* yacc.c:1646  */
+#line 4552 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 248:
-#line 1170 "bison_parser.y" /* yacc.c:1646  */
+#line 979 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.expr) = Expr::makeLiteral((yyvsp[0].fval)); }
-#line 4532 "bison_parser.cpp" /* yacc.c:1646  */
+#line 4558 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 250:
-#line 1175 "bison_parser.y" /* yacc.c:1646  */
+#line 982 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.expr) = Expr::makeLiteral((yyvsp[0].ival)); }
-#line 4538 "bison_parser.cpp" /* yacc.c:1646  */
+#line 4564 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 251:
-#line 1179 "bison_parser.y" /* yacc.c:1646  */
+#line 984 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.expr) = Expr::makeNullLiteral(); }
-#line 4544 "bison_parser.cpp" /* yacc.c:1646  */
+#line 4570 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 252:
-#line 1183 "bison_parser.y" /* yacc.c:1646  */
+#line 986 "bison_parser.y" /* yacc.c:1646  */
     {
-      int day{0}, month{0}, year{0}, chars_parsed{0};
-      // If the whole string is parsed, chars_parsed points to the terminating null byte after the last character
-      if (sscanf((yyvsp[0].sval), "%4d-%2d-%2d%n", &day, &month, &year, &chars_parsed) != 3 || (yyvsp[0].sval)[chars_parsed] != 0) {
-        free((yyvsp[0].sval));
-        yyerror(&yyloc, result, scanner, "Found incorrect date format. Expected format: YYYY-MM-DD");
-        YYERROR;
-      }
-      (yyval.expr) = Expr::makeDateLiteral((yyvsp[0].sval));
-    }
-#line 4559 "bison_parser.cpp" /* yacc.c:1646  */
+  int day{0}, month{0}, year{0}, chars_parsed{0};
+  // If the whole string is parsed, chars_parsed points to the terminating null byte after the last character
+  if (sscanf((yyvsp[0].sval), "%4d-%2d-%2d%n", &day, &month, &year, &chars_parsed) != 3 || (yyvsp[0].sval)[chars_parsed] != 0) {
+    free((yyvsp[0].sval));
+    yyerror(&yyloc, result, scanner, "Found incorrect date format. Expected format: YYYY-MM-DD");
+    YYERROR;
+  }
+  (yyval.expr) = Expr::makeDateLiteral((yyvsp[0].sval));
+}
+#line 4585 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 253:
-#line 1196 "bison_parser.y" /* yacc.c:1646  */
-    { (yyval.expr) = Expr::makeIntervalLiteral((yyvsp[-1].expr)->ival, (yyvsp[0].datetime_field)); delete (yyvsp[-1].expr); }
-#line 4565 "bison_parser.cpp" /* yacc.c:1646  */
+#line 997 "bison_parser.y" /* yacc.c:1646  */
+    {
+  (yyval.expr) = Expr::makeIntervalLiteral((yyvsp[-1].expr)->ival, (yyvsp[0].datetime_field));
+  delete (yyvsp[-1].expr);
+}
+#line 4594 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 254:
-#line 1197 "bison_parser.y" /* yacc.c:1646  */
+#line 1001 "bison_parser.y" /* yacc.c:1646  */
     {
-      int duration{0}, chars_parsed{0};
-      // If the whole string is parsed, chars_parsed points to the terminating null byte after the last character
-      if (sscanf((yyvsp[-1].sval), "%d%n", &duration, &chars_parsed) != 1 || (yyvsp[-1].sval)[chars_parsed] != 0) {
-        free((yyvsp[-1].sval));
-        yyerror(&yyloc, result, scanner, "Found incorrect interval format. Expected format: INTEGER");
-        YYERROR;
-      }
-      free((yyvsp[-1].sval));
-      (yyval.expr) = Expr::makeIntervalLiteral(duration, (yyvsp[0].datetime_field));
-    }
-#line 4581 "bison_parser.cpp" /* yacc.c:1646  */
+  int duration{0}, chars_parsed{0};
+  // If the whole string is parsed, chars_parsed points to the terminating null byte after the last character
+  if (sscanf((yyvsp[-1].sval), "%d%n", &duration, &chars_parsed) != 1 || (yyvsp[-1].sval)[chars_parsed] != 0) {
+    free((yyvsp[-1].sval));
+    yyerror(&yyloc, result, scanner, "Found incorrect interval format. Expected format: INTEGER");
+    YYERROR;
+  }
+  free((yyvsp[-1].sval));
+  (yyval.expr) = Expr::makeIntervalLiteral(duration, (yyvsp[0].datetime_field));
+}
+#line 4610 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 255:
-#line 1208 "bison_parser.y" /* yacc.c:1646  */
+#line 1012 "bison_parser.y" /* yacc.c:1646  */
     {
-      int duration{0}, chars_parsed{0};
-      // 'seconds' and 'minutes' are the longest accepted interval qualifiers (7 chars) + null byte
-      char unit_string[8];
-      // If the whole string is parsed, chars_parsed points to the terminating null byte after the last character
-      if (sscanf((yyvsp[0].sval), "%d %7s%n", &duration, unit_string, &chars_parsed) != 2 || (yyvsp[0].sval)[chars_parsed] != 0) {
-        free((yyvsp[0].sval));
-        yyerror(&yyloc, result, scanner, "Found incorrect interval format. Expected format: INTEGER INTERVAL_QUALIIFIER");
-        YYERROR;
-      }
-      free((yyvsp[0].sval));
+  int duration{0}, chars_parsed{0};
+  // 'seconds' and 'minutes' are the longest accepted interval qualifiers (7 chars) + null byte
+  char unit_string[8];
+  // If the whole string is parsed, chars_parsed points to the terminating null byte after the last character
+  if (sscanf((yyvsp[0].sval), "%d %7s%n", &duration, unit_string, &chars_parsed) != 2 || (yyvsp[0].sval)[chars_parsed] != 0) {
+    free((yyvsp[0].sval));
+    yyerror(&yyloc, result, scanner, "Found incorrect interval format. Expected format: INTEGER INTERVAL_QUALIIFIER");
+    YYERROR;
+  }
+  free((yyvsp[0].sval));
 
-      DatetimeField unit;
-      if (strcasecmp(unit_string, "second") == 0 || strcasecmp(unit_string, "seconds") == 0) {
-        unit = kDatetimeSecond;
-      } else if (strcasecmp(unit_string, "minute") == 0 || strcasecmp(unit_string, "minutes") == 0) {
-        unit = kDatetimeMinute;
-      } else if (strcasecmp(unit_string, "hour") == 0 || strcasecmp(unit_string, "hours") == 0) {
-        unit = kDatetimeHour;
-      } else if (strcasecmp(unit_string, "day") == 0 || strcasecmp(unit_string, "days") == 0) {
-        unit = kDatetimeDay;
-      } else if (strcasecmp(unit_string, "month") == 0 || strcasecmp(unit_string, "months") == 0) {
-        unit = kDatetimeMonth;
-      } else if (strcasecmp(unit_string, "year") == 0 || strcasecmp(unit_string, "years") == 0) {
-        unit = kDatetimeYear;
-      } else {
-        yyerror(&yyloc, result, scanner, "Interval qualifier is unknown.");
-        YYERROR;
-      }
-      (yyval.expr) = Expr::makeIntervalLiteral(duration, unit);
-    }
-#line 4617 "bison_parser.cpp" /* yacc.c:1646  */
+  DatetimeField unit;
+  if (strcasecmp(unit_string, "second") == 0 || strcasecmp(unit_string, "seconds") == 0) {
+    unit = kDatetimeSecond;
+  } else if (strcasecmp(unit_string, "minute") == 0 || strcasecmp(unit_string, "minutes") == 0) {
+    unit = kDatetimeMinute;
+  } else if (strcasecmp(unit_string, "hour") == 0 || strcasecmp(unit_string, "hours") == 0) {
+    unit = kDatetimeHour;
+  } else if (strcasecmp(unit_string, "day") == 0 || strcasecmp(unit_string, "days") == 0) {
+    unit = kDatetimeDay;
+  } else if (strcasecmp(unit_string, "month") == 0 || strcasecmp(unit_string, "months") == 0) {
+    unit = kDatetimeMonth;
+  } else if (strcasecmp(unit_string, "year") == 0 || strcasecmp(unit_string, "years") == 0) {
+    unit = kDatetimeYear;
+  } else {
+    yyerror(&yyloc, result, scanner, "Interval qualifier is unknown.");
+    YYERROR;
+  }
+  (yyval.expr) = Expr::makeIntervalLiteral(duration, unit);
+}
+#line 4646 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 256:
-#line 1242 "bison_parser.y" /* yacc.c:1646  */
+#line 1044 "bison_parser.y" /* yacc.c:1646  */
     {
-      (yyval.expr) = Expr::makeParameter(yylloc.total_column);
-      (yyval.expr)->ival2 = yyloc.param_list.size();
-      yyloc.param_list.push_back((yyval.expr));
-    }
-#line 4627 "bison_parser.cpp" /* yacc.c:1646  */
+  (yyval.expr) = Expr::makeParameter(yylloc.total_column);
+  (yyval.expr)->ival2 = yyloc.param_list.size();
+  yyloc.param_list.push_back((yyval.expr));
+}
+#line 4656 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 258:
-#line 1255 "bison_parser.y" /* yacc.c:1646  */
+#line 1053 "bison_parser.y" /* yacc.c:1646  */
     {
-      (yyvsp[-2].table_vec)->push_back((yyvsp[0].table));
-      auto tbl = new TableRef(kTableCrossProduct);
-      tbl->list = (yyvsp[-2].table_vec);
-      (yyval.table) = tbl;
-    }
-#line 4638 "bison_parser.cpp" /* yacc.c:1646  */
+  (yyvsp[-2].table_vec)->push_back((yyvsp[0].table));
+  auto tbl = new TableRef(kTableCrossProduct);
+  tbl->list = (yyvsp[-2].table_vec);
+  (yyval.table) = tbl;
+}
+#line 4667 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 262:
-#line 1271 "bison_parser.y" /* yacc.c:1646  */
+#line 1062 "bison_parser.y" /* yacc.c:1646  */
     {
-      auto tbl = new TableRef(kTableSelect);
-      tbl->select = (yyvsp[-2].select_stmt);
-      tbl->alias = (yyvsp[0].alias_t);
-      (yyval.table) = tbl;
-    }
-#line 4649 "bison_parser.cpp" /* yacc.c:1646  */
+  auto tbl = new TableRef(kTableSelect);
+  tbl->select = (yyvsp[-2].select_stmt);
+  tbl->alias = (yyvsp[0].alias_t);
+  (yyval.table) = tbl;
+}
+#line 4678 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 263:
-#line 1280 "bison_parser.y" /* yacc.c:1646  */
-    { (yyval.table_vec) = new std::vector<TableRef*>(); (yyval.table_vec)->push_back((yyvsp[0].table)); }
-#line 4655 "bison_parser.cpp" /* yacc.c:1646  */
+#line 1069 "bison_parser.y" /* yacc.c:1646  */
+    {
+  (yyval.table_vec) = new std::vector<TableRef*>();
+  (yyval.table_vec)->push_back((yyvsp[0].table));
+}
+#line 4687 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 264:
-#line 1281 "bison_parser.y" /* yacc.c:1646  */
-    { (yyvsp[-2].table_vec)->push_back((yyvsp[0].table)); (yyval.table_vec) = (yyvsp[-2].table_vec); }
-#line 4661 "bison_parser.cpp" /* yacc.c:1646  */
+#line 1073 "bison_parser.y" /* yacc.c:1646  */
+    {
+  (yyvsp[-2].table_vec)->push_back((yyvsp[0].table));
+  (yyval.table_vec) = (yyvsp[-2].table_vec);
+}
+#line 4696 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 265:
-#line 1286 "bison_parser.y" /* yacc.c:1646  */
+#line 1078 "bison_parser.y" /* yacc.c:1646  */
     {
-      auto tbl = new TableRef(kTableName);
-      tbl->schema = (yyvsp[-1].table_name).schema;
-      tbl->name = (yyvsp[-1].table_name).name;
-      tbl->alias = (yyvsp[0].alias_t);
-      (yyval.table) = tbl;
-    }
-#line 4673 "bison_parser.cpp" /* yacc.c:1646  */
+  auto tbl = new TableRef(kTableName);
+  tbl->schema = (yyvsp[-1].table_name).schema;
+  tbl->name = (yyvsp[-1].table_name).name;
+  tbl->alias = (yyvsp[0].alias_t);
+  (yyval.table) = tbl;
+}
+#line 4708 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 266:
-#line 1297 "bison_parser.y" /* yacc.c:1646  */
+#line 1086 "bison_parser.y" /* yacc.c:1646  */
     {
-      (yyval.table) = new TableRef(kTableName);
-      (yyval.table)->schema = (yyvsp[0].table_name).schema;
-      (yyval.table)->name = (yyvsp[0].table_name).name;
-    }
-#line 4683 "bison_parser.cpp" /* yacc.c:1646  */
+  (yyval.table) = new TableRef(kTableName);
+  (yyval.table)->schema = (yyvsp[0].table_name).schema;
+  (yyval.table)->name = (yyvsp[0].table_name).name;
+}
+#line 4718 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 267:
-#line 1306 "bison_parser.y" /* yacc.c:1646  */
-    { (yyval.table_name).schema = nullptr; (yyval.table_name).name = (yyvsp[0].sval);}
-#line 4689 "bison_parser.cpp" /* yacc.c:1646  */
+#line 1092 "bison_parser.y" /* yacc.c:1646  */
+    {
+  (yyval.table_name).schema = nullptr;
+  (yyval.table_name).name = (yyvsp[0].sval);
+}
+#line 4727 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 268:
-#line 1307 "bison_parser.y" /* yacc.c:1646  */
-    { (yyval.table_name).schema = (yyvsp[-2].sval); (yyval.table_name).name = (yyvsp[0].sval); }
-#line 4695 "bison_parser.cpp" /* yacc.c:1646  */
+#line 1096 "bison_parser.y" /* yacc.c:1646  */
+    {
+  (yyval.table_name).schema = (yyvsp[-2].sval);
+  (yyval.table_name).name = (yyvsp[0].sval);
+}
+#line 4736 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 269:
-#line 1311 "bison_parser.y" /* yacc.c:1646  */
-    { (yyval.sval) = (yyvsp[0].sval);}
-#line 4701 "bison_parser.cpp" /* yacc.c:1646  */
+#line 1101 "bison_parser.y" /* yacc.c:1646  */
+    { (yyval.sval) = (yyvsp[0].sval); }
+#line 4742 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 270:
-#line 1312 "bison_parser.y" /* yacc.c:1646  */
-    { (yyval.sval) = nullptr;}
-#line 4707 "bison_parser.cpp" /* yacc.c:1646  */
+#line 1102 "bison_parser.y" /* yacc.c:1646  */
+    { (yyval.sval) = nullptr; }
+#line 4748 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 272:
-#line 1317 "bison_parser.y" /* yacc.c:1646  */
+#line 1104 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.alias_t) = new Alias((yyvsp[-3].sval), (yyvsp[-1].str_vec)); }
-#line 4713 "bison_parser.cpp" /* yacc.c:1646  */
+#line 4754 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 274:
-#line 1323 "bison_parser.y" /* yacc.c:1646  */
+#line 1106 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.alias_t) = nullptr; }
-#line 4719 "bison_parser.cpp" /* yacc.c:1646  */
+#line 4760 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 275:
-#line 1328 "bison_parser.y" /* yacc.c:1646  */
+#line 1108 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.alias_t) = new Alias((yyvsp[0].sval)); }
-#line 4725 "bison_parser.cpp" /* yacc.c:1646  */
+#line 4766 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 276:
-#line 1329 "bison_parser.y" /* yacc.c:1646  */
+#line 1109 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.alias_t) = new Alias((yyvsp[0].sval)); }
-#line 4731 "bison_parser.cpp" /* yacc.c:1646  */
+#line 4772 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 278:
-#line 1335 "bison_parser.y" /* yacc.c:1646  */
+#line 1111 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.alias_t) = nullptr; }
-#line 4737 "bison_parser.cpp" /* yacc.c:1646  */
+#line 4778 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 280:
-#line 1345 "bison_parser.y" /* yacc.c:1646  */
+#line 1117 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.with_description_vec) = nullptr; }
-#line 4743 "bison_parser.cpp" /* yacc.c:1646  */
+#line 4784 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 281:
-#line 1349 "bison_parser.y" /* yacc.c:1646  */
+#line 1119 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.with_description_vec) = (yyvsp[0].with_description_vec); }
-#line 4749 "bison_parser.cpp" /* yacc.c:1646  */
+#line 4790 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 282:
-#line 1353 "bison_parser.y" /* yacc.c:1646  */
+#line 1121 "bison_parser.y" /* yacc.c:1646  */
     {
-      (yyval.with_description_vec) = new std::vector<WithDescription*>();
-      (yyval.with_description_vec)->push_back((yyvsp[0].with_description_t));
-    }
-#line 4758 "bison_parser.cpp" /* yacc.c:1646  */
+  (yyval.with_description_vec) = new std::vector<WithDescription*>();
+  (yyval.with_description_vec)->push_back((yyvsp[0].with_description_t));
+}
+#line 4799 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 283:
-#line 1357 "bison_parser.y" /* yacc.c:1646  */
+#line 1125 "bison_parser.y" /* yacc.c:1646  */
     {
-      (yyvsp[-2].with_description_vec)->push_back((yyvsp[0].with_description_t));
-                        (yyval.with_description_vec) = (yyvsp[-2].with_description_vec);
-    }
-#line 4767 "bison_parser.cpp" /* yacc.c:1646  */
+  (yyvsp[-2].with_description_vec)->push_back((yyvsp[0].with_description_t));
+  (yyval.with_description_vec) = (yyvsp[-2].with_description_vec);
+}
+#line 4808 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 284:
-#line 1364 "bison_parser.y" /* yacc.c:1646  */
+#line 1130 "bison_parser.y" /* yacc.c:1646  */
     {
-      (yyval.with_description_t) = new WithDescription();
-      (yyval.with_description_t)->alias = (yyvsp[-2].sval);
-      (yyval.with_description_t)->select = (yyvsp[0].select_stmt);
-    }
-#line 4777 "bison_parser.cpp" /* yacc.c:1646  */
+  (yyval.with_description_t) = new WithDescription();
+  (yyval.with_description_t)->alias = (yyvsp[-2].sval);
+  (yyval.with_description_t)->select = (yyvsp[0].select_stmt);
+}
+#line 4818 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 285:
-#line 1378 "bison_parser.y" /* yacc.c:1646  */
+#line 1140 "bison_parser.y" /* yacc.c:1646  */
     {
-      (yyval.table) = new TableRef(kTableJoin);
-      (yyval.table)->join = new JoinDefinition();
-      (yyval.table)->join->type = kJoinNatural;
-      (yyval.table)->join->left = (yyvsp[-3].table);
-      (yyval.table)->join->right = (yyvsp[0].table);
-    }
-#line 4789 "bison_parser.cpp" /* yacc.c:1646  */
+  (yyval.table) = new TableRef(kTableJoin);
+  (yyval.table)->join = new JoinDefinition();
+  (yyval.table)->join->type = kJoinNatural;
+  (yyval.table)->join->left = (yyvsp[-3].table);
+  (yyval.table)->join->right = (yyvsp[0].table);
+}
+#line 4830 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 286:
-#line 1386 "bison_parser.y" /* yacc.c:1646  */
+#line 1147 "bison_parser.y" /* yacc.c:1646  */
     {
-      (yyval.table) = new TableRef(kTableJoin);
-      (yyval.table)->join = new JoinDefinition();
-      (yyval.table)->join->type = (JoinType) (yyvsp[-4].join_type);
-      (yyval.table)->join->left = (yyvsp[-5].table);
-      (yyval.table)->join->right = (yyvsp[-2].table);
-      (yyval.table)->join->condition = (yyvsp[0].expr);
-    }
-#line 4802 "bison_parser.cpp" /* yacc.c:1646  */
+  (yyval.table) = new TableRef(kTableJoin);
+  (yyval.table)->join = new JoinDefinition();
+  (yyval.table)->join->type = (JoinType)(yyvsp[-4].join_type);
+  (yyval.table)->join->left = (yyvsp[-5].table);
+  (yyval.table)->join->right = (yyvsp[-2].table);
+  (yyval.table)->join->condition = (yyvsp[0].expr);
+}
+#line 4843 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 287:
-#line 1396 "bison_parser.y" /* yacc.c:1646  */
+#line 1155 "bison_parser.y" /* yacc.c:1646  */
     {
-      (yyval.table) = new TableRef(kTableJoin);
-      (yyval.table)->join = new JoinDefinition();
-      (yyval.table)->join->type = (JoinType) (yyvsp[-6].join_type);
-      (yyval.table)->join->left = (yyvsp[-7].table);
-      (yyval.table)->join->right = (yyvsp[-4].table);
-      auto left_col = Expr::makeColumnRef(strdup((yyvsp[-1].expr)->name));
-      if ((yyvsp[-1].expr)->alias != nullptr) left_col->alias = strdup((yyvsp[-1].expr)->alias);
-      if ((yyvsp[-7].table)->getName() != nullptr) left_col->table = strdup((yyvsp[-7].table)->getName());
-      auto right_col = Expr::makeColumnRef(strdup((yyvsp[-1].expr)->name));
-      if ((yyvsp[-1].expr)->alias != nullptr) right_col->alias = strdup((yyvsp[-1].expr)->alias);
-      if ((yyvsp[-4].table)->getName() != nullptr) right_col->table = strdup((yyvsp[-4].table)->getName());
-      (yyval.table)->join->condition = Expr::makeOpBinary(left_col, kOpEquals, right_col);
-      delete (yyvsp[-1].expr);
-    }
-#line 4822 "bison_parser.cpp" /* yacc.c:1646  */
+  (yyval.table) = new TableRef(kTableJoin);
+  (yyval.table)->join = new JoinDefinition();
+  (yyval.table)->join->type = (JoinType)(yyvsp[-6].join_type);
+  (yyval.table)->join->left = (yyvsp[-7].table);
+  (yyval.table)->join->right = (yyvsp[-4].table);
+  auto left_col = Expr::makeColumnRef(strdup((yyvsp[-1].expr)->name));
+  if ((yyvsp[-1].expr)->alias != nullptr) left_col->alias = strdup((yyvsp[-1].expr)->alias);
+  if ((yyvsp[-7].table)->getName() != nullptr) left_col->table = strdup((yyvsp[-7].table)->getName());
+  auto right_col = Expr::makeColumnRef(strdup((yyvsp[-1].expr)->name));
+  if ((yyvsp[-1].expr)->alias != nullptr) right_col->alias = strdup((yyvsp[-1].expr)->alias);
+  if ((yyvsp[-4].table)->getName() != nullptr) right_col->table = strdup((yyvsp[-4].table)->getName());
+  (yyval.table)->join->condition = Expr::makeOpBinary(left_col, kOpEquals, right_col);
+  delete (yyvsp[-1].expr);
+}
+#line 4863 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 288:
-#line 1414 "bison_parser.y" /* yacc.c:1646  */
+#line 1171 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.join_type) = kJoinInner; }
-#line 4828 "bison_parser.cpp" /* yacc.c:1646  */
+#line 4869 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 289:
-#line 1415 "bison_parser.y" /* yacc.c:1646  */
+#line 1172 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.join_type) = kJoinLeft; }
-#line 4834 "bison_parser.cpp" /* yacc.c:1646  */
+#line 4875 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 290:
-#line 1416 "bison_parser.y" /* yacc.c:1646  */
+#line 1173 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.join_type) = kJoinLeft; }
-#line 4840 "bison_parser.cpp" /* yacc.c:1646  */
+#line 4881 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 291:
-#line 1417 "bison_parser.y" /* yacc.c:1646  */
+#line 1174 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.join_type) = kJoinRight; }
-#line 4846 "bison_parser.cpp" /* yacc.c:1646  */
+#line 4887 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 292:
-#line 1418 "bison_parser.y" /* yacc.c:1646  */
+#line 1175 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.join_type) = kJoinRight; }
-#line 4852 "bison_parser.cpp" /* yacc.c:1646  */
+#line 4893 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 293:
-#line 1419 "bison_parser.y" /* yacc.c:1646  */
+#line 1176 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.join_type) = kJoinFull; }
-#line 4858 "bison_parser.cpp" /* yacc.c:1646  */
+#line 4899 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 294:
-#line 1420 "bison_parser.y" /* yacc.c:1646  */
+#line 1177 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.join_type) = kJoinFull; }
-#line 4864 "bison_parser.cpp" /* yacc.c:1646  */
+#line 4905 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 295:
-#line 1421 "bison_parser.y" /* yacc.c:1646  */
+#line 1178 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.join_type) = kJoinFull; }
-#line 4870 "bison_parser.cpp" /* yacc.c:1646  */
+#line 4911 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 296:
-#line 1422 "bison_parser.y" /* yacc.c:1646  */
+#line 1179 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.join_type) = kJoinCross; }
-#line 4876 "bison_parser.cpp" /* yacc.c:1646  */
+#line 4917 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 297:
-#line 1423 "bison_parser.y" /* yacc.c:1646  */
+#line 1180 "bison_parser.y" /* yacc.c:1646  */
     { (yyval.join_type) = kJoinInner; }
-#line 4882 "bison_parser.cpp" /* yacc.c:1646  */
+#line 4923 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 301:
-#line 1443 "bison_parser.y" /* yacc.c:1646  */
-    { (yyval.str_vec) = new std::vector<char*>(); (yyval.str_vec)->push_back((yyvsp[0].sval)); }
-#line 4888 "bison_parser.cpp" /* yacc.c:1646  */
+#line 1191 "bison_parser.y" /* yacc.c:1646  */
+    {
+  (yyval.str_vec) = new std::vector<char*>();
+  (yyval.str_vec)->push_back((yyvsp[0].sval));
+}
+#line 4932 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
   case 302:
-#line 1444 "bison_parser.y" /* yacc.c:1646  */
-    { (yyvsp[-2].str_vec)->push_back((yyvsp[0].sval)); (yyval.str_vec) = (yyvsp[-2].str_vec); }
-#line 4894 "bison_parser.cpp" /* yacc.c:1646  */
+#line 1195 "bison_parser.y" /* yacc.c:1646  */
+    {
+  (yyvsp[-2].str_vec)->push_back((yyvsp[0].sval));
+  (yyval.str_vec) = (yyvsp[-2].str_vec);
+}
+#line 4941 "bison_parser.cpp" /* yacc.c:1646  */
     break;
 
 
-#line 4898 "bison_parser.cpp" /* yacc.c:1646  */
+#line 4945 "bison_parser.cpp" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -5129,11 +5176,11 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 1448 "bison_parser.y" /* yacc.c:1906  */
+#line 1201 "bison_parser.y" /* yacc.c:1906  */
 
-// clang-format on
-/*********************************
+    // clang-format on
+    /*********************************
  ** Section 4: Additional C code
  *********************************/
 
-/* empty */
+    /* empty */
