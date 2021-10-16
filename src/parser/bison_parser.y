@@ -90,12 +90,11 @@
 
 // Define additional parameters for yyparse
 %parse-param { hsql::SQLParserResult* result }
-%parse-param { yyscan_t scanner }  // clang-format on
+%parse-param { yyscan_t scanner }
 
-        /*********************************
+/*********************************
  ** Define all data-types (http://www.gnu.org/software/bison/manual/html_node/Union-Decl.html)
  *********************************/
-        // clang-format off
 %union {
   // clang-format on
   bool bval;
