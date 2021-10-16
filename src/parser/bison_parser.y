@@ -1,4 +1,6 @@
+// clang-format off
 %{
+// clang-format on
 /**
  * bison_parser.y
  * defines bison_parser.h
@@ -24,15 +26,18 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 	result->setErrorDetails(strdup(msg), llocp->first_line, llocp->first_column);
 	return 0;
 }
-
+// clang-format off
 %}
+// clang-format on
 /*********************************
  ** Section 2: Bison Parser Declarations
  *********************************/
 
 
 // Specify code that is included in the generated .h and .c files
+// clang-format off
 %code requires {
+// clang-format on
 // %code requires block
 
 #include "../sql/statements.h"
@@ -61,6 +66,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 // %defines "bison_parser.h"
 
 // Tell bison to create a reentrant parser
+// clang-format off
 %define api.pure full
 
 // Prefix the parser
@@ -87,12 +93,15 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 // Define additional parameters for yyparse
 %parse-param { hsql::SQLParserResult* result }
 %parse-param { yyscan_t scanner }
+// clang-format on
 
 
 /*********************************
  ** Define all data-types (http://www.gnu.org/software/bison/manual/html_node/Union-Decl.html)
  *********************************/
+// clang-format off
 %union {
+// clang-format on
 	bool      bval;
 	char*     sval;
 	double    fval;
@@ -114,7 +123,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 	hsql::SQLStatement*         statement;
 	hsql::TransactionStatement* transaction_stmt;
 	hsql::UpdateStatement* 	    update_stmt;
-    
+
 	hsql::Alias*              alias_t;
 	hsql::AlterAction*        alter_action_t;
 	hsql::ColumnDefinition*   column_t;
@@ -153,6 +162,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 /*********************************
  ** Destructor symbols
  *********************************/
+// clang-format off
 %destructor { } <fval> <ival> <bval> <join_type> <order_type> <datetime_field> <column_type_t> <column_constraint_t> <import_type_t> <column_specification_t> <column_constraint_vec>
 %destructor { free( ($$.name) ); free( ($$.schema) ); } <table_name>
 %destructor { free( ($$) ); } <sval>
@@ -281,6 +291,7 @@ int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const cha
 %left		'.'
 %left   JOIN
 %%
+// clang-format on
 /*********************************
  ** Section 3: Grammar Definition
  *********************************/
@@ -1433,7 +1444,9 @@ ident_commalist:
 	|	ident_commalist ',' IDENTIFIER { $1->push_back($3); $$ = $1; }
 	;
 
+// clang-format off
 %%
+// clang-format on
 /*********************************
  ** Section 4: Additional C code
  *********************************/

@@ -8,7 +8,9 @@
 /***************************
  ** Section 1: Definitions
  ***************************/
+// clang-format off
 %{
+// clang-format on
 
 #include "../sql/Expr.h"
 #include "bison_parser.h"
@@ -20,6 +22,7 @@
 
 static thread_local std::stringstream strbuf;
 
+// clang-format off
 %}
 %x singlequotedstring
 
@@ -55,6 +58,7 @@ static thread_local std::stringstream strbuf;
  ** Section 3: Rules
  ***************************/
 %%
+// clang-format on
 
 --              BEGIN(COMMENT);
 <COMMENT>[^\n]* /* skipping comment content until a end of line is read */;
@@ -227,8 +231,8 @@ INTERVAL    TOKEN(INTERVAL)
 	return SQL_FLOATVAL;
 }
 
-	/* 
-	 * Regularly, negative literals are treated as <unary minus> <positive literal>. This does not work for LLONG_MIN, as it has no 
+	/*
+	 * Regularly, negative literals are treated as <unary minus> <positive literal>. This does not work for LLONG_MIN, as it has no
 	 * positive equivalent. We thus match for LLONG_MIN specifically. This is not an issue for floats, where
 	 *   numeric_limits<double>::lowest() == -numeric_limits<double>::max();
 	 */
@@ -266,8 +270,9 @@ INTERVAL    TOKEN(INTERVAL)
 
 . { fprintf(stderr, "[SQL-Lexer-Error] Unknown Character: %c\n", yytext[0]); return 0; }
 
-
+// clang-format off
 %%
+// clang-format on
 /***************************
  ** Section 3: User code
  ***************************/
