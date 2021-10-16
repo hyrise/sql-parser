@@ -8,9 +8,7 @@
 /***************************
  ** Section 1: Definitions
  ***************************/
-/* clang-format off */
 %{
-/* clang-format on */
 
 #include "../sql/Expr.h"
 #include "bison_parser.h"
@@ -22,7 +20,6 @@
 
 static thread_local std::stringstream strbuf;
 
-/* clang-format off */
 %}
 %x singlequotedstring
 
@@ -53,7 +50,6 @@ static thread_local std::stringstream strbuf;
 
 
 %s COMMENT
-/* clang-format on */
 
 /***************************
  ** Section 3: Rules
