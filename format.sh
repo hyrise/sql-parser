@@ -8,7 +8,7 @@ elif [[ "$unamestr" == 'Linux' ]]; then
 	format_cmd="clang-format -i -style=file '{}'"
 fi
 
-source_regex="^(src|test).*\.(cpp|h|y|l)"
+source_regex="^(src|test).*\.(cpp|h|y)"
 
 if [ "${1}" = "all" ]; then
     find src test | grep -E "$source_regex" | xargs -I{} sh -c "${format_cmd}"
