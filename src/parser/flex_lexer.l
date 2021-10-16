@@ -8,9 +8,9 @@
 /***************************
  ** Section 1: Definitions
  ***************************/
-// clang-format off
+/* clang-format off */
 %{
-// clang-format on
+/* clang-format on */
 
 #include "../sql/Expr.h"
 #include "bison_parser.h"
@@ -22,7 +22,7 @@
 
 static thread_local std::stringstream strbuf;
 
-// clang-format off
+/* clang-format off */
 %}
 %x singlequotedstring
 
@@ -53,12 +53,12 @@ static thread_local std::stringstream strbuf;
 
 
 %s COMMENT
+/* clang-format on */
 
 /***************************
  ** Section 3: Rules
  ***************************/
 %%
-// clang-format on
 
 --              BEGIN(COMMENT);
 <COMMENT>[^\n]* /* skipping comment content until a end of line is read */;
@@ -270,9 +270,7 @@ INTERVAL    TOKEN(INTERVAL)
 
 . { fprintf(stderr, "[SQL-Lexer-Error] Unknown Character: %c\n", yytext[0]); return 0; }
 
-// clang-format off
 %%
-// clang-format on
 /***************************
  ** Section 3: User code
  ***************************/
