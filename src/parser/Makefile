@@ -20,7 +20,7 @@ bison_parser.cpp: bison_parser.y
 	$(BISON) bison_parser.y --output=bison_parser.cpp --defines=bison_parser.h --verbose
 
 flex_lexer.cpp: flex_lexer.l
-	$(FLEX) flex_lexer.l
+	! $(FLEX) flex_lexer.l 2>&1 | grep "warning"
 
 clean:
 	rm -f bison_parser.cpp flex_lexer.cpp bison_parser.h flex_lexer.h *.output
