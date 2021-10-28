@@ -39,8 +39,8 @@
   // clang-format on
   // %code requires block
 
-#include "../sql/statements.h"
 #include "../SQLParserResult.h"
+#include "../sql/statements.h"
 #include "parser_typedef.h"
 
 // Auto update column and line number
