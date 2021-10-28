@@ -6,36 +6,35 @@
 // Note: Implementations of constructors and destructors can be found in statements.cpp.
 namespace hsql {
 
-  enum ActionType {
-    DropColumn,
-  };
+enum ActionType {
+  DropColumn,
+};
 
-  struct AlterAction {
-    AlterAction(ActionType type);
-    ActionType type;
-    virtual ~AlterAction();
-  };
+struct AlterAction {
+  AlterAction(ActionType type);
+  ActionType type;
+  virtual ~AlterAction();
+};
 
-  struct DropColumnAction : AlterAction {
-    DropColumnAction(char* column_name);
-    char* columnName;
-    bool ifExists;
+struct DropColumnAction : AlterAction {
+  DropColumnAction(char* column_name);
+  char* columnName;
+  bool ifExists;
 
-    ~DropColumnAction() override;
-  };
+  ~DropColumnAction() override;
+};
 
-  // Represents SQL Alter Table statements.
-  // Example "ALTER TABLE students DROP COLUMN name;"
-  struct AlterStatement : SQLStatement {
+// Represents SQL Alter Table statements.
+// Example "ALTER TABLE students DROP COLUMN name;"
+struct AlterStatement : SQLStatement {
+  AlterStatement(char* name, AlterAction* action);
+  ~AlterStatement() override;
 
-    AlterStatement(char* name, AlterAction* action);
-    ~AlterStatement() override;
-
-    char* schema;
-    bool ifTableExists;
-    char* name;
-    AlterAction* action;
-  };
-} // namespace hsql
+  char* schema;
+  bool ifTableExists;
+  char* name;
+  AlterAction* action;
+};
+}  // namespace hsql
 
 #endif

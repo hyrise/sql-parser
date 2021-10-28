@@ -5,44 +5,29 @@
 
 #include "sql_asserts.h"
 
-#include <string>
 #include <fstream>
-#include <streambuf>
 #include <iostream>
+#include <streambuf>
+#include <string>
 
 using namespace hsql;
 
 std::string readFileContents(std::string file_path) {
   std::ifstream t(file_path.c_str());
-  std::string text((std::istreambuf_iterator<char>(t)),
-                   std::istreambuf_iterator<char>());
+  std::string text((std::istreambuf_iterator<char>(t)), std::istreambuf_iterator<char>());
   return text;
 }
 
 TEST(TPCHQueryGrammarTests) {
   std::vector<std::string> files = {
-    "test/queries/tpc-h-01.sql",
-    "test/queries/tpc-h-02.sql",
-    "test/queries/tpc-h-03.sql",
-    "test/queries/tpc-h-04.sql",
-    "test/queries/tpc-h-05.sql",
-    "test/queries/tpc-h-06.sql",
-    "test/queries/tpc-h-07.sql",
-    "test/queries/tpc-h-08.sql",
-    "test/queries/tpc-h-09.sql",
-    "test/queries/tpc-h-10.sql",
-    "test/queries/tpc-h-11.sql",
-    "test/queries/tpc-h-12.sql",
-    "test/queries/tpc-h-13.sql",
-    "test/queries/tpc-h-14.sql",
-    "test/queries/tpc-h-15.sql",
-    "test/queries/tpc-h-16.sql",
-    "test/queries/tpc-h-17.sql",
-    "test/queries/tpc-h-18.sql",
-    "test/queries/tpc-h-19.sql",
-    "test/queries/tpc-h-20.sql",
-    "test/queries/tpc-h-21.sql",
-    "test/queries/tpc-h-22.sql",
+      "test/queries/tpc-h-01.sql", "test/queries/tpc-h-02.sql", "test/queries/tpc-h-03.sql",
+      "test/queries/tpc-h-04.sql", "test/queries/tpc-h-05.sql", "test/queries/tpc-h-06.sql",
+      "test/queries/tpc-h-07.sql", "test/queries/tpc-h-08.sql", "test/queries/tpc-h-09.sql",
+      "test/queries/tpc-h-10.sql", "test/queries/tpc-h-11.sql", "test/queries/tpc-h-12.sql",
+      "test/queries/tpc-h-13.sql", "test/queries/tpc-h-14.sql", "test/queries/tpc-h-15.sql",
+      "test/queries/tpc-h-16.sql", "test/queries/tpc-h-17.sql", "test/queries/tpc-h-18.sql",
+      "test/queries/tpc-h-19.sql", "test/queries/tpc-h-20.sql", "test/queries/tpc-h-21.sql",
+      "test/queries/tpc-h-22.sql",
   };
 
   int testsFailed = 0;
@@ -57,7 +42,8 @@ TEST(TPCHQueryGrammarTests) {
     SQLParser::parse(query.c_str(), &result);
     if (!result.isValid()) {
       mt::printFailed(file_path.c_str());
-      printf("%s           %s (L%d:%d)%s\n", mt::red(), result.errorMsg(), result.errorLine(), result.errorColumn(), mt::def());
+      printf("%s           %s (L%d:%d)%s\n", mt::red(), result.errorMsg(), result.errorLine(), result.errorColumn(),
+             mt::def());
       ++testsFailed;
     } else {
       mt::printOk(file_path.c_str());
@@ -68,7 +54,8 @@ TEST(TPCHQueryGrammarTests) {
   SQLParser::parse(concatenated.c_str(), &result);
   if (!result.isValid()) {
     mt::printFailed("TPCHAllConcatenated");
-    printf("%s           %s (L%d:%d)%s\n", mt::red(), result.errorMsg(), result.errorLine(), result.errorColumn(), mt::def());
+    printf("%s           %s (L%d:%d)%s\n", mt::red(), result.errorMsg(), result.errorLine(), result.errorColumn(),
+           mt::def());
     ++testsFailed;
   } else {
     mt::printOk("TPCHAllConcatenated");
@@ -88,7 +75,7 @@ TEST(TPCHQueryDetailTest) {
   const SQLStatement* stmt20 = result.getStatement(0);
   ASSERT_EQ(stmt20->type(), kStmtSelect);
 
-  const SelectStatement* select20 = (const SelectStatement*) stmt20;
+  const SelectStatement* select20 = (const SelectStatement*)stmt20;
   ASSERT_EQ(select20->selectList->size(), 2);
   ASSERT_STREQ(select20->selectList->at(0)->getName(), "S_NAME");
   ASSERT_STREQ(select20->selectList->at(1)->getName(), "S_ADDRESS");

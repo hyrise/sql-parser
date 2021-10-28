@@ -221,40 +221,40 @@ INTERVAL    TOKEN(INTERVAL)
 [-+*/(){},.;<>=^%:?[\]|]    { return yytext[0]; }
 
 [0-9]+"."[0-9]* |
-"."[0-9]*	{
-	yylval->fval = atof(yytext);
-	return SQL_FLOATVAL;
+"."[0-9]*  {
+  yylval->fval = atof(yytext);
+  return SQL_FLOATVAL;
 }
 
-	/* 
-	 * Regularly, negative literals are treated as <unary minus> <positive literal>. This does not work for LLONG_MIN, as it has no 
-	 * positive equivalent. We thus match for LLONG_MIN specifically. This is not an issue for floats, where
-	 *   numeric_limits<double>::lowest() == -numeric_limits<double>::max();
-	 */
+  /*
+   * Regularly, negative literals are treated as <unary minus> <positive literal>. This does not work for LLONG_MIN, as it has no
+   * positive equivalent. We thus match for LLONG_MIN specifically. This is not an issue for floats, where
+   *   numeric_limits<double>::lowest() == -numeric_limits<double>::max();
+   */
 -9223372036854775808 {
-	yylval->ival = LLONG_MIN;
-	return SQL_INTVAL;
+  yylval->ival = LLONG_MIN;
+  return SQL_INTVAL;
 }
 
 [0-9]+ {
-	errno = 0;
-	yylval->ival = strtoll(yytext, nullptr, 0);
-	if (errno) {
-		return fprintf(stderr, "[SQL-Lexer-Error] Integer cannot be parsed - is it out of range?");
-		return 0;
-	}
-	return SQL_INTVAL;
+  errno = 0;
+  yylval->ival = strtoll(yytext, nullptr, 0);
+  if (errno) {
+    return fprintf(stderr, "[SQL-Lexer-Error] Integer cannot be parsed - is it out of range?");
+    return 0;
+  }
+  return SQL_INTVAL;
 }
 
 \"[^\"\n]+\" {
-	// Crop the leading and trailing quote char
-	yylval->sval = hsql::substr(yytext, 1, strlen(yytext)-1);
-	return SQL_IDENTIFIER;
+  // Crop the leading and trailing quote char
+  yylval->sval = hsql::substr(yytext, 1, strlen(yytext)-1);
+  return SQL_IDENTIFIER;
 }
 
 [A-Za-z][A-Za-z0-9_]* {
-	yylval->sval = strdup(yytext);
-	return SQL_IDENTIFIER;
+  yylval->sval = strdup(yytext);
+  return SQL_IDENTIFIER;
 }
 
 \'                          { BEGIN singlequotedstring; strbuf.clear(); strbuf.str(""); }  // Clear strbuf manually, see #170
@@ -264,7 +264,6 @@ INTERVAL    TOKEN(INTERVAL)
 <singlequotedstring><<EOF>> { fprintf(stderr, "[SQL-Lexer-Error] Unterminated string\n"); return 0; }
 
 . { fprintf(stderr, "[SQL-Lexer-Error] Unknown Character: %c\n", yytext[0]); return 0; }
-
 
 %%
 /***************************

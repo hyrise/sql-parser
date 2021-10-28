@@ -6,48 +6,46 @@
 #include "Expr.h"
 
 namespace hsql {
-  enum StatementType {
-    kStmtError, // unused
-    kStmtSelect,
-    kStmtImport,
-    kStmtInsert,
-    kStmtUpdate,
-    kStmtDelete,
-    kStmtCreate,
-    kStmtDrop,
-    kStmtPrepare,
-    kStmtExecute,
-    kStmtExport,
-    kStmtRename,
-    kStmtAlter,
-    kStmtShow,
-    kStmtTransaction
-  };
+enum StatementType {
+  kStmtError,  // unused
+  kStmtSelect,
+  kStmtImport,
+  kStmtInsert,
+  kStmtUpdate,
+  kStmtDelete,
+  kStmtCreate,
+  kStmtDrop,
+  kStmtPrepare,
+  kStmtExecute,
+  kStmtExport,
+  kStmtRename,
+  kStmtAlter,
+  kStmtShow,
+  kStmtTransaction
+};
 
-  // Base struct for every SQL statement
-  struct SQLStatement {
+// Base struct for every SQL statement
+struct SQLStatement {
+  SQLStatement(StatementType type);
 
-    SQLStatement(StatementType type);
+  virtual ~SQLStatement();
 
-    virtual ~SQLStatement();
+  StatementType type() const;
 
-    StatementType type() const;
+  bool isType(StatementType type) const;
 
-    bool isType(StatementType type) const;
+  // Shorthand for isType(type).
+  bool is(StatementType type) const;
 
-    // Shorthand for isType(type).
-    bool is(StatementType type) const;
+  // Length of the string in the SQL query string
+  size_t stringLength;
 
-    // Length of the string in the SQL query string
-    size_t stringLength;
+  std::vector<Expr*>* hints;
 
-    std::vector<Expr*>* hints;
+ private:
+  StatementType type_;
+};
 
-   private:
-    StatementType type_;
+}  // namespace hsql
 
-  };
-
-} // namespace hsql
-
-#endif // SQLPARSER_SQLSTATEMENT_H
+#endif  // SQLPARSER_SQLSTATEMENT_H

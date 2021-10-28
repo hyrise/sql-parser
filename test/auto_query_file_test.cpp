@@ -1,12 +1,12 @@
 #include <stdio.h>
-#include <string>
 #include <chrono>
 #include <fstream>
 #include <sstream>
+#include <string>
 #include <vector>
 
-#include "thirdparty/microtest/microtest.h"
 #include "SQLParser.h"
+#include "thirdparty/microtest/microtest.h"
 
 // Read all lines from the given file path. Skips comment lines.
 std::vector<std::string> readlines(std::string path);
@@ -26,7 +26,6 @@ TEST(AutoQueryFileTest) {
       query_files.push_back(args[++i]);
     }
   }
-
 
   // Read list of queries from all input files.
   std::vector<std::string> lines;
@@ -74,7 +73,8 @@ TEST(AutoQueryFileTest) {
   if (num_failed == 0) {
     printf("\033[0;32m{      ok} \033[0mAll %lu grammar tests completed successfully!\n", num_executed);
   } else {
-    fprintf(stderr, "\033[0;31m{  failed} \033[0mSome grammar tests failed! %lu out of %lu tests failed!\n", num_failed, num_executed);
+    fprintf(stderr, "\033[0;31m{  failed} \033[0mSome grammar tests failed! %lu out of %lu tests failed!\n", num_failed,
+            num_executed);
   }
   ASSERT_EQ(num_failed, 0);
 }
@@ -87,8 +87,7 @@ std::vector<std::string> readlines(std::string path) {
     std::istringstream iss(line);
 
     // Skip comments.
-    if (line[0] == '#' ||
-        (line[0] == '-' && line[1] == '-')) {
+    if (line[0] == '#' || (line[0] == '-' && line[1] == '-')) {
       continue;
     }
 

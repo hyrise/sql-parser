@@ -3,16 +3,13 @@
 
 #include <vector>
 
-
 #ifndef YYtypeDEF_YY_SCANNER_T
 #define YYtypeDEF_YY_SCANNER_T
 typedef void* yyscan_t;
 #endif
 
-
 #define YYSTYPE HSQL_STYPE
 #define YYLTYPE HSQL_LTYPE
-
 
 struct HSQL_CUST_LTYPE {
   int first_line;

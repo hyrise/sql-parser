@@ -5,21 +5,17 @@
 
 namespace hsql {
 
-  // Represents SQL Transaction statements.
-  // Example: BEGIN TRANSACTION;
-  enum TransactionCommand {
-    kBeginTransaction,
-    kCommitTransaction,
-    kRollbackTransaction
-  };
+// Represents SQL Transaction statements.
+// Example: BEGIN TRANSACTION;
+enum TransactionCommand { kBeginTransaction, kCommitTransaction, kRollbackTransaction };
 
-  struct TransactionStatement : SQLStatement {
-    TransactionStatement(TransactionCommand command);
-    ~TransactionStatement() override;
+struct TransactionStatement : SQLStatement {
+  TransactionStatement(TransactionCommand command);
+  ~TransactionStatement() override;
 
-    TransactionCommand command;
-  };
-  
-} // namsepace hsql
+  TransactionCommand command;
+};
+
+}  // namespace hsql
 
 #endif

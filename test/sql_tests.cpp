@@ -11,7 +11,6 @@
 
 using namespace hsql;
 
-
 TEST(DeleteStatementTest) {
   SQLParserResult result;
   SQLParser::parse("DELETE FROM students WHERE grade > 2.0;", &result);
@@ -20,7 +19,7 @@ TEST(DeleteStatementTest) {
   ASSERT_EQ(result.size(), 1);
   ASSERT(result.getStatement(0)->type() == kStmtDelete);
 
-  const DeleteStatement* stmt = (const DeleteStatement*) result.getStatement(0);
+  const DeleteStatement* stmt = (const DeleteStatement*)result.getStatement(0);
   ASSERT_STREQ(stmt->tableName, "students");
   ASSERT_NOTNULL(stmt->expr);
   ASSERT(stmt->expr->isType(kExprOperator));
@@ -30,13 +29,16 @@ TEST(DeleteStatementTest) {
 
 TEST(CreateStatementTest) {
   SQLParserResult result;
-  SQLParser::parse("CREATE TABLE students (name VARCHAR(50), student_number INT, city INTEGER NULL, PRIMARY KEY(name, student_number), grade DOUBLE NOT NULL, comment TEXT UNIQUE PRIMARY KEY NOT NULL)", &result);
+  SQLParser::parse(
+      "CREATE TABLE students (name VARCHAR(50), student_number INT, city INTEGER NULL, PRIMARY KEY(name, "
+      "student_number), grade DOUBLE NOT NULL, comment TEXT UNIQUE PRIMARY KEY NOT NULL)",
+      &result);
 
   ASSERT(result.isValid());
   ASSERT_EQ(result.size(), 1);
   ASSERT_EQ(result.getStatement(0)->type(), kStmtCreate);
 
-  const CreateStatement* stmt = (const CreateStatement*) result.getStatement(0);
+  const CreateStatement* stmt = (const CreateStatement*)result.getStatement(0);
   ASSERT_EQ(stmt->type, kCreateTable);
   ASSERT_STREQ(stmt->tableName, "students");
   ASSERT_NOTNULL(stmt->columns);
@@ -69,7 +71,7 @@ TEST(CreateAsSelectStatementTest) {
   ASSERT_EQ(result.size(), 1);
   ASSERT_EQ(result.getStatement(0)->type(), kStmtCreate);
 
-  const CreateStatement* stmt = (const CreateStatement*) result.getStatement(0);
+  const CreateStatement* stmt = (const CreateStatement*)result.getStatement(0);
   ASSERT_EQ(stmt->type, kCreateTable);
   ASSERT_STREQ(stmt->tableName, "students_2");
   ASSERT_NULL(stmt->columns);
@@ -88,7 +90,7 @@ TEST(UpdateStatementTest) {
   ASSERT_EQ(result.size(), 1);
   ASSERT_EQ(result.getStatement(0)->type(), kStmtUpdate);
 
-  const UpdateStatement* stmt = (const UpdateStatement*) result.getStatement(0);
+  const UpdateStatement* stmt = (const UpdateStatement*)result.getStatement(0);
   ASSERT_NOTNULL(stmt->table);
   ASSERT_STREQ(stmt->table->name, "students");
 
@@ -109,12 +111,8 @@ TEST(UpdateStatementTest) {
 }
 
 TEST(InsertStatementTest) {
-  TEST_PARSE_SINGLE_SQL(
-    "INSERT INTO students VALUES ('Max Mustermann', 12345, 'Musterhausen', 2.0)",
-    kStmtInsert,
-    InsertStatement,
-    result,
-    stmt);
+  TEST_PARSE_SINGLE_SQL("INSERT INTO students VALUES ('Max Mustermann', 12345, 'Musterhausen', 2.0)", kStmtInsert,
+                        InsertStatement, result, stmt);
 
   ASSERT_EQ(stmt->values->size(), 4);
   // TODO
@@ -127,11 +125,11 @@ TEST(AlterStatementDropActionTest) {
   ASSERT(result.isValid());
   ASSERT_EQ(result.size(), 1);
 
-  const AlterStatement* stmt = (const AlterStatement*) result.getStatement(0);
+  const AlterStatement* stmt = (const AlterStatement*)result.getStatement(0);
   ASSERT_STREQ(stmt->name, "mytable");
   ASSERT_EQ(stmt->ifTableExists, false);
 
-  auto dropAction = (const DropColumnAction*) stmt->action;
+  auto dropAction = (const DropColumnAction*)stmt->action;
 
   ASSERT_EQ(dropAction->type, hsql::ActionType::DropColumn);
   ASSERT_STREQ(dropAction->columnName, "mycolumn");
@@ -144,7 +142,7 @@ TEST(CreateIndexStatementTest) {
   ASSERT(result.isValid());
   ASSERT_EQ(result.size(), 1);
 
-  const CreateStatement* stmt = (const CreateStatement*) result.getStatement(0);
+  const CreateStatement* stmt = (const CreateStatement*)result.getStatement(0);
   ASSERT_STREQ(stmt->indexName, "myindex");
   ASSERT_STREQ(stmt->tableName, "myTable");
   ASSERT_EQ(stmt->type, kCreateIndex);
@@ -159,7 +157,7 @@ TEST(CreateIndexStatementIfNotExistsTest) {
   ASSERT(result.isValid());
   ASSERT_EQ(result.size(), 1);
 
-  const CreateStatement* stmt = (const CreateStatement*) result.getStatement(0);
+  const CreateStatement* stmt = (const CreateStatement*)result.getStatement(0);
   ASSERT_STREQ(stmt->indexName, "myindex");
   ASSERT_STREQ(stmt->tableName, "myTable");
   ASSERT_EQ(stmt->type, kCreateIndex);
@@ -174,7 +172,7 @@ TEST(DropIndexTest) {
   ASSERT(result.isValid());
   ASSERT_EQ(result.size(), 1);
 
-  const DropStatement* stmt = (const DropStatement*) result.getStatement(0);
+  const DropStatement* stmt = (const DropStatement*)result.getStatement(0);
   ASSERT_STREQ(stmt->indexName, "myindex");
   ASSERT_EQ(stmt->ifExists, false);
 }
@@ -186,18 +184,13 @@ TEST(DropIndexIfExistsTest) {
   ASSERT(result.isValid());
   ASSERT_EQ(result.size(), 1);
 
-  const DropStatement* stmt = (const DropStatement*) result.getStatement(0);
+  const DropStatement* stmt = (const DropStatement*)result.getStatement(0);
   ASSERT_STREQ(stmt->indexName, "myindex");
   ASSERT_EQ(stmt->ifExists, true);
 }
 
 TEST(DropTableStatementTest) {
-  TEST_PARSE_SINGLE_SQL(
-    "DROP TABLE students",
-    kStmtDrop,
-    DropStatement,
-    result,
-    stmt);
+  TEST_PARSE_SINGLE_SQL("DROP TABLE students", kStmtDrop, DropStatement, result, stmt);
 
   ASSERT_FALSE(stmt->ifExists);
   ASSERT_EQ(stmt->type, kDropTable);
@@ -206,12 +199,7 @@ TEST(DropTableStatementTest) {
 }
 
 TEST(DropTableIfExistsStatementTest) {
-  TEST_PARSE_SINGLE_SQL(
-    "DROP TABLE IF EXISTS students",
-    kStmtDrop,
-    DropStatement,
-    result,
-    stmt);
+  TEST_PARSE_SINGLE_SQL("DROP TABLE IF EXISTS students", kStmtDrop, DropStatement, result, stmt);
 
   ASSERT_TRUE(stmt->ifExists);
   ASSERT_EQ(stmt->type, kDropTable);
@@ -220,12 +208,7 @@ TEST(DropTableIfExistsStatementTest) {
 }
 
 TEST(ReleaseStatementTest) {
-  TEST_PARSE_SINGLE_SQL(
-    "SELECT * FROM students;",
-    kStmtSelect,
-    SelectStatement,
-    result,
-    stmt);
+  TEST_PARSE_SINGLE_SQL("SELECT * FROM students;", kStmtSelect, SelectStatement, result, stmt);
 
   ASSERT_EQ(1, result.size());
   ASSERT_NULL(stmt->whereClause);
@@ -240,24 +223,14 @@ TEST(ReleaseStatementTest) {
 }
 
 TEST(ShowTableStatementTest) {
-  TEST_PARSE_SINGLE_SQL(
-    "SHOW TABLES;",
-    kStmtShow,
-    ShowStatement,
-    result,
-    stmt);
+  TEST_PARSE_SINGLE_SQL("SHOW TABLES;", kStmtShow, ShowStatement, result, stmt);
 
   ASSERT_EQ(stmt->type, kShowTables);
   ASSERT_NULL(stmt->name);
 }
 
 TEST(ShowColumnsStatementTest) {
-  TEST_PARSE_SINGLE_SQL(
-    "SHOW COLUMNS students;",
-    kStmtShow,
-    ShowStatement,
-    result,
-    stmt);
+  TEST_PARSE_SINGLE_SQL("SHOW COLUMNS students;", kStmtShow, ShowStatement, result, stmt);
 
   ASSERT_EQ(stmt->type, kShowColumns);
   ASSERT_NOTNULL(stmt->name);
@@ -265,12 +238,7 @@ TEST(ShowColumnsStatementTest) {
 }
 
 TEST(DescribeStatementTest) {
-  TEST_PARSE_SINGLE_SQL(
-    "DESCRIBE students;",
-    kStmtShow,
-    ShowStatement,
-    result,
-    stmt);
+  TEST_PARSE_SINGLE_SQL("DESCRIBE students;", kStmtShow, ShowStatement, result, stmt);
 
   ASSERT_EQ(stmt->type, kShowColumns);
   ASSERT_NOTNULL(stmt->name);
@@ -278,12 +246,8 @@ TEST(DescribeStatementTest) {
 }
 
 TEST(ImportStatementTest) {
-  TEST_PARSE_SINGLE_SQL(
-    "IMPORT FROM TBL FILE 'students_file' INTO students;",
-    kStmtImport,
-    ImportStatement,
-    result,
-    stmt);
+  TEST_PARSE_SINGLE_SQL("IMPORT FROM TBL FILE 'students_file' INTO students;", kStmtImport, ImportStatement, result,
+                        stmt);
 
   ASSERT_EQ(stmt->type, kImportTbl);
   ASSERT_NOTNULL(stmt->tableName);
@@ -292,24 +256,15 @@ TEST(ImportStatementTest) {
 }
 
 TEST(CopyStatementTest) {
-  TEST_PARSE_SINGLE_SQL(
-    "COPY students FROM 'students_file' ;",
-    kStmtImport,
-    ImportStatement,
-    import_result,
-    import_stmt);
+  TEST_PARSE_SINGLE_SQL("COPY students FROM 'students_file' ;", kStmtImport, ImportStatement, import_result,
+                        import_stmt);
 
   ASSERT_EQ(import_stmt->type, kImportAuto);
   ASSERT_NOTNULL(import_stmt->tableName);
   ASSERT_STREQ(import_stmt->tableName, "students");
   ASSERT_STREQ(import_stmt->filePath, "students_file");
 
-  TEST_PARSE_SINGLE_SQL(
-    "COPY students TO 'students_file';",
-    kStmtExport,
-    ExportStatement,
-    export_result,
-    export_stmt);
+  TEST_PARSE_SINGLE_SQL("COPY students TO 'students_file';", kStmtExport, ExportStatement, export_result, export_stmt);
 
   ASSERT_EQ(export_stmt->type, kImportAuto);
   ASSERT_NOTNULL(export_stmt->tableName);
@@ -346,12 +301,8 @@ TEST(MoveSQLResultTest) {
 }
 
 TEST(HintTest) {
-  TEST_PARSE_SINGLE_SQL(
-    "SELECT * FROM students WITH HINT(NO_CACHE, SAMPLE_RATE(10));",
-    kStmtSelect,
-    SelectStatement,
-    result,
-    stmt);
+  TEST_PARSE_SINGLE_SQL("SELECT * FROM students WITH HINT(NO_CACHE, SAMPLE_RATE(10));", kStmtSelect, SelectStatement,
+                        result, stmt);
 
   ASSERT_NOTNULL(stmt->hints);
   ASSERT_EQ(2, stmt->hints->size());
@@ -362,10 +313,7 @@ TEST(HintTest) {
 }
 
 TEST(StringLengthTest) {
-  TEST_PARSE_SQL_QUERY(
-    "SELECT * FROM bar; INSERT INTO foo VALUES (4);\t\n SELECT * FROM foo;",
-    result,
-    3);
+  TEST_PARSE_SQL_QUERY("SELECT * FROM bar; INSERT INTO foo VALUES (4);\t\n SELECT * FROM foo;", result, 3);
 
   ASSERT_EQ(result.getStatement(0)->stringLength, 18);
   ASSERT_EQ(result.getStatement(1)->stringLength, 28);
@@ -373,12 +321,8 @@ TEST(StringLengthTest) {
 }
 
 TEST(ExceptOperatorTest) {
-  TEST_PARSE_SINGLE_SQL(
-    "SELECT * FROM students EXCEPT SELECT * FROM students_2;",
-    kStmtSelect,
-    SelectStatement,
-    result,
-    stmt);
+  TEST_PARSE_SINGLE_SQL("SELECT * FROM students EXCEPT SELECT * FROM students_2;", kStmtSelect, SelectStatement, result,
+                        stmt);
 
   ASSERT_STREQ(stmt->setOperations->back()->nestedSelectStatement->fromTable->name, "students_2");
   ASSERT_STREQ(stmt->fromTable->name, "students");
@@ -386,12 +330,8 @@ TEST(ExceptOperatorTest) {
 }
 
 TEST(IntersectOperatorTest) {
-  TEST_PARSE_SINGLE_SQL(
-    "SELECT * FROM students INTERSECT SELECT * FROM students_2;",
-    kStmtSelect,
-    SelectStatement,
-    result,
-    stmt);
+  TEST_PARSE_SINGLE_SQL("SELECT * FROM students INTERSECT SELECT * FROM students_2;", kStmtSelect, SelectStatement,
+                        result, stmt);
 
   ASSERT_STREQ(stmt->setOperations->back()->nestedSelectStatement->fromTable->name, "students_2");
   ASSERT_STREQ(stmt->fromTable->name, "students");
@@ -399,12 +339,8 @@ TEST(IntersectOperatorTest) {
 }
 
 TEST(UnionOperatorTest) {
-  TEST_PARSE_SINGLE_SQL(
-    "SELECT * FROM students UNION SELECT * FROM students_2;",
-    kStmtSelect,
-    SelectStatement,
-    result,
-    stmt);
+  TEST_PARSE_SINGLE_SQL("SELECT * FROM students UNION SELECT * FROM students_2;", kStmtSelect, SelectStatement, result,
+                        stmt);
 
   ASSERT_STREQ(stmt->setOperations->back()->nestedSelectStatement->fromTable->name, "students_2");
   ASSERT_STREQ(stmt->fromTable->name, "students");
@@ -413,12 +349,8 @@ TEST(UnionOperatorTest) {
 }
 
 TEST(UnionAllOperatorTest) {
-  TEST_PARSE_SINGLE_SQL(
-    "SELECT * FROM students UNION ALL SELECT * FROM students_2;",
-    kStmtSelect,
-    SelectStatement,
-    result,
-    stmt);
+  TEST_PARSE_SINGLE_SQL("SELECT * FROM students UNION ALL SELECT * FROM students_2;", kStmtSelect, SelectStatement,
+                        result, stmt);
 
   ASSERT_STREQ(stmt->setOperations->back()->nestedSelectStatement->fromTable->name, "students_2");
   ASSERT_STREQ(stmt->fromTable->name, "students");
@@ -426,14 +358,12 @@ TEST(UnionAllOperatorTest) {
 }
 
 TEST(NestedSetOperationTest) {
-  TEST_PARSE_SINGLE_SQL(
-    "SELECT * FROM students INTERSECT SELECT grade FROM students_2 UNION SELECT * FROM employees;",
-    kStmtSelect,
-    SelectStatement,
-    result,
-    stmt);
+  TEST_PARSE_SINGLE_SQL("SELECT * FROM students INTERSECT SELECT grade FROM students_2 UNION SELECT * FROM employees;",
+                        kStmtSelect, SelectStatement, result, stmt);
 
-  ASSERT_STREQ(stmt->setOperations->back()->nestedSelectStatement->setOperations->back()->nestedSelectStatement->fromTable->name, "employees");
+  ASSERT_STREQ(
+      stmt->setOperations->back()->nestedSelectStatement->setOperations->back()->nestedSelectStatement->fromTable->name,
+      "employees");
   ASSERT_STREQ(stmt->setOperations->back()->nestedSelectStatement->fromTable->name, "students_2");
   ASSERT_STREQ(stmt->fromTable->name, "students");
   ASSERT_EQ(stmt->setOperations->back()->setType, kSetIntersect);
@@ -443,11 +373,8 @@ TEST(NestedSetOperationTest) {
 
 TEST(OrderByFullStatementTest) {
   TEST_PARSE_SINGLE_SQL(
-    "SELECT * FROM students INTERSECT SELECT grade FROM students_2 UNION SELECT * FROM employees ORDER BY grade ASC;",
-    kStmtSelect,
-    SelectStatement,
-    result,
-    stmt);
+      "SELECT * FROM students INTERSECT SELECT grade FROM students_2 UNION SELECT * FROM employees ORDER BY grade ASC;",
+      kStmtSelect, SelectStatement, result, stmt);
 
   ASSERT_EQ(stmt->setOperations->back()->resultOrder->at(0)->type, kOrderAsc);
   ASSERT_STREQ(stmt->setOperations->back()->resultOrder->at(0)->expr->name, "grade");
@@ -455,12 +382,10 @@ TEST(OrderByFullStatementTest) {
 }
 
 TEST(SetOperationSubQueryOrder) {
-    TEST_PARSE_SINGLE_SQL(
-    "(SELECT * FROM students ORDER BY name DESC) INTERSECT SELECT grade FROM students_2 UNION SELECT * FROM employees ORDER BY grade ASC;",
-    kStmtSelect,
-    SelectStatement,
-    result,
-    stmt);
+  TEST_PARSE_SINGLE_SQL(
+      "(SELECT * FROM students ORDER BY name DESC) INTERSECT SELECT grade FROM students_2 UNION SELECT * FROM "
+      "employees ORDER BY grade ASC;",
+      kStmtSelect, SelectStatement, result, stmt);
 
   ASSERT_EQ(stmt->order->at(0)->type, kOrderDesc);
   ASSERT_STREQ(stmt->order->at(0)->expr->name, "name");
@@ -471,15 +396,21 @@ TEST(SetOperationSubQueryOrder) {
 }
 
 TEST(SetOperationLastSubQueryOrder) {
-    TEST_PARSE_SINGLE_SQL(
-    "SELECT * FROM students INTERSECT SELECT grade FROM students_2 UNION (SELECT * FROM employees ORDER BY name DESC) ORDER BY grade ASC;",
-    kStmtSelect,
-    SelectStatement,
-    result,
-    stmt);
+  TEST_PARSE_SINGLE_SQL(
+      "SELECT * FROM students INTERSECT SELECT grade FROM students_2 UNION (SELECT * FROM employees ORDER BY name "
+      "DESC) ORDER BY grade ASC;",
+      kStmtSelect, SelectStatement, result, stmt);
 
-  ASSERT_EQ(stmt->setOperations->back()->nestedSelectStatement->setOperations->back()->nestedSelectStatement->order->at(0)->type, kOrderDesc);
-  ASSERT_STREQ(stmt->setOperations->back()->nestedSelectStatement->setOperations->back()->nestedSelectStatement->order->at(0)->expr->name, "name");
+  ASSERT_EQ(stmt->setOperations->back()
+                ->nestedSelectStatement->setOperations->back()
+                ->nestedSelectStatement->order->at(0)
+                ->type,
+            kOrderDesc);
+  ASSERT_STREQ(stmt->setOperations->back()
+                   ->nestedSelectStatement->setOperations->back()
+                   ->nestedSelectStatement->order->at(0)
+                   ->expr->name,
+               "name");
 
   ASSERT_EQ(stmt->setOperations->back()->resultOrder->at(0)->type, kOrderAsc);
   ASSERT_STREQ(stmt->setOperations->back()->resultOrder->at(0)->expr->name, "grade");
@@ -487,64 +418,62 @@ TEST(SetOperationLastSubQueryOrder) {
 }
 
 TEST(NestedDifferentSetOperationsWithWithClause) {
-
-  TEST_PARSE_SINGLE_SQL("WITH UNION_FIRST AS (SELECT * FROM A UNION SELECT * FROM B) SELECT * FROM UNION_FIRST EXCEPT SELECT * FROM C",
-      kStmtSelect,
-      SelectStatement,
-      result,
-      stmt);
+  TEST_PARSE_SINGLE_SQL(
+      "WITH UNION_FIRST AS (SELECT * FROM A UNION SELECT * FROM B) SELECT * FROM UNION_FIRST EXCEPT SELECT * FROM C",
+      kStmtSelect, SelectStatement, result, stmt);
 
   ASSERT_STREQ(stmt->withDescriptions->back()->alias, "UNION_FIRST");
   ASSERT_EQ(stmt->withDescriptions->back()->select->setOperations->back()->setType, kSetUnion);
   ASSERT_STREQ(stmt->withDescriptions->back()->select->fromTable->name, "A");
-  ASSERT_STREQ(stmt->withDescriptions->back()->select->setOperations->back()->nestedSelectStatement->fromTable->name, "B");
+  ASSERT_STREQ(stmt->withDescriptions->back()->select->setOperations->back()->nestedSelectStatement->fromTable->name,
+               "B");
 
   ASSERT_EQ(stmt->setOperations->back()->setType, kSetExcept);
   ASSERT_STREQ(stmt->fromTable->name, "UNION_FIRST");
   ASSERT_STREQ(stmt->setOperations->back()->nestedSelectStatement->fromTable->name, "C");
-
 }
 
 TEST(NestedAllSetOperationsWithWithClause) {
-
-  TEST_PARSE_SINGLE_SQL("WITH UNION_FIRST AS (SELECT * FROM A UNION SELECT * FROM B) SELECT * FROM UNION_FIRST EXCEPT SELECT * FROM (SELECT * FROM C INTERSECT SELECT * FROM D)",
-      kStmtSelect,
-      SelectStatement,
-      result,
-      stmt);
+  TEST_PARSE_SINGLE_SQL(
+      "WITH UNION_FIRST AS (SELECT * FROM A UNION SELECT * FROM B) SELECT * FROM UNION_FIRST EXCEPT SELECT * FROM "
+      "(SELECT * FROM C INTERSECT SELECT * FROM D)",
+      kStmtSelect, SelectStatement, result, stmt);
 
   ASSERT_STREQ(stmt->withDescriptions->back()->alias, "UNION_FIRST");
   ASSERT_EQ(stmt->withDescriptions->back()->select->setOperations->back()->setType, kSetUnion);
   ASSERT_STREQ(stmt->withDescriptions->back()->select->fromTable->name, "A");
-  ASSERT_STREQ(stmt->withDescriptions->back()->select->setOperations->back()->nestedSelectStatement->fromTable->name, "B");
+  ASSERT_STREQ(stmt->withDescriptions->back()->select->setOperations->back()->nestedSelectStatement->fromTable->name,
+               "B");
 
   ASSERT_EQ(stmt->setOperations->back()->setType, kSetExcept);
   ASSERT_STREQ(stmt->fromTable->name, "UNION_FIRST");
-  ASSERT_EQ(stmt->setOperations->back()->nestedSelectStatement->fromTable->select->setOperations->back()->setType, kSetIntersect);
+  ASSERT_EQ(stmt->setOperations->back()->nestedSelectStatement->fromTable->select->setOperations->back()->setType,
+            kSetIntersect);
   ASSERT_STREQ(stmt->setOperations->back()->nestedSelectStatement->fromTable->select->fromTable->name, "C");
-  ASSERT_STREQ(stmt->setOperations->back()->nestedSelectStatement->fromTable->select->setOperations->back()->nestedSelectStatement->fromTable->name, "D");
-
+  ASSERT_STREQ(stmt->setOperations->back()
+                   ->nestedSelectStatement->fromTable->select->setOperations->back()
+                   ->nestedSelectStatement->fromTable->name,
+               "D");
 }
 
 TEST(NestedSetOperationsWithMultipleWithClauses) {
-
   TEST_PARSE_SINGLE_SQL(
-       "WITH UNION_FIRST AS (SELECT * FROM A UNION SELECT * FROM B),INTERSECT_SECOND AS (SELECT * FROM UNION_FIRST INTERSECT SELECT * FROM C) SELECT * FROM UNION_FIRST EXCEPT SELECT * FROM INTERSECT_SECOND",
-        kStmtSelect,
-        SelectStatement,
-        result,
-        stmt);
+      "WITH UNION_FIRST AS (SELECT * FROM A UNION SELECT * FROM B),INTERSECT_SECOND AS (SELECT * FROM UNION_FIRST "
+      "INTERSECT SELECT * FROM C) SELECT * FROM UNION_FIRST EXCEPT SELECT * FROM INTERSECT_SECOND",
+      kStmtSelect, SelectStatement, result, stmt);
 
   ASSERT_STREQ(stmt->withDescriptions->at(0)->alias, "UNION_FIRST");
   ASSERT_STREQ(stmt->withDescriptions->back()->alias, "INTERSECT_SECOND");
 
   ASSERT_EQ(stmt->withDescriptions->at(0)->select->setOperations->back()->setType, kSetUnion);
   ASSERT_STREQ(stmt->withDescriptions->at(0)->select->fromTable->name, "A");
-  ASSERT_STREQ(stmt->withDescriptions->at(0)->select->setOperations->back()->nestedSelectStatement->fromTable->name, "B");
+  ASSERT_STREQ(stmt->withDescriptions->at(0)->select->setOperations->back()->nestedSelectStatement->fromTable->name,
+               "B");
 
   ASSERT_EQ(stmt->withDescriptions->back()->select->setOperations->back()->setType, kSetIntersect);
   ASSERT_STREQ(stmt->withDescriptions->back()->select->fromTable->name, "UNION_FIRST");
-  ASSERT_STREQ(stmt->withDescriptions->back()->select->setOperations->back()->nestedSelectStatement->fromTable->name, "C");
+  ASSERT_STREQ(stmt->withDescriptions->back()->select->setOperations->back()->nestedSelectStatement->fromTable->name,
+               "C");
 
   ASSERT_EQ(stmt->setOperations->back()->setType, kSetExcept);
   ASSERT_STREQ(stmt->fromTable->name, "UNION_FIRST");
@@ -558,58 +487,35 @@ TEST(WrongOrderByStatementTest) {
 
 TEST(BeginTransactionTest) {
   {
-    TEST_PARSE_SINGLE_SQL(
-        "BEGIN TRANSACTION;",
-        kStmtTransaction,
-        TransactionStatement,
-        transaction_result,
-        transaction_stmt);
+    TEST_PARSE_SINGLE_SQL("BEGIN TRANSACTION;", kStmtTransaction, TransactionStatement, transaction_result,
+                          transaction_stmt);
 
     ASSERT_EQ(transaction_stmt->command, kBeginTransaction);
   }
 
   {
-    TEST_PARSE_SINGLE_SQL(
-        "BEGIN;",
-        kStmtTransaction,
-        TransactionStatement,
-        transaction_result,
-        transaction_stmt);
+    TEST_PARSE_SINGLE_SQL("BEGIN;", kStmtTransaction, TransactionStatement, transaction_result, transaction_stmt);
 
     ASSERT_EQ(transaction_stmt->command, kBeginTransaction);
   }
 }
 
 TEST(RollbackTransactionTest) {
-  TEST_PARSE_SINGLE_SQL(
-      "ROLLBACK TRANSACTION;",
-      kStmtTransaction,
-      TransactionStatement,
-      transaction_result,
-      transaction_stmt);
+  TEST_PARSE_SINGLE_SQL("ROLLBACK TRANSACTION;", kStmtTransaction, TransactionStatement, transaction_result,
+                        transaction_stmt);
 
   ASSERT_EQ(transaction_stmt->command, kRollbackTransaction);
 }
 
 TEST(CommitTransactionTest) {
-  TEST_PARSE_SINGLE_SQL(
-      "COMMIT TRANSACTION;",
-      kStmtTransaction,
-      TransactionStatement,
-      transaction_result,
-      transaction_stmt);
+  TEST_PARSE_SINGLE_SQL("COMMIT TRANSACTION;", kStmtTransaction, TransactionStatement, transaction_result,
+                        transaction_stmt);
 
   ASSERT_EQ(transaction_stmt->command, kCommitTransaction);
 }
 
 TEST(CastAsType) {
-
-  TEST_PARSE_SINGLE_SQL(
-       "SELECT CAST(ID AS VARCHAR(8)) FROM TEST",
-        kStmtSelect,
-        SelectStatement,
-        result,
-        stmt);
+  TEST_PARSE_SINGLE_SQL("SELECT CAST(ID AS VARCHAR(8)) FROM TEST", kStmtSelect, SelectStatement, result, stmt);
 
   ASSERT_TRUE(result.isValid());
   ASSERT_EQ(stmt->selectList->size(), 1);
