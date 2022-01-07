@@ -716,13 +716,10 @@ select_statement : opt_with_clause select_with_paren {
 }
 | opt_with_clause select_with_paren set_operator select_within_set_operation opt_order opt_limit {
   $$ = $2;
-  if ($$->setOperations == nullptr) {
-    $$->setOperations = new std::vector<SetOperation*>();
-  }
-  $$->setOperations->push_back($3);
-  $$->setOperations->back()->nestedSelectStatement = $4;
-  $$->setOperations->back()->resultOrder = $5;
-  $$->setOperations->back()->resultLimit = $6;
+  $$->setOperation = $3;
+  $$->setOperation->nestedSelectStatement = $4;
+  $$->setOperation->resultOrder = $5;
+  $$->setOperation->resultLimit = $6;
   $$->withDescriptions = $1;
 };
 
@@ -731,11 +728,8 @@ select_within_set_operation : select_with_paren | select_within_set_operation_no
 select_within_set_operation_no_parentheses : select_clause { $$ = $1; }
 | select_clause set_operator select_within_set_operation {
   $$ = $1;
-  if ($$->setOperations == nullptr) {
-    $$->setOperations = new std::vector<SetOperation*>();
-  }
-  $$->setOperations->push_back($2);
-  $$->setOperations->back()->nestedSelectStatement = $3;
+  $$->setOperation = $2;
+  $$->setOperation->nestedSelectStatement = $3;
 };
 
 select_with_paren : '(' select_no_paren ')' { $$ = $2; }
@@ -753,13 +747,10 @@ select_no_paren : select_clause opt_order opt_limit {
 }
 | select_clause set_operator select_within_set_operation opt_order opt_limit {
   $$ = $1;
-  if ($$->setOperations == nullptr) {
-    $$->setOperations = new std::vector<SetOperation*>();
-  }
-  $$->setOperations->push_back($2);
-  $$->setOperations->back()->nestedSelectStatement = $3;
-  $$->setOperations->back()->resultOrder = $4;
-  $$->setOperations->back()->resultLimit = $5;
+  $$->setOperation = $2;
+  $$->setOperation->nestedSelectStatement = $3;
+  $$->setOperation->resultOrder = $4;
+  $$->setOperation->resultLimit = $5;
 };
 
 set_operator : set_type opt_all {

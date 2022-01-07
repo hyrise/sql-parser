@@ -298,7 +298,7 @@ SelectStatement::SelectStatement()
       selectList(nullptr),
       whereClause(nullptr),
       groupBy(nullptr),
-      setOperations(nullptr),
+      setOperation(nullptr),
       order(nullptr),
       withDescriptions(nullptr),
       limit(nullptr){};
@@ -331,11 +331,8 @@ SelectStatement::~SelectStatement() {
     delete withDescriptions;
   }
 
-  if (setOperations != nullptr) {
-    for (SetOperation* setOperation : *setOperations) {
-      delete setOperation;
-    }
-    delete setOperations;
+  if (setOperation != nullptr) {
+    delete setOperation;
   }
 }
 

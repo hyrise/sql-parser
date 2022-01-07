@@ -67,31 +67,26 @@ struct SelectStatement : SQLStatement {
   Expr* whereClause;
   GroupByDescription* groupBy;
 
-  // Note that a SetOperation is always connected to a
-  // different SelectStatement. This statement can itself
-  // have SetOperation connections to other SelectStatements.
-  // To evaluate the operations in the correct order:
-  //    Iterate over the setOperations vector:
-  //      1. Fully evaluate the nestedSelectStatement within the SetOperation
-  //      2. Connect the original statement with the
-  //         evaluated nestedSelectStatement
-  //      3. Apply the resultOrder and the resultLimit
-  //      4. The result now functions as the the original statement
-  //         for the next iteration
+  // Note that a SetOperation is always connected to a different SelectStatement. This statement can itself have
+  // a SetOperation connection to another SelectStatement. Thus, SelectStatements connected via SetOperations form a
+  // linked list. To evaluate the operations, the linked list of SelectStatements has to be traversed. Note, the
+  // evaluation order of set operations depends on the DBMS. Postgres (14), for example, specifies the following order:
+  // "Without parentheses, UNION and EXCEPT associate left-to-right, but INTERSECT binds more tightly than those two
+  // operators" [https://www.postgresql.org/docs/14/queries-union.html].
   //
-  // Example:
+  // Evaluation example:
   //
   //   (SELECT * FROM students INTERSECT SELECT * FROM students_2) UNION SELECT * FROM students_3 ORDER BY grade ASC;
   //
-  //   1. We evaluate `Select * FROM students`
-  //   2. Then we iterate over the setOperations vector
-  //   3. We evalute the nestedSelectStatement of the first entry, which is: `SELECT * FROM students_2`
-  //   4. We connect the result of 1. with the results of 3. using the setType, which is INTERSECT
-  //   5. We continue the iteration of the setOperations vector
-  //   6. We evaluate the new nestedSelectStatement which is: `SELECT * FROM students_3`
-  //   7. We apply a Union-Operation to connect the results of 4. and 6.
-  //   8. Finally, we apply the resultOrder of the last SetOperation (ORDER BY grade ASC)
-  std::vector<SetOperation*>* setOperations;
+  //   1. Evaluate `Select * FROM students`
+  //   2. Traverse down to the next SelectStatement via the setOperation
+  //   3. Evalute the nestedSelectStatement, which is: `SELECT * FROM students_2`
+  //   4. Connect the result of step 1 with the results of step 3 using the setType, which is INTERSECT
+  //   5. Continue traversing down to the next SelectStatement via the setOperation
+  //   6. Evaluate the new nestedSelectStatement which is: `SELECT * FROM students_3`
+  //   7. Apply a Union-Operation to connect the results of 4. and 6.
+  //   8. Finally, apply the resultOrder of the last SetOperation (ORDER BY grade ASC)
+  SetOperation* setOperation;
 
   std::vector<OrderDescription*>* order;
   std::vector<WithDescription*>* withDescriptions;
