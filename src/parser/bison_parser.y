@@ -122,7 +122,6 @@
   hsql::Alias* alias_t;
   hsql::AlterAction* alter_action_t;
   hsql::ColumnDefinition* column_t;
-  hsql::ColumnSpecification column_specification_t;
   hsql::ColumnType column_type_t;
   hsql::ConstraintType column_constraint_t;
   hsql::DatetimeField datetime_field;
@@ -151,13 +150,15 @@
   std::vector<hsql::TableRef*>* table_vec;
   std::vector<hsql::UpdateClause*>* update_vec;
   std::vector<hsql::WithDescription*>* with_description_vec;
+
+  std::pair<int64_t, int64_t>* ival_pair;
 }
 
     /*********************************
      ** Destructor symbols
      *********************************/
     // clang-format off
-    %destructor { } <fval> <ival> <bval> <join_type> <order_type> <datetime_field> <column_type_t> <column_constraint_t> <import_type_t> <column_specification_t> <column_constraint_vec>
+    %destructor { } <fval> <ival> <bval> <join_type> <order_type> <datetime_field> <column_type_t> <column_constraint_t> <import_type_t> <column_constraint_vec>
     %destructor { free( ($$.name) ); free( ($$.schema) ); } <table_name>
     %destructor { free( ($$) ); } <sval>
     %destructor {
@@ -182,7 +183,7 @@
     %token DEALLOCATE PARAMETERS INTERSECT TEMPORARY TIMESTAMP
     %token DISTINCT NVARCHAR RESTRICT TRUNCATE ANALYZE BETWEEN
     %token CASCADE COLUMNS CONTROL DEFAULT EXECUTE EXPLAIN
-    %token INTEGER NATURAL PREPARE PRIMARY SCHEMAS CHARACTER VARYING REAL DECIMAL
+    %token INTEGER NATURAL PREPARE PRIMARY SCHEMAS CHARACTER VARYING REAL DECIMAL SMALLINT
     %token SPATIAL VARCHAR VIRTUAL DESCRIBE BEFORE COLUMN CREATE DELETE DIRECT
     %token DOUBLE ESCAPE EXCEPT EXISTS EXTRACT CAST FORMAT GLOBAL HAVING IMPORT
     %token INSERT ISNULL OFFSET RENAME SCHEMA SELECT SORTED
@@ -220,8 +221,8 @@
     %type <sval>                   opt_index_name
     %type <sval>                   file_path prepare_target_query
     %type <bval>                   opt_not_exists opt_exists opt_distinct opt_all
-    %type <column_specification_t> opt_decimal_specification
-    %type <column_specification_t> opt_time_specification
+    %type <ival_pair>              opt_decimal_specification
+    %type <ival>                   opt_time_precision
     %type <join_type>              opt_join_type
     %type <table>                  opt_from_clause from_clause table_ref table_ref_atomic table_ref_name nonjoin_table_ref_atomic
     %type <table>                  join_clause table_ref_name_no_alias
@@ -542,26 +543,30 @@ column_def : IDENTIFIER column_type opt_column_constraints {
 };
 
 column_type : INT { $$ = ColumnType{DataType::INT}; }
+| CHAR '(' INTVAL ')' { $$ = ColumnType{DataType::CHAR, $3}; }
+| CHARACTER VARYING '(' INTVAL ')' { $$ = ColumnType{DataType::VARCHAR, $4}; }
+| DATE { $$ = ColumnType{DataType::DATE}; };
+| DATETIME { $$ = ColumnType{DataType::DATETIME}; }
+| DECIMAL opt_decimal_specification {
+  $$ = ColumnType{DataType::DECIMAL, 0, $2->first, $2->second};
+  delete $2;
+}
+| DOUBLE { $$ = ColumnType{DataType::DOUBLE}; }
+| FLOAT { $$ = ColumnType{DataType::FLOAT}; }
 | INTEGER { $$ = ColumnType{DataType::INT}; }
 | LONG { $$ = ColumnType{DataType::LONG}; }
-| FLOAT { $$ = ColumnType{DataType::FLOAT}; }
-| DECIMAL opt_decimal_specification { $$ = ColumnType{DataType::DECIMAL, 0, $2}; }
-| DOUBLE { $$ = ColumnType{DataType::DOUBLE}; }
 | REAL { $$ = ColumnType{DataType::REAL}; }
-| VARCHAR '(' INTVAL ')' { $$ = ColumnType{DataType::VARCHAR, $3}; }
-| CHARACTER VARYING '(' INTVAL ')' { $$ = ColumnType{DataType::VARCHAR, $4}; }
-| CHAR '(' INTVAL ')' { $$ = ColumnType{DataType::CHAR, $3}; }
+| SMALLINT { $$ = ColumnType{DataType::SMALLINT}; }
 | TEXT { $$ = ColumnType{DataType::TEXT}; }
-| TIME opt_time_specification { $$ = ColumnType{DataType::TIME, 0, $2}; }
-| DATETIME { $$ = ColumnType{DataType::DATETIME}; }
-| DATE { $$ = ColumnType{DataType::DATE}; };
+| TIME opt_time_precision { $$ = ColumnType{DataType::TIME, 0, $2}; }
+| VARCHAR '(' INTVAL ')' { $$ = ColumnType{DataType::VARCHAR, $3}; }
 
-opt_time_specification : '(' INTVAL ')' { $$ = ColumnSpecification{$2}; }
-| /* empty */ { $$ = ColumnSpecification{}; };
+opt_time_precision : '(' INTVAL ')' { $$ = $2; }
+| /* empty */ { $$ = 0; };
 
-opt_decimal_specification : '(' INTVAL ',' INTVAL ')' { $$ = ColumnSpecification{$2, $4}; }
-| '(' INTVAL ')' { $$ = ColumnSpecification{$2}; }
-| /* empty */ { $$ = ColumnSpecification{}; };
+opt_decimal_specification : '(' INTVAL ',' INTVAL ')' { $$ = new std::pair<int64_t, int64_t>{$2, $4}; }
+| '(' INTVAL ')' { $$ = new std::pair<int64_t, int64_t>{$2, 0}; }
+| /* empty */ { $$ = new std::pair<int64_t, int64_t>{0, 0}; };
 
 opt_column_constraints : column_constraint_list { $$ = $1; }
 | /* empty */ { $$ = new std::vector<ConstraintType>(); };

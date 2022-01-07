@@ -30,8 +30,11 @@ TEST(DeleteStatementTest) {
 TEST(CreateStatementTest) {
   SQLParserResult result;
   SQLParser::parse(
-      "CREATE TABLE students (name VARCHAR(50), student_number INT, city INTEGER NULL, PRIMARY KEY(name, "
-      "student_number), grade DOUBLE NOT NULL, comment TEXT UNIQUE PRIMARY KEY NOT NULL)",
+      "CREATE TABLE dummy_table (c_char CHAR(42), c_date DATE, c_datetime DATETIME, c_decimal DECIMAL, "
+      "c_decimal_precision DECIMAL(13), c_decimal_precision_scale DECIMAL(13,37), c_double_not_null DOUBLE NOT NULL, "
+      "c_float FLOAT, c_int INT, PRIMARY KEY(c_char, c_int), c_integer INTEGER NULL, c_long LONG, c_real REAL, "
+      "c_smallint SMALLINT, c_text TEXT UNIQUE PRIMARY KEY NOT NULL, c_time TIME, c_time_precision TIME(17), c_varchar"
+      " VARCHAR(50), c_char_varying CHARACTER VARYING(60))",
       &result);
 
   ASSERT(result.isValid());
@@ -40,27 +43,75 @@ TEST(CreateStatementTest) {
 
   const CreateStatement* stmt = (const CreateStatement*)result.getStatement(0);
   ASSERT_EQ(stmt->type, kCreateTable);
-  ASSERT_STREQ(stmt->tableName, "students");
+  ASSERT_STREQ(stmt->tableName, "dummy_table");
   ASSERT_NOTNULL(stmt->columns);
-  ASSERT_EQ(stmt->columns->size(), 5);
-  ASSERT_STREQ(stmt->columns->at(0)->name, "name");
-  ASSERT_STREQ(stmt->columns->at(1)->name, "student_number");
-  ASSERT_STREQ(stmt->columns->at(2)->name, "city");
-  ASSERT_STREQ(stmt->columns->at(3)->name, "grade");
-  ASSERT_STREQ(stmt->columns->at(4)->name, "comment");
-  ASSERT_EQ(stmt->columns->at(0)->type, (ColumnType{DataType::VARCHAR, 50}));
-  ASSERT_EQ(stmt->columns->at(1)->type, ColumnType{DataType::INT});
-  ASSERT_EQ(stmt->columns->at(2)->type, ColumnType{DataType::INT});
-  ASSERT_EQ(stmt->columns->at(3)->type, ColumnType{DataType::DOUBLE});
-  ASSERT_EQ(stmt->columns->at(4)->type, ColumnType{DataType::TEXT});
+  ASSERT_EQ(stmt->columns->size(), 18);
+  ASSERT_STREQ(stmt->columns->at(0)->name, "c_char");
+  ASSERT_STREQ(stmt->columns->at(1)->name, "c_date");
+  ASSERT_STREQ(stmt->columns->at(2)->name, "c_datetime");
+  ASSERT_STREQ(stmt->columns->at(3)->name, "c_decimal");
+  ASSERT_STREQ(stmt->columns->at(4)->name, "c_decimal_precision");
+  ASSERT_STREQ(stmt->columns->at(5)->name, "c_decimal_precision_scale");
+  ASSERT_STREQ(stmt->columns->at(6)->name, "c_double_not_null");
+  ASSERT_STREQ(stmt->columns->at(7)->name, "c_float");
+  ASSERT_STREQ(stmt->columns->at(8)->name, "c_int");
+  ASSERT_STREQ(stmt->columns->at(9)->name, "c_integer");
+  ASSERT_STREQ(stmt->columns->at(10)->name, "c_long");
+  ASSERT_STREQ(stmt->columns->at(11)->name, "c_real");
+  ASSERT_STREQ(stmt->columns->at(12)->name, "c_smallint");
+  ASSERT_STREQ(stmt->columns->at(13)->name, "c_text");
+  ASSERT_STREQ(stmt->columns->at(14)->name, "c_time");
+  ASSERT_STREQ(stmt->columns->at(15)->name, "c_time_precision");
+  ASSERT_STREQ(stmt->columns->at(16)->name, "c_varchar");
+  ASSERT_STREQ(stmt->columns->at(17)->name, "c_char_varying");
+  ASSERT_EQ(stmt->columns->at(0)->type, (ColumnType{DataType::CHAR, 42}));
+  ASSERT_NEQ(stmt->columns->at(0)->type, (ColumnType{DataType::CHAR, 43}));
+  ASSERT_EQ(stmt->columns->at(1)->type, (ColumnType{DataType::DATE}));
+  ASSERT_EQ(stmt->columns->at(2)->type, (ColumnType{DataType::DATETIME}));
+  ASSERT_EQ(stmt->columns->at(3)->type, (ColumnType{DataType::DECIMAL}));
+  ASSERT_EQ(stmt->columns->at(4)->type, (ColumnType{DataType::DECIMAL, 0, 13}));
+  ASSERT_NEQ(stmt->columns->at(4)->type, (ColumnType{DataType::DECIMAL, 0, 14}));
+  ASSERT_EQ(stmt->columns->at(5)->type, (ColumnType{DataType::DECIMAL, 0, 13, 37}));
+  ASSERT_NEQ(stmt->columns->at(5)->type, (ColumnType{DataType::DECIMAL, 0, 14, 37}));
+  ASSERT_NEQ(stmt->columns->at(5)->type, (ColumnType{DataType::DECIMAL, 0, 13, 38}));
+  ASSERT_EQ(stmt->columns->at(6)->type, (ColumnType{DataType::DOUBLE}));
+  ASSERT_EQ(stmt->columns->at(7)->type, (ColumnType{DataType::FLOAT}));
+  ASSERT_EQ(stmt->columns->at(8)->type, (ColumnType{DataType::INT}));
+  ASSERT_EQ(stmt->columns->at(9)->type, (ColumnType{DataType::INT}));
+  ASSERT_EQ(stmt->columns->at(10)->type, (ColumnType{DataType::LONG}));
+  ASSERT_EQ(stmt->columns->at(11)->type, (ColumnType{DataType::REAL}));
+  ASSERT_EQ(stmt->columns->at(12)->type, (ColumnType{DataType::SMALLINT}));
+  ASSERT_EQ(stmt->columns->at(13)->type, (ColumnType{DataType::TEXT}));
+  ASSERT_EQ(stmt->columns->at(14)->type, (ColumnType{DataType::TIME}));
+  ASSERT_EQ(stmt->columns->at(15)->type, (ColumnType{DataType::TIME, 0, 17}));
+  ASSERT_NEQ(stmt->columns->at(15)->type, (ColumnType{DataType::TIME, 0, 18}));
+  ASSERT_EQ(stmt->columns->at(16)->type, (ColumnType{DataType::VARCHAR, 50}));
+  ASSERT_NEQ(stmt->columns->at(16)->type, (ColumnType{DataType::VARCHAR, 51}));
+  ASSERT_EQ(stmt->columns->at(17)->type, (ColumnType{DataType::VARCHAR, 60}));
+  ASSERT_NEQ(stmt->columns->at(17)->type, (ColumnType{DataType::VARCHAR, 61}));
+
   ASSERT_EQ(stmt->columns->at(0)->nullable, false);
   ASSERT_EQ(stmt->columns->at(1)->nullable, false);
-  ASSERT_EQ(stmt->columns->at(2)->nullable, true);
+  ASSERT_EQ(stmt->columns->at(2)->nullable, false);
   ASSERT_EQ(stmt->columns->at(3)->nullable, false);
   ASSERT_EQ(stmt->columns->at(4)->nullable, false);
-  ASSERT_EQ(stmt->columns->at(4)->column_constraints->size(), 2);
-  ASSERT_STREQ(stmt->tableConstraints->at(0)->columnNames->at(0), "name");
-  ASSERT_STREQ(stmt->tableConstraints->at(0)->columnNames->at(1), "student_number");
+  ASSERT_EQ(stmt->columns->at(5)->nullable, false);
+  ASSERT_EQ(stmt->columns->at(6)->nullable, false);
+  ASSERT_EQ(stmt->columns->at(7)->nullable, false);
+  ASSERT_EQ(stmt->columns->at(8)->nullable, false);
+  ASSERT_EQ(stmt->columns->at(9)->nullable, true);
+  ASSERT_EQ(stmt->columns->at(10)->nullable, false);
+  ASSERT_EQ(stmt->columns->at(11)->nullable, false);
+  ASSERT_EQ(stmt->columns->at(12)->nullable, false);
+  ASSERT_EQ(stmt->columns->at(13)->nullable, false);
+  ASSERT_EQ(stmt->columns->at(14)->nullable, false);
+  ASSERT_EQ(stmt->columns->at(15)->nullable, false);
+  ASSERT_EQ(stmt->columns->at(16)->nullable, false);
+  // Expecting two column constraints since the NULL constraint gets explicitly removed and the corresponding
+  // information is then stored in `ColumnDefinition::nullable` instead.
+  ASSERT_EQ(stmt->columns->at(13)->column_constraints->size(), 2);
+  ASSERT_STREQ(stmt->tableConstraints->at(0)->columnNames->at(0), "c_char");
+  ASSERT_STREQ(stmt->tableConstraints->at(0)->columnNames->at(1), "c_int");
 }
 
 TEST(CreateAsSelectStatementTest) {
