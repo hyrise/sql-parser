@@ -69,8 +69,8 @@ struct SelectStatement : SQLStatement {
 
   // Note that a SetOperation is always connected to a different SelectStatement. This statement can itself have
   // a SetOperation connection to another SelectStatement. Thus, SelectStatements connected via SetOperations form a
-  // linked list. To evaluate the operations, the linked list of SelectStatements has to be traversed. Note, the
-  // evaluation order of set operations depends on the DBMS. Postgres (14), for example, specifies the following order:
+  // linked list. To evaluate the operations, the linked list of SelectStatements has to be traversed. The evaluation
+  // order of set operations depends on the DBMS. Postgres (14), for example, specifies the following order:
   // "Without parentheses, UNION and EXCEPT associate left-to-right, but INTERSECT binds more tightly than those two
   // operators" [https://www.postgresql.org/docs/14/queries-union.html].
   //
