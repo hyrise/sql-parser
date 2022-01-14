@@ -23,19 +23,12 @@ ColumnDefinition::~ColumnDefinition() {
   delete column_constraints;
 }
 
-ColumnType::ColumnType(DataType data_type, int64_t length, ColumnSpecification column_specification)
-    : data_type(data_type), length(length), columnSpecification(column_specification){};
-
-ColumnSpecification::ColumnSpecification(int64_t precision, int64_t scale) : precision(precision), scale(scale){};
-
-ColumnSpecification::ColumnSpecification(int64_t precision) : precision(precision), scale(0){};
+ColumnType::ColumnType(DataType data_type, int64_t length, int64_t precision, int64_t scale)
+    : data_type(data_type), length(length), precision(precision), scale(scale){};
 
 bool operator==(const ColumnType& lhs, const ColumnType& rhs) {
   if (lhs.data_type != rhs.data_type) return false;
-  if (lhs.data_type == DataType::VARCHAR || lhs.data_type == DataType::CHAR) {
-    return lhs.length == rhs.length;
-  }
-  return true;
+  return lhs.length == rhs.length && lhs.precision == rhs.precision && lhs.scale == rhs.scale;
 }
 
 bool operator!=(const ColumnType& lhs, const ColumnType& rhs) { return !(lhs == rhs); }
