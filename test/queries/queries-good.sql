@@ -29,6 +29,7 @@ CREATE TABLE students (name TEXT, student_number INTEGER, city TEXT, grade DOUBL
 CREATE TABLE students (name TEXT, student_number INTEGER NOT NULL, city TEXT, grade DOUBLE PRIMARY KEY UNIQUE)
 CREATE TABLE teachers (name VARCHAR(30), student_number LONG, city CHAR(10), grade FLOAT)
 CREATE TABLE teachers (name VARCHAR(30), student_number LONG, PRIMARY KEY (name, student_number), city CHAR(10), grade FLOAT)
+CREATE TABLE teachers (name CHARACTER VARYING(30));
 CREATE TABLE students_2 AS SELECT * FROM students
 CREATE TABLE students_3 AS SELECT city, grade FROM students WHERE grade > 3.0
 # Multiple statements
@@ -84,3 +85,4 @@ SELECT * FROM t WHERE a = DATE '2000-01-01' + INTERVAL '30 DAYS';
 SELECT * FROM t WHERE a = DATE '2000-01-01' + INTERVAL '10' DAY;
 SELECT * FROM t WHERE a BETWEEN '2000-01-01' AND DATE '2000-01-01' - 1 MONTH;
 SELECT (CAST('2002-5-01' as DATE) + INTERVAL '60 days');
+SELECT student.id AS character FROM student;
