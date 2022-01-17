@@ -49,7 +49,8 @@ static thread_local std::stringstream strbuf;
 /* %option nodefault */
 
 
-%s COMMENT
+%s COMMENT WITH WITH_DESC CAST CAST_EXPR SELECT
+%x SELECT_AS
 
 /***************************
  ** Section 3: Rules
@@ -86,6 +87,8 @@ PREPARE     TOKEN(PREPARE)
 PRIMARY     TOKEN(PRIMARY)
 SCHEMAS     TOKEN(SCHEMAS)
 SPATIAL     TOKEN(SPATIAL)
+CHARACTER   TOKEN(CHARACTER)
+VARYING     TOKEN(VARYING)
 VARCHAR     TOKEN(VARCHAR)
 TIME        TOKEN(TIME)
 DECIMAL     TOKEN(DECIMAL)
@@ -102,7 +105,7 @@ ESCAPE      TOKEN(ESCAPE)
 EXCEPT      TOKEN(EXCEPT)
 EXISTS      TOKEN(EXISTS)
 EXTRACT     TOKEN(EXTRACT)
-CAST        TOKEN(CAST)
+CAST        { BEGIN(CAST); return SQL_CAST; }
 FORMAT      TOKEN(FORMAT)
 GLOBAL      TOKEN(GLOBAL)
 HAVING      TOKEN(HAVING)
@@ -112,7 +115,8 @@ ISNULL      TOKEN(ISNULL)
 OFFSET      TOKEN(OFFSET)
 RENAME      TOKEN(RENAME)
 SCHEMA      TOKEN(SCHEMA)
-SELECT      TOKEN(SELECT)
+<INITIAL>SELECT      { BEGIN(SELECT); return SQL_SELECT; }
+<WITH>SELECT         { BEGIN(INITIAL); return SQL_SELECT; }
 SORTED      TOKEN(SORTED)
 TABLES      TOKEN(TABLES)
 UNIQUE      TOKEN(UNIQUE)
@@ -167,7 +171,7 @@ TEXT        TOKEN(TEXT)
 THEN        TOKEN(THEN)
 VIEW        TOKEN(VIEW)
 WHEN        TOKEN(WHEN)
-WITH        TOKEN(WITH)
+WITH        { BEGIN(WITH); return SQL_WITH; }
 ADD         TOKEN(ADD)
 ALL         TOKEN(ALL)
 AND         TOKEN(AND)
@@ -180,7 +184,8 @@ NOT         TOKEN(NOT)
 OFF         TOKEN(OFF)
 SET         TOKEN(SET)
 TOP         TOKEN(TOP)
-AS          TOKEN(AS)
+<CAST,WITH>AS          TOKEN(AS)
+<SELECT>AS { BEGIN(SELECT_AS); return SQL_AS; }
 BY          TOKEN(BY)
 IF          TOKEN(IF)
 IN          TOKEN(IN)
@@ -209,15 +214,21 @@ ROLLBACK    TOKEN(ROLLBACK)
 COMMIT      TOKEN(COMMIT)
 INTERVAL    TOKEN(INTERVAL)
 
-CHARACTER[ \t\n]+VARYING TOKEN(CHARACTER_VARYING)
-
-            /* Allow =/== see https://sqlite.org/lang_expr.html#collateop */
-"=="        TOKEN(EQUALS)
-"!="        TOKEN(NOTEQUALS)
-"<>"        TOKEN(NOTEQUALS)
-"<="        TOKEN(LESSEQ)
-">="        TOKEN(GREATEREQ)
-"||"        TOKEN(CONCAT)
+              /* Allow =/== see https://sqlite.org/lang_expr.html#collateop */
+"=="          TOKEN(EQUALS)
+"!="          TOKEN(NOTEQUALS)
+"<>"          TOKEN(NOTEQUALS)
+"<="          TOKEN(LESSEQ)
+">="          TOKEN(GREATEREQ)
+"||"          TOKEN(CONCAT)
+","           TOKEN(COMMA)
+";"           { BEGIN(INITIAL); return SQL_SEMICOLON;}
+<INITIAL>"("  TOKEN(PAREN_OPEN)
+<INITIAL>")"  TOKEN(PAREN_CLOSE)
+<CAST>"("       { BEGIN(CAST_EXPR); return SQL_PAREN_OPEN; }
+<CAST_EXPR>")"  { BEGIN(INITIAL); return SQL_PAREN_CLOSE; }
+<WITH>"("       { BEGIN(WITH_DESC); return SQL_PAREN_OPEN; }
+<WITH_DESC>")"  { BEGIN(WITH); return SQL_PAREN_CLOSE; }
 
 [-+*/(){},.;<>=^%:?[\]|]    { return yytext[0]; }
 
@@ -254,6 +265,19 @@ CHARACTER[ \t\n]+VARYING TOKEN(CHARACTER_VARYING)
 }
 
 [A-Za-z][A-Za-z0-9_]* {
+  yylval->sval = strdup(yytext);
+  return SQL_IDENTIFIER;
+}
+
+<SELECT_AS>\"[^\"\n]+\" {
+  BEGIN(INITIAL);
+  // Crop the leading and trailing quote char
+  yylval->sval = hsql::substr(yytext, 1, strlen(yytext)-1);
+  return SQL_IDENTIFIER;
+}
+
+<SELECT_AS>[A-Za-z][A-Za-z0-9_]* {
+  BEGIN(INITIAL);
   yylval->sval = strdup(yytext);
   return SQL_IDENTIFIER;
 }

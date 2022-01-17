@@ -183,7 +183,7 @@
     %token DEALLOCATE PARAMETERS INTERSECT TEMPORARY TIMESTAMP
     %token DISTINCT NVARCHAR RESTRICT TRUNCATE ANALYZE BETWEEN
     %token CASCADE COLUMNS CONTROL DEFAULT EXECUTE EXPLAIN
-    %token INTEGER NATURAL PREPARE PRIMARY SCHEMAS CHARACTER_VARYING REAL DECIMAL SMALLINT
+    %token INTEGER NATURAL PREPARE PRIMARY SCHEMAS CHARACTER VARYING REAL DECIMAL SMALLINT
     %token SPATIAL VARCHAR VIRTUAL DESCRIBE BEFORE COLUMN CREATE DELETE DIRECT
     %token DOUBLE ESCAPE EXCEPT EXISTS EXTRACT CAST FORMAT GLOBAL HAVING IMPORT
     %token INSERT ISNULL OFFSET RENAME SCHEMA SELECT SORTED
@@ -282,8 +282,10 @@
     /* Unary Operators */
     %right    UMINUS
     %left     '[' ']'
-    %left     '(' ')'
+    %left     PAREN_OPEN PAREN_CLOSE
     %left     '.'
+    %left     COMMA
+    %left     SEMICOLON
     %left     JOIN
 %%
 /*********************************
@@ -350,14 +352,14 @@ preparable_statement : select_statement { $$ = $1; }
  * Hints
  ******************************/
 
-opt_hints : WITH HINT '(' hint_list ')' { $$ = $4; }
+opt_hints : WITH HINT PAREN_OPEN hint_list PAREN_CLOSE { $$ = $4; }
 | /* empty */ { $$ = nullptr; };
 
 hint_list : hint {
   $$ = new std::vector<Expr*>();
   $$->push_back($1);
 }
-| hint_list ',' hint {
+| hint_list COMMA hint {
   $1->push_back($3);
   $$ = $1;
 };
@@ -366,7 +368,7 @@ hint : IDENTIFIER {
   $$ = Expr::make(kExprHint);
   $$->name = $1;
 }
-| IDENTIFIER '(' literal_list ')' {
+| IDENTIFIER PAREN_OPEN literal_list PAREN_CLOSE {
   $$ = Expr::make(kExprHint);
   $$->name = $1;
   $$->exprList = $3;
@@ -398,7 +400,7 @@ prepare_target_query : STRING
   $$ = new ExecuteStatement();
   $$->name = $2;
 }
-| EXECUTE IDENTIFIER '(' opt_literal_list ')' {
+| EXECUTE IDENTIFIER PAREN_OPEN opt_literal_list PAREN_CLOSE {
   $$ = new ExecuteStatement();
   $$->name = $2;
   $$->parameters = $4;
@@ -491,7 +493,7 @@ create_statement : CREATE TABLE opt_not_exists table_name FROM IDENTIFIER FILE f
   free($6);
   $$->filePath = $8;
 }
-| CREATE TABLE opt_not_exists table_name '(' table_elem_commalist ')' {
+| CREATE TABLE opt_not_exists table_name PAREN_OPEN table_elem_commalist PAREN_CLOSE {
   $$ = new CreateStatement(kCreateTable);
   $$->ifNotExists = $3;
   $$->schema = $4.schema;
@@ -506,7 +508,7 @@ create_statement : CREATE TABLE opt_not_exists table_name FROM IDENTIFIER FILE f
   $$->tableName = $4.name;
   $$->select = $6;
 }
-| CREATE INDEX opt_not_exists opt_index_name ON table_name '(' ident_commalist ')' {
+| CREATE INDEX opt_not_exists opt_index_name ON table_name PAREN_OPEN ident_commalist PAREN_CLOSE {
   $$ = new CreateStatement(kCreateIndex);
   $$->indexName = $4;
   $$->ifNotExists = $3;
@@ -529,7 +531,7 @@ table_elem_commalist : table_elem {
   $$ = new std::vector<TableElement*>();
   $$->push_back($1);
 }
-| table_elem_commalist ',' table_elem {
+| table_elem_commalist COMMA table_elem {
   $1->push_back($3);
   $$ = $1;
 };
@@ -543,8 +545,8 @@ column_def : IDENTIFIER column_type opt_column_constraints {
 };
 
 column_type : INT { $$ = ColumnType{DataType::INT}; }
-| CHAR '(' INTVAL ')' { $$ = ColumnType{DataType::CHAR, $3}; }
-| CHARACTER_VARYING '(' INTVAL ')' { $$ = ColumnType{DataType::VARCHAR, $3}; }
+| CHAR PAREN_OPEN INTVAL PAREN_CLOSE { $$ = ColumnType{DataType::CHAR, $3}; }
+| CHARACTER VARYING PAREN_OPEN INTVAL PAREN_CLOSE { $$ = ColumnType{DataType::VARCHAR, $4}; }
 | DATE { $$ = ColumnType{DataType::DATE}; };
 | DATETIME { $$ = ColumnType{DataType::DATETIME}; }
 | DECIMAL opt_decimal_specification {
@@ -559,13 +561,13 @@ column_type : INT { $$ = ColumnType{DataType::INT}; }
 | SMALLINT { $$ = ColumnType{DataType::SMALLINT}; }
 | TEXT { $$ = ColumnType{DataType::TEXT}; }
 | TIME opt_time_precision { $$ = ColumnType{DataType::TIME, 0, $2}; }
-| VARCHAR '(' INTVAL ')' { $$ = ColumnType{DataType::VARCHAR, $3}; }
+| VARCHAR PAREN_OPEN INTVAL PAREN_CLOSE { $$ = ColumnType{DataType::VARCHAR, $3}; }
 
-opt_time_precision : '(' INTVAL ')' { $$ = $2; }
+opt_time_precision : PAREN_OPEN INTVAL PAREN_CLOSE { $$ = $2; }
 | /* empty */ { $$ = 0; };
 
-opt_decimal_specification : '(' INTVAL ',' INTVAL ')' { $$ = new std::pair<int64_t, int64_t>{$2, $4}; }
-| '(' INTVAL ')' { $$ = new std::pair<int64_t, int64_t>{$2, 0}; }
+opt_decimal_specification : PAREN_OPEN INTVAL COMMA INTVAL PAREN_CLOSE { $$ = new std::pair<int64_t, int64_t>{$2, $4}; }
+| PAREN_OPEN INTVAL PAREN_CLOSE { $$ = new std::pair<int64_t, int64_t>{$2, 0}; }
 | /* empty */ { $$ = new std::pair<int64_t, int64_t>{0, 0}; };
 
 opt_column_constraints : column_constraint_list { $$ = $1; }
@@ -585,8 +587,8 @@ column_constraint : PRIMARY KEY { $$ = ConstraintType::PrimaryKey; }
 | NULL { $$ = ConstraintType::Null; }
 | NOT NULL { $$ = ConstraintType::NotNull; };
 
-table_constraint : PRIMARY KEY '(' ident_commalist ')' { $$ = new TableConstraint(ConstraintType::PrimaryKey, $4); }
-| UNIQUE '(' ident_commalist ')' { $$ = new TableConstraint(ConstraintType::Unique, $3); };
+table_constraint : PRIMARY KEY PAREN_OPEN ident_commalist PAREN_CLOSE { $$ = new TableConstraint(ConstraintType::PrimaryKey, $4); }
+| UNIQUE PAREN_OPEN ident_commalist PAREN_CLOSE { $$ = new TableConstraint(ConstraintType::Unique, $3); };
 
 /******************************
  * Drop Statement
@@ -662,7 +664,7 @@ truncate_statement : TRUNCATE table_name {
  * INSERT INTO students VALUES ('Max', 1112233, 'Musterhausen', 2.3)
  * INSERT INTO employees SELECT * FROM stundents
  ******************************/
-insert_statement : INSERT INTO table_name opt_column_list VALUES '(' literal_list ')' {
+insert_statement : INSERT INTO table_name opt_column_list VALUES PAREN_OPEN literal_list PAREN_CLOSE {
   $$ = new InsertStatement(kInsertValues);
   $$->schema = $3.schema;
   $$->tableName = $3.name;
@@ -677,7 +679,7 @@ insert_statement : INSERT INTO table_name opt_column_list VALUES '(' literal_lis
   $$->select = $5;
 };
 
-opt_column_list : '(' ident_commalist ')' { $$ = $2; }
+opt_column_list : PAREN_OPEN ident_commalist PAREN_CLOSE { $$ = $2; }
 | /* empty */ { $$ = nullptr; };
 
 /******************************
@@ -696,7 +698,7 @@ update_clause_commalist : update_clause {
   $$ = new std::vector<UpdateClause*>();
   $$->push_back($1);
 }
-| update_clause_commalist ',' update_clause {
+| update_clause_commalist COMMA update_clause {
   $1->push_back($3);
   $$ = $1;
 };
@@ -743,8 +745,8 @@ select_within_set_operation_no_parentheses : select_clause { $$ = $1; }
   $$->setOperations->back()->nestedSelectStatement = $3;
 };
 
-select_with_paren : '(' select_no_paren ')' { $$ = $2; }
-| '(' select_with_paren ')' { $$ = $2; };
+select_with_paren : PAREN_OPEN select_no_paren PAREN_CLOSE { $$ = $2; }
+| PAREN_OPEN select_with_paren PAREN_CLOSE { $$ = $2; };
 
 select_no_paren : select_clause opt_order opt_limit {
   $$ = $1;
@@ -828,7 +830,7 @@ order_list : order_desc {
   $$ = new std::vector<OrderDescription*>();
   $$->push_back($1);
 }
-| order_list ',' order_desc {
+| order_list COMMA order_desc {
   $1->push_back($3);
   $$ = $1;
 };
@@ -858,7 +860,7 @@ expr_list : expr_alias {
   $$ = new std::vector<Expr*>();
   $$->push_back($1);
 }
-| expr_list ',' expr_alias {
+| expr_list COMMA expr_alias {
   $1->push_back($3);
   $$ = $1;
 };
@@ -870,7 +872,7 @@ literal_list : literal {
   $$ = new std::vector<Expr*>();
   $$->push_back($1);
 }
-| literal_list ',' literal {
+| literal_list COMMA literal {
   $1->push_back($3);
   $$ = $1;
 };
@@ -885,9 +887,9 @@ expr_alias : expr opt_alias {
 
 expr : operand | between_expr | logic_expr | exists_expr | in_expr;
 
-operand : '(' expr ')' { $$ = $2; }
+operand : PAREN_OPEN expr PAREN_CLOSE { $$ = $2; }
 | array_index | scalar_expr | unary_expr | binary_expr | case_expr | function_expr | extract_expr | cast_expr |
-    array_expr | '(' select_no_paren ')' {
+    array_expr | PAREN_OPEN select_no_paren PAREN_CLOSE {
   $$ = Expr::makeSelect($2);
 };
 
@@ -913,10 +915,10 @@ binary_expr : comp_expr | operand '-' operand { $$ = Expr::makeOpBinary($1, kOpM
 logic_expr : expr AND expr { $$ = Expr::makeOpBinary($1, kOpAnd, $3); }
 | expr OR expr { $$ = Expr::makeOpBinary($1, kOpOr, $3); };
 
-in_expr : operand IN '(' expr_list ')' { $$ = Expr::makeInOperator($1, $4); }
-| operand NOT IN '(' expr_list ')' { $$ = Expr::makeOpUnary(kOpNot, Expr::makeInOperator($1, $5)); }
-| operand IN '(' select_no_paren ')' { $$ = Expr::makeInOperator($1, $4); }
-| operand NOT IN '(' select_no_paren ')' { $$ = Expr::makeOpUnary(kOpNot, Expr::makeInOperator($1, $5)); };
+in_expr : operand IN PAREN_OPEN expr_list PAREN_CLOSE { $$ = Expr::makeInOperator($1, $4); }
+| operand NOT IN PAREN_OPEN expr_list PAREN_CLOSE { $$ = Expr::makeOpUnary(kOpNot, Expr::makeInOperator($1, $5)); }
+| operand IN PAREN_OPEN select_no_paren PAREN_CLOSE { $$ = Expr::makeInOperator($1, $4); }
+| operand NOT IN PAREN_OPEN select_no_paren PAREN_CLOSE { $$ = Expr::makeOpUnary(kOpNot, Expr::makeInOperator($1, $5)); };
 
 // CASE grammar based on: flex & bison by John Levine
 // https://www.safaribooksonline.com/library/view/flex-bison/9780596805418/ch04.html#id352665
@@ -928,8 +930,8 @@ case_expr : CASE expr case_list END { $$ = Expr::makeCase($2, $3, nullptr); }
 case_list : WHEN expr THEN expr { $$ = Expr::makeCaseList(Expr::makeCaseListElement($2, $4)); }
 | case_list WHEN expr THEN expr { $$ = Expr::caseListAppend($1, Expr::makeCaseListElement($3, $5)); };
 
-exists_expr : EXISTS '(' select_no_paren ')' { $$ = Expr::makeExists($3); }
-| NOT EXISTS '(' select_no_paren ')' { $$ = Expr::makeOpUnary(kOpNot, Expr::makeExists($4)); };
+exists_expr : EXISTS PAREN_OPEN select_no_paren PAREN_CLOSE { $$ = Expr::makeExists($3); }
+| NOT EXISTS PAREN_OPEN select_no_paren PAREN_CLOSE { $$ = Expr::makeOpUnary(kOpNot, Expr::makeExists($4)); };
 
 comp_expr : operand '=' operand { $$ = Expr::makeOpBinary($1, kOpEquals, $3); }
 | operand EQUALS operand { $$ = Expr::makeOpBinary($1, kOpEquals, $3); }
@@ -939,12 +941,12 @@ comp_expr : operand '=' operand { $$ = Expr::makeOpBinary($1, kOpEquals, $3); }
 | operand LESSEQ operand { $$ = Expr::makeOpBinary($1, kOpLessEq, $3); }
 | operand GREATEREQ operand { $$ = Expr::makeOpBinary($1, kOpGreaterEq, $3); };
 
-function_expr : IDENTIFIER '(' ')' { $$ = Expr::makeFunctionRef($1, new std::vector<Expr*>(), false); }
-| IDENTIFIER '(' opt_distinct expr_list ')' { $$ = Expr::makeFunctionRef($1, $4, $3); };
+function_expr : IDENTIFIER PAREN_OPEN PAREN_CLOSE { $$ = Expr::makeFunctionRef($1, new std::vector<Expr*>(), false); }
+| IDENTIFIER PAREN_OPEN opt_distinct expr_list PAREN_CLOSE { $$ = Expr::makeFunctionRef($1, $4, $3); };
 
-extract_expr : EXTRACT '(' datetime_field FROM expr ')' { $$ = Expr::makeExtract($3, $5); };
+extract_expr : EXTRACT PAREN_OPEN datetime_field FROM expr PAREN_CLOSE { $$ = Expr::makeExtract($3, $5); };
 
-cast_expr : CAST '(' expr AS column_type ')' { $$ = Expr::makeCast($3, $5); };
+cast_expr : CAST PAREN_OPEN expr AS column_type PAREN_CLOSE { $$ = Expr::makeCast($3, $5); };
 
 datetime_field : SECOND { $$ = kDatetimeSecond; }
 | MINUTE { $$ = kDatetimeMinute; }
@@ -1054,7 +1056,7 @@ param_expr : '?' {
 /******************************
  * Table
  ******************************/
-table_ref : table_ref_atomic | table_ref_commalist ',' table_ref_atomic {
+table_ref : table_ref_atomic | table_ref_commalist COMMA table_ref_atomic {
   $1->push_back($3);
   auto tbl = new TableRef(kTableCrossProduct);
   tbl->list = $1;
@@ -1063,7 +1065,7 @@ table_ref : table_ref_atomic | table_ref_commalist ',' table_ref_atomic {
 
 table_ref_atomic : nonjoin_table_ref_atomic | join_clause;
 
-nonjoin_table_ref_atomic : table_ref_name | '(' select_statement ')' opt_table_alias {
+nonjoin_table_ref_atomic : table_ref_name | PAREN_OPEN select_statement PAREN_CLOSE opt_table_alias {
   auto tbl = new TableRef(kTableSelect);
   tbl->select = $2;
   tbl->alias = $4;
@@ -1074,7 +1076,7 @@ table_ref_commalist : table_ref_atomic {
   $$ = new std::vector<TableRef*>();
   $$->push_back($1);
 }
-| table_ref_commalist ',' table_ref_atomic {
+| table_ref_commalist COMMA table_ref_atomic {
   $1->push_back($3);
   $$ = $1;
 };
@@ -1105,7 +1107,7 @@ table_name : IDENTIFIER {
 opt_index_name : IDENTIFIER { $$ = $1; }
 | /* empty */ { $$ = nullptr; };
 
-table_alias : alias | AS IDENTIFIER '(' ident_commalist ')' { $$ = new Alias($2, $4); };
+table_alias : alias | AS IDENTIFIER PAREN_OPEN ident_commalist PAREN_CLOSE { $$ = new Alias($2, $4); };
 
 opt_table_alias : table_alias | /* empty */ { $$ = nullptr; };
 
@@ -1126,7 +1128,7 @@ with_description_list : with_description {
   $$ = new std::vector<WithDescription*>();
   $$->push_back($1);
 }
-| with_description_list ',' with_description {
+| with_description_list COMMA with_description {
   $1->push_back($3);
   $$ = $1;
 };
@@ -1156,7 +1158,7 @@ join_clause : table_ref_atomic NATURAL JOIN nonjoin_table_ref_atomic {
   $$->join->right = $4;
   $$->join->condition = $6;
 }
-| table_ref_atomic opt_join_type JOIN table_ref_atomic USING '(' column_name ')' {
+| table_ref_atomic opt_join_type JOIN table_ref_atomic USING PAREN_OPEN column_name PAREN_CLOSE {
   $$ = new TableRef(kTableJoin);
   $$->join = new JoinDefinition();
   $$->join->type = (JoinType)$2;
@@ -1196,7 +1198,7 @@ ident_commalist : IDENTIFIER {
   $$ = new std::vector<char*>();
   $$->push_back($1);
 }
-| ident_commalist ',' IDENTIFIER {
+| ident_commalist COMMA IDENTIFIER {
   $1->push_back($3);
   $$ = $1;
 };
