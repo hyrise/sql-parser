@@ -209,7 +209,7 @@ ROLLBACK    TOKEN(ROLLBACK)
 COMMIT      TOKEN(COMMIT)
 INTERVAL    TOKEN(INTERVAL)
 
-CHARACTER[ \t]+VARYING TOKEN(CHARACTER_VARYING)
+CHARACTER[ \t\n]+VARYING TOKEN(CHARACTER_VARYING)
 
             /* Allow =/== see https://sqlite.org/lang_expr.html#collateop */
 "=="        TOKEN(EQUALS)
