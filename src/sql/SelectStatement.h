@@ -56,6 +56,15 @@ struct SetOperation {
   LimitDescription* resultLimit;
 };
 
+struct ForLockingClause {
+  bool isXLock;
+  bool withKey;
+  bool specifier;
+  bool isNoWait;
+  TableRef* depTable;
+  ForLockingClause(bool isxlock, bool withkey) : isXLock(isxlock), withKey(withkey), specifier(false), isNoWait(false), depTable(nullptr){}
+};
+
 // Representation of a full SQL select statement.
 struct SelectStatement : SQLStatement {
   SelectStatement();
@@ -96,6 +105,7 @@ struct SelectStatement : SQLStatement {
   std::vector<OrderDescription*>* order;
   std::vector<WithDescription*>* withDescriptions;
   LimitDescription* limit;
+  ForLockingClause* lockings;
 };
 
 }  // namespace hsql

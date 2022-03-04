@@ -140,6 +140,7 @@
   hsql::TableRef* table;
   hsql::UpdateClause* update_t;
   hsql::WithDescription* with_description_t;
+  hsql::ForLockingClause* locking_t;
 
   std::vector<char*>* str_vec;
   std::vector<hsql::ConstraintType>* column_constraint_vec;
@@ -193,11 +194,12 @@
     %token DESC DROP ELSE FILE FROM FULL HASH HINT INTO JOIN
     %token LEFT LIKE LOAD LONG NULL PLAN SHOW TEXT THEN TIME
     %token VIEW WHEN WITH ADD ALL AND ASC END FOR INT KEY
-    %token NOT OFF SET TOP AS BY IF IN IS OF ON OR TO
+    %token NOT OFF SET TOP AS BY IF IN IS OF ON OR TO NO
     %token ARRAY CONCAT ILIKE SECOND MINUTE HOUR DAY MONTH YEAR
     %token SECONDS MINUTES HOURS DAYS MONTHS YEARS INTERVAL
     %token TRUE FALSE
     %token TRANSACTION BEGIN COMMIT ROLLBACK
+    %token NOWAIT SKIP LOCKED SHARE
 
     /*********************************
      ** Non-Terminal types (http://www.gnu.org/software/bison/manual/html_node/Type-Decl.html)
@@ -222,7 +224,7 @@
     %type <sval>                   file_path prepare_target_query
     %type <bval>                   opt_not_exists opt_exists opt_distinct opt_all
     %type <ival_pair>              opt_decimal_specification
-    %type <ival>                   opt_time_precision
+    %type <ival>                   opt_time_precision for_locking_clause_waiting_policy
     %type <join_type>              opt_join_type
     %type <table>                  opt_from_clause from_clause table_ref table_ref_atomic table_ref_name nonjoin_table_ref_atomic
     %type <table>                  join_clause table_ref_name_no_alias
@@ -240,6 +242,7 @@
     %type <column_type_t>          column_type
     %type <table_constraint_t>     table_constraint
     %type <update_t>               update_clause
+    %type <locking_t>              for_locking_clause for_locking_clause_xs
     %type <group_t>                opt_group
     %type <alias_t>                opt_table_alias table_alias opt_alias alias
     %type <with_description_t>     with_description
@@ -746,17 +749,19 @@ select_within_set_operation_no_parentheses : select_clause { $$ = $1; }
 select_with_paren : '(' select_no_paren ')' { $$ = $2; }
 | '(' select_with_paren ')' { $$ = $2; };
 
-select_no_paren : select_clause opt_order opt_limit {
+select_no_paren : select_clause opt_order for_locking_clause opt_limit {
   $$ = $1;
   $$->order = $2;
 
+  if($3 != nullptr) $$->lockings = $3;
+
   // Limit could have been set by TOP.
-  if ($3 != nullptr) {
+  if ($4 != nullptr) {
     delete $$->limit;
-    $$->limit = $3;
+    $$->limit = $4;
   }
 }
-| select_clause set_operator select_within_set_operation opt_order opt_limit {
+| select_clause set_operator select_within_set_operation opt_order for_locking_clause opt_limit {
   $$ = $1;
   if ($$->setOperations == nullptr) {
     $$->setOperations = new std::vector<SetOperation*>();
@@ -764,7 +769,8 @@ select_no_paren : select_clause opt_order opt_limit {
   $$->setOperations->push_back($2);
   $$->setOperations->back()->nestedSelectStatement = $3;
   $$->setOperations->back()->resultOrder = $4;
-  $$->setOperations->back()->resultLimit = $5;
+  $$->setOperations->back()->resultLimit = $6;
+  $$->lockings = $5;
 };
 
 set_operator : set_type opt_all {
@@ -1113,6 +1119,49 @@ alias : AS IDENTIFIER { $$ = new Alias($2); }
 | IDENTIFIER { $$ = new Alias($1); };
 
 opt_alias : alias | /* empty */ { $$ = nullptr; };
+
+/******************************
+ * Row Locking Descriptions
+ ******************************/
+
+ for_locking_clause: FOR for_locking_clause_xs for_locking_clause_waiting_policy{
+   $$ = $2;
+   if($3 != 2){
+    $$->specifier = true;
+    $$->isNoWait = $3;
+   }
+ }
+ | FOR for_locking_clause_xs OF table_ref for_locking_clause_waiting_policy{
+   $$ = $2;
+   $$->depTable = $4;
+   if($5 != 2){
+    $$->specifier = true;
+    $$->isNoWait = $5;
+   }
+ }
+ | /* empty */ { $$ = nullptr; }
+
+ for_locking_clause_xs: UPDATE{
+   $$ = new ForLockingClause(true, true);
+ }
+ | NO KEY UPDATE{
+   $$ = new ForLockingClause(true, false);
+ }
+ | SHARE{
+   $$ = new ForLockingClause(false, false);
+ }
+ | KEY SHARE{
+   $$ = new ForLockingClause(false, true);
+ }
+ |/* empty */{ $$ = nullptr; };
+
+ for_locking_clause_waiting_policy: SKIP LOCKED{
+   $$ = 0;
+ }
+ | NOWAIT{
+   $$ = 1;
+ }
+ |/* empty */{ $$ = 2; };
 
 /******************************
  * With Descriptions

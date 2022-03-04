@@ -193,6 +193,26 @@ void printSelectStatementInfo(const SelectStatement* stmt, uintmax_t numIndent) 
       printExpression(stmt->groupBy->having, numIndent + 2);
     }
   }
+  if(stmt->lockings != nullptr){
+    inprint("Lock Info:", numIndent + 1);
+    inprint("Type", numIndent + 2);
+    if(stmt->lockings->isXLock) {
+      if(stmt->lockings->withKey) inprint("FOR UPDATE", numIndent + 3);
+      else inprint("FOR NO KEY UPDATE", numIndent + 3);
+    }else{
+      if(stmt->lockings->withKey) inprint("FOR KEY SHARE", numIndent + 3);
+      else inprint("FOR SHARE", numIndent + 3);
+    }
+    if(stmt->lockings->depTable != nullptr){
+      inprint("Target table:", numIndent + 2);
+      printTableRefInfo(stmt->lockings->depTable, numIndent + 3);
+    }
+    if(stmt->lockings->specifier){
+      inprint("Waiting policy: ", numIndent + 2);
+      if(stmt->lockings->isNoWait) inprint("NOWAIT", numIndent + 3);
+      else inprint("SKIP LOCKED", numIndent + 3);
+    }
+  }
 
   if (stmt->setOperations != nullptr) {
     for (SetOperation* setOperation : *stmt->setOperations) {

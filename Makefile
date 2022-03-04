@@ -7,7 +7,7 @@ BIN        = bin
 SRC        = src
 SRCPARSER  = src/parser
 
-INSTALL     = /usr/local
+INSTALL     = /usr
 
 ######################################
 ############ Compile Mode ############
