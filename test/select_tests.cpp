@@ -805,3 +805,123 @@ TEST(IntervalLiteral) {
     }
   }
 }
+TEST(LockingClauseWithoutWaitPolicy) {
+  SelectStatement* stmt;
+  TEST_PARSE_SQL_QUERY(
+      "SELECT * FROM t WHERE a = 10 FOR UPDATE;"
+      "SELECT * FROM t WHERE a = 10 FOR SHARE;"
+      "SELECT * FROM t WHERE a = 10 FOR NO KEY UPDATE;"
+      "SELECT * FROM t WHERE a = 10 FOR KEY SHARE;",
+      result, 4);
+
+  stmt = (SelectStatement*)result.getStatement(0);
+  ASSERT_EQ(stmt->lockings->at(0)->lockMode, LockMode::ForUpdate);
+  ASSERT_EQ(stmt->lockings->at(0)->lockWaitPolicy, LockWaitPolicy::None);
+
+  stmt = (SelectStatement*)result.getStatement(1);
+  ASSERT_EQ(stmt->lockings->at(0)->lockMode, LockMode::ForShare);
+  ASSERT_EQ(stmt->lockings->at(0)->lockWaitPolicy, LockWaitPolicy::None);
+
+  stmt = (SelectStatement*)result.getStatement(2);
+  ASSERT_EQ(stmt->lockings->at(0)->lockMode, LockMode::ForNoKeyUpdate);
+  ASSERT_EQ(stmt->lockings->at(0)->lockWaitPolicy, LockWaitPolicy::None);
+
+  stmt = (SelectStatement*)result.getStatement(3);
+  ASSERT_EQ(stmt->lockings->at(0)->lockMode, LockMode::ForKeyShare);
+  ASSERT_EQ(stmt->lockings->at(0)->lockWaitPolicy, LockWaitPolicy::None);
+}
+
+TEST(LockingClauseWithWaitPolicy) {
+  SelectStatement* stmt;
+  TEST_PARSE_SQL_QUERY(
+      "SELECT * FROM t WHERE a = 10 FOR UPDATE NOWAIT;"
+      "SELECT * FROM t WHERE a = 10 FOR SHARE NOWAIT;"
+      "SELECT * FROM t WHERE a = 10 FOR NO KEY UPDATE NOWAIT;"
+      "SELECT * FROM t WHERE a = 10 FOR KEY SHARE NOWAIT;"
+      "SELECT * FROM t WHERE a = 10 FOR UPDATE SKIP LOCKED;"
+      "SELECT * FROM t WHERE a = 10 FOR SHARE SKIP LOCKED;"
+      "SELECT * FROM t WHERE a = 10 FOR NO KEY UPDATE SKIP LOCKED;"
+      "SELECT * FROM t WHERE a = 10 FOR KEY SHARE SKIP LOCKED;",
+      result, 8);
+
+  stmt = (SelectStatement*)result.getStatement(0);
+  ASSERT_EQ(stmt->lockings->at(0)->lockMode, LockMode::ForUpdate);
+  ASSERT_EQ(stmt->lockings->at(0)->lockWaitPolicy, LockWaitPolicy::NoWait);
+
+  stmt = (SelectStatement*)result.getStatement(1);
+  ASSERT_EQ(stmt->lockings->at(0)->lockMode, LockMode::ForShare);
+  ASSERT_EQ(stmt->lockings->at(0)->lockWaitPolicy, LockWaitPolicy::NoWait);
+
+  stmt = (SelectStatement*)result.getStatement(2);
+  ASSERT_EQ(stmt->lockings->at(0)->lockMode, LockMode::ForNoKeyUpdate);
+  ASSERT_EQ(stmt->lockings->at(0)->lockWaitPolicy, LockWaitPolicy::NoWait);
+
+  stmt = (SelectStatement*)result.getStatement(3);
+  ASSERT_EQ(stmt->lockings->at(0)->lockMode, LockMode::ForKeyShare);
+  ASSERT_EQ(stmt->lockings->at(0)->lockWaitPolicy, LockWaitPolicy::NoWait);
+
+  stmt = (SelectStatement*)result.getStatement(4);
+  ASSERT_EQ(stmt->lockings->at(0)->lockMode, LockMode::ForUpdate);
+  ASSERT_EQ(stmt->lockings->at(0)->lockWaitPolicy, LockWaitPolicy::SkipLocked);
+
+  stmt = (SelectStatement*)result.getStatement(5);
+  ASSERT_EQ(stmt->lockings->at(0)->lockMode, LockMode::ForShare);
+  ASSERT_EQ(stmt->lockings->at(0)->lockWaitPolicy, LockWaitPolicy::SkipLocked);
+
+  stmt = (SelectStatement*)result.getStatement(6);
+  ASSERT_EQ(stmt->lockings->at(0)->lockMode, LockMode::ForNoKeyUpdate);
+  ASSERT_EQ(stmt->lockings->at(0)->lockWaitPolicy, LockWaitPolicy::SkipLocked);
+
+  stmt = (SelectStatement*)result.getStatement(7);
+  ASSERT_EQ(stmt->lockings->at(0)->lockMode, LockMode::ForKeyShare);
+  ASSERT_EQ(stmt->lockings->at(0)->lockWaitPolicy, LockWaitPolicy::SkipLocked);
+}
+TEST(LockingClauseWithTableReference) {
+  SelectStatement* stmt;
+  TEST_PARSE_SQL_QUERY(
+      "SELECT * FROM t WHERE a = 10 FOR UPDATE OF t;"
+      "SELECT * FROM t, c WHERE t.a = 10 FOR SHARE OF t,c;"
+      "SELECT * FROM t, c WHERE t.a = 10 FOR NO KEY UPDATE OF t,c NOWAIT;",
+      result, 3);
+
+  stmt = (SelectStatement*)result.getStatement(0);
+  ASSERT_EQ(stmt->lockings->at(0)->lockMode, LockMode::ForUpdate);
+  ASSERT_EQ(stmt->lockings->at(0)->lockWaitPolicy, LockWaitPolicy::None);
+  ASSERT_STREQ(stmt->lockings->at(0)->depTable->at(0), "t");
+
+  stmt = (SelectStatement*)result.getStatement(1);
+  ASSERT_EQ(stmt->lockings->at(0)->lockMode, LockMode::ForShare);
+  ASSERT_EQ(stmt->lockings->at(0)->lockWaitPolicy, LockWaitPolicy::None);
+  ASSERT_STREQ(stmt->lockings->at(0)->depTable->at(0), "t");
+  ASSERT_STREQ(stmt->lockings->at(0)->depTable->at(1), "c");
+
+  stmt = (SelectStatement*)result.getStatement(2);
+  ASSERT_EQ(stmt->lockings->at(0)->lockMode, LockMode::ForNoKeyUpdate);
+  ASSERT_EQ(stmt->lockings->at(0)->lockWaitPolicy, LockWaitPolicy::NoWait);
+  ASSERT_STREQ(stmt->lockings->at(0)->depTable->at(0), "t");
+  ASSERT_STREQ(stmt->lockings->at(0)->depTable->at(1), "c");
+}
+
+TEST(MultipleLockingClause) {
+  SelectStatement* stmt;
+  TEST_PARSE_SQL_QUERY(
+      "SELECT * FROM t, c WHERE t.a = 10 FOR NO KEY UPDATE OF t FOR KEY SHARE OF c;"
+      "SELECT * FROM t, c WHERE t.a = 10 FOR SHARE OF t SKIP LOCKED FOR UPDATE OF c NOWAIT;",
+      result, 2);
+
+  stmt = (SelectStatement*)result.getStatement(0);
+  ASSERT_EQ(stmt->lockings->at(0)->lockMode, LockMode::ForNoKeyUpdate);
+  ASSERT_EQ(stmt->lockings->at(0)->lockWaitPolicy, LockWaitPolicy::None);
+  ASSERT_STREQ(stmt->lockings->at(0)->depTable->at(0), "t");
+  ASSERT_EQ(stmt->lockings->at(1)->lockMode, LockMode::ForKeyShare);
+  ASSERT_EQ(stmt->lockings->at(1)->lockWaitPolicy, LockWaitPolicy::None);
+  ASSERT_STREQ(stmt->lockings->at(1)->depTable->at(0), "c");
+
+  stmt = (SelectStatement*)result.getStatement(1);
+  ASSERT_EQ(stmt->lockings->at(0)->lockMode, LockMode::ForShare);
+  ASSERT_EQ(stmt->lockings->at(0)->lockWaitPolicy, LockWaitPolicy::SkipLocked);
+  ASSERT_STREQ(stmt->lockings->at(0)->depTable->at(0), "t");
+  ASSERT_EQ(stmt->lockings->at(1)->lockMode, LockMode::ForUpdate);
+  ASSERT_EQ(stmt->lockings->at(1)->lockWaitPolicy, LockWaitPolicy::NoWait);
+  ASSERT_STREQ(stmt->lockings->at(1)->depTable->at(0), "c");
+}

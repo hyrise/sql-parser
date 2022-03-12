@@ -10,6 +10,9 @@ enum OrderType { kOrderAsc, kOrderDesc };
 
 enum SetType { kSetUnion, kSetIntersect, kSetExcept };
 
+enum LockMode { ForUpdate, ForNoKeyUpdate, ForShare, ForKeyShare };
+enum LockWaitPolicy { NoWait, SkipLocked, None };
+
 // Description of the order by clause within a select statement.
 struct OrderDescription {
   OrderDescription(OrderType type, Expr* expr);
@@ -56,13 +59,10 @@ struct SetOperation {
   LimitDescription* resultLimit;
 };
 
-struct ForLockingClause {
-  bool isXLock;
-  bool withKey;
-  bool specifier;
-  bool isNoWait;
-  TableRef* depTable;
-  ForLockingClause(bool isxlock, bool withkey) : isXLock(isxlock), withKey(withkey), specifier(false), isNoWait(false), depTable(nullptr){}
+struct LockingClause {
+  LockMode lockMode;
+  LockWaitPolicy lockWaitPolicy;
+  std::vector<char*>* depTable;
 };
 
 // Representation of a full SQL select statement.
@@ -105,7 +105,7 @@ struct SelectStatement : SQLStatement {
   std::vector<OrderDescription*>* order;
   std::vector<WithDescription*>* withDescriptions;
   LimitDescription* limit;
-  ForLockingClause* lockings;
+  std::vector<LockingClause*>* lockings;
 };
 
 }  // namespace hsql
