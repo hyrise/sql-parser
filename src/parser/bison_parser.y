@@ -155,8 +155,8 @@
 
   std::pair<int64_t, int64_t>* ival_pair;
 
-  hsql::LockMode lock_mode_t;
-  hsql::LockWaitPolicy lock_wait_policy_t;
+  hsql::RowLockMode lock_mode_t;
+  hsql::RowLockWaitPolicy lock_wait_policy_t;
 }
 
     /*********************************
@@ -256,8 +256,8 @@
     %type <column_constraint_vec>  opt_column_constraints
     %type <alter_action_t>         alter_action
     %type <drop_action_t>          drop_action
-    %type <lock_wait_policy_t>     opt_lock_waiting_policy
-    %type <lock_mode_t>            lock_strength
+    %type <lock_wait_policy_t>     opt_row_lock_policy
+    %type <lock_mode_t>            row_lock_mode
 
     // ImportType is used for compatibility reasons
     %type <import_type_t>          opt_file_type file_type
@@ -760,14 +760,14 @@ select_no_paren : select_clause opt_order opt_limit opt_locking_clause {
   $$ = $1;
   $$->order = $2;
 
-  if ($4 != nullptr) {
-    $$->lockings = $4;
-  }
-
   // Limit could have been set by TOP.
   if ($3 != nullptr) {
     delete $$->limit;
     $$->limit = $3;
+  }
+
+  if ($4 != nullptr) {
+    $$->lockings = $4;
   }
 }
 | select_clause set_operator select_within_set_operation opt_order opt_limit opt_locking_clause {
@@ -1145,27 +1145,27 @@ opt_locking_clause_list : locking_clause {
   $$ = $1;
 };
 
-locking_clause : FOR lock_strength opt_lock_waiting_policy {
+locking_clause : FOR row_lock_mode opt_row_lock_policy {
   $$ = new LockingClause();
-  $$->depTable = nullptr;
-  $$->lockMode = $2;
-  $$->lockWaitPolicy = $3;
+  $$->rowLockMode = $2;
+  $$->rowLockWaitPolicy = $3;
+  $$->tables = nullptr;
 }
-| FOR lock_strength OF ident_commalist opt_lock_waiting_policy {
+| FOR row_lock_mode OF ident_commalist opt_row_lock_policy {
   $$ = new LockingClause();
-  $$->lockMode = $2;
-  $$->depTable = $4;
-  $$->lockWaitPolicy = $5;
+  $$->rowLockMode = $2;
+  $$->tables = $4;
+  $$->rowLockWaitPolicy = $5;
 };
 
-lock_strength : UPDATE { $$ = LockMode::ForUpdate; }
-| NO KEY UPDATE { $$ = LockMode::ForNoKeyUpdate; }
-| SHARE { $$ = LockMode::ForShare; }
-| KEY SHARE { $$ = LockMode::ForKeyShare; };
+row_lock_mode : UPDATE { $$ = RowLockMode::ForUpdate; }
+| NO KEY UPDATE { $$ = RowLockMode::ForNoKeyUpdate; }
+| SHARE { $$ = RowLockMode::ForShare; }
+| KEY SHARE { $$ = RowLockMode::ForKeyShare; };
 
-opt_lock_waiting_policy : SKIP LOCKED { $$ = LockWaitPolicy::SkipLocked; }
-| NOWAIT { $$ = LockWaitPolicy::NoWait; }
-| /* empty */ { $$ = LockWaitPolicy::None; };
+opt_row_lock_policy : SKIP LOCKED { $$ = RowLockWaitPolicy::SkipLocked; }
+| NOWAIT { $$ = RowLockWaitPolicy::NoWait; }
+| /* empty */ { $$ = RowLockWaitPolicy::None; };
 
 /******************************
  * With Descriptions

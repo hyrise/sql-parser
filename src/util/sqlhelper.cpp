@@ -197,24 +197,24 @@ void printSelectStatementInfo(const SelectStatement* stmt, uintmax_t numIndent) 
     inprint("Lock Info:", numIndent + 1);
     for (LockingClause* lockingClause : *stmt->lockings) {
       inprint("Type", numIndent + 2);
-      if (lockingClause->lockMode == LockMode::ForUpdate) {
+      if (lockingClause->rowLockMode == RowLockMode::ForUpdate) {
         inprint("FOR UPDATE", numIndent + 3);
-      } else if (lockingClause->lockMode == LockMode::ForNoKeyUpdate) {
+      } else if (lockingClause->rowLockMode == RowLockMode::ForNoKeyUpdate) {
         inprint("FOR NO KEY UPDATE", numIndent + 3);
-      } else if (lockingClause->lockMode == LockMode::ForShare) {
+      } else if (lockingClause->rowLockMode == RowLockMode::ForShare) {
         inprint("FOR SHARE", numIndent + 3);
-      } else if (lockingClause->lockMode == LockMode::ForKeyShare) {
+      } else if (lockingClause->rowLockMode == RowLockMode::ForKeyShare) {
         inprint("FOR KEY SHARE", numIndent + 3);
       }
-      if (lockingClause->depTable != nullptr) {
-        inprint("Target table:", numIndent + 2);
-        for (char* dtable : *lockingClause->depTable) {
+      if (lockingClause->tables != nullptr) {
+        inprint("Target tables:", numIndent + 2);
+        for (char* dtable : *lockingClause->tables) {
           inprint(dtable, numIndent + 3);
         }
       }
-      if (lockingClause->lockWaitPolicy != LockWaitPolicy::None) {
+      if (lockingClause->rowLockWaitPolicy != RowLockWaitPolicy::None) {
         inprint("Waiting policy: ", numIndent + 2);
-        if (lockingClause->lockWaitPolicy == LockWaitPolicy::NoWait)
+        if (lockingClause->rowLockWaitPolicy == RowLockWaitPolicy::NoWait)
           inprint("NOWAIT", numIndent + 3);
         else
           inprint("SKIP LOCKED", numIndent + 3);

@@ -334,11 +334,11 @@ SelectStatement::~SelectStatement() {
 
   if (lockings != nullptr) {
     for (LockingClause* lockingClause : *lockings) {
-      if (lockingClause->depTable != nullptr) {
-        for (char* dtable : *lockingClause->depTable) {
+      if (lockingClause->tables != nullptr) {
+        for (char* dtable : *lockingClause->tables) {
           if (dtable != nullptr) free(dtable);
         }
-        delete lockingClause->depTable;
+        delete lockingClause->tables;
       }
       delete lockingClause;
     }

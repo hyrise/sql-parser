@@ -10,8 +10,8 @@ enum OrderType { kOrderAsc, kOrderDesc };
 
 enum SetType { kSetUnion, kSetIntersect, kSetExcept };
 
-enum LockMode { ForUpdate, ForNoKeyUpdate, ForShare, ForKeyShare };
-enum LockWaitPolicy { NoWait, SkipLocked, None };
+enum RowLockMode { ForUpdate, ForNoKeyUpdate, ForShare, ForKeyShare };
+enum RowLockWaitPolicy { NoWait, SkipLocked, None };
 
 // Description of the order by clause within a select statement.
 struct OrderDescription {
@@ -60,9 +60,9 @@ struct SetOperation {
 };
 
 struct LockingClause {
-  LockMode lockMode;
-  LockWaitPolicy lockWaitPolicy;
-  std::vector<char*>* depTable;
+  RowLockMode rowLockMode;
+  RowLockWaitPolicy rowLockWaitPolicy;
+  std::vector<char*>* tables;
 };
 
 // Representation of a full SQL select statement.
