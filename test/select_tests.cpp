@@ -805,30 +805,35 @@ TEST(IntervalLiteral) {
     }
   }
 }
+
 TEST(LockingClauseWithoutWaitPolicy) {
   SelectStatement* stmt;
   TEST_PARSE_SQL_QUERY(
       "SELECT * FROM t WHERE a = 10 FOR UPDATE;"
       "SELECT * FROM t WHERE a = 10 FOR SHARE;"
-      "SELECT * FROM t WHERE a = 10 FOR NO KEY UPDATE;"
-      "SELECT * FROM t WHERE a = 10 FOR KEY SHARE;",
-      result, 4);
+      "SELECT * FROM t WHERE a = 10 FOR NO KEY UPDATE FOR KEY SHARE;",
+      result, 3);
 
   stmt = (SelectStatement*)result.getStatement(0);
+  ASSERT_EQ(stmt->lockings->size(), 1);
+  ASSERT_TRUE(stmt->lockings->at(0)->tables == nullptr);
   ASSERT_EQ(stmt->lockings->at(0)->rowLockMode, RowLockMode::ForUpdate);
   ASSERT_EQ(stmt->lockings->at(0)->rowLockWaitPolicy, RowLockWaitPolicy::None);
 
   stmt = (SelectStatement*)result.getStatement(1);
+  ASSERT_EQ(stmt->lockings->size(), 1);
+  ASSERT_TRUE(stmt->lockings->at(0)->tables == nullptr);
   ASSERT_EQ(stmt->lockings->at(0)->rowLockMode, RowLockMode::ForShare);
   ASSERT_EQ(stmt->lockings->at(0)->rowLockWaitPolicy, RowLockWaitPolicy::None);
 
   stmt = (SelectStatement*)result.getStatement(2);
+  ASSERT_EQ(stmt->lockings->size(), 2);
+  ASSERT_TRUE(stmt->lockings->at(0)->tables == nullptr);
+  ASSERT_TRUE(stmt->lockings->at(1)->tables == nullptr);
   ASSERT_EQ(stmt->lockings->at(0)->rowLockMode, RowLockMode::ForNoKeyUpdate);
   ASSERT_EQ(stmt->lockings->at(0)->rowLockWaitPolicy, RowLockWaitPolicy::None);
-
-  stmt = (SelectStatement*)result.getStatement(3);
-  ASSERT_EQ(stmt->lockings->at(0)->rowLockMode, RowLockMode::ForKeyShare);
-  ASSERT_EQ(stmt->lockings->at(0)->rowLockWaitPolicy, RowLockWaitPolicy::None);
+  ASSERT_EQ(stmt->lockings->at(1)->rowLockMode, RowLockMode::ForKeyShare);
+  ASSERT_EQ(stmt->lockings->at(1)->rowLockWaitPolicy, RowLockWaitPolicy::None);
 }
 
 TEST(LockingClauseWithWaitPolicy) {
@@ -845,37 +850,54 @@ TEST(LockingClauseWithWaitPolicy) {
       result, 8);
 
   stmt = (SelectStatement*)result.getStatement(0);
+  ASSERT_EQ(stmt->lockings->size(), 1);
+  ASSERT_TRUE(stmt->lockings->at(0)->tables == nullptr);
   ASSERT_EQ(stmt->lockings->at(0)->rowLockMode, RowLockMode::ForUpdate);
   ASSERT_EQ(stmt->lockings->at(0)->rowLockWaitPolicy, RowLockWaitPolicy::NoWait);
 
   stmt = (SelectStatement*)result.getStatement(1);
+  ASSERT_EQ(stmt->lockings->size(), 1);
+  ASSERT_TRUE(stmt->lockings->at(0)->tables == nullptr);
   ASSERT_EQ(stmt->lockings->at(0)->rowLockMode, RowLockMode::ForShare);
   ASSERT_EQ(stmt->lockings->at(0)->rowLockWaitPolicy, RowLockWaitPolicy::NoWait);
 
   stmt = (SelectStatement*)result.getStatement(2);
+  ASSERT_EQ(stmt->lockings->size(), 1);
+  ASSERT_TRUE(stmt->lockings->at(0)->tables == nullptr);
   ASSERT_EQ(stmt->lockings->at(0)->rowLockMode, RowLockMode::ForNoKeyUpdate);
   ASSERT_EQ(stmt->lockings->at(0)->rowLockWaitPolicy, RowLockWaitPolicy::NoWait);
 
   stmt = (SelectStatement*)result.getStatement(3);
+  ASSERT_EQ(stmt->lockings->size(), 1);
+  ASSERT_TRUE(stmt->lockings->at(0)->tables == nullptr);
   ASSERT_EQ(stmt->lockings->at(0)->rowLockMode, RowLockMode::ForKeyShare);
   ASSERT_EQ(stmt->lockings->at(0)->rowLockWaitPolicy, RowLockWaitPolicy::NoWait);
 
   stmt = (SelectStatement*)result.getStatement(4);
+  ASSERT_EQ(stmt->lockings->size(), 1);
+  ASSERT_TRUE(stmt->lockings->at(0)->tables == nullptr);
   ASSERT_EQ(stmt->lockings->at(0)->rowLockMode, RowLockMode::ForUpdate);
   ASSERT_EQ(stmt->lockings->at(0)->rowLockWaitPolicy, RowLockWaitPolicy::SkipLocked);
 
   stmt = (SelectStatement*)result.getStatement(5);
+  ASSERT_EQ(stmt->lockings->size(), 1);
+  ASSERT_TRUE(stmt->lockings->at(0)->tables == nullptr);
   ASSERT_EQ(stmt->lockings->at(0)->rowLockMode, RowLockMode::ForShare);
   ASSERT_EQ(stmt->lockings->at(0)->rowLockWaitPolicy, RowLockWaitPolicy::SkipLocked);
 
   stmt = (SelectStatement*)result.getStatement(6);
+  ASSERT_EQ(stmt->lockings->size(), 1);
+  ASSERT_TRUE(stmt->lockings->at(0)->tables == nullptr);
   ASSERT_EQ(stmt->lockings->at(0)->rowLockMode, RowLockMode::ForNoKeyUpdate);
   ASSERT_EQ(stmt->lockings->at(0)->rowLockWaitPolicy, RowLockWaitPolicy::SkipLocked);
 
   stmt = (SelectStatement*)result.getStatement(7);
+  ASSERT_EQ(stmt->lockings->size(), 1);
+  ASSERT_TRUE(stmt->lockings->at(0)->tables == nullptr);
   ASSERT_EQ(stmt->lockings->at(0)->rowLockMode, RowLockMode::ForKeyShare);
   ASSERT_EQ(stmt->lockings->at(0)->rowLockWaitPolicy, RowLockWaitPolicy::SkipLocked);
 }
+
 TEST(LockingClauseWithTableReference) {
   SelectStatement* stmt;
   TEST_PARSE_SQL_QUERY(
@@ -885,19 +907,25 @@ TEST(LockingClauseWithTableReference) {
       result, 3);
 
   stmt = (SelectStatement*)result.getStatement(0);
+  ASSERT_EQ(stmt->lockings->size(), 1);
   ASSERT_EQ(stmt->lockings->at(0)->rowLockMode, RowLockMode::ForUpdate);
   ASSERT_EQ(stmt->lockings->at(0)->rowLockWaitPolicy, RowLockWaitPolicy::None);
+  ASSERT_EQ(stmt->lockings->at(0)->tables->size(), 1);
   ASSERT_STREQ(stmt->lockings->at(0)->tables->at(0), "t");
 
   stmt = (SelectStatement*)result.getStatement(1);
+  ASSERT_EQ(stmt->lockings->size(), 1);
   ASSERT_EQ(stmt->lockings->at(0)->rowLockMode, RowLockMode::ForShare);
   ASSERT_EQ(stmt->lockings->at(0)->rowLockWaitPolicy, RowLockWaitPolicy::None);
+  ASSERT_EQ(stmt->lockings->at(0)->tables->size(), 2);
   ASSERT_STREQ(stmt->lockings->at(0)->tables->at(0), "t");
   ASSERT_STREQ(stmt->lockings->at(0)->tables->at(1), "c");
 
   stmt = (SelectStatement*)result.getStatement(2);
+  ASSERT_EQ(stmt->lockings->size(), 1);
   ASSERT_EQ(stmt->lockings->at(0)->rowLockMode, RowLockMode::ForNoKeyUpdate);
   ASSERT_EQ(stmt->lockings->at(0)->rowLockWaitPolicy, RowLockWaitPolicy::NoWait);
+  ASSERT_EQ(stmt->lockings->at(0)->tables->size(), 2);
   ASSERT_STREQ(stmt->lockings->at(0)->tables->at(0), "t");
   ASSERT_STREQ(stmt->lockings->at(0)->tables->at(1), "c");
 }
@@ -906,22 +934,46 @@ TEST(MultipleLockingClause) {
   SelectStatement* stmt;
   TEST_PARSE_SQL_QUERY(
       "SELECT * FROM t, c WHERE t.a = 10 FOR NO KEY UPDATE OF t FOR KEY SHARE OF c;"
-      "SELECT * FROM t, c WHERE t.a = 10 FOR SHARE OF t SKIP LOCKED FOR UPDATE OF c NOWAIT;",
-      result, 2);
+      "SELECT * FROM t, c WHERE t.a = 10 FOR SHARE OF t SKIP LOCKED FOR UPDATE OF c NOWAIT;"
+      "SELECT * FROM t, c, s WHERE t.a = 10 FOR NO KEY UPDATE FOR SHARE OF t SKIP LOCKED FOR UPDATE OF c, s NOWAIT;",
+      result, 3);
 
   stmt = (SelectStatement*)result.getStatement(0);
+  ASSERT_EQ(stmt->lockings->size(), 2);
   ASSERT_EQ(stmt->lockings->at(0)->rowLockMode, RowLockMode::ForNoKeyUpdate);
   ASSERT_EQ(stmt->lockings->at(0)->rowLockWaitPolicy, RowLockWaitPolicy::None);
+  ASSERT_EQ(stmt->lockings->at(0)->tables->size(), 1);
   ASSERT_STREQ(stmt->lockings->at(0)->tables->at(0), "t");
   ASSERT_EQ(stmt->lockings->at(1)->rowLockMode, RowLockMode::ForKeyShare);
   ASSERT_EQ(stmt->lockings->at(1)->rowLockWaitPolicy, RowLockWaitPolicy::None);
+  ASSERT_EQ(stmt->lockings->at(1)->tables->size(), 1);
   ASSERT_STREQ(stmt->lockings->at(1)->tables->at(0), "c");
 
   stmt = (SelectStatement*)result.getStatement(1);
+  ASSERT_EQ(stmt->lockings->size(), 2);
   ASSERT_EQ(stmt->lockings->at(0)->rowLockMode, RowLockMode::ForShare);
   ASSERT_EQ(stmt->lockings->at(0)->rowLockWaitPolicy, RowLockWaitPolicy::SkipLocked);
+  ASSERT_EQ(stmt->lockings->at(0)->tables->size(), 1);
   ASSERT_STREQ(stmt->lockings->at(0)->tables->at(0), "t");
   ASSERT_EQ(stmt->lockings->at(1)->rowLockMode, RowLockMode::ForUpdate);
   ASSERT_EQ(stmt->lockings->at(1)->rowLockWaitPolicy, RowLockWaitPolicy::NoWait);
+  ASSERT_EQ(stmt->lockings->at(0)->tables->size(), 1);
   ASSERT_STREQ(stmt->lockings->at(1)->tables->at(0), "c");
+
+  stmt = (SelectStatement*)result.getStatement(2);
+  ASSERT_EQ(stmt->lockings->size(), 3);
+  ASSERT_EQ(stmt->lockings->at(0)->rowLockMode, RowLockMode::ForNoKeyUpdate);
+  ASSERT_EQ(stmt->lockings->at(0)->rowLockWaitPolicy, RowLockWaitPolicy::None);
+  ASSERT_TRUE(stmt->lockings->at(0)->tables == nullptr);
+
+  ASSERT_EQ(stmt->lockings->at(1)->rowLockMode, RowLockMode::ForShare);
+  ASSERT_EQ(stmt->lockings->at(1)->rowLockWaitPolicy, RowLockWaitPolicy::SkipLocked);
+  ASSERT_EQ(stmt->lockings->at(1)->tables->size(), 1);
+  ASSERT_STREQ(stmt->lockings->at(1)->tables->at(0), "t");
+
+  ASSERT_EQ(stmt->lockings->at(2)->rowLockMode, RowLockMode::ForUpdate);
+  ASSERT_EQ(stmt->lockings->at(2)->rowLockWaitPolicy, RowLockWaitPolicy::NoWait);
+  ASSERT_EQ(stmt->lockings->at(2)->tables->size(), 2);
+  ASSERT_STREQ(stmt->lockings->at(2)->tables->at(0), "c");
+  ASSERT_STREQ(stmt->lockings->at(2)->tables->at(1), "s");
 }
