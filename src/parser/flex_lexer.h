@@ -2,9 +2,9 @@
 #define hsql_HEADER_H 1
 #define hsql_IN_HEADER 1
 
-#line 5 "flex_lexer.h"
+#line 6 "flex_lexer.h"
 
-#line 7 "flex_lexer.h"
+#line 8 "flex_lexer.h"
 
 #define YY_INT_ALIGNED short int
 
@@ -726,8 +726,8 @@ extern int yylex(YYSTYPE* yylval_param, YYLTYPE* yylloc_param, yyscan_t yyscanne
 #undef yyTABLES_NAME
 #endif
 
-#line 269 "flex_lexer.l"
+#line 274 "flex_lexer.l"
 
-#line 736 "flex_lexer.h"
+#line 737 "flex_lexer.h"
 #undef hsql_IN_HEADER
 #endif /* hsql_HEADER_H */

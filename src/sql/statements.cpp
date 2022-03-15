@@ -294,7 +294,8 @@ SelectStatement::SelectStatement()
       setOperations(nullptr),
       order(nullptr),
       withDescriptions(nullptr),
-      limit(nullptr){};
+      limit(nullptr),
+      lockings(nullptr){};
 
 SelectStatement::~SelectStatement() {
   delete fromTable;
@@ -329,6 +330,19 @@ SelectStatement::~SelectStatement() {
       delete setOperation;
     }
     delete setOperations;
+  }
+
+  if (lockings != nullptr) {
+    for (LockingClause* lockingClause : *lockings) {
+      if (lockingClause->tables != nullptr) {
+        for (char* dtable : *lockingClause->tables) {
+          if (dtable != nullptr) free(dtable);
+        }
+        delete lockingClause->tables;
+      }
+      delete lockingClause;
+    }
+    delete lockings;
   }
 }
 

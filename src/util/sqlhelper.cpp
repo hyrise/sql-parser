@@ -193,6 +193,34 @@ void printSelectStatementInfo(const SelectStatement* stmt, uintmax_t numIndent) 
       printExpression(stmt->groupBy->having, numIndent + 2);
     }
   }
+  if (stmt->lockings != nullptr) {
+    inprint("Lock Info:", numIndent + 1);
+    for (LockingClause* lockingClause : *stmt->lockings) {
+      inprint("Type", numIndent + 2);
+      if (lockingClause->rowLockMode == RowLockMode::ForUpdate) {
+        inprint("FOR UPDATE", numIndent + 3);
+      } else if (lockingClause->rowLockMode == RowLockMode::ForNoKeyUpdate) {
+        inprint("FOR NO KEY UPDATE", numIndent + 3);
+      } else if (lockingClause->rowLockMode == RowLockMode::ForShare) {
+        inprint("FOR SHARE", numIndent + 3);
+      } else if (lockingClause->rowLockMode == RowLockMode::ForKeyShare) {
+        inprint("FOR KEY SHARE", numIndent + 3);
+      }
+      if (lockingClause->tables != nullptr) {
+        inprint("Target tables:", numIndent + 2);
+        for (char* dtable : *lockingClause->tables) {
+          inprint(dtable, numIndent + 3);
+        }
+      }
+      if (lockingClause->rowLockWaitPolicy != RowLockWaitPolicy::None) {
+        inprint("Waiting policy: ", numIndent + 2);
+        if (lockingClause->rowLockWaitPolicy == RowLockWaitPolicy::NoWait)
+          inprint("NOWAIT", numIndent + 3);
+        else
+          inprint("SKIP LOCKED", numIndent + 3);
+      }
+    }
+  }
 
   if (stmt->setOperations != nullptr) {
     for (SetOperation* setOperation : *stmt->setOperations) {

@@ -41,3 +41,7 @@
 # ON is not supported by postgres. We follow postgres here since the sql-92 standard does not specify index
 # implementation details.
 !DROP INDEX myindex ON mytable;
+!SELECT * FROM test WHERE val = 2 FOR KEY UPDATE;
+!SELECT * FROM test WHERE val = 2 FOR SHARE test1;
+!SELECT * FROM test WHERE val = 2 FOR NO KEY SHARE;
+!SELECT * FROM test WHERE val = 2 NOWAIT FOR UPDATE;

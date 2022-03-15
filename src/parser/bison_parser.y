@@ -140,6 +140,7 @@
   hsql::TableRef* table;
   hsql::UpdateClause* update_t;
   hsql::WithDescription* with_description_t;
+  hsql::LockingClause* locking_t;
 
   std::vector<char*>* str_vec;
   std::vector<hsql::ConstraintType>* column_constraint_vec;
@@ -150,15 +151,19 @@
   std::vector<hsql::TableRef*>* table_vec;
   std::vector<hsql::UpdateClause*>* update_vec;
   std::vector<hsql::WithDescription*>* with_description_vec;
+  std::vector<hsql::LockingClause*>* locking_clause_vec;
 
   std::pair<int64_t, int64_t>* ival_pair;
+
+  hsql::RowLockMode lock_mode_t;
+  hsql::RowLockWaitPolicy lock_wait_policy_t;
 }
 
     /*********************************
      ** Destructor symbols
      *********************************/
     // clang-format off
-    %destructor { } <fval> <ival> <bval> <join_type> <order_type> <datetime_field> <column_type_t> <column_constraint_t> <import_type_t> <column_constraint_vec>
+    %destructor { } <fval> <ival> <bval> <join_type> <order_type> <datetime_field> <column_type_t> <column_constraint_t> <import_type_t> <column_constraint_vec> <lock_mode_t> <lock_wait_policy_t>
     %destructor { free( ($$.name) ); free( ($$.schema) ); } <table_name>
     %destructor { free( ($$) ); } <sval>
     %destructor {
@@ -193,11 +198,12 @@
     %token DESC DROP ELSE FILE FROM FULL HASH HINT INTO JOIN
     %token LEFT LIKE LOAD LONG NULL PLAN SHOW TEXT THEN TIME
     %token VIEW WHEN WITH ADD ALL AND ASC END FOR INT KEY
-    %token NOT OFF SET TOP AS BY IF IN IS OF ON OR TO
+    %token NOT OFF SET TOP AS BY IF IN IS OF ON OR TO NO
     %token ARRAY CONCAT ILIKE SECOND MINUTE HOUR DAY MONTH YEAR
     %token SECONDS MINUTES HOURS DAYS MONTHS YEARS INTERVAL
     %token TRUE FALSE
     %token TRANSACTION BEGIN COMMIT ROLLBACK
+    %token NOWAIT SKIP LOCKED SHARE
 
     /*********************************
      ** Non-Terminal types (http://www.gnu.org/software/bison/manual/html_node/Type-Decl.html)
@@ -240,6 +246,7 @@
     %type <column_type_t>          column_type
     %type <table_constraint_t>     table_constraint
     %type <update_t>               update_clause
+    %type <locking_t>              locking_clause
     %type <group_t>                opt_group
     %type <alias_t>                opt_table_alias table_alias opt_alias alias
     %type <with_description_t>     with_description
@@ -249,6 +256,8 @@
     %type <column_constraint_vec>  opt_column_constraints
     %type <alter_action_t>         alter_action
     %type <drop_action_t>          drop_action
+    %type <lock_wait_policy_t>     opt_row_lock_policy
+    %type <lock_mode_t>            row_lock_mode
 
     // ImportType is used for compatibility reasons
     %type <import_type_t>          opt_file_type file_type
@@ -260,6 +269,7 @@
     %type <with_description_vec>   opt_with_clause with_clause with_description_list
     %type <update_vec>             update_clause_commalist
     %type <table_element_vec>      table_elem_commalist
+    %type <locking_clause_vec>     opt_locking_clause_list opt_locking_clause
 
     /******************************
      ** Token Precedence and Associativity
@@ -746,7 +756,7 @@ select_within_set_operation_no_parentheses : select_clause { $$ = $1; }
 select_with_paren : '(' select_no_paren ')' { $$ = $2; }
 | '(' select_with_paren ')' { $$ = $2; };
 
-select_no_paren : select_clause opt_order opt_limit {
+select_no_paren : select_clause opt_order opt_limit opt_locking_clause {
   $$ = $1;
   $$->order = $2;
 
@@ -755,8 +765,12 @@ select_no_paren : select_clause opt_order opt_limit {
     delete $$->limit;
     $$->limit = $3;
   }
+
+  if ($4 != nullptr) {
+    $$->lockings = $4;
+  }
 }
-| select_clause set_operator select_within_set_operation opt_order opt_limit {
+| select_clause set_operator select_within_set_operation opt_order opt_limit opt_locking_clause {
   $$ = $1;
   if ($$->setOperations == nullptr) {
     $$->setOperations = new std::vector<SetOperation*>();
@@ -765,6 +779,7 @@ select_no_paren : select_clause opt_order opt_limit {
   $$->setOperations->back()->nestedSelectStatement = $3;
   $$->setOperations->back()->resultOrder = $4;
   $$->setOperations->back()->resultLimit = $5;
+  $$->lockings = $6;
 };
 
 set_operator : set_type opt_all {
@@ -1113,6 +1128,44 @@ alias : AS IDENTIFIER { $$ = new Alias($2); }
 | IDENTIFIER { $$ = new Alias($1); };
 
 opt_alias : alias | /* empty */ { $$ = nullptr; };
+
+/******************************
+ * Row Locking Descriptions
+ ******************************/
+
+opt_locking_clause : opt_locking_clause_list { $$ = $1; }
+| /* empty */ { $$ = nullptr; };
+
+opt_locking_clause_list : locking_clause {
+  $$ = new std::vector<LockingClause*>();
+  $$->push_back($1);
+}
+| opt_locking_clause_list locking_clause {
+  $1->push_back($2);
+  $$ = $1;
+};
+
+locking_clause : FOR row_lock_mode opt_row_lock_policy {
+  $$ = new LockingClause();
+  $$->rowLockMode = $2;
+  $$->rowLockWaitPolicy = $3;
+  $$->tables = nullptr;
+}
+| FOR row_lock_mode OF ident_commalist opt_row_lock_policy {
+  $$ = new LockingClause();
+  $$->rowLockMode = $2;
+  $$->tables = $4;
+  $$->rowLockWaitPolicy = $5;
+};
+
+row_lock_mode : UPDATE { $$ = RowLockMode::ForUpdate; }
+| NO KEY UPDATE { $$ = RowLockMode::ForNoKeyUpdate; }
+| SHARE { $$ = RowLockMode::ForShare; }
+| KEY SHARE { $$ = RowLockMode::ForKeyShare; };
+
+opt_row_lock_policy : SKIP LOCKED { $$ = RowLockWaitPolicy::SkipLocked; }
+| NOWAIT { $$ = RowLockWaitPolicy::NoWait; }
+| /* empty */ { $$ = RowLockWaitPolicy::None; };
 
 /******************************
  * With Descriptions
