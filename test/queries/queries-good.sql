@@ -25,7 +25,7 @@ SELECT a, SUM(b) FROM t2 GROUP BY a HAVING SUM(b) > 100;
 # CREATE statement
 CREATE TABLE "table" FROM TBL FILE 'students.tbl'
 CREATE TABLE IF NOT EXISTS "table" FROM TBL FILE 'students.tbl'
-CREATE TABLE students (name TEXT, student_number INTEGER, city TEXT, grade DOUBLE)
+CREATE TABLE students (name TEXT, student_number INTEGER, city TEXT, grade DOUBLE, credits BIGINT)
 CREATE TABLE students (name TEXT, student_number INTEGER NOT NULL, city TEXT, grade DOUBLE PRIMARY KEY UNIQUE)
 CREATE TABLE teachers (name VARCHAR(30), student_number LONG, city CHAR(10), grade FLOAT)
 CREATE TABLE teachers (name VARCHAR(30), student_number LONG, PRIMARY KEY (name, student_number), city CHAR(10), grade FLOAT)
@@ -85,6 +85,7 @@ SELECT * FROM t WHERE a = DATE '2000-01-01' + INTERVAL '30 DAYS';
 SELECT * FROM t WHERE a = DATE '2000-01-01' + INTERVAL '10' DAY;
 SELECT * FROM t WHERE a BETWEEN '2000-01-01' AND DATE '2000-01-01' - 1 MONTH;
 SELECT (CAST('2002-5-01' as DATE) + INTERVAL '60 days');
+SELECT CAST(student.student_number as BIGINT) FROM students;
 SELECT student.name AS character FROM student;
 # ROW LOCKING
 SELECT * FROM test WHERE id = 1 FOR UPDATE;
