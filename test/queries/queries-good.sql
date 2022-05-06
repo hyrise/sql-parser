@@ -85,7 +85,7 @@ SELECT * FROM t WHERE a = DATE '2000-01-01' + INTERVAL '30 DAYS';
 SELECT * FROM t WHERE a = DATE '2000-01-01' + INTERVAL '10' DAY;
 SELECT * FROM t WHERE a BETWEEN '2000-01-01' AND DATE '2000-01-01' - 1 MONTH;
 SELECT (CAST('2002-5-01' as DATE) + INTERVAL '60 days');
-SELECT CAST(student.student_number as BIGINT) FROM students;
+SELECT CAST(student.student_number as BIGINT) FROM student;
 SELECT student.name AS character FROM student;
 # ROW LOCKING
 SELECT * FROM test WHERE id = 1 FOR UPDATE;
