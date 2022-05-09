@@ -509,6 +509,7 @@ create_statement : CREATE TABLE opt_not_exists table_name FROM IDENTIFIER FILE f
   $$->setColumnDefsAndConstraints($6);
   delete $6;
   if (result->errorMsg()) {
+    delete $$;
     YYERROR;
   }
 }
