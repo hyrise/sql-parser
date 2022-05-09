@@ -508,6 +508,9 @@ create_statement : CREATE TABLE opt_not_exists table_name FROM IDENTIFIER FILE f
   $$->tableName = $4.name;
   $$->setColumnDefsAndConstraints($6);
   delete $6;
+  if (result->errorMsg()) {
+    YYERROR;
+  }
 }
 | CREATE TABLE opt_not_exists table_name AS select_statement {
   $$ = new CreateStatement(kCreateTable);
@@ -550,8 +553,7 @@ table_elem : column_def { $$ = $1; }
 column_def : IDENTIFIER column_type opt_column_constraints {
   $$ = new ColumnDefinition($1, $2, $3);
   if (!$$->trySetNullableExplicit()) {
-    yyerror(&yyloc, result, scanner, ("Mismatching nullability constraints for " + std::string{$$->name}).c_str());
-    YYERROR;
+    yyerror(&yyloc, result, scanner, ("Mismatching nullability constraints for " + std::string{$1}).c_str());
   }
 };
 

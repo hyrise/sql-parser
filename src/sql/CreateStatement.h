@@ -4,7 +4,6 @@
 #include "ColumnType.h"
 #include "SQLStatement.h"
 
-#include <iostream>
 #include <ostream>
 
 // Note: Implementations of constructors and destructors can be found in statements.cpp.
@@ -40,7 +39,6 @@ struct ColumnDefinition : TableElement {
     std::vector<unsigned long> constraints_to_remove;
 
     for (unsigned long constraint_index = 0; constraint_index < column_constraints->size(); constraint_index++) {
-      std::cout << constraint_index << std::endl;
       const auto column_constraint = column_constraints->at(constraint_index);
       if (column_constraint == ConstraintType::Null) {
         if (explicit_not_nullable) {
