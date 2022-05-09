@@ -64,20 +64,20 @@
 #define YYPULL 1
 
 /* Substitute the type names.  */
-#define YYSTYPE         HSQL_STYPE
-#define YYLTYPE         HSQL_LTYPE
+#define YYSTYPE HSQL_STYPE
+#define YYLTYPE HSQL_LTYPE
 /* Substitute the variable and function names.  */
-#define yyparse         hsql_parse
-#define yylex           hsql_lex
-#define yyerror         hsql_error
-#define yydebug         hsql_debug
-#define yynerrs         hsql_nerrs
+#define yyparse hsql_parse
+#define yylex hsql_lex
+#define yyerror hsql_error
+#define yydebug hsql_debug
+#define yynerrs hsql_nerrs
 
 /* First part of user prologue.  */
 #line 2 "bison_parser.y"
 
-  // clang-format on
-  /**
+// clang-format on
+/**
  * bison_parser.y
  * defines bison_parser.h
  * outputs bison_parser.c
@@ -85,7 +85,7 @@
  * Grammar File Spec: http://dinosaur.compilertools.net/bison/bison_6.html
  *
  */
-  /*********************************
+/*********************************
  ** Section 1: C Declarations
  *********************************/
 
@@ -95,14 +95,14 @@
 #include <stdio.h>
 #include <string.h>
 
-  using namespace hsql;
+using namespace hsql;
 
-  int yyerror(YYLTYPE * llocp, SQLParserResult * result, yyscan_t scanner, const char* msg) {
-    result->setIsValid(false);
-    result->setErrorDetails(strdup(msg), llocp->first_line, llocp->first_column);
-    return 0;
-  }
-  // clang-format off
+int yyerror(YYLTYPE* llocp, SQLParserResult* result, yyscan_t scanner, const char* msg) {
+  result->setIsValid(false);
+  result->setErrorDetails(strdup(msg), llocp->first_line, llocp->first_column);
+  return 0;
+}
+// clang-format off
 
 #line 108 "bison_parser.cpp"
 
@@ -5511,9 +5511,9 @@ yyreturnlab:
 
 #line 1261 "bison_parser.y"
 
-    // clang-format on
-    /*********************************
+// clang-format on
+/*********************************
  ** Section 4: Additional C code
  *********************************/
 
-    /* empty */
+/* empty */

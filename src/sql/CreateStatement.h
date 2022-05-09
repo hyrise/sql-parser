@@ -4,6 +4,7 @@
 #include "ColumnType.h"
 #include "SQLStatement.h"
 
+#include <iostream>
 #include <ostream>
 
 // Note: Implementations of constructors and destructors can be found in statements.cpp.
@@ -36,36 +37,34 @@ struct ColumnDefinition : TableElement {
   bool trySetNullableExplicit() {
     bool explicit_nullable = false;
     bool explicit_not_nullable = false;
+    std::vector<unsigned long> constraints_to_remove;
 
     for (unsigned long constraint_index = 0; constraint_index < column_constraints->size(); constraint_index++) {
-      const auto& column_constraint = column_constraints->at(constraint_index);
-      switch (column_constraint) {
-        case ConstraintType::Null: {
-          if (explicit_not_nullable) {
-            return false;
-          }
-          explicit_nullable = true;
-          column_constraints->erase(column_constraints->cbegin() + constraint_index);
-          break;
+      std::cout << constraint_index << std::endl;
+      const auto column_constraint = column_constraints->at(constraint_index);
+      if (column_constraint == ConstraintType::Null) {
+        if (explicit_not_nullable) {
+          return false;
         }
-        case ConstraintType::NotNull:
-        case ConstraintType::PrimaryKey: {
-          if (explicit_nullable) {
-            return false;
-          }
-          explicit_not_nullable = true;
-          if (column_constraint == ConstraintType::NotNull) {
-            column_constraints->erase(column_constraints->cbegin() + constraint_index);
-          }
-          break;
+        explicit_nullable = true;
+        constraints_to_remove.emplace_back(constraint_index);
+      } else if (column_constraint == ConstraintType::NotNull || column_constraint == ConstraintType::PrimaryKey) {
+        if (explicit_nullable) {
+          return false;
         }
-        default: break;
+        explicit_not_nullable = true;
+        nullable = false;
+        if (column_constraint == ConstraintType::NotNull) {
+          constraints_to_remove.emplace_back(constraint_index);
+        }
       }
     }
 
-    if (explicit_not_nullable) {
-      nullable = false;
+    for (auto constraint_index = constraints_to_remove.rbegin(); constraint_index != constraints_to_remove.rend();
+         ++constraint_index) {
+      column_constraints->erase(column_constraints->begin() + *constraint_index);
     }
+
     return true;
   }
 
