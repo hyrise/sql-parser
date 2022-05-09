@@ -549,7 +549,10 @@ table_elem : column_def { $$ = $1; }
 
 column_def : IDENTIFIER column_type opt_column_constraints {
   $$ = new ColumnDefinition($1, $2, $3);
-  $$->setNullableExplicit();
+  if (!$$->trySetNullableExplicit()) {
+    yyerror(&yyloc, result, scanner, ("Mismatching nullability constraints for " + std::string{$$->name}).c_str());
+    YYERROR;
+  }
 };
 
 column_type : INT { $$ = ColumnType{DataType::INT}; }

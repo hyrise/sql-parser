@@ -33,17 +33,40 @@ struct ColumnDefinition : TableElement {
 
   ~ColumnDefinition() override;
 
-  void setNullableExplicit() {
-    nullable = true;
+  bool trySetNullableExplicit() {
+    bool explicit_nullable = false;
+    bool explicit_not_nullable = false;
 
     for (unsigned long constraint_index = 0; constraint_index < column_constraints->size(); constraint_index++) {
-      if (column_constraints->at(constraint_index) == ConstraintType::NotNull) {
-        nullable = false;
-        column_constraints->erase(column_constraints->cbegin() + constraint_index);
-      } else if (column_constraints->at(constraint_index) == ConstraintType::Null) {
-        column_constraints->erase(column_constraints->cbegin() + constraint_index);
+      const auto& column_constraint = column_constraints->at(constraint_index);
+      switch (column_constraint) {
+        case ConstraintType::Null: {
+          if (explicit_not_nullable) {
+            return false;
+          }
+          explicit_nullable = true;
+          column_constraints->erase(column_constraints->cbegin() + constraint_index);
+          break;
+        }
+        case ConstraintType::NotNull:
+        case ConstraintType::PrimaryKey: {
+          if (explicit_nullable) {
+            return false;
+          }
+          explicit_not_nullable = true;
+          if (column_constraint == ConstraintType::NotNull) {
+            column_constraints->erase(column_constraints->cbegin() + constraint_index);
+          }
+          break;
+        }
+        default: break;
       }
     }
+
+    if (explicit_not_nullable) {
+      nullable = false;
+    }
+    return true;
   }
 
   std::vector<ConstraintType>* column_constraints;
