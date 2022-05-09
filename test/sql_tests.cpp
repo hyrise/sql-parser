@@ -65,32 +65,32 @@ TEST(CreateStatementTest) {
   ASSERT_STREQ(stmt->columns->at(0)->name, "c_char");
   ASSERT_EQ(stmt->columns->at(0)->type, (ColumnType{DataType::CHAR, 42}));
   ASSERT_NEQ(stmt->columns->at(0)->type, (ColumnType{DataType::CHAR, 43}));
-  ASSERT_EQ(stmt->columns->at(0)->nullable, false);
+  ASSERT_EQ(stmt->columns->at(0)->nullable, true);
   // c_date DATE
   ASSERT_STREQ(stmt->columns->at(1)->name, "c_date");
   ASSERT_EQ(stmt->columns->at(1)->type, (ColumnType{DataType::DATE}));
-  ASSERT_EQ(stmt->columns->at(1)->nullable, false);
+  ASSERT_EQ(stmt->columns->at(1)->nullable, true);
   // c_datetime DATETIME
   ASSERT_STREQ(stmt->columns->at(2)->name, "c_datetime");
   ASSERT_EQ(stmt->columns->at(2)->type, (ColumnType{DataType::DATETIME}));
-  ASSERT_EQ(stmt->columns->at(2)->nullable, false);
+  ASSERT_EQ(stmt->columns->at(2)->nullable, true);
   // c_decimal DECIMAL
   ASSERT_STREQ(stmt->columns->at(3)->name, "c_decimal");
   ASSERT_EQ(stmt->columns->at(3)->type, (ColumnType{DataType::DECIMAL}));
-  ASSERT_EQ(stmt->columns->at(3)->nullable, false);
+  ASSERT_EQ(stmt->columns->at(3)->nullable, true);
   // c_decimal_precision DECIMAL(13)
   ASSERT_STREQ(stmt->columns->at(4)->name, "c_decimal_precision");
   ASSERT_EQ(stmt->columns->at(4)->type, (ColumnType{DataType::DECIMAL, 0, 13}));
   ASSERT_NEQ(stmt->columns->at(4)->type, (ColumnType{DataType::DECIMAL, 0, 14}));
   ASSERT_NEQ(stmt->columns->at(4)->type, (ColumnType{DataType::DECIMAL, 1, 13}));
-  ASSERT_EQ(stmt->columns->at(4)->nullable, false);
+  ASSERT_EQ(stmt->columns->at(4)->nullable, true);
   // c_decimal_precision_scale DECIMAL(13,37)
   ASSERT_STREQ(stmt->columns->at(5)->name, "c_decimal_precision_scale");
   ASSERT_EQ(stmt->columns->at(5)->type, (ColumnType{DataType::DECIMAL, 0, 13, 37}));
   ASSERT_NEQ(stmt->columns->at(5)->type, (ColumnType{DataType::DECIMAL, 0, 14, 37}));
   ASSERT_NEQ(stmt->columns->at(5)->type, (ColumnType{DataType::DECIMAL, 0, 13, 38}));
   ASSERT_NEQ(stmt->columns->at(5)->type, (ColumnType{DataType::DECIMAL, 1, 13, 37}));
-  ASSERT_EQ(stmt->columns->at(5)->nullable, false);
+  ASSERT_EQ(stmt->columns->at(5)->nullable, true);
   // c_double_not_null DOUBLE NOT NULL
   ASSERT_STREQ(stmt->columns->at(6)->name, "c_double_not_null");
   ASSERT_EQ(stmt->columns->at(6)->type, (ColumnType{DataType::DOUBLE}));
@@ -98,11 +98,11 @@ TEST(CreateStatementTest) {
   // c_float FLOAT
   ASSERT_STREQ(stmt->columns->at(7)->name, "c_float");
   ASSERT_EQ(stmt->columns->at(7)->type, (ColumnType{DataType::FLOAT}));
-  ASSERT_EQ(stmt->columns->at(7)->nullable, false);
+  ASSERT_EQ(stmt->columns->at(7)->nullable, true);
   // c_int INT
   ASSERT_STREQ(stmt->columns->at(8)->name, "c_int");
   ASSERT_EQ(stmt->columns->at(8)->type, (ColumnType{DataType::INT}));
-  ASSERT_EQ(stmt->columns->at(8)->nullable, false);
+  ASSERT_EQ(stmt->columns->at(8)->nullable, true);
   // c_integer INTEGER NULL
   ASSERT_STREQ(stmt->columns->at(9)->name, "c_integer_null");
   ASSERT_EQ(stmt->columns->at(9)->type, (ColumnType{DataType::INT}));
@@ -110,15 +110,15 @@ TEST(CreateStatementTest) {
   // c_long LONG
   ASSERT_STREQ(stmt->columns->at(10)->name, "c_long");
   ASSERT_EQ(stmt->columns->at(10)->type, (ColumnType{DataType::LONG}));
-  ASSERT_EQ(stmt->columns->at(10)->nullable, false);
+  ASSERT_EQ(stmt->columns->at(10)->nullable, true);
   // c_real REAL
   ASSERT_STREQ(stmt->columns->at(11)->name, "c_real");
   ASSERT_EQ(stmt->columns->at(11)->type, (ColumnType{DataType::REAL}));
-  ASSERT_EQ(stmt->columns->at(11)->nullable, false);
+  ASSERT_EQ(stmt->columns->at(11)->nullable, true);
   // c_smallint SMALLINT
   ASSERT_STREQ(stmt->columns->at(12)->name, "c_smallint");
   ASSERT_EQ(stmt->columns->at(12)->type, (ColumnType{DataType::SMALLINT}));
-  ASSERT_EQ(stmt->columns->at(12)->nullable, false);
+  ASSERT_EQ(stmt->columns->at(12)->nullable, true);
   // c_text TEXT UNIQUE PRIMARY KEY NOT NULL
   ASSERT_STREQ(stmt->columns->at(13)->name, "c_text");
   ASSERT_EQ(stmt->columns->at(13)->type, (ColumnType{DataType::TEXT}));
@@ -131,18 +131,18 @@ TEST(CreateStatementTest) {
   // c_time TIME
   ASSERT_STREQ(stmt->columns->at(14)->name, "c_time");
   ASSERT_EQ(stmt->columns->at(14)->type, (ColumnType{DataType::TIME}));
-  ASSERT_EQ(stmt->columns->at(14)->nullable, false);
+  ASSERT_EQ(stmt->columns->at(14)->nullable, true);
   // c_time_precision TIME(17)
   ASSERT_STREQ(stmt->columns->at(15)->name, "c_time_precision");
   ASSERT_EQ(stmt->columns->at(15)->type, (ColumnType{DataType::TIME, 0, 17}));
   ASSERT_NEQ(stmt->columns->at(15)->type, (ColumnType{DataType::TIME, 0, 18}));
   ASSERT_NEQ(stmt->columns->at(15)->type, (ColumnType{DataType::TIME, 1, 17}));
-  ASSERT_EQ(stmt->columns->at(15)->nullable, false);
+  ASSERT_EQ(stmt->columns->at(15)->nullable, true);
   // c_varchar VARCHAR(50)
   ASSERT_STREQ(stmt->columns->at(16)->name, "c_varchar");
   ASSERT_EQ(stmt->columns->at(16)->type, (ColumnType{DataType::VARCHAR, 50}));
   ASSERT_NEQ(stmt->columns->at(16)->type, (ColumnType{DataType::VARCHAR, 51}));
-  ASSERT_EQ(stmt->columns->at(16)->nullable, false);
+  ASSERT_EQ(stmt->columns->at(16)->nullable, true);
   // c_char_varying CHARACTER VARYING(60)
   ASSERT_STREQ(stmt->columns->at(17)->name, "c_char_varying");
   ASSERT_EQ(stmt->columns->at(17)->type, (ColumnType{DataType::VARCHAR, 60}));

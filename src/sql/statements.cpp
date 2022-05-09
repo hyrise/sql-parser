@@ -16,7 +16,7 @@ TableConstraint::~TableConstraint() {
 
 // ColumnDefinition
 ColumnDefinition::ColumnDefinition(char* name, ColumnType type, std::vector<ConstraintType>* column_constraints)
-    : column_constraints(column_constraints), name(name), type(type), nullable(false){};
+    : column_constraints(column_constraints), name(name), type(type), nullable(true){};
 
 ColumnDefinition::~ColumnDefinition() {
   free(name);

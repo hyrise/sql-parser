@@ -34,13 +34,13 @@ struct ColumnDefinition : TableElement {
   ~ColumnDefinition() override;
 
   void setNullableExplicit() {
-    nullable = false;
+    nullable = true;
 
     for (unsigned long constraint_index = 0; constraint_index < column_constraints->size(); constraint_index++) {
-      if (column_constraints->at(constraint_index) == ConstraintType::Null) {
-        nullable = true;
+      if (column_constraints->at(constraint_index) == ConstraintType::NotNull) {
+        nullable = false;
         column_constraints->erase(column_constraints->cbegin() + constraint_index);
-      } else if (column_constraints->at(constraint_index) == ConstraintType::NotNull) {
+      } else if (column_constraints->at(constraint_index) == ConstraintType::Null) {
         column_constraints->erase(column_constraints->cbegin() + constraint_index);
       }
     }
