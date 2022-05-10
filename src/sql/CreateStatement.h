@@ -50,6 +50,7 @@ struct ColumnDefinition : TableElement {
         } break;
         case ConstraintType::NotNull: {
           constraints_to_remove.emplace_back(constraint_index);
+          [[fallthrough]];
         }
         case ConstraintType::PrimaryKey: {
           if (explicit_nullable) {
