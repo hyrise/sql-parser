@@ -41,6 +41,9 @@ std::ostream& operator<<(std::ostream& stream, const ColumnType& column_type) {
     case DataType::INT:
       stream << "INT";
       break;
+    case DataType::BIGINT:
+      stream << "BIGINT";
+      break;
     case DataType::LONG:
       stream << "LONG";
       break;
