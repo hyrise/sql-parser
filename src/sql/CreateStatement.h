@@ -41,24 +41,23 @@ struct ColumnDefinition : TableElement {
     for (unsigned long constraint_index = 0; constraint_index < column_constraints->size(); constraint_index++) {
       const auto column_constraint = column_constraints->at(constraint_index);
       switch (column_constraint) {
-        case ConstraintType::Null: {
+        case ConstraintType::Null:
           if (explicit_not_nullable) {
             return false;
           }
           explicit_nullable = true;
           constraints_to_remove.emplace_back(constraint_index);
-        } break;
-        case ConstraintType::NotNull: {
+          break;
+        case ConstraintType::NotNull:
           constraints_to_remove.emplace_back(constraint_index);
           [[fallthrough]];
-        }
-        case ConstraintType::PrimaryKey: {
+        case ConstraintType::PrimaryKey:
           if (explicit_nullable) {
             return false;
           }
           explicit_not_nullable = true;
           nullable = false;
-        } break;
+          break;
         default:
           break;
       }
