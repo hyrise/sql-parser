@@ -5,6 +5,7 @@
 #include "SQLStatement.h"
 
 #include <ostream>
+#include <unordered_set>
 
 // Note: Implementations of constructors and destructors can be found in statements.cpp.
 namespace hsql {
@@ -29,49 +30,31 @@ struct TableConstraint : TableElement {
 
 // Represents definition of a table column
 struct ColumnDefinition : TableElement {
-  ColumnDefinition(char* name, ColumnType type, std::vector<ConstraintType>* column_constraints);
+  ColumnDefinition(char* name, ColumnType type, std::unordered_set<ConstraintType>* column_constraints);
 
   ~ColumnDefinition() override;
 
+  // By default, columns are nullable. However, we track if a column is explicitly requested to be nullable to
+  // notice conflicts with PRIMARY KEY table constraints.
   bool trySetNullableExplicit() {
-    bool explicit_nullable = false;
-    bool explicit_not_nullable = false;
-    std::vector<unsigned long> constraints_to_remove;
-
-    for (unsigned long constraint_index = 0; constraint_index < column_constraints->size(); constraint_index++) {
-      const auto column_constraint = column_constraints->at(constraint_index);
-      switch (column_constraint) {
-        case ConstraintType::Null:
-          if (explicit_not_nullable) {
-            return false;
-          }
-          explicit_nullable = true;
-          constraints_to_remove.emplace_back(constraint_index);
-          break;
-        case ConstraintType::NotNull:
-          constraints_to_remove.emplace_back(constraint_index);
-          [[fallthrough]];
-        case ConstraintType::PrimaryKey:
-          if (explicit_nullable) {
-            return false;
-          }
-          explicit_not_nullable = true;
-          nullable = false;
-          break;
-        default:
-          break;
+    for (const auto& constraint : *column_constraints) {
+      if (constraint == ConstraintType::Null) {
+        if (column_constraints->count(ConstraintType::NotNull) ||
+            column_constraints->count(ConstraintType::PrimaryKey)) {
+          return false;
+        }
+      } else if (constraint == ConstraintType::NotNull || constraint == ConstraintType::PrimaryKey) {
+        if (column_constraints->count(ConstraintType::Null)) {
+          return false;
+        }
+        nullable = false;
       }
-    }
-
-    for (auto constraint_index = constraints_to_remove.rbegin(); constraint_index != constraints_to_remove.rend();
-         ++constraint_index) {
-      column_constraints->erase(column_constraints->begin() + *constraint_index);
     }
 
     return true;
   }
 
-  std::vector<ConstraintType>* column_constraints;
+  std::unordered_set<ConstraintType>* column_constraints;
   char* name;
   ColumnType type;
   bool nullable;

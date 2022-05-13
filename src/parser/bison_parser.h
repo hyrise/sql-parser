@@ -312,6 +312,7 @@ union HSQL_STYPE
 
   std::vector<char*>* str_vec;
   std::vector<hsql::ConstraintType>* column_constraint_vec;
+  std::unordered_set<hsql::ConstraintType>* column_constraint_set;
   std::vector<hsql::Expr*>* expr_vec;
   std::vector<hsql::OrderDescription*>* order_vec;
   std::vector<hsql::SQLStatement*>* stmt_vec;
@@ -326,7 +327,7 @@ union HSQL_STYPE
   hsql::RowLockMode lock_mode_t;
   hsql::RowLockWaitPolicy lock_wait_policy_t;
 
-#line 330 "bison_parser.h"
+#line 331 "bison_parser.h"
 
 };
 typedef union HSQL_STYPE HSQL_STYPE;

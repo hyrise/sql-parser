@@ -112,6 +112,8 @@ TEST(CreateStatementTest) {
   ASSERT_STREQ(stmt->columns->at(10)->name, "c_integer_null");
   ASSERT_EQ(stmt->columns->at(10)->type, (ColumnType{DataType::INT}));
   ASSERT_EQ(stmt->columns->at(10)->nullable, true);
+  ASSERT_EQ(stmt->columns->at(10)->column_constraints->size(), 1);
+  ASSERT(stmt->columns->at(10)->column_constraints->count(ConstraintType::Null));
   // c_long LONG
   ASSERT_STREQ(stmt->columns->at(11)->name, "c_long");
   ASSERT_EQ(stmt->columns->at(11)->type, (ColumnType{DataType::LONG}));
@@ -128,11 +130,10 @@ TEST(CreateStatementTest) {
   ASSERT_STREQ(stmt->columns->at(14)->name, "c_text");
   ASSERT_EQ(stmt->columns->at(14)->type, (ColumnType{DataType::TEXT}));
   ASSERT_EQ(stmt->columns->at(14)->nullable, false);
-  // Expecting two elements in column_constraints since information about NULL constraints is separately stored in
-  // ColumnDefinition::nullable
-  ASSERT_EQ(stmt->columns->at(14)->column_constraints->size(), 2);
-  ASSERT(stmt->columns->at(14)->column_constraints->at(0) == ConstraintType::Unique);
-  ASSERT(stmt->columns->at(14)->column_constraints->at(1) == ConstraintType::PrimaryKey);
+  ASSERT_EQ(stmt->columns->at(14)->column_constraints->size(), 3);
+  ASSERT(stmt->columns->at(14)->column_constraints->count(ConstraintType::Unique));
+  ASSERT(stmt->columns->at(14)->column_constraints->count(ConstraintType::PrimaryKey));
+  ASSERT(stmt->columns->at(14)->column_constraints->count(ConstraintType::NotNull));
   // c_time TIME
   ASSERT_STREQ(stmt->columns->at(15)->name, "c_time");
   ASSERT_EQ(stmt->columns->at(15)->type, (ColumnType{DataType::TIME}));
