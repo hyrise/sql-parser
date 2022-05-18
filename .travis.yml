@@ -22,6 +22,7 @@ matrix:
             - ubuntu-toolchain-r-test
           packages:
             - g++-10
+            - libstdc++-10-dev
             - valgrind
             - bison
             - flex
