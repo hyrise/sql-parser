@@ -1,13 +1,12 @@
 
 language: cpp
-dist: focal
 
 matrix:
   include:
-    - addons:
+    - dist:
+        - xenial
+      addons:
         apt:
-          sources:
-            - ubuntu-toolchain-r-test
           packages:
             - g++-6
             - valgrind
@@ -16,10 +15,10 @@ matrix:
       env:
         - MATRIX_EVAL="CC=gcc-6 && CXX=g++-6"
 
-    - addons:
+    - dist:
+        - focal
+      addons:
         apt:
-          sources:
-            - ubuntu-toolchain-r-test
           packages:
             - g++-10
             - valgrind
@@ -28,10 +27,10 @@ matrix:
       env:
         - MATRIX_EVAL="CC=gcc-10 && CXX=g++-10"
 
-    - addons:
+    - dist:
+        - focal
+      addons:
         apt:
-          sources:
-            - ubuntu-toolchain-r-test
           packages:
             - clang-12
             - valgrind
