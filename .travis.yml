@@ -3,7 +3,7 @@ language: cpp
 
 matrix:
   include:
-    - stage: gcc-6
+    - name: gcc-6
       dist: xenial
       addons:
         apt:
@@ -17,7 +17,7 @@ matrix:
       env:
         - MATRIX_EVAL="CC=gcc-6 && CXX=g++-6"
 
-    - stage: gcc-10
+    - name: gcc-10
       dist: focal
       addons:
         apt:
@@ -29,7 +29,7 @@ matrix:
       env:
         - MATRIX_EVAL="CC=gcc-10 && CXX=g++-10"
 
-    - stage: clang-12
+    - name: clang-12
       dist: focal
       addons:
         apt:
