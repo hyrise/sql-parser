@@ -1,6 +1,6 @@
 
 language: cpp
-
+dist: focal
 
 matrix:
   include:
@@ -22,7 +22,6 @@ matrix:
             - ubuntu-toolchain-r-test
           packages:
             - g++-10
-            - libstdc++-10-dev
             - valgrind
             - bison
             - flex
@@ -33,7 +32,6 @@ matrix:
         apt:
           sources:
             - ubuntu-toolchain-r-test
-            - llvm-toolchain-bionic-12
           packages:
             - clang-12
             - valgrind
