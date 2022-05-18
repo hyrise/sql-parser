@@ -14,32 +14,32 @@ matrix:
             - bison
             - flex
       env:
-        - MATRIX_EVAL="CC=gcc-9 && CXX=g++-9"
+        - MATRIX_EVAL="CC=gcc-6 && CXX=g++-6"
 
     - addons:
         apt:
           sources:
             - ubuntu-toolchain-r-test
           packages:
-            - g++-11
+            - g++-10
             - valgrind
             - bison
             - flex
       env:
-        - MATRIX_EVAL="CC=gcc-11 && CXX=g++-11"
+        - MATRIX_EVAL="CC=gcc-10 && CXX=g++-10"
 
     - addons:
         apt:
           sources:
             - ubuntu-toolchain-r-test
-            - llvm-toolchain-bionic-13
+            - llvm-toolchain-bionic-12
           packages:
-            - clang-13
+            - clang-12
             - valgrind
             - bison
             - flex
       env:
-        - MATRIX_EVAL="CC=clang-13 && CXX=clang++-13"
+        - MATRIX_EVAL="CC=clang-12 && CXX=clang++-12"
 
 before_install:
   - eval "${MATRIX_EVAL}"
