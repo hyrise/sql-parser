@@ -1,42 +1,56 @@
 
 language: cpp
 
-install:
-  - sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
-  - sudo apt-get -qq update
-  - sudo apt-get install -y g++-6 libstdc++-6-dev
-  - sudo apt-get install -y valgrind
-  - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-6 90
-  - sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-6 90
+matrix:
+  include:
+    - name: gcc-6
+      dist: xenial
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-6
+            - valgrind
+            - bison
+            - flex
+      env:
+        - MATRIX_EVAL="CC=gcc-6 && CXX=g++-6"
 
-  # Install bison 3.0.4.
-  - wget http://ftp.gnu.org/gnu/bison/bison-3.0.4.tar.gz
-  - tar -xvzf bison-3.0.4.tar.gz
-  - cd bison-3.0.4
-  - ./configure && make && sudo make install
-  - cd ..
+    - name: gcc-10
+      dist: focal
+      addons:
+        apt:
+          packages:
+            - g++-10
+            - valgrind
+            - bison
+            - flex
+      env:
+        - MATRIX_EVAL="CC=gcc-10 && CXX=g++-10"
 
-  # Install flex 2.6.4
-  - wget https://github.com/westes/flex/releases/download/v2.6.4/flex-2.6.4.tar.gz
-  - tar -xvzf flex-2.6.4.tar.gz
-  - cd flex-2.6.4
-  - ./configure && make && sudo make install
-  - cd ..
+    - name: clang-12
+      dist: focal
+      addons:
+        apt:
+          packages:
+            - clang-12
+            - valgrind
+            - bison
+            - flex
+      env:
+        - MATRIX_EVAL="CC=clang-12 && CXX=clang++-12"
 
-  # Show installed versions.
-  - which g++
-  - g++ -v
+before_install:
+  - eval "${MATRIX_EVAL}"
+
+script:
+  # print package versions
   - bison --version
   - flex --version
   - valgrind --version
-  - if [ "$CXX" = "clang++" ]; then export CXXFLAGS="-stdlib=libc++"; fi
 
-compiler:
-  - gcc
-  - clang
-
-script:
-  # bi build with flex/bison files checked into repo
+  # build with flex/bison files checked into repo
   - make -j4
   - make test
   - make test_example
@@ -46,6 +60,3 @@ script:
   - make -j4
   - make test
   - make test_example
-
-  # Test if benchmark can be built.
-  # - make benchmark
