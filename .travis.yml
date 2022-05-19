@@ -45,7 +45,12 @@ before_install:
   - eval "${MATRIX_EVAL}"
 
 script:
-  # bi build with flex/bison files checked into repo
+  # print package versions
+  - bison --version
+  - flex --version
+  - valgrind --version
+
+  # build with flex/bison files checked into repo
   - make -j4
   - make test
   - make test_example
@@ -55,4 +60,3 @@ script:
   - make -j4
   - make test
   - make test_example
-
