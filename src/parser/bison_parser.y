@@ -201,7 +201,7 @@
     %token NOT OFF SET TOP AS BY IF IN IS OF ON OR TO NO
     %token ARRAY CONCAT ILIKE SECOND MINUTE HOUR DAY MONTH YEAR
     %token SECONDS MINUTES HOURS DAYS MONTHS YEARS INTERVAL
-    %token TRUE FALSE
+    %token TRUE FALSE BOOLEAN
     %token TRANSACTION BEGIN COMMIT ROLLBACK
     %token NOWAIT SKIP LOCKED SHARE
 
@@ -553,6 +553,7 @@ column_def : IDENTIFIER column_type opt_column_constraints {
 };
 
 column_type : BIGINT { $$ = ColumnType{DataType::BIGINT}; }
+| BOOLEAN { $$ = ColumnType{DataType::BOOLEAN}; }
 | CHAR '(' INTVAL ')' { $$ = ColumnType{DataType::CHAR, $3}; }
 | CHARACTER_VARYING '(' INTVAL ')' { $$ = ColumnType{DataType::VARCHAR, $3}; }
 | DATE { $$ = ColumnType{DataType::DATE}; };
