@@ -32,6 +32,7 @@ CREATE TABLE teachers (name VARCHAR(30), student_number LONG, PRIMARY KEY (name,
 CREATE TABLE teachers (name CHARACTER VARYING(30));
 CREATE TABLE students_2 AS SELECT * FROM students
 CREATE TABLE students_3 AS SELECT city, grade FROM students WHERE grade > 3.0
+CREATE TABLE students (date_of_birth DATE, matriculation_date DATETIME, graduation_date TIMESTAMP);
 # Multiple statements
 CREATE TABLE "table" FROM TBL FILE 'students.tbl'; SELECT * FROM "table";
 # INSERT

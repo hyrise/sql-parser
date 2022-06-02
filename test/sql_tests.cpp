@@ -49,6 +49,7 @@ TEST(CreateStatementTest) {
       "  c_text TEXT UNIQUE PRIMARY KEY NOT NULL, "
       "  c_time TIME, "
       "  c_time_precision TIME(17), "
+      "  c_timestamp TIMESTAMP, "
       "  c_varchar VARCHAR(50), "
       "  c_char_varying CHARACTER VARYING(60)"
       ")",
@@ -61,7 +62,7 @@ TEST(CreateStatementTest) {
   ASSERT_EQ(stmt->type, kCreateTable);
   ASSERT_STREQ(stmt->tableName, "dummy_table");
   ASSERT_NOTNULL(stmt->columns);
-  ASSERT_EQ(stmt->columns->size(), 19);
+  ASSERT_EQ(stmt->columns->size(), 20);
   // c_bigint BIGINT
   ASSERT_STREQ(stmt->columns->at(0)->name, "c_bigint");
   ASSERT_EQ(stmt->columns->at(0)->type, (ColumnType{DataType::BIGINT}));
@@ -143,15 +144,19 @@ TEST(CreateStatementTest) {
   ASSERT_NEQ(stmt->columns->at(16)->type, (ColumnType{DataType::TIME, 0, 18}));
   ASSERT_NEQ(stmt->columns->at(16)->type, (ColumnType{DataType::TIME, 1, 17}));
   ASSERT_EQ(stmt->columns->at(16)->nullable, false);
-  // c_varchar VARCHAR(50)
-  ASSERT_STREQ(stmt->columns->at(17)->name, "c_varchar");
-  ASSERT_EQ(stmt->columns->at(17)->type, (ColumnType{DataType::VARCHAR, 50}));
-  ASSERT_NEQ(stmt->columns->at(17)->type, (ColumnType{DataType::VARCHAR, 51}));
+  // c_timestamp TIMESTAMP
+  ASSERT_STREQ(stmt->columns->at(17)->name, "c_timestamp");
+  ASSERT_EQ(stmt->columns->at(17)->type, (ColumnType{DataType::DATETIME}));
   ASSERT_EQ(stmt->columns->at(17)->nullable, false);
+  // c_varchar VARCHAR(50)
+  ASSERT_STREQ(stmt->columns->at(18)->name, "c_varchar");
+  ASSERT_EQ(stmt->columns->at(18)->type, (ColumnType{DataType::VARCHAR, 50}));
+  ASSERT_NEQ(stmt->columns->at(18)->type, (ColumnType{DataType::VARCHAR, 51}));
+  ASSERT_EQ(stmt->columns->at(18)->nullable, false);
   // c_char_varying CHARACTER VARYING(60)
-  ASSERT_STREQ(stmt->columns->at(18)->name, "c_char_varying");
-  ASSERT_EQ(stmt->columns->at(18)->type, (ColumnType{DataType::VARCHAR, 60}));
-  ASSERT_NEQ(stmt->columns->at(18)->type, (ColumnType{DataType::VARCHAR, 61}));
+  ASSERT_STREQ(stmt->columns->at(19)->name, "c_char_varying");
+  ASSERT_EQ(stmt->columns->at(19)->type, (ColumnType{DataType::VARCHAR, 60}));
+  ASSERT_NEQ(stmt->columns->at(19)->type, (ColumnType{DataType::VARCHAR, 61}));
   // Table constraints are identified and separated during the parsing of the SQL string
   // Table constraints:
   // - PRIMARY KEY(c_char, c_int)

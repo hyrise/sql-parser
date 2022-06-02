@@ -552,7 +552,7 @@ column_def : IDENTIFIER column_type opt_column_constraints {
   $$->setNullableExplicit();
 };
 
-column_type : INT { $$ = ColumnType{DataType::INT}; }
+column_type : BIGINT { $$ = ColumnType{DataType::BIGINT}; }
 | CHAR '(' INTVAL ')' { $$ = ColumnType{DataType::CHAR, $3}; }
 | CHARACTER_VARYING '(' INTVAL ')' { $$ = ColumnType{DataType::VARCHAR, $3}; }
 | DATE { $$ = ColumnType{DataType::DATE}; };
@@ -563,13 +563,14 @@ column_type : INT { $$ = ColumnType{DataType::INT}; }
 }
 | DOUBLE { $$ = ColumnType{DataType::DOUBLE}; }
 | FLOAT { $$ = ColumnType{DataType::FLOAT}; }
+| INT { $$ = ColumnType{DataType::INT}; }
 | INTEGER { $$ = ColumnType{DataType::INT}; }
 | LONG { $$ = ColumnType{DataType::LONG}; }
 | REAL { $$ = ColumnType{DataType::REAL}; }
 | SMALLINT { $$ = ColumnType{DataType::SMALLINT}; }
-| BIGINT { $$ = ColumnType{DataType::BIGINT}; }
 | TEXT { $$ = ColumnType{DataType::TEXT}; }
 | TIME opt_time_precision { $$ = ColumnType{DataType::TIME, 0, $2}; }
+| TIMESTAMP { $$ = ColumnType{DataType::DATETIME}; }
 | VARCHAR '(' INTVAL ')' { $$ = ColumnType{DataType::VARCHAR, $3}; }
 
 opt_time_precision : '(' INTVAL ')' { $$ = $2; }
