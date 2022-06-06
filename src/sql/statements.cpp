@@ -80,6 +80,9 @@ std::ostream& operator<<(std::ostream& stream, const ColumnType& column_type) {
     case DataType::SMALLINT:
       stream << "SMALLINT";
       break;
+    case DataType::BOOLEAN:
+      stream << "BOOLEAN";
+      break;
   }
   return stream;
 }

@@ -238,22 +238,23 @@ extern int hsql_debug;
     SQL_INTERVAL = 405,            /* INTERVAL  */
     SQL_TRUE = 406,                /* TRUE  */
     SQL_FALSE = 407,               /* FALSE  */
-    SQL_TRANSACTION = 408,         /* TRANSACTION  */
-    SQL_BEGIN = 409,               /* BEGIN  */
-    SQL_COMMIT = 410,              /* COMMIT  */
-    SQL_ROLLBACK = 411,            /* ROLLBACK  */
-    SQL_NOWAIT = 412,              /* NOWAIT  */
-    SQL_SKIP = 413,                /* SKIP  */
-    SQL_LOCKED = 414,              /* LOCKED  */
-    SQL_SHARE = 415,               /* SHARE  */
-    SQL_EQUALS = 416,              /* EQUALS  */
-    SQL_NOTEQUALS = 417,           /* NOTEQUALS  */
-    SQL_LESS = 418,                /* LESS  */
-    SQL_GREATER = 419,             /* GREATER  */
-    SQL_LESSEQ = 420,              /* LESSEQ  */
-    SQL_GREATEREQ = 421,           /* GREATEREQ  */
-    SQL_NOTNULL = 422,             /* NOTNULL  */
-    SQL_UMINUS = 423               /* UMINUS  */
+    SQL_BOOLEAN = 408,             /* BOOLEAN  */
+    SQL_TRANSACTION = 409,         /* TRANSACTION  */
+    SQL_BEGIN = 410,               /* BEGIN  */
+    SQL_COMMIT = 411,              /* COMMIT  */
+    SQL_ROLLBACK = 412,            /* ROLLBACK  */
+    SQL_NOWAIT = 413,              /* NOWAIT  */
+    SQL_SKIP = 414,                /* SKIP  */
+    SQL_LOCKED = 415,              /* LOCKED  */
+    SQL_SHARE = 416,               /* SHARE  */
+    SQL_EQUALS = 417,              /* EQUALS  */
+    SQL_NOTEQUALS = 418,           /* NOTEQUALS  */
+    SQL_LESS = 419,                /* LESS  */
+    SQL_GREATER = 420,             /* GREATER  */
+    SQL_LESSEQ = 421,              /* LESSEQ  */
+    SQL_GREATEREQ = 422,           /* GREATEREQ  */
+    SQL_NOTNULL = 423,             /* NOTNULL  */
+    SQL_UMINUS = 424               /* UMINUS  */
   };
   typedef enum hsql_tokentype hsql_token_kind_t;
 #endif
@@ -326,7 +327,7 @@ union HSQL_STYPE
   hsql::RowLockMode lock_mode_t;
   hsql::RowLockWaitPolicy lock_wait_policy_t;
 
-#line 330 "bison_parser.h"
+#line 331 "bison_parser.h"
 
 };
 typedef union HSQL_STYPE HSQL_STYPE;
