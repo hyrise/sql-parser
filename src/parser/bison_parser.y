@@ -143,7 +143,6 @@
   hsql::LockingClause* locking_t;
 
   std::vector<char*>* str_vec;
-  std::vector<hsql::ConstraintType>* column_constraint_vec;
   std::unordered_set<hsql::ConstraintType>* column_constraint_set;
   std::vector<hsql::Expr*>* expr_vec;
   std::vector<hsql::OrderDescription*>* order_vec;
