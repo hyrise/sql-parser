@@ -37,20 +37,13 @@ struct ColumnDefinition : TableElement {
   // By default, columns are nullable. However, we track if a column is explicitly requested to be nullable to
   // notice conflicts with PRIMARY KEY table constraints.
   bool trySetNullableExplicit() {
-    for (const auto& constraint : *column_constraints) {
-      if (constraint == ConstraintType::Null) {
-        if (column_constraints->count(ConstraintType::NotNull) ||
-            column_constraints->count(ConstraintType::PrimaryKey)) {
-          return false;
-        }
-      } else if (constraint == ConstraintType::NotNull || constraint == ConstraintType::PrimaryKey) {
-        if (column_constraints->count(ConstraintType::Null)) {
-          return false;
-        }
-        nullable = false;
+    if (column_constraints->count(ConstraintType::NotNull) || column_constraints->count(ConstraintType::PrimaryKey)) {
+      if (column_constraints->count(ConstraintType::Null)) {
+        return false;
       }
+      nullable = false;
     }
-
+    
     return true;
   }
 
