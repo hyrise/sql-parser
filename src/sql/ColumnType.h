@@ -7,6 +7,7 @@ namespace hsql {
 enum class DataType {
   UNKNOWN,
   BIGINT,
+  BOOLEAN,
   CHAR,
   DATE,
   DATETIME,
