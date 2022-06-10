@@ -45,3 +45,7 @@
 !SELECT * FROM test WHERE val = 2 FOR SHARE test1;
 !SELECT * FROM test WHERE val = 2 FOR NO KEY SHARE;
 !SELECT * FROM test WHERE val = 2 NOWAIT FOR UPDATE;
+!CREATE TABLE a_table (a_column INT PRIMARY KEY NULL);
+!CREATE TABLE a_table (a_column INT NULL PRIMARY KEY);
+!CREATE TABLE a_table (a_column INT NOT NULL NULL);
+!CREATE TABLE a_table (a_column INT NULL NOT NULL);

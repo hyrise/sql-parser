@@ -5,6 +5,7 @@
 #include "SQLStatement.h"
 
 #include <ostream>
+#include <unordered_set>
 
 // Note: Implementations of constructors and destructors can be found in statements.cpp.
 namespace hsql {
@@ -29,24 +30,24 @@ struct TableConstraint : TableElement {
 
 // Represents definition of a table column
 struct ColumnDefinition : TableElement {
-  ColumnDefinition(char* name, ColumnType type, std::vector<ConstraintType>* column_constraints);
+  ColumnDefinition(char* name, ColumnType type, std::unordered_set<ConstraintType>* column_constraints);
 
   ~ColumnDefinition() override;
 
-  void setNullableExplicit() {
-    nullable = false;
-
-    for (unsigned long constraint_index = 0; constraint_index < column_constraints->size(); constraint_index++) {
-      if (column_constraints->at(constraint_index) == ConstraintType::Null) {
-        nullable = true;
-        column_constraints->erase(column_constraints->cbegin() + constraint_index);
-      } else if (column_constraints->at(constraint_index) == ConstraintType::NotNull) {
-        column_constraints->erase(column_constraints->cbegin() + constraint_index);
+  // By default, columns are nullable. However, we track if a column is explicitly requested to be nullable to
+  // notice conflicts with PRIMARY KEY table constraints.
+  bool trySetNullableExplicit() {
+    if (column_constraints->count(ConstraintType::NotNull) || column_constraints->count(ConstraintType::PrimaryKey)) {
+      if (column_constraints->count(ConstraintType::Null)) {
+        return false;
       }
+      nullable = false;
     }
+    
+    return true;
   }
 
-  std::vector<ConstraintType>* column_constraints;
+  std::unordered_set<ConstraintType>* column_constraints;
   char* name;
   ColumnType type;
   bool nullable;

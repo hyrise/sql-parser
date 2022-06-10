@@ -143,7 +143,7 @@
   hsql::LockingClause* locking_t;
 
   std::vector<char*>* str_vec;
-  std::vector<hsql::ConstraintType>* column_constraint_vec;
+  std::unordered_set<hsql::ConstraintType>* column_constraint_set;
   std::vector<hsql::Expr*>* expr_vec;
   std::vector<hsql::OrderDescription*>* order_vec;
   std::vector<hsql::SQLStatement*>* stmt_vec;
@@ -163,7 +163,7 @@
      ** Destructor symbols
      *********************************/
     // clang-format off
-    %destructor { } <fval> <ival> <bval> <join_type> <order_type> <datetime_field> <column_type_t> <column_constraint_t> <import_type_t> <column_constraint_vec> <lock_mode_t> <lock_wait_policy_t>
+    %destructor { } <fval> <ival> <bval> <join_type> <order_type> <datetime_field> <column_type_t> <column_constraint_t> <import_type_t> <column_constraint_set> <lock_mode_t> <lock_wait_policy_t>
     %destructor { free( ($$.name) ); free( ($$.schema) ); } <table_name>
     %destructor { free( ($$) ); } <sval>
     %destructor {
@@ -252,8 +252,8 @@
     %type <with_description_t>     with_description
     %type <set_operator_t>         set_operator set_type
     %type <column_constraint_t>    column_constraint
-    %type <column_constraint_vec>  column_constraint_list
-    %type <column_constraint_vec>  opt_column_constraints
+    %type <column_constraint_set>  opt_column_constraints
+    %type <column_constraint_set>  column_constraint_set
     %type <alter_action_t>         alter_action
     %type <drop_action_t>          drop_action
     %type <lock_wait_policy_t>     opt_row_lock_policy
@@ -508,6 +508,10 @@ create_statement : CREATE TABLE opt_not_exists table_name FROM IDENTIFIER FILE f
   $$->tableName = $4.name;
   $$->setColumnDefsAndConstraints($6);
   delete $6;
+  if (result->errorMsg()) {
+    delete $$;
+    YYERROR;
+  }
 }
 | CREATE TABLE opt_not_exists table_name AS select_statement {
   $$ = new CreateStatement(kCreateTable);
@@ -549,7 +553,9 @@ table_elem : column_def { $$ = $1; }
 
 column_def : IDENTIFIER column_type opt_column_constraints {
   $$ = new ColumnDefinition($1, $2, $3);
-  $$->setNullableExplicit();
+  if (!$$->trySetNullableExplicit()) {
+    yyerror(&yyloc, result, scanner, ("Conflicting nullability constraints for " + std::string{$1}).c_str());
+  }
 };
 
 column_type : BIGINT { $$ = ColumnType{DataType::BIGINT}; }
@@ -581,15 +587,15 @@ opt_decimal_specification : '(' INTVAL ',' INTVAL ')' { $$ = new std::pair<int64
 | '(' INTVAL ')' { $$ = new std::pair<int64_t, int64_t>{$2, 0}; }
 | /* empty */ { $$ = new std::pair<int64_t, int64_t>{0, 0}; };
 
-opt_column_constraints : column_constraint_list { $$ = $1; }
-| /* empty */ { $$ = new std::vector<ConstraintType>(); };
+opt_column_constraints : column_constraint_set { $$ = $1; }
+| /* empty */ { $$ = new std::unordered_set<ConstraintType>(); };
 
-column_constraint_list : column_constraint {
-  $$ = new std::vector<ConstraintType>();
-  $$->push_back($1);
+column_constraint_set : column_constraint {
+  $$ = new std::unordered_set<ConstraintType>();
+  $$->insert($1);
 }
-| column_constraint_list column_constraint {
-  $1->push_back($2);
+| column_constraint_set column_constraint {
+  $1->insert($2);
   $$ = $1;
 }
 
