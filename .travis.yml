@@ -54,10 +54,9 @@ matrix:
             - bison
             - flex
       env:
-        - LLVM_PATH="$(brew --prefix llvm@14)/bin"
-        - BISON_PATH="$(brew --prefix bison)/bin/bison"
-        - FLEX_PATH="$(brew --prefix flex)/bin/flex"
-        - MATRIX_EVAL="CC=${LLVM_PATH}/clang && CXX=${LLVM_PATH}/clang++ BISON=${BISON_PATH} FLEX=${FLEX_PATH}"
+        - BREW_PATH="$(brew --prefix)/opt"
+        - LLVM_PATH="${BREW_PATH}/llvm@14/bin"
+        - MATRIX_EVAL="CC=${LLVM_PATH}/clang && CXX=${LLVM_PATH}/clang++ BISON=${BREW_PATH}/bison/bin/bison FLEX=${BREW_PATH}/flex/bin/flex"
 
 before_install:
   - eval "${MATRIX_EVAL}"
