@@ -53,8 +53,7 @@ matrix:
             - bison
             - flex
       env:
-        - BREW_PATH="$(brew --prefix)/opt"
-        - MATRIX_EVAL="CC=clang && CXX=clang++ && BISON=${BREW_PATH}/bison/bin/bison && FLEX=${BREW_PATH}/flex/bin/flex"
+        - MATRIX_EVAL="CC=clang && CXX=clang++ && BISON=/usr/local/opt/bison/bin/bison && FLEX=/usr/local/opt/flex/bin/flex"
 
 before_install:
   - eval "${MATRIX_EVAL}"
