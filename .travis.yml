@@ -3,7 +3,8 @@ language: cpp
 
 matrix:
   include:
-    - name: gcc-6
+    - name: ubuntu16.04-gcc-6
+      os: linux
       dist: xenial
       addons:
         apt:
@@ -17,29 +18,46 @@ matrix:
       env:
         - MATRIX_EVAL="CC=gcc-6 && CXX=g++-6"
 
-    - name: gcc-10
-      dist: focal
+    - name: ubuntu22.04-gcc-12
+      os: linux
+      dist: jammy
       addons:
         apt:
           packages:
-            - g++-10
+            - g++-12
             - valgrind
             - bison
             - flex
       env:
-        - MATRIX_EVAL="CC=gcc-10 && CXX=g++-10"
+        - MATRIX_EVAL="CC=gcc-12 && CXX=g++-12"
 
-    - name: clang-12
-      dist: focal
+    - name: ubuntu22.04-clang-14
+      os: linux
+      dist: jammy
       addons:
         apt:
           packages:
-            - clang-12
+            - clang-14
             - valgrind
             - bison
             - flex
       env:
-        - MATRIX_EVAL="CC=clang-12 && CXX=clang++-12"
+        - MATRIX_EVAL="CC=clang-14 && CXX=clang++-14"
+
+    - name: macOS12.04-clang-14
+      os: osx
+      osx_image: xcode13.4
+      addons:
+        homebrew:
+          packages:
+            - clang-14
+            - bison
+            - flex
+      env:
+        - CLANG_PATH="$(brew --prefix llvm@14)/bin"
+        - BISON_PATH="$(brew --prefix bison)/bin/bison"
+        - FLEX_PATH="$(brew --prefix flex)/bin/flex"
+        - MATRIX_EVAL="CC=${CLANG_PATH}/clang && CXX=${CLANG_PATH}/clang++ BISON=${BISON_PATH} FLEX=${FLEX_PATH}"
 
 before_install:
   - eval "${MATRIX_EVAL}"
