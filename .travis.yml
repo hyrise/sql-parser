@@ -16,8 +16,7 @@ matrix:
             - bison
             - flex
       env:
-        - MATRIX_EVAL="CC=gcc-6 && CXX=g++-6"
-
+        - MATRIX_EVAL="CC=gcc-6 && CXX=g++-6 && BISON=bison && FLEX=flex"
     - name: ubuntu22.04-gcc-12
       os: linux
       dist: jammy
@@ -29,7 +28,7 @@ matrix:
             - bison
             - flex
       env:
-        - MATRIX_EVAL="CC=gcc-12 && CXX=g++-12"
+        - MATRIX_EVAL="CC=gcc-12 && CXX=g++-12 && BISON=bison && FLEX=flex"
 
     - name: ubuntu22.04-clang-14
       os: linux
@@ -42,7 +41,7 @@ matrix:
             - bison
             - flex
       env:
-        - MATRIX_EVAL="CC=clang-14 && CXX=clang++-14"
+        - MATRIX_EVAL="CC=clang-14 && CXX=clang++-14 && BISON=bison && FLEX=flex"
 
     - name: macOS12.04-clang
       os: osx
@@ -60,8 +59,8 @@ before_install:
 
 script:
   # print package versions
-  - bison --version
-  - flex --version
+  - ${BISON} --version
+  - ${FLEX} --version
   - awk -v a=$(uname) 'BEGIN { if (a == "Linux") system("valgrind --version") }'
 
   # build with flex/bison files checked into repo
