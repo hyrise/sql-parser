@@ -66,7 +66,7 @@ script:
   # print package versions
   - bison --version
   - flex --version
-  - valgrind --version
+  - awk -v a=$(uname) 'BEGIN { if (a == "Linux") system("valgrind --version") }'
 
   # build with flex/bison files checked into repo
   - make -j4
