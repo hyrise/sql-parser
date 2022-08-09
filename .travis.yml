@@ -52,13 +52,16 @@ matrix:
             - bison
             - flex
       env:
-        - MATRIX_EVAL="CC=clang && CXX=clang++ && BISON=/usr/local/opt/bison/bin/bison && FLEX=/usr/local/opt/flex/bin/flex"
+        - BREW_PREFIX="$(brew --prefix)/opt"
+        - MATRIX_EVAL="CC=clang && CXX=clang++ && BISON=${BREW_PREFIX}/bison/bin/bison && FLEX=$${BREW_PREFIX}/flex/bin/flex"
 
 before_install:
   - eval "${MATRIX_EVAL}"
 
 script:
   # print package versions
+  - ${CC} --version
+  - ${CXX} --version
   - ${BISON} --version
   - ${FLEX} --version
   - awk -v a=$(uname) 'BEGIN { if (a == "Linux") system("valgrind --version") }'
