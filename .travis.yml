@@ -65,11 +65,11 @@ script:
 
   # build with flex/bison files checked into repo
   - make -j4
-  - make test
+  - BISON=${BISON} FLEX=${FLEX} make test
   - make test_example
 
   # build flex/bison files in CI
-  - make cleanall
-  - make -j4
-  - make test
+  - BISON=${BISON} FLEX=${FLEX} make cleanall
+  - BISON=${BISON} FLEX=${FLEX} make -j4
+  - BISON=${BISON} FLEX=${FLEX} make test
   - make test_example
