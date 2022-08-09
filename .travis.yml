@@ -44,18 +44,18 @@ matrix:
       env:
         - MATRIX_EVAL="CC=clang-14 && CXX=clang++-14"
 
-    - name: macOS12.04-clang-14
+    - name: macOS12.04-clang
       os: osx
       osx_image: xcode13.4
       addons:
         homebrew:
           packages:
-            - llvm@14
+            - llvm
             - bison
             - flex
       env:
         - BREW_PATH="$(brew --prefix)/opt"
-        - LLVM_PATH="${BREW_PATH}/llvm@14/bin"
+        - LLVM_PATH="${BREW_PATH}/llvm/bin"
         - MATRIX_EVAL="CC=${LLVM_PATH}/clang && CXX=${LLVM_PATH}/clang++ BISON=${BREW_PATH}/bison/bin/bison FLEX=${BREW_PATH}/flex/bin/flex"
 
 before_install:

@@ -23,10 +23,10 @@ bin/tests -f "test/queries/queries-good.sql" -f "test/queries/queries-bad.sql"
 SQL_TEST_RET=$?
 
 if [ $SQL_TEST_RET -eq 0 ]; then
-	printf "${GREEN}SQL parser tests succeeded!${NC}\n"
+  printf "${GREEN}SQL parser tests succeeded!${NC}\n"
 else
-	RET=1
-	printf "${RED}SQL parser tests failed!${NC}\n"
+  RET=1
+  printf "${RED}SQL parser tests failed!${NC}\n"
 fi
 
 #################################################
@@ -66,10 +66,10 @@ make -C src/parser/ test >>/dev/null
 CONFLICT_RET=$?
 
 if [ $CONFLICT_RET -eq 0 ]; then
-	printf "${GREEN}Conflict check succeeded!${NC}\n"
+  printf "${GREEN}Conflict check succeeded!${NC}\n"
 else
-	RET=1
-	printf "${RED}Conflict check failed!${NC}\n"
+  RET=1
+  printf "${RED}Conflict check failed!${NC}\n"
 fi
 
 # Print a summary of the test results.
@@ -77,14 +77,14 @@ printf "
 ----------------------------------
 ${BOLD}Summary:\n"
 if [ $SQL_TEST_RET -eq 0 ]; then printf "SQL Tests:              ${GREEN}Success${BOLD}\n";
-else							               printf "SQL Tests:              ${RED}Failure${BOLD}\n"; fi
+else                             printf "SQL Tests:              ${RED}Failure${BOLD}\n"; fi
 if [ "$MEM_LEAK_EXECUTED" = true ]; then
   if [ $MEM_LEAK_RET -eq 0 ]; then printf "Memory Leak Check:      ${GREEN}Success${BOLD}\n";
-  else							               printf "Memory Leak Check:      ${RED}Failure${BOLD}\n"; fi
+  else                             printf "Memory Leak Check:      ${RED}Failure${BOLD}\n"; fi
 else                               printf "Memory Leak Check:      ${YELLOW}Skipped${BOLD}\n"
 fi
 if [ $CONFLICT_RET -eq 0 ]; then printf "Grammar Conflict Check: ${GREEN}Success${BOLD}\n";
-else							               printf "Grammar Conflict Check: ${RED}Failure${BOLD}\n"; fi
+else                             printf "Grammar Conflict Check: ${RED}Failure${BOLD}\n"; fi
 
 if [ $RET -ne 0 ]; then                     printf "${RED}Some tests failed!${NC}\n"
 elif [ "$MEM_LEAK_EXECUTED" = false ]; then printf "${YELLOW}Some tests were skipped!${NC}\n"
