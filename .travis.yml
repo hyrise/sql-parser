@@ -50,14 +50,14 @@ matrix:
       addons:
         homebrew:
           packages:
-            - clang-14
+            - llvm@14
             - bison
             - flex
       env:
-        - CLANG_PATH="$(brew --prefix llvm@14)/bin"
+        - LLVM_PATH="$(brew --prefix llvm@14)/bin"
         - BISON_PATH="$(brew --prefix bison)/bin/bison"
         - FLEX_PATH="$(brew --prefix flex)/bin/flex"
-        - MATRIX_EVAL="CC=${CLANG_PATH}/clang && CXX=${CLANG_PATH}/clang++ BISON=${BISON_PATH} FLEX=${FLEX_PATH}"
+        - MATRIX_EVAL="CC=${LLVM_PATH}/clang && CXX=${LLVM_PATH}/clang++ BISON=${BISON_PATH} FLEX=${FLEX_PATH}"
 
 before_install:
   - eval "${MATRIX_EVAL}"
