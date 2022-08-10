@@ -3,7 +3,8 @@ language: cpp
 
 matrix:
   include:
-    - name: gcc-6
+    - name: ubuntu16.04-gcc-6
+      os: linux
       dist: xenial
       addons:
         apt:
@@ -15,48 +16,63 @@ matrix:
             - bison
             - flex
       env:
-        - MATRIX_EVAL="CC=gcc-6 && CXX=g++-6"
-
-    - name: gcc-10
-      dist: focal
+        - MATRIX_EVAL="CC=gcc-6 && CXX=g++-6 && BISON=bison && FLEX=flex"
+    - name: ubuntu22.04-gcc-12
+      os: linux
+      dist: jammy
       addons:
         apt:
           packages:
-            - g++-10
+            - g++-12
             - valgrind
             - bison
             - flex
       env:
-        - MATRIX_EVAL="CC=gcc-10 && CXX=g++-10"
+        - MATRIX_EVAL="CC=gcc-12 && CXX=g++-12 && BISON=bison && FLEX=flex"
 
-    - name: clang-12
-      dist: focal
+    - name: ubuntu22.04-clang-14
+      os: linux
+      dist: jammy
       addons:
         apt:
           packages:
-            - clang-12
+            - clang-14
             - valgrind
             - bison
             - flex
       env:
-        - MATRIX_EVAL="CC=clang-12 && CXX=clang++-12"
+        - MATRIX_EVAL="CC=clang-14 && CXX=clang++-14 && BISON=bison && FLEX=flex"
+
+    - name: macOS12.04-clang
+      os: osx
+      osx_image: xcode13.4
+      addons:
+        homebrew:
+          packages:
+            - bison
+            - flex
+      env:
+        - BREW_PREFIX="$(brew --prefix)/opt"
+        - MATRIX_EVAL="CC=clang && CXX=clang++ && BISON=${BREW_PREFIX}/bison/bin/bison && FLEX=${BREW_PREFIX}/flex/bin/flex"
 
 before_install:
   - eval "${MATRIX_EVAL}"
 
 script:
   # print package versions
-  - bison --version
-  - flex --version
-  - valgrind --version
+  - ${CC} --version
+  - ${CXX} --version
+  - ${BISON} --version
+  - ${FLEX} --version
+  - awk -v a=$(uname) 'BEGIN { if (a == "Linux") system("valgrind --version") }'
 
   # build with flex/bison files checked into repo
   - make -j4
-  - make test
+  - BISON=${BISON} FLEX=${FLEX} make test
   - make test_example
 
   # build flex/bison files in CI
-  - make cleanall
-  - make -j4
-  - make test
+  - BISON=${BISON} FLEX=${FLEX} make cleanall
+  - BISON=${BISON} FLEX=${FLEX} make -j4
+  - BISON=${BISON} FLEX=${FLEX} make test
   - make test_example
