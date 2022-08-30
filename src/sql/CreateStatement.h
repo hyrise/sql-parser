@@ -43,7 +43,7 @@ struct ColumnDefinition : TableElement {
       }
       nullable = false;
     }
-    
+
     return true;
   }
 
@@ -66,18 +66,7 @@ struct CreateStatement : SQLStatement {
   CreateStatement(CreateType type);
   ~CreateStatement() override;
 
-  void setColumnDefsAndConstraints(std::vector<TableElement*>* tableElements) {
-    columns = new std::vector<ColumnDefinition*>();
-    tableConstraints = new std::vector<TableConstraint*>();
-
-    for (auto tableElem : *tableElements) {
-      if (auto* colDef = dynamic_cast<ColumnDefinition*>(tableElem)) {
-        columns->emplace_back(colDef);
-      } else if (auto* tableConstraint = dynamic_cast<TableConstraint*>(tableElem)) {
-        tableConstraints->emplace_back(tableConstraint);
-      }
-    }
-  }
+  void setColumnDefsAndConstraints(std::vector<TableElement*>* tableElements);
 
   CreateType type;
   bool ifNotExists;                                 // default: false
