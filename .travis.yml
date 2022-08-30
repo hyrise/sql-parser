@@ -76,3 +76,9 @@ script:
   - BISON=${BISON} FLEX=${FLEX} make -j4
   - BISON=${BISON} FLEX=${FLEX} make test
   - make test_example
+
+  # build flex/bison files in CI with debug mode
+  - BISON=${BISON} FLEX=${FLEX} make cleanall
+  - BISON=${BISON} FLEX=${FLEX} make -j4 mode=debug
+  - BISON=${BISON} FLEX=${FLEX} make test
+  - make test_example
