@@ -36,23 +36,30 @@ GMAKE = make mode=$(mode)
 NAME := sqlparser
 PARSER_CPP = $(SRCPARSER)/bison_parser.cpp  $(SRCPARSER)/flex_lexer.cpp
 PARSER_H   = $(SRCPARSER)/bison_parser.h    $(SRCPARSER)/flex_lexer.h
-LIB_CFLAGS = -std=c++1z -Wall -Werror $(OPT_FLAG)
+LIB_CFLAGS = -std=c++1z $(OPT_FLAG)
+
+relaxed_build ?= "off"
+ifeq ($(relaxed_build), on)
+    $(warning $(NAME) will be built with most compiler warnings deactivated. This is fine if you want to test $(NAME) but will become an issue when you want to contribute code.)
+else
+    LIB_CLFAGS += -Wall -Werror
+endif
 
 static ?= no
 ifeq ($(static), yes)
 	LIB_BUILD  = lib$(NAME).a
-	LIBLINKER = $(AR)
+	LIBLINKER  = $(AR)
 	LIB_LFLAGS = rs
 else
-	LIB_BUILD  = lib$(NAME).so
-	LIBLINKER = $(CXX)
-	LIB_CFLAGS  +=  -fPIC
-	LIB_LFLAGS = -shared -o
+	LIB_BUILD   = lib$(NAME).so
+	LIBLINKER   = $(CXX)
+	LIB_CFLAGS += -fPIC
+	LIB_LFLAGS  = -shared -o
 endif
-LIB_CPP    = $(sort $(shell find $(SRC) -name '*.cpp' -not -path "$(SRCPARSER)/*") $(PARSER_CPP))
-LIB_H      = $(shell find $(SRC) -name '*.h' -not -path "$(SRCPARSER)/*") $(PARSER_H)
-LIB_ALL    = $(shell find $(SRC) -name '*.cpp' -not -path "$(SRCPARSER)/*") $(shell find $(SRC) -name '*.h' -not -path "$(SRCPARSER)/*")
-LIB_OBJ    = $(LIB_CPP:%.cpp=%.o)
+LIB_CPP = $(sort $(shell find $(SRC) -name '*.cpp' -not -path "$(SRCPARSER)/*") $(PARSER_CPP))
+LIB_H   = $(shell find $(SRC) -name '*.h' -not -path "$(SRCPARSER)/*") $(PARSER_H)
+LIB_ALL = $(shell find $(SRC) -name '*.cpp' -not -path "$(SRCPARSER)/*") $(shell find $(SRC) -name '*.h' -not -path "$(SRCPARSER)/*")
+LIB_OBJ = $(LIB_CPP:%.cpp=%.o)
 
 library: $(LIB_BUILD)
 
@@ -119,11 +126,11 @@ $(BM_BUILD): $(BM_ALL) $(LIB_BUILD)
 ########################################
 ############ Test & Example ############
 ########################################
-TEST_BUILD   = $(BIN)/tests
-TEST_CFLAGS   = -std=c++1z -Wall -Werror -Isrc/ -Itest/ -L./ $(OPT_FLAG)
-TEST_CPP     = $(shell find test/ -name '*.cpp')
-TEST_ALL     = $(shell find test/ -name '*.cpp') $(shell find test/ -name '*.h')
-EXAMPLE_SRC  = $(shell find example/ -name '*.cpp') $(shell find example/ -name '*.h')
+TEST_BUILD  = $(BIN)/tests
+TEST_CFLAGS = -std=c++1z -Wall -Werror -Isrc/ -Itest/ -L./ $(OPT_FLAG)
+TEST_CPP    = $(shell find test/ -name '*.cpp')
+TEST_ALL    = $(shell find test/ -name '*.cpp') $(shell find test/ -name '*.h')
+EXAMPLE_SRC = $(shell find example/ -name '*.cpp') $(shell find example/ -name '*.h')
 
 test: $(TEST_BUILD)
 	bash test/test.sh
