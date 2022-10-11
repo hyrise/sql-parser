@@ -169,7 +169,7 @@
     %destructor {
       if (($$) != nullptr) {
         for (auto ptr : *($$)) {
-          free(ptr);
+          delete ptr;
         }
       }
       delete ($$);

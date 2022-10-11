@@ -2051,7 +2051,7 @@ yydestruct (const char *yymsg,
                 {
       if ((((*yyvaluep).stmt_vec)) != nullptr) {
         for (auto ptr : *(((*yyvaluep).stmt_vec))) {
-          free(ptr);
+          delete ptr;
         }
       }
       delete (((*yyvaluep).stmt_vec));
@@ -2076,7 +2076,7 @@ yydestruct (const char *yymsg,
                 {
       if ((((*yyvaluep).expr_vec)) != nullptr) {
         for (auto ptr : *(((*yyvaluep).expr_vec))) {
-          free(ptr);
+          delete ptr;
         }
       }
       delete (((*yyvaluep).expr_vec));
@@ -2089,7 +2089,7 @@ yydestruct (const char *yymsg,
                 {
       if ((((*yyvaluep).expr_vec)) != nullptr) {
         for (auto ptr : *(((*yyvaluep).expr_vec))) {
-          free(ptr);
+          delete ptr;
         }
       }
       delete (((*yyvaluep).expr_vec));
@@ -2180,7 +2180,7 @@ yydestruct (const char *yymsg,
                 {
       if ((((*yyvaluep).table_element_vec)) != nullptr) {
         for (auto ptr : *(((*yyvaluep).table_element_vec))) {
-          free(ptr);
+          delete ptr;
         }
       }
       delete (((*yyvaluep).table_element_vec));
@@ -2295,7 +2295,7 @@ yydestruct (const char *yymsg,
                 {
       if ((((*yyvaluep).str_vec)) != nullptr) {
         for (auto ptr : *(((*yyvaluep).str_vec))) {
-          free(ptr);
+          delete ptr;
         }
       }
       delete (((*yyvaluep).str_vec));
@@ -2314,7 +2314,7 @@ yydestruct (const char *yymsg,
                 {
       if ((((*yyvaluep).update_vec)) != nullptr) {
         for (auto ptr : *(((*yyvaluep).update_vec))) {
-          free(ptr);
+          delete ptr;
         }
       }
       delete (((*yyvaluep).update_vec));
@@ -2393,7 +2393,7 @@ yydestruct (const char *yymsg,
                 {
       if ((((*yyvaluep).expr_vec)) != nullptr) {
         for (auto ptr : *(((*yyvaluep).expr_vec))) {
-          free(ptr);
+          delete ptr;
         }
       }
       delete (((*yyvaluep).expr_vec));
@@ -2436,7 +2436,7 @@ yydestruct (const char *yymsg,
                 {
       if ((((*yyvaluep).order_vec)) != nullptr) {
         for (auto ptr : *(((*yyvaluep).order_vec))) {
-          free(ptr);
+          delete ptr;
         }
       }
       delete (((*yyvaluep).order_vec));
@@ -2449,7 +2449,7 @@ yydestruct (const char *yymsg,
                 {
       if ((((*yyvaluep).order_vec)) != nullptr) {
         for (auto ptr : *(((*yyvaluep).order_vec))) {
-          free(ptr);
+          delete ptr;
         }
       }
       delete (((*yyvaluep).order_vec));
@@ -2486,7 +2486,7 @@ yydestruct (const char *yymsg,
                 {
       if ((((*yyvaluep).expr_vec)) != nullptr) {
         for (auto ptr : *(((*yyvaluep).expr_vec))) {
-          free(ptr);
+          delete ptr;
         }
       }
       delete (((*yyvaluep).expr_vec));
@@ -2499,7 +2499,7 @@ yydestruct (const char *yymsg,
                 {
       if ((((*yyvaluep).expr_vec)) != nullptr) {
         for (auto ptr : *(((*yyvaluep).expr_vec))) {
-          free(ptr);
+          delete ptr;
         }
       }
       delete (((*yyvaluep).expr_vec));
@@ -2512,7 +2512,7 @@ yydestruct (const char *yymsg,
                 {
       if ((((*yyvaluep).expr_vec)) != nullptr) {
         for (auto ptr : *(((*yyvaluep).expr_vec))) {
-          free(ptr);
+          delete ptr;
         }
       }
       delete (((*yyvaluep).expr_vec));
@@ -2729,7 +2729,7 @@ yydestruct (const char *yymsg,
                 {
       if ((((*yyvaluep).table_vec)) != nullptr) {
         for (auto ptr : *(((*yyvaluep).table_vec))) {
-          free(ptr);
+          delete ptr;
         }
       }
       delete (((*yyvaluep).table_vec));
@@ -2862,7 +2862,7 @@ yydestruct (const char *yymsg,
                 {
       if ((((*yyvaluep).str_vec)) != nullptr) {
         for (auto ptr : *(((*yyvaluep).str_vec))) {
-          free(ptr);
+          delete ptr;
         }
       }
       delete (((*yyvaluep).str_vec));

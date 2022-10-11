@@ -261,7 +261,8 @@ CHARACTER[ \t\n]+VARYING TOKEN(CHARACTER_VARYING)
 }
 
 [A-Za-z][A-Za-z0-9_]* {
-  yylval->sval = strdup(yytext);
+  yylval->sval = new char[strlen(yytext) + 1];
+  strcpy(yylval->sval, yytext);
   return SQL_IDENTIFIER;
 }
 
