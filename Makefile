@@ -36,7 +36,7 @@ GMAKE = make mode=$(mode)
 NAME := sqlparser
 PARSER_CPP = $(SRCPARSER)/bison_parser.cpp  $(SRCPARSER)/flex_lexer.cpp
 PARSER_H   = $(SRCPARSER)/bison_parser.h    $(SRCPARSER)/flex_lexer.h
-LIB_CFLAGS = -std=c++1z $(OPT_FLAG)
+LIB_CFLAGS = -std=c++17 $(OPT_FLAG)
 
 relaxed_build ?= "off"
 ifeq ($(relaxed_build), on)
