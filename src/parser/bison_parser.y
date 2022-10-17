@@ -165,6 +165,14 @@
     // clang-format off
     %destructor { } <fval> <ival> <bval> <join_type> <order_type> <datetime_field> <column_type_t> <column_constraint_t> <import_type_t> <column_constraint_set> <lock_mode_t> <lock_wait_policy_t>
     %destructor { free( ($$.name) ); free( ($$.schema) ); } <table_name>
+    %destructor {
+      if (($$) != nullptr) {
+        for (auto ptr : *($$)) {
+          free(ptr);
+        }
+      }
+      delete ($$);
+    } <str_vec>
     %destructor { free( ($$) ); } <sval>
     %destructor {
       if (($$) != nullptr) {
@@ -173,7 +181,7 @@
         }
       }
       delete ($$);
-    } <str_vec> <table_vec> <table_element_vec> <update_vec> <expr_vec> <order_vec> <stmt_vec>
+    } <table_vec> <table_element_vec> <update_vec> <expr_vec> <order_vec> <stmt_vec>
     %destructor { delete ($$); } <*>
 
 
