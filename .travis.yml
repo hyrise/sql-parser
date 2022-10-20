@@ -58,6 +58,7 @@ matrix:
         - MATRIX_EVAL="CC=clang && CXX=clang++ && BISON=${BREW_PREFIX}/bison/bin/bison && FLEX=${BREW_PREFIX}/flex/bin/flex"
 
 before_install:
+  - export HOMEBREW_NO_AUTO_UPDATE=1 HOMEBREW_NO_INSTALL_CLEANUP=1
   - eval "${MATRIX_EVAL}"
 
 script:
