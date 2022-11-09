@@ -13,10 +13,7 @@ In March 2015 we've also written a short paper outlining discussing some develop
 
 **Note:** You can also find a detailed usage description [here](docs/basic-usage.md).
 
-**Requirements:**
- * gcc 5+ (or clang 5+)
-
-To use the SQL parser in your own projects you simply have to follow these few steps. The only requirement for is gcc 4.8+. Older versions of gcc/clang might also work, but are untested.
+To use the SQL parser in your own projects you simply have to follow these few steps.
 
  1. Download the [latest release here](https://github.com/hyrise/sql-parser/releases)
  2. Compile the library `make` to create `libsqlparser.so`
@@ -64,12 +61,3 @@ We strongly encourage you to contribute to this project! If you want to contribu
 ## License
 
 HYRISE sql-parser is licensed as open source after the MIT License which is declared in the LICENSE file of this project.
-
-
-## Contributors
-
-The following people contributed to HYRISE sql-parser in various forms.
-
-* Pedro Flemming ([@torpedro](https://github.com/torpedro))
-* David Schwalb ([@schwald](https://github.com/schwald))
-* Markus Dreseler ([@mrks](https://github.com/mrks))

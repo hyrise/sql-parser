@@ -16,7 +16,10 @@ matrix:
             - bison
             - flex
       env:
-        - MATRIX_EVAL="CC=gcc-6 && CXX=g++-6 && BISON=bison && FLEX=flex"
+        - CC=gcc-6
+        - CXX=g++-6
+        - BISON=bison
+        - FLEX=flex
 
     - name: ubuntu22.04-gcc-12
       os: linux
@@ -30,7 +33,11 @@ matrix:
             - flex
       env:
         # relaxed builds for debug mode with current gcc versions, see #218
-        - MATRIX_EVAL="CC=gcc-12 && CXX=g++-12 && BISON=bison && FLEX=flex && RELAXED_BUILD=on"
+        - CC=gcc-12
+        - CXX=g++-12
+        - BISON=bison
+        - FLEX=flex
+        - RELAXED_BUILD=on
 
     - name: ubuntu22.04-clang-14
       os: linux
@@ -43,7 +50,10 @@ matrix:
             - bison
             - flex
       env:
-        - MATRIX_EVAL="CC=clang-14 && CXX=clang++-14 && BISON=bison && FLEX=flex"
+        - CC=clang-14
+        - CXX=clang++-14
+        - BISON=bison
+        - FLEX=flex
 
     - name: macOS12.04-clang
       os: osx
@@ -55,10 +65,12 @@ matrix:
             - flex
       env:
         - BREW_PREFIX="$(brew --prefix)/opt"
-        - MATRIX_EVAL="CC=clang && CXX=clang++ && BISON=${BREW_PREFIX}/bison/bin/bison && FLEX=${BREW_PREFIX}/flex/bin/flex"
-
-before_install:
-  - eval "${MATRIX_EVAL}"
+        - CC=clang
+        - CXX=clang++
+        - BISON=${BREW_PREFIX}/bison/bin/bison
+        - FLEX=${BREW_PREFIX}/flex/bin/flex
+        - HOMEBREW_NO_AUTO_UPDATE=1
+        - HOMEBREW_NO_INSTALL_CLEANUP=1
 
 script:
   # print package versions
