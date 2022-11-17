@@ -433,11 +433,12 @@ import_statement : IMPORT FROM file_type FILE file_path INTO table_name {
   $$->schema = $7.schema;
   $$->tableName = $7.name;
 }
-| COPY table_name FROM file_path opt_file_type {
+| COPY table_name FROM file_path opt_file_type opt_where {
   $$ = new ImportStatement($5);
   $$->filePath = $4;
   $$->schema = $2.schema;
   $$->tableName = $2.name;
+  $$->whereClause = $6;
 };
 
 file_type : IDENTIFIER {

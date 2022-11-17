@@ -291,6 +291,10 @@ void printImportStatementInfo(const ImportStatement* stmt, uintmax_t numIndent) 
       break;
   }
   inprint(stmt->tableName, numIndent + 1);
+  if (stmt->whereClause) {
+    inprint("WHERE:", numIndent + 1);
+    printExpression(stmt->whereClause, numIndent + 2);
+  }
 }
 
 void printExportStatementInfo(const ExportStatement* stmt, uintmax_t numIndent) {

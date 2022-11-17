@@ -159,12 +159,18 @@ ExportStatement::~ExportStatement() {
 
 // ImportStatement
 ImportStatement::ImportStatement(ImportType type)
-    : SQLStatement(kStmtImport), type(type), filePath(nullptr), schema(nullptr), tableName(nullptr){};
+    : SQLStatement(kStmtImport),
+      type(type),
+      filePath(nullptr),
+      schema(nullptr),
+      tableName(nullptr),
+      whereClause(nullptr){};
 
 ImportStatement::~ImportStatement() {
   free(filePath);
   free(schema);
   free(tableName);
+  delete whereClause;
 }
 
 // InsertStatement

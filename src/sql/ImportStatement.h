@@ -20,6 +20,7 @@ struct ImportStatement : SQLStatement {
   char* filePath;
   char* schema;
   char* tableName;
+  Expr* whereClause;
 };
 
 }  // namespace hsql

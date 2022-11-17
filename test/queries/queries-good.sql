@@ -70,6 +70,7 @@ COPY students FROM 'file_path' WITH FORMAT TBL;
 COPY students FROM 'file_path' WITH FORMAT CSV;
 COPY students FROM 'file_path' WITH FORMAT BIN;
 COPY students FROM 'file_path' WITH FORMAT BINARY;
+COPY good_students FROM 'file_path' WHERE grade > (SELECT AVG(grade) from alumni);
 COPY students TO 'student.tbl';
 COPY students TO 'file_path' WITH FORMAT TBL;
 COPY students TO 'file_path' WITH FORMAT CSV;
