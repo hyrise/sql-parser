@@ -36,7 +36,6 @@
 // Specify code that is included in the generated .h and .c files
 // clang-format off
 %code requires {
-// clang-format on
 // %code requires block
 
 #include "../SQLParserResult.h"
@@ -57,14 +56,13 @@
       yylloc->last_column++;                  \
     }                                         \
   }
-             }
+}
 
-        // Define the names of the created files (defined in Makefile)
-        // %output  "bison_parser.cpp"
-        // %defines "bison_parser.h"
+// Define the names of the created files (defined in Makefile)
+// %output  "bison_parser.cpp"
+// %defines "bison_parser.h"
 
-        // Tell bison to create a reentrant parser
-        // clang-format off
+// Tell bison to create a reentrant parser
 %define api.pure full
 
 // Prefix the parser
