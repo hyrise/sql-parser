@@ -471,9 +471,8 @@ export_statement : COPY table_name TO file_path opt_file_type {
   $$->filePath = $4;
   $$->schema = $2.schema;
   $$->tableName = $2.name;
-};
-
-export_statement : COPY select_with_paren TO file_path opt_file_type {
+}
+| COPY select_with_paren TO file_path opt_file_type {
   $$ = new ExportStatement($5);
   $$->filePath = $4;
   $$->select = $2;
