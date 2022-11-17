@@ -403,6 +403,17 @@ TEST(SelectAliasWithColumns) {
   ASSERT_STREQ(alias->columns->at(1), "city");
 }
 
+TEST(SelectExpressionAlias) {
+  TEST_PARSE_SINGLE_SQL("SELECT AVG(grade) avg_grade FROM students;", kStmtSelect, SelectStatement, result, stmt);
+
+  ASSERT_NULL(stmt->fromTable->alias);
+  ASSERT_EQ(stmt->selectList->size(), 1);
+  ASSERT_TRUE(stmt->selectList->at(0)->isType(kExprFunctionRef));
+  ASSERT_STREQ(stmt->selectList->at(0)->name, "AVG");
+  ASSERT_TRUE(stmt->selectList->at(0)->hasAlias());
+  ASSERT_STREQ(stmt->selectList->at(0)->alias, "avg_grade");
+}
+
 TEST(Operators) {
   SelectStatement* stmt;
   SQLParserResult result;
@@ -747,7 +758,7 @@ TEST(IntervalLiteral) {
   Expr* interval_literal;
   TEST_PARSE_SQL_QUERY(
       "SELECT a + 1 year FROM t;"
-      "SELECT * FROM t where a = cast ('2000-01-01' as date) - 30 days;",
+      "SELECT * FROM t where a = cast ('2000-01-01' AS DATE) - 30 days;",
       result, 2);
 
   stmt = (SelectStatement*)result.getStatement(0);
@@ -781,18 +792,18 @@ TEST(IntervalLiteral) {
   for (const auto& it : interval_units) {
     const auto& unit_string = it.second;
     const auto unit_string_plural = unit_string + "s";
-    TEST_PARSE_SQL_QUERY("SELECT * FROM t where a = 1 + 5 " + unit_string +
+    TEST_PARSE_SQL_QUERY("SELECT * FROM t WHERE a = 1 + 5 " + unit_string +
                              ";"
-                             "SELECT * FROM t where a = 1 + 5 " +
+                             "SELECT * FROM t WHERE a = 1 + 5 " +
                              unit_string_plural +
                              ";"
-                             "SELECT * FROM t where a = 1 + interval '5'" +
+                             "SELECT * FROM t WHERE a = 1 + INTERVAL '5'" +
                              unit_string +
                              ";"
-                             "SELECT * FROM t where a = 1 + interval '5 " +
+                             "SELECT * FROM t WHERE a = 1 + INTERVAL '5 " +
                              unit_string +
                              "';"
-                             "SELECT * FROM t where a = 1 + interval '5 " +
+                             "SELECT * FROM t WHERE a = 1 + INTERVAL '5 " +
                              unit_string_plural + "';",
                          result, 5);
 

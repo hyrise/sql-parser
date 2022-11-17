@@ -25,28 +25,28 @@ CreateStatement::~CreateStatement() {
   free(indexName);
   delete select;
 
-  if (columns != nullptr) {
+  if (columns) {
     for (ColumnDefinition* def : *columns) {
       delete def;
     }
     delete columns;
   }
 
-  if (tableConstraints != nullptr) {
+  if (tableConstraints) {
     for (TableConstraint* def : *tableConstraints) {
       delete def;
     }
     delete tableConstraints;
   }
 
-  if (indexColumns != nullptr) {
+  if (indexColumns) {
     for (char* column : *indexColumns) {
       free(column);
     }
     delete indexColumns;
   }
 
-  if (viewColumns != nullptr) {
+  if (viewColumns) {
     for (char* column : *viewColumns) {
       free(column);
     }

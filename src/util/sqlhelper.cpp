@@ -77,9 +77,9 @@ void printOperatorExpression(Expr* expr, uintmax_t numIndent) {
   inprint(expr->opType, numIndent);
 
   printExpression(expr->expr, numIndent + 1);
-  if (expr->expr2 != nullptr) {
+  if (expr->expr2) {
     printExpression(expr->expr2, numIndent + 1);
-  } else if (expr->exprList != nullptr) {
+  } else if (expr->exprList) {
     for (Expr* e : *expr->exprList) printExpression(e, numIndent + 1);
   }
 }
@@ -152,7 +152,7 @@ void printExpression(Expr* expr, uintmax_t numIndent) {
       std::cerr << "Unrecognized expression type " << expr->type << std::endl;
       return;
   }
-  if (expr->alias != nullptr) {
+  if (expr->alias) {
     inprint("Alias", numIndent + 1);
     inprint(expr->alias, numIndent + 2);
   }
@@ -175,25 +175,25 @@ void printSelectStatementInfo(const SelectStatement* stmt, uintmax_t numIndent) 
   inprint("Fields:", numIndent + 1);
   for (Expr* expr : *stmt->selectList) printExpression(expr, numIndent + 2);
 
-  if (stmt->fromTable != nullptr) {
+  if (stmt->fromTable) {
     inprint("Sources:", numIndent + 1);
     printTableRefInfo(stmt->fromTable, numIndent + 2);
   }
 
-  if (stmt->whereClause != nullptr) {
+  if (stmt->whereClause) {
     inprint("Search Conditions:", numIndent + 1);
     printExpression(stmt->whereClause, numIndent + 2);
   }
 
-  if (stmt->groupBy != nullptr) {
+  if (stmt->groupBy) {
     inprint("GroupBy:", numIndent + 1);
     for (Expr* expr : *stmt->groupBy->columns) printExpression(expr, numIndent + 2);
-    if (stmt->groupBy->having != nullptr) {
+    if (stmt->groupBy->having) {
       inprint("Having:", numIndent + 1);
       printExpression(stmt->groupBy->having, numIndent + 2);
     }
   }
-  if (stmt->lockings != nullptr) {
+  if (stmt->lockings) {
     inprint("Lock Info:", numIndent + 1);
     for (LockingClause* lockingClause : *stmt->lockings) {
       inprint("Type", numIndent + 2);
@@ -206,7 +206,7 @@ void printSelectStatementInfo(const SelectStatement* stmt, uintmax_t numIndent) 
       } else if (lockingClause->rowLockMode == RowLockMode::ForKeyShare) {
         inprint("FOR KEY SHARE", numIndent + 3);
       }
-      if (lockingClause->tables != nullptr) {
+      if (lockingClause->tables) {
         inprint("Target tables:", numIndent + 2);
         for (char* dtable : *lockingClause->tables) {
           inprint(dtable, numIndent + 3);
@@ -222,7 +222,7 @@ void printSelectStatementInfo(const SelectStatement* stmt, uintmax_t numIndent) 
     }
   }
 
-  if (stmt->setOperations != nullptr) {
+  if (stmt->setOperations) {
     for (SetOperation* setOperation : *stmt->setOperations) {
       switch (setOperation->setType) {
         case SetType::kSetIntersect:
@@ -238,18 +238,18 @@ void printSelectStatementInfo(const SelectStatement* stmt, uintmax_t numIndent) 
 
       printSelectStatementInfo(setOperation->nestedSelectStatement, numIndent + 2);
 
-      if (setOperation->resultOrder != nullptr) {
+      if (setOperation->resultOrder) {
         inprint("SetResultOrderBy:", numIndent + 1);
         printOrderBy(setOperation->resultOrder, numIndent + 2);
       }
 
-      if (setOperation->resultLimit != nullptr) {
-        if (setOperation->resultLimit->limit != nullptr) {
+      if (setOperation->resultLimit) {
+        if (setOperation->resultLimit->limit) {
           inprint("SetResultLimit:", numIndent + 1);
           printExpression(setOperation->resultLimit->limit, numIndent + 2);
         }
 
-        if (setOperation->resultLimit->offset != nullptr) {
+        if (setOperation->resultLimit->offset) {
           inprint("SetResultOffset:", numIndent + 1);
           printExpression(setOperation->resultLimit->offset, numIndent + 2);
         }
@@ -257,17 +257,17 @@ void printSelectStatementInfo(const SelectStatement* stmt, uintmax_t numIndent) 
     }
   }
 
-  if (stmt->order != nullptr) {
+  if (stmt->order) {
     inprint("OrderBy:", numIndent + 1);
     printOrderBy(stmt->order, numIndent + 2);
   }
 
-  if (stmt->limit != nullptr && stmt->limit->limit != nullptr) {
+  if (stmt->limit && stmt->limit->limit) {
     inprint("Limit:", numIndent + 1);
     printExpression(stmt->limit->limit, numIndent + 2);
   }
 
-  if (stmt->limit != nullptr && stmt->limit->offset != nullptr) {
+  if (stmt->limit && stmt->limit->offset) {
     inprint("Offset:", numIndent + 1);
     printExpression(stmt->limit->offset, numIndent + 2);
   }
@@ -331,7 +331,7 @@ void printCreateStatementInfo(const CreateStatement* stmt, uintmax_t numIndent) 
 void printInsertStatementInfo(const InsertStatement* stmt, uintmax_t numIndent) {
   inprint("InsertStatement", numIndent);
   inprint(stmt->tableName, numIndent + 1);
-  if (stmt->columns != nullptr) {
+  if (stmt->columns) {
     inprint("Columns", numIndent + 1);
     for (char* col_name : *stmt->columns) {
       inprint(col_name, numIndent + 2);

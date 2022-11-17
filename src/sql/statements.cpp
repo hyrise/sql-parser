@@ -138,7 +138,7 @@ ExecuteStatement::ExecuteStatement() : SQLStatement(kStmtExecute), name(nullptr)
 ExecuteStatement::~ExecuteStatement() {
   free(name);
 
-  if (parameters != nullptr) {
+  if (parameters) {
     for (Expr* param : *parameters) {
       delete param;
     }
@@ -188,14 +188,14 @@ InsertStatement::~InsertStatement() {
   free(tableName);
   delete select;
 
-  if (columns != nullptr) {
+  if (columns) {
     for (char* column : *columns) {
       free(column);
     }
     delete columns;
   }
 
-  if (values != nullptr) {
+  if (values) {
     for (Expr* expr : *values) {
       delete expr;
     }
@@ -232,7 +232,7 @@ GroupByDescription::GroupByDescription() : columns(nullptr), having(nullptr) {}
 GroupByDescription::~GroupByDescription() {
   delete having;
 
-  if (columns != nullptr) {
+  if (columns) {
     for (Expr* expr : *columns) {
       delete expr;
     }
@@ -266,39 +266,39 @@ SelectStatement::~SelectStatement() {
   delete limit;
 
   // Delete each element in the select list.
-  if (selectList != nullptr) {
+  if (selectList) {
     for (Expr* expr : *selectList) {
       delete expr;
     }
     delete selectList;
   }
 
-  if (order != nullptr) {
+  if (order) {
     for (OrderDescription* desc : *order) {
       delete desc;
     }
     delete order;
   }
 
-  if (withDescriptions != nullptr) {
+  if (withDescriptions) {
     for (WithDescription* desc : *withDescriptions) {
       delete desc;
     }
     delete withDescriptions;
   }
 
-  if (setOperations != nullptr) {
+  if (setOperations) {
     for (SetOperation* setOperation : *setOperations) {
       delete setOperation;
     }
     delete setOperations;
   }
 
-  if (lockings != nullptr) {
+  if (lockings) {
     for (LockingClause* lockingClause : *lockings) {
-      if (lockingClause->tables != nullptr) {
+      if (lockingClause->tables) {
         for (char* dtable : *lockingClause->tables) {
-          if (dtable != nullptr) free(dtable);
+          if (dtable) free(dtable);
         }
         delete lockingClause->tables;
       }
@@ -315,7 +315,7 @@ UpdateStatement::~UpdateStatement() {
   delete table;
   delete where;
 
-  if (updates != nullptr) {
+  if (updates) {
     for (UpdateClause* update : *updates) {
       free(update->column);
       delete update->value;
@@ -350,7 +350,7 @@ TableRef::~TableRef() {
   delete join;
   delete alias;
 
-  if (list != nullptr) {
+  if (list) {
     for (TableRef* table : *list) {
       delete table;
     }
@@ -358,7 +358,7 @@ TableRef::~TableRef() {
   }
 }
 
-bool TableRef::hasSchema() const { return schema != nullptr; }
+bool TableRef::hasSchema() const { return static_cast<bool>(schema); }
 
 const char* TableRef::getName() const {
   if (alias)
@@ -382,7 +382,7 @@ SetOperation::~SetOperation() {
   delete nestedSelectStatement;
   delete resultLimit;
 
-  if (resultOrder != nullptr) {
+  if (resultOrder) {
     for (OrderDescription* desc : *resultOrder) {
       delete desc;
     }

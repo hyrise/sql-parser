@@ -164,7 +164,7 @@
     %destructor { } <fval> <ival> <bval> <join_type> <order_type> <datetime_field> <column_type_t> <column_constraint_t> <import_type_t> <column_constraint_set> <lock_mode_t> <lock_wait_policy_t>
     %destructor { free( ($$.name) ); free( ($$.schema) ); } <table_name>
     %destructor {
-      if (($$) != nullptr) {
+      if ($$) {
         for (auto ptr : *($$)) {
           free(ptr);
         }
@@ -173,7 +173,7 @@
     } <str_vec>
     %destructor { free( ($$) ); } <sval>
     %destructor {
-      if (($$) != nullptr) {
+      if ($$) {
         for (auto ptr : *($$)) {
           delete ptr;
         }
@@ -315,7 +315,7 @@ input : statement_list opt_semicolon {
 
   unsigned param_id = 0;
   for (void* param : yyloc.param_list) {
-    if (param != nullptr) {
+    if (param) {
       Expr* expr = (Expr*)param;
       expr->ival = param_id;
       result->addParameter(expr);
@@ -782,12 +782,12 @@ select_no_paren : select_clause opt_order opt_limit opt_locking_clause {
   $$->order = $2;
 
   // Limit could have been set by TOP.
-  if ($3 != nullptr) {
+  if ($3) {
     delete $$->limit;
     $$->limit = $3;
   }
 
-  if ($4 != nullptr) {
+  if ($4) {
     $$->lockings = $4;
   }
 }
@@ -1237,11 +1237,19 @@ join_clause : table_ref_atomic NATURAL JOIN nonjoin_table_ref_atomic {
   $$->join->left = $1;
   $$->join->right = $4;
   auto left_col = Expr::makeColumnRef(strdup($7->name));
-  if ($7->alias != nullptr) left_col->alias = strdup($7->alias);
-  if ($1->getName() != nullptr) left_col->table = strdup($1->getName());
+  if ($7->alias) {
+    left_col->alias = strdup($7->alias);
+  }
+  if ($1->getName()) {
+    left_col->table = strdup($1->getName());
+  }
   auto right_col = Expr::makeColumnRef(strdup($7->name));
-  if ($7->alias != nullptr) right_col->alias = strdup($7->alias);
-  if ($4->getName() != nullptr) right_col->table = strdup($4->getName());
+  if ($7->alias) {
+    right_col->alias = strdup($7->alias);
+  }
+  if ($4->getName()) {
+    right_col->table = strdup($4->getName());
+  }
   $$->join->condition = Expr::makeOpBinary(left_col, kOpEquals, right_col);
   delete $7;
 };

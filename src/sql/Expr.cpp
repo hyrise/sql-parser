@@ -31,7 +31,7 @@ Expr::~Expr() {
   free(table);
   free(alias);
 
-  if (exprList != nullptr) {
+  if (exprList) {
     for (Expr* e : *exprList) {
       delete e;
     }
@@ -250,12 +250,12 @@ bool Expr::isLiteral() const {
          isType(kExprLiteralNull) || isType(kExprLiteralDate) || isType(kExprLiteralInterval);
 }
 
-bool Expr::hasAlias() const { return alias != nullptr; }
+bool Expr::hasAlias() const { return static_cast<bool>(alias); }
 
-bool Expr::hasTable() const { return table != nullptr; }
+bool Expr::hasTable() const { return static_cast<bool>(table); }
 
 const char* Expr::getName() const {
-  if (alias != nullptr)
+  if (alias)
     return alias;
   else
     return name;
