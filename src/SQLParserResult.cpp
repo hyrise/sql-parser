@@ -4,9 +4,9 @@
 
 namespace hsql {
 
-SQLParserResult::SQLParserResult() : isValid_(false), errorMsg_(nullptr){};
+SQLParserResult::SQLParserResult() : isValid_(false), errorMsg_(nullptr) {}
 
-SQLParserResult::SQLParserResult(SQLStatement* stmt) : isValid_(false), errorMsg_(nullptr) { addStatement(stmt); };
+SQLParserResult::SQLParserResult(SQLStatement* stmt) : isValid_(false), errorMsg_(nullptr) { addStatement(stmt); }
 
 // Move constructor.
 SQLParserResult::SQLParserResult(SQLParserResult&& moved) { *this = std::forward<SQLParserResult>(moved); }

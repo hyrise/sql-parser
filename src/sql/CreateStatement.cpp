@@ -1,5 +1,5 @@
-#include "SelectStatement.h"
 #include "CreateStatement.h"
+#include "SelectStatement.h"
 
 namespace hsql {
 
@@ -16,7 +16,7 @@ CreateStatement::CreateStatement(CreateType type)
       columns(nullptr),
       tableConstraints(nullptr),
       viewColumns(nullptr),
-      select(nullptr){};
+      select(nullptr) {}
 
 CreateStatement::~CreateStatement() {
   free(filePath);

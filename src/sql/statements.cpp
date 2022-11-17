@@ -5,7 +5,7 @@ namespace hsql {
 
 // KeyConstraints
 TableConstraint::TableConstraint(ConstraintType type, std::vector<char*>* columnNames)
-    : type(type), columnNames(columnNames){};
+    : type(type), columnNames(columnNames) {}
 
 TableConstraint::~TableConstraint() {
   for (char* def : *columnNames) {
@@ -16,7 +16,7 @@ TableConstraint::~TableConstraint() {
 
 // ColumnDefinition
 ColumnDefinition::ColumnDefinition(char* name, ColumnType type, std::unordered_set<ConstraintType>* column_constraints)
-    : column_constraints(column_constraints), name(name), type(type), nullable(true){};
+    : column_constraints(column_constraints), name(name), type(type), nullable(true) {}
 
 ColumnDefinition::~ColumnDefinition() {
   free(name);
@@ -24,7 +24,7 @@ ColumnDefinition::~ColumnDefinition() {
 }
 
 ColumnType::ColumnType(DataType data_type, int64_t length, int64_t precision, int64_t scale)
-    : data_type(data_type), length(length), precision(precision), scale(scale){};
+    : data_type(data_type), length(length), precision(precision), scale(scale) {}
 
 bool operator==(const ColumnType& lhs, const ColumnType& rhs) {
   if (lhs.data_type != rhs.data_type) return false;
@@ -88,7 +88,7 @@ std::ostream& operator<<(std::ostream& stream, const ColumnType& column_type) {
 }
 
 // DeleteStatement
-DeleteStatement::DeleteStatement() : SQLStatement(kStmtDelete), schema(nullptr), tableName(nullptr), expr(nullptr){};
+DeleteStatement::DeleteStatement() : SQLStatement(kStmtDelete), schema(nullptr), tableName(nullptr), expr(nullptr) {}
 
 DeleteStatement::~DeleteStatement() {
   free(schema);
@@ -113,7 +113,7 @@ AlterAction::AlterAction(ActionType type) : type(type) {}
 AlterAction::~AlterAction() = default;
 
 DropColumnAction::DropColumnAction(char* column_name)
-    : AlterAction(ActionType::DropColumn), columnName(column_name), ifExists(false){};
+    : AlterAction(ActionType::DropColumn), columnName(column_name), ifExists(false) {}
 
 DropColumnAction::~DropColumnAction() { free(columnName); }
 
@@ -148,7 +148,7 @@ ExecuteStatement::~ExecuteStatement() {
 
 // ExportStatement
 ExportStatement::ExportStatement(ImportType type)
-    : SQLStatement(kStmtExport), type(type), filePath(nullptr), schema(nullptr), tableName(nullptr), select(nullptr){};
+    : SQLStatement(kStmtExport), type(type), filePath(nullptr), schema(nullptr), tableName(nullptr), select(nullptr) {}
 
 ExportStatement::~ExportStatement() {
   free(filePath);
@@ -164,7 +164,7 @@ ImportStatement::ImportStatement(ImportType type)
       filePath(nullptr),
       schema(nullptr),
       tableName(nullptr),
-      whereClause(nullptr){};
+      whereClause(nullptr) {}
 
 ImportStatement::~ImportStatement() {
   free(filePath);
@@ -257,7 +257,7 @@ SelectStatement::SelectStatement()
       order(nullptr),
       withDescriptions(nullptr),
       limit(nullptr),
-      lockings(nullptr){};
+      lockings(nullptr) {}
 
 SelectStatement::~SelectStatement() {
   delete fromTable;

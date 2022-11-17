@@ -21,7 +21,7 @@ Expr::Expr(ExprType type)
       columnType(DataType::UNKNOWN, 0),
       isBoolLiteral(false),
       opType(kOpNone),
-      distinct(false){};
+      distinct(false) {}
 
 Expr::~Expr() {
   delete expr;
