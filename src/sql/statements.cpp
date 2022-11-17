@@ -148,12 +148,13 @@ ExecuteStatement::~ExecuteStatement() {
 
 // ExportStatement
 ExportStatement::ExportStatement(ImportType type)
-    : SQLStatement(kStmtExport), type(type), filePath(nullptr), schema(nullptr), tableName(nullptr){};
+    : SQLStatement(kStmtExport), type(type), filePath(nullptr), schema(nullptr), tableName(nullptr), select(nullptr){};
 
 ExportStatement::~ExportStatement() {
   free(filePath);
   free(schema);
   free(tableName);
+  delete select;
 }
 
 // ImportStatement

@@ -75,6 +75,7 @@ COPY students TO 'file_path' WITH FORMAT TBL;
 COPY students TO 'file_path' WITH FORMAT CSV;
 COPY students TO 'file_path' WITH FORMAT BIN;
 COPY students TO 'file_path' WITH FORMAT BINARY;
+COPY (SELECT firstname, COUNT(*) FROM students GROUP BY firstname) TO 'student_names.csv';
 # HINTS
 SELECT * FROM test WITH HINT(NO_CACHE);
 SELECT * FROM test WITH HINT(NO_CACHE, NO_SAMPLING);

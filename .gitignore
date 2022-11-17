@@ -48,5 +48,6 @@ cmake-build-debug/
 
 # macOS compilation dirs
 *.dSYM
+.DS_STORE
 
 .vscode/*

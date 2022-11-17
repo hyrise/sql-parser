@@ -3,6 +3,7 @@
 
 #include "ImportStatement.h"
 #include "SQLStatement.h"
+#include "SelectStatement.h"
 
 namespace hsql {
 // Represents SQL Export statements.
@@ -15,6 +16,7 @@ struct ExportStatement : SQLStatement {
   char* filePath;
   char* schema;
   char* tableName;
+  SelectStatement* select;
 };
 
 }  // namespace hsql

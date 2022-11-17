@@ -310,7 +310,12 @@ void printExportStatementInfo(const ExportStatement* stmt, uintmax_t numIndent) 
       inprint("AUTO", numIndent + 1);
       break;
   }
-  inprint(stmt->tableName, numIndent + 1);
+
+  if (stmt->tableName) {
+    inprint(stmt->tableName, numIndent + 1);
+  } else {
+    printSelectStatementInfo(stmt->select, numIndent + 1);
+  }
 }
 
 void printCreateStatementInfo(const CreateStatement* stmt, uintmax_t numIndent) {

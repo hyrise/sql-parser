@@ -36,8 +36,8 @@
 // Specify code that is included in the generated .h and .c files
 // clang-format off
 %code requires {
-  // clang-format on
-  // %code requires block
+// clang-format on
+// %code requires block
 
 #include "../SQLParserResult.h"
 #include "../sql/statements.h"
@@ -57,14 +57,14 @@
       yylloc->last_column++;                  \
     }                                         \
   }
-}
+             }
 
-// Define the names of the created files (defined in Makefile)
-// %output  "bison_parser.cpp"
-// %defines "bison_parser.h"
+        // Define the names of the created files (defined in Makefile)
+        // %output  "bison_parser.cpp"
+        // %defines "bison_parser.h"
 
-// Tell bison to create a reentrant parser
-// clang-format off
+        // Tell bison to create a reentrant parser
+        // clang-format off
 %define api.pure full
 
 // Prefix the parser
@@ -472,6 +472,12 @@ export_statement : COPY table_name TO file_path opt_file_type {
   $$->filePath = $4;
   $$->schema = $2.schema;
   $$->tableName = $2.name;
+};
+
+export_statement : COPY select_with_paren TO file_path opt_file_type {
+  $$ = new ExportStatement($5);
+  $$->filePath = $4;
+  $$->select = $2;
 };
 
 /******************************
