@@ -162,7 +162,10 @@
      *********************************/
     // clang-format off
     %destructor { } <fval> <ival> <bval> <join_type> <order_type> <datetime_field> <column_type_t> <column_constraint_t> <import_type_t> <column_constraint_set> <lock_mode_t> <lock_wait_policy_t>
-    %destructor { free( ($$.name) ); free( ($$.schema) ); } <table_name>
+    %destructor {
+      free( ($$.name) );
+      free( ($$.schema) );
+    } <table_name>
     %destructor {
       if ($$) {
         for (auto ptr : *($$)) {

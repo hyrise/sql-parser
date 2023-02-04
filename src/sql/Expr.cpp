@@ -250,9 +250,9 @@ bool Expr::isLiteral() const {
          isType(kExprLiteralNull) || isType(kExprLiteralDate) || isType(kExprLiteralInterval);
 }
 
-bool Expr::hasAlias() const { return static_cast<bool>(alias); }
+bool Expr::hasAlias() const { return alias != nullptr; }
 
-bool Expr::hasTable() const { return static_cast<bool>(table); }
+bool Expr::hasTable() const { return table != nullptr; }
 
 const char* Expr::getName() const {
   if (alias)

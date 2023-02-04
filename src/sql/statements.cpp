@@ -298,7 +298,7 @@ SelectStatement::~SelectStatement() {
     for (LockingClause* lockingClause : *lockings) {
       if (lockingClause->tables) {
         for (char* dtable : *lockingClause->tables) {
-          if (dtable) free(dtable);
+          free(dtable);
         }
         delete lockingClause->tables;
       }
@@ -358,7 +358,7 @@ TableRef::~TableRef() {
   }
 }
 
-bool TableRef::hasSchema() const { return static_cast<bool>(schema); }
+bool TableRef::hasSchema() const { return schema != nullptr; }
 
 const char* TableRef::getName() const {
   if (alias)
