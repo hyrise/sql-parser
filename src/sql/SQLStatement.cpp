@@ -4,10 +4,10 @@
 namespace hsql {
 
 // SQLStatement
-SQLStatement::SQLStatement(StatementType type) : hints(nullptr), type_(type){};
+SQLStatement::SQLStatement(StatementType type) : hints(nullptr), type_(type) {}
 
 SQLStatement::~SQLStatement() {
-  if (hints != nullptr) {
+  if (hints) {
     for (Expr* hint : *hints) {
       delete hint;
     }

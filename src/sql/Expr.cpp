@@ -21,7 +21,7 @@ Expr::Expr(ExprType type)
       columnType(DataType::UNKNOWN, 0),
       isBoolLiteral(false),
       opType(kOpNone),
-      distinct(false){};
+      distinct(false) {}
 
 Expr::~Expr() {
   delete expr;
@@ -31,7 +31,7 @@ Expr::~Expr() {
   free(table);
   free(alias);
 
-  if (exprList != nullptr) {
+  if (exprList) {
     for (Expr* e : *exprList) {
       delete e;
     }
@@ -255,7 +255,7 @@ bool Expr::hasAlias() const { return alias != nullptr; }
 bool Expr::hasTable() const { return table != nullptr; }
 
 const char* Expr::getName() const {
-  if (alias != nullptr)
+  if (alias)
     return alias;
   else
     return name;

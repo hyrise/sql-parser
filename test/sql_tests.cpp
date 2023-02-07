@@ -369,20 +369,60 @@ TEST(ImportStatementTest) {
 }
 
 TEST(CopyStatementTest) {
-  TEST_PARSE_SINGLE_SQL("COPY students FROM 'students_file' ;", kStmtImport, ImportStatement, import_result,
-                        import_stmt);
+  TEST_PARSE_SINGLE_SQL("COPY students FROM 'students_file' WITH FORMAT BINARY;", kStmtImport, ImportStatement,
+                        import_result, import_stmt);
 
-  ASSERT_EQ(import_stmt->type, kImportAuto);
+  ASSERT_EQ(import_stmt->type, kImportBinary);
   ASSERT_NOTNULL(import_stmt->tableName);
   ASSERT_STREQ(import_stmt->tableName, "students");
+  ASSERT_NOTNULL(import_stmt->filePath);
   ASSERT_STREQ(import_stmt->filePath, "students_file");
+  ASSERT_NULL(import_stmt->whereClause);
 
-  TEST_PARSE_SINGLE_SQL("COPY students TO 'students_file';", kStmtExport, ExportStatement, export_result, export_stmt);
+  TEST_PARSE_SINGLE_SQL("COPY students FROM 'students_file' WHERE lastname = 'Potter';", kStmtImport, ImportStatement,
+                        import_filter_result, import_filter_stmt);
 
-  ASSERT_EQ(export_stmt->type, kImportAuto);
-  ASSERT_NOTNULL(export_stmt->tableName);
-  ASSERT_STREQ(export_stmt->tableName, "students");
-  ASSERT_STREQ(export_stmt->filePath, "students_file");
+  ASSERT_EQ(import_filter_stmt->type, kImportAuto);
+  ASSERT_NOTNULL(import_filter_stmt->tableName);
+  ASSERT_STREQ(import_filter_stmt->tableName, "students");
+  ASSERT_NOTNULL(import_filter_stmt->filePath);
+  ASSERT_STREQ(import_filter_stmt->filePath, "students_file");
+  ASSERT_NOTNULL(import_filter_stmt->whereClause);
+  ASSERT_EQ(import_filter_stmt->whereClause->opType, kOpEquals);
+  ASSERT_EQ(import_filter_stmt->whereClause->expr->type, kExprColumnRef);
+  ASSERT_STREQ(import_filter_stmt->whereClause->expr->name, "lastname");
+  ASSERT_EQ(import_filter_stmt->whereClause->expr2->type, kExprLiteralString);
+  ASSERT_STREQ(import_filter_stmt->whereClause->expr2->name, "Potter");
+
+  TEST_PARSE_SINGLE_SQL("COPY students TO 'students_file' WITH FORMAT CSV;", kStmtExport, ExportStatement,
+                        export_table_result, export_table_stmt);
+
+  ASSERT_EQ(export_table_stmt->type, kImportCSV);
+  ASSERT_NOTNULL(export_table_stmt->tableName);
+  ASSERT_STREQ(export_table_stmt->tableName, "students");
+  ASSERT_NOTNULL(export_table_stmt->filePath);
+  ASSERT_STREQ(export_table_stmt->filePath, "students_file");
+  ASSERT_NULL(export_table_stmt->select);
+
+  TEST_PARSE_SINGLE_SQL("COPY (SELECT firstname, lastname FROM students) TO 'students_file';", kStmtExport,
+                        ExportStatement, export_select_result, export_select_stmt);
+
+  ASSERT_EQ(export_select_stmt->type, kImportAuto);
+  ASSERT_NULL(export_select_stmt->tableName);
+  ASSERT_NOTNULL(export_select_stmt->filePath);
+  ASSERT_STREQ(export_select_stmt->filePath, "students_file");
+
+  ASSERT_NOTNULL(export_select_stmt->select);
+  const auto& select_stmt = export_select_stmt->select;
+  ASSERT_NULL(select_stmt->whereClause);
+  ASSERT_NULL(select_stmt->groupBy);
+  ASSERT_EQ(select_stmt->selectList->size(), 2);
+  ASSERT(select_stmt->selectList->at(0)->isType(kExprColumnRef));
+  ASSERT_STREQ(select_stmt->selectList->at(0)->getName(), "firstname");
+  ASSERT(select_stmt->selectList->at(1)->isType(kExprColumnRef));
+  ASSERT_STREQ(select_stmt->selectList->at(1)->getName(), "lastname");
+  ASSERT_NOTNULL(select_stmt->fromTable);
+  ASSERT_STREQ(select_stmt->fromTable->name, "students");
 }
 
 SQLParserResult parse_and_move(std::string query) {
