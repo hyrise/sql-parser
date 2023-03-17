@@ -1,58 +1,62 @@
-name: Builds and Tests
+name: CI
 
 on:
-  push:
   pull_request:
+  push:
     branches:
-      - main
+      - master
 
 jobs:
-
   build:
-    name: ${{ matrix.name }}
+    name: ${{matrix.name}}
     runs-on: ${{matrix.os}}
     container: ${{matrix.container}}
     env:
       CC: ${{matrix.cc}}
       CXX: ${{matrix.cxx}}
+    defaults:
+      run:
+        shell: bash
     strategy:
       fail-fast: false
       matrix:
         include:
           - name: gcc-6
-            os: ubuntu-22.04
-            container: ubuntu:16.04
             cc: gcc-6
             cxx: g++-6
+            os: ubuntu-latest
+            container: ubuntu:18.04
           - name: gcc-12
             cc: gcc-12
             cxx: g++-12
-            os: ubuntu-22.04
+            os: ubuntu-latest
             container: ubuntu:22.04
             build_options: "relaxed_build=on"
           - name: clang-15
-            os: ubuntu-22.04
-            container: ubuntu:22.04
             cc: clang-15
             cxx: clang++-15
+            os: ubuntu-latest
+            container: ubuntu:22.04
           - name: clang-macOS
-            os: macos-latest
-            container: macos-latest
             cc: clang
             cxx: clang++
+            os: macos-latest
 
     steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
       - name: Setup (macOS)
         if: matrix.name == 'clang-macOS'
         run: |
-          brew install bison flex
+          brew install bison flex ${CC}
           echo "BISON=$(brew --prefix bison)/bin/bison" >> $GITHUB_ENV
           echo "FLEX=$(brew --prefix flex)/bin/flex" >> $GITHUB_ENV
       - name: Setup (Ubuntu)
         if: matrix.name != 'clang-macOS'
         run: |
           apt-get update
-          apt-get install --no-install-recommends -y apt-get install bison flex ${CC}
+          apt-get install --no-install-recommends -y bison flex ${CC} ${CXX} make valgrind
           echo "BISON=bison" >> $GITHUB_ENV
           echo "FLEX=flex" >> $GITHUB_ENV
       - name: System Information
@@ -76,6 +80,6 @@ jobs:
       - name: Build Parser and Lexer from Scratch (Debug)
         run: |
           BISON=${BISON} FLEX=${FLEX} make cleanall
-          BISON=${BISON} FLEX=${FLEX} make -j mode=debug ${{ matrix.build_options }}
+          BISON=${BISON} FLEX=${FLEX} make -j mode=debug ${{matrix.build_options}}
           BISON=${BISON} FLEX=${FLEX} make test
           make test_example
