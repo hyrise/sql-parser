@@ -26,17 +26,20 @@ jobs:
             cxx: g++-6
             os: ubuntu-latest
             container: ubuntu:18.04
+
           - name: gcc-12
             cc: gcc-12
             cxx: g++-12
             os: ubuntu-latest
             container: ubuntu:22.04
             build_options: "relaxed_build=on"
+
           - name: clang-15
             cc: clang-15
             cxx: clang++-15
             os: ubuntu-latest
             container: ubuntu:22.04
+
           - name: clang-macOS
             cc: clang
             cxx: clang++
@@ -44,8 +47,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-        with:
-          submodules: true
       - name: Setup (macOS)
         if: matrix.name == 'clang-macOS'
         run: |
