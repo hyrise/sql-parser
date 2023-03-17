@@ -1,0 +1,81 @@
+name: Builds and Tests
+
+on:
+  push:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+
+  build:
+    name: ${{ matrix.name }}
+    runs-on: ${{matrix.os}}
+    container: ${{matrix.container}}
+    env:
+      CC: ${{matrix.cc}}
+      CXX: ${{matrix.cxx}}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: gcc-6
+            os: ubuntu-22.04
+            container: ubuntu:16.04
+            cc: gcc-6
+            cxx: g++-6
+          - name: gcc-12
+            cc: gcc-12
+            cxx: g++-12
+            os: ubuntu-22.04
+            container: ubuntu:22.04
+            build_options: "relaxed_build=on"
+          - name: clang-15
+            os: ubuntu-22.04
+            container: ubuntu:22.04
+            cc: clang-15
+            cxx: clang++-15
+          - name: clang-macOS
+            os: macos-latest
+            container: macos-latest
+            cc: clang
+            cxx: clang++
+
+    steps:
+      - name: Setup (macOS)
+        if: matrix.name == 'clang-macOS'
+        run: |
+          brew install bison flex
+          echo "BISON=$(brew --prefix bison)/bin/bison" >> $GITHUB_ENV
+          echo "FLEX=$(brew --prefix flex)/bin/flex" >> $GITHUB_ENV
+      - name: Setup (Ubuntu)
+        if: matrix.name != 'clang-macOS'
+        run: |
+          apt-get update
+          apt-get install --no-install-recommends -y apt-get install bison flex ${CC}
+          echo "BISON=bison" >> $GITHUB_ENV
+          echo "FLEX=flex" >> $GITHUB_ENV
+      - name: System Information
+        run: |
+          ${CC} --version
+          ${CXX} --version
+          ${BISON} --version
+          ${FLEX} --version
+          awk -v a=$(uname) 'BEGIN { if (a == "Linux") system("valgrind --version") }'
+      - name: Build Parser
+        run: |
+          make -j
+          BISON=${BISON} FLEX=${FLEX} make test
+          make test_example
+      - name: Build Parser and Lexer from Scratch
+        run: |
+          BISON=${BISON} FLEX=${FLEX} make cleanall
+          BISON=${BISON} FLEX=${FLEX} make -j
+          BISON=${BISON} FLEX=${FLEX} make test
+          make test_example
+      - name: Build Parser and Lexer from Scratch (Debug)
+        run: |
+          BISON=${BISON} FLEX=${FLEX} make cleanall
+          BISON=${BISON} FLEX=${FLEX} make -j mode=debug ${{ matrix.build_options }}
+          BISON=${BISON} FLEX=${FLEX} make test
+          make test_example
