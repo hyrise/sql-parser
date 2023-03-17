@@ -50,7 +50,7 @@ jobs:
       - name: Setup (macOS)
         if: matrix.name == 'clang-macOS'
         run: |
-          brew install bison flex ${CC}
+          brew install bison flex
           echo "BISON=$(brew --prefix bison)/bin/bison" >> $GITHUB_ENV
           echo "FLEX=$(brew --prefix flex)/bin/flex" >> $GITHUB_ENV
       - name: Setup (Ubuntu)
