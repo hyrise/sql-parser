@@ -75,20 +75,20 @@ jobs:
 
       - name: Build Parser
         run: |
-          make -j
+          make -j $(nproc)
           BISON=${BISON} FLEX=${FLEX} make test
           make test_example
 
       - name: Build Parser and Lexer from Scratch
         run: |
           BISON=${BISON} FLEX=${FLEX} make cleanall
-          BISON=${BISON} FLEX=${FLEX} make -j
+          BISON=${BISON} FLEX=${FLEX} make -j $(nproc)
           BISON=${BISON} FLEX=${FLEX} make test
           make test_example
 
       - name: Build Parser and Lexer from Scratch (Debug)
         run: |
           BISON=${BISON} FLEX=${FLEX} make cleanall
-          BISON=${BISON} FLEX=${FLEX} make -j mode=debug ${{matrix.build_options}}
+          BISON=${BISON} FLEX=${FLEX} make -j $(nproc) mode=debug ${{matrix.build_options}}
           BISON=${BISON} FLEX=${FLEX} make test
           make test_example
