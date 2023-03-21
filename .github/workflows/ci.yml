@@ -1,0 +1,94 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    name: ${{matrix.name}}
+    runs-on: ${{matrix.os}}
+    container: ${{matrix.container}}
+    env:
+      CC: ${{matrix.cc}}
+      CXX: ${{matrix.cxx}}
+    defaults:
+      run:
+        shell: bash
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: gcc-6
+            cc: gcc-6
+            cxx: g++-6
+            os: ubuntu-latest
+            container: ubuntu:18.04
+
+          - name: gcc-12
+            cc: gcc-12
+            cxx: g++-12
+            os: ubuntu-latest
+            container: ubuntu:22.04
+            # We need relaxed builds for debug mode with current GCC versions, see #218.
+            build_options: "relaxed_build=on"
+
+          - name: clang-15
+            cc: clang-15
+            cxx: clang++-15
+            os: ubuntu-latest
+            container: ubuntu:22.04
+
+          - name: clang-macOS
+            cc: clang
+            cxx: clang++
+            os: macos-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup (macOS)
+        if: matrix.name == 'clang-macOS'
+        run: |
+          brew install bison flex
+          echo "BISON=$(brew --prefix bison)/bin/bison" >> $GITHUB_ENV
+          echo "FLEX=$(brew --prefix flex)/bin/flex" >> $GITHUB_ENV
+
+      - name: Setup (Ubuntu)
+        if: matrix.name != 'clang-macOS'
+        run: |
+          apt-get update
+          apt-get install --no-install-recommends -y bison flex ${CC} ${CXX} make valgrind
+          echo "BISON=bison" >> $GITHUB_ENV
+          echo "FLEX=flex" >> $GITHUB_ENV
+
+      - name: System Information
+        run: |
+          awk -v a=$(uname) 'BEGIN { a == "Linux" ? system("cat /etc/issue") : system("sw_vers") }'
+          ${CC} --version
+          ${CXX} --version
+          ${BISON} --version
+          ${FLEX} --version
+          awk -v a=$(uname) 'BEGIN { if (a == "Linux") system("valgrind --version") }'
+
+      - name: Build Parser
+        run: |
+          make -j $(nproc)
+          BISON=${BISON} FLEX=${FLEX} make test
+          make test_example
+
+      - name: Build Parser and Lexer from Scratch
+        run: |
+          BISON=${BISON} FLEX=${FLEX} make cleanall
+          BISON=${BISON} FLEX=${FLEX} make -j $(nproc)
+          BISON=${BISON} FLEX=${FLEX} make test
+          make test_example
+
+      - name: Build Parser and Lexer from Scratch (Debug)
+        run: |
+          BISON=${BISON} FLEX=${FLEX} make cleanall
+          BISON=${BISON} FLEX=${FLEX} make -j $(nproc) mode=debug ${{matrix.build_options}}
+          BISON=${BISON} FLEX=${FLEX} make test
+          make test_example
