@@ -8,6 +8,7 @@
 
 namespace hsql {
 struct SelectStatement;
+struct OrderDescription;
 
 // Helper function used by the lexer.
 // TODO: move to more appropriate place.
@@ -30,7 +31,8 @@ enum ExprType {
   kExprArray,
   kExprArrayIndex,
   kExprExtract,
-  kExprCast
+  kExprCast,
+  kExprWindow
 };
 
 // Operator types. These are important for expressions of type kExprOperator.
@@ -83,6 +85,27 @@ enum DatetimeField {
   kDatetimeYear,
 };
 
+enum FrameType { kRange, kRows, kGroups };
+
+// Description of the frame clause within a window expression.
+struct FrameDescription {
+  FrameDescription(FrameType type, char* start, char* end);
+  virtual ~FrameDescription();
+
+  FrameType type;
+  char* start;
+  char* end;
+};
+
+// Description of additional fields for a window expression.
+struct WindowDescription {
+  WindowDescription(std::vector<OrderDescription*>* orderList, FrameDescription* frameDescription);
+  virtual ~WindowDescription();
+
+  std::vector<OrderDescription*>* orderList;
+  FrameDescription* frameDescription;
+};
+
 typedef struct Expr Expr;
 
 // Represents SQL expressions (i.e. literals, operators, column_refs).
@@ -111,6 +134,8 @@ struct Expr {
 
   OperatorType opType;
   bool distinct;
+
+  WindowDescription* windowDescription;
 
   // Convenience accessor methods.
 
@@ -183,6 +208,9 @@ struct Expr {
   static Expr* makeExtract(DatetimeField datetimeField1, Expr* expr);
 
   static Expr* makeCast(Expr* expr, ColumnType columnType);
+
+  static Expr* makeWindow(Expr* expr, std::vector<Expr*>* partitionList, std::vector<OrderDescription*>* orderList,
+                          FrameDescription* frameDescription);
 };
 
 // Zero initializes an Expr object and assigns it to a space in the heap

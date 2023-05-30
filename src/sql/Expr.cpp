@@ -5,6 +5,27 @@
 
 namespace hsql {
 
+FrameDescription::FrameDescription(FrameType type, char* start, char* end) : type{type}, start{start}, end{end} {}
+
+FrameDescription::~FrameDescription() {
+  free(start);
+  free(end);
+}
+
+WindowDescription::WindowDescription(std::vector<OrderDescription*>* orderList, FrameDescription* frameDescription)
+    : orderList{orderList}, frameDescription(frameDescription) {}
+
+WindowDescription::~WindowDescription() {
+  if (orderList) {
+    for (OrderDescription* orderDescription : *orderList) {
+      delete orderDescription;
+    }
+    delete orderList;
+  }
+
+  delete frameDescription;
+}
+
 Expr::Expr(ExprType type)
     : type(type),
       expr(nullptr),
@@ -21,12 +42,15 @@ Expr::Expr(ExprType type)
       columnType(DataType::UNKNOWN, 0),
       isBoolLiteral(false),
       opType(kOpNone),
-      distinct(false) {}
+      distinct(false),
+      windowDescription(nullptr) {}
 
 Expr::~Expr() {
   delete expr;
   delete expr2;
   delete select;
+  delete windowDescription;
+
   free(name);
   free(table);
   free(alias);
@@ -240,6 +264,16 @@ Expr* Expr::makeCast(Expr* expr, ColumnType columnType) {
   Expr* e = new Expr(kExprCast);
   e->columnType = columnType;
   e->expr = expr;
+  return e;
+}
+
+Expr* Expr::makeWindow(Expr* expr, std::vector<Expr*>* partitionList, std::vector<OrderDescription*>* orderList,
+                       FrameDescription* frameDescription) {
+  Expr* e = new Expr(kExprWindow);
+  e->expr = expr;
+  e->exprList = partitionList;
+  WindowDescription* w = new WindowDescription(orderList, frameDescription);
+  e->windowDescription = w;
   return e;
 }
 
