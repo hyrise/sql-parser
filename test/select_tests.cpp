@@ -1080,7 +1080,7 @@ TEST(WindowExpression) {
   const auto frame_ends =
       std::vector<FrameBound>{{2, kFollowing, false}, {0, kFollowing, true}, {0, kCurrentRow, false}};
 
-  for (auto bound_index = 0; bound_index < frame_starts.size(); ++bound_index) {
+  for (auto bound_index = size_t{0}; bound_index < frame_starts.size(); ++bound_index) {
     stmt = (SelectStatement*)result.getStatement(3 + bound_index);
     const auto& expected_start = frame_starts[bound_index];
     const auto& expected_end = frame_ends[bound_index];
