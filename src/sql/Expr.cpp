@@ -5,11 +5,15 @@
 
 namespace hsql {
 
-FrameDescription::FrameDescription(FrameType type, char* start, char* end) : type{type}, start{start}, end{end} {}
+FrameBound::FrameBound(int64_t offset, FrameBoundType type, bool unbounded)
+    : offset{offset}, type{type}, unbounded{unbounded} {}
+
+FrameDescription::FrameDescription(FrameType type, FrameBound* start, FrameBound* end)
+    : type{type}, start{start}, end{end} {}
 
 FrameDescription::~FrameDescription() {
-  free(start);
-  free(end);
+  delete start;
+  delete end;
 }
 
 WindowDescription::WindowDescription(std::vector<OrderDescription*>* orderList, FrameDescription* frameDescription)
@@ -272,8 +276,7 @@ Expr* Expr::makeWindow(Expr* expr, std::vector<Expr*>* partitionList, std::vecto
   Expr* e = new Expr(kExprWindow);
   e->expr = expr;
   e->exprList = partitionList;
-  WindowDescription* w = new WindowDescription(orderList, frameDescription);
-  e->windowDescription = w;
+  e->windowDescription = new WindowDescription(orderList, frameDescription);
   return e;
 }
 

@@ -85,16 +85,24 @@ enum DatetimeField {
   kDatetimeYear,
 };
 
-enum FrameType { kRange, kRows, kGroups };
-
 // Description of the frame clause within a window expression.
+enum FrameBoundType { kFollowing, kPreceding, kCurrentRow };
+struct FrameBound {
+  FrameBound(int64_t offset, FrameBoundType type, bool unbounded);
+
+  int64_t offset;
+  FrameBoundType type;
+  bool unbounded;
+};
+
+enum FrameType { kRange, kRows, kGroups };
 struct FrameDescription {
-  FrameDescription(FrameType type, char* start, char* end);
+  FrameDescription(FrameType type, FrameBound* start, FrameBound* end);
   virtual ~FrameDescription();
 
   FrameType type;
-  char* start;
-  char* end;
+  FrameBound* start;
+  FrameBound* end;
 };
 
 // Description of additional fields for a window expression.

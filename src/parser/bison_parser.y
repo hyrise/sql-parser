@@ -17,8 +17,8 @@
 #include "flex_lexer.h"
 
 #include <stdio.h>
-#include <sstream>
 #include <string.h>
+#include <sstream>
 
   using namespace hsql;
 
@@ -126,6 +126,7 @@
   hsql::DatetimeField datetime_field;
   hsql::DropColumnAction* drop_action_t;
   hsql::Expr* expr;
+  hsql::FrameBound* frame_bound;
   hsql::FrameDescription* frame_description;
   hsql::FrameType frame_type;
   hsql::GroupByDescription* group_t;
@@ -205,7 +206,7 @@
     %token DOUBLE ESCAPE EXCEPT EXISTS EXTRACT CAST FORMAT GLOBAL HAVING IMPORT
     %token INSERT ISNULL OFFSET RENAME SCHEMA SELECT SORTED
     %token TABLES UNIQUE UNLOAD UPDATE VALUES AFTER ALTER CROSS
-    %token DELTA FLOAT GROUP GROUPS INDEX INNER LIMIT LOCAL MERGE MINUS ORDER OVER RANGE ROWS
+    %token DELTA FLOAT GROUP INDEX INNER LIMIT LOCAL MERGE MINUS ORDER OVER
     %token OUTER RIGHT TABLE UNION USING WHERE CALL CASE CHAR COPY DATE DATETIME
     %token DESC DROP ELSE FILE FROM FULL HASH HINT INTO JOIN
     %token LEFT LIKE LOAD LONG NULL PARTITION PLAN SHOW TEXT THEN TIME
@@ -216,6 +217,7 @@
     %token TRUE FALSE BOOLEAN
     %token TRANSACTION BEGIN COMMIT ROLLBACK
     %token NOWAIT SKIP LOCKED SHARE
+    %token RANGE ROWS GROUPS UNBOUNDED FOLLOWING PRECEDING CURRENT_ROW
 
     /*********************************
      ** Non-Terminal types (http://www.gnu.org/software/bison/manual/html_node/Type-Decl.html)
@@ -239,8 +241,8 @@
     %type <sval>                   opt_index_name
     %type <sval>                   file_path prepare_target_query
     %type <frame_description>      opt_frame_clause
+    %type <frame_bound>            frame_bound
     %type <frame_type>             frame_type
-    %type <sval>                   frame_bound
     %type <bval>                   opt_not_exists opt_exists opt_distinct opt_all
     %type <ival_pair>              opt_decimal_specification
     %type <ival>                   opt_time_precision
@@ -978,37 +980,11 @@ frame_type : RANGE { $$ = FrameType::kRange; }
 | ROWS { $$ = FrameType::kRows; }
 | GROUPS { $$ = FrameType::kGroups; };
 
-
-// We keep the frame clauses simple by passing string values for the frame bounds. The DBMS has to check if they are
-// correct. SQL:2003 allows the following five options, which all consist of two tokens:
-// UNBOUNDED PRECEDING | unsigned-integer PRECEDING | CURRENT ROW | unsigned-integer FOLLOWING | UNBOUNDED FOLLOWING
-frame_bound : INTVAL IDENTIFIER {
-  // This is a rather ugly workaround to get a string out of the INTVAL. We cannot use IDENTIFIER because it must not
-  // start with a number. STRING is also not possible because it must be in single quotes.
-  std::stringstream stream;
-  stream << $1;
-  std::string temp_str = stream.str();
-
-  // We must allocate a new char* that has enough space for the result. The destructor for sval (a.k.a char*) uses
-  // free(), so we have to use malloc() rather than new char. +2 for NULL terminator and whitespace.
-  char* result = static_cast<char*>(malloc(sizeof(char) * (temp_str.size() + strlen($2) + 2)));
-  strcpy(result, temp_str.c_str());
-  strcat(result, " ");
-  strcat(result, $2);
-  free($2);
-  $$ = result;
-}
-| IDENTIFIER IDENTIFIER {
-  // We must allocate a new char* that has enough space for the result. The destructor for sval (a.k.a char*) uses
-  // free(), so we have to use malloc() rather than new char. +2 for NULL terminator and whitespace.
-  char* result = static_cast<char*>(malloc(sizeof(char) * (strlen($1) + strlen($2) + 2)));
-  strcpy(result, $1);
-  strcat(result, " ");
-  strcat(result, $2);
-  free($1);
-  free($2);
-  $$ = result;
-};
+frame_bound : UNBOUNDED PRECEDING { $$ = new FrameBound{0, kPreceding, true}; }
+| INTVAL PRECEDING { $$ = new FrameBound{$1, kPreceding, false}; }
+| UNBOUNDED FOLLOWING { $$ = new FrameBound{0, kFollowing, true}; }
+| INTVAL FOLLOWING { $$ = new FrameBound{$1, kFollowing, false}; }
+| CURRENT_ROW { $$ = new FrameBound{0, kCurrentRow, false}; };
 
 // CASE grammar based on: flex & bison by John Levine
 // https://www.safaribooksonline.com/library/view/flex-bison/9780596805418/ch04.html#id352665

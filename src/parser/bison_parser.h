@@ -36,19 +36,19 @@
    private implementation details that can be changed or removed.  */
 
 #ifndef YY_HSQL_BISON_PARSER_H_INCLUDED
-# define YY_HSQL_BISON_PARSER_H_INCLUDED
+#define YY_HSQL_BISON_PARSER_H_INCLUDED
 /* Debug traces.  */
 #ifndef HSQL_DEBUG
-# if defined YYDEBUG
+#if defined YYDEBUG
 #if YYDEBUG
-#   define HSQL_DEBUG 1
-#  else
-#   define HSQL_DEBUG 0
-#  endif
-# else /* ! defined YYDEBUG */
-#  define HSQL_DEBUG 0
-# endif /* ! defined YYDEBUG */
-#endif  /* ! defined HSQL_DEBUG */
+#define HSQL_DEBUG 1
+#else
+#define HSQL_DEBUG 0
+#endif
+#else  /* ! defined YYDEBUG */
+#define HSQL_DEBUG 0
+#endif /* ! defined YYDEBUG */
+#endif /* ! defined HSQL_DEBUG */
 #if HSQL_DEBUG
 extern int hsql_debug;
 #endif
@@ -80,193 +80,195 @@ extern int hsql_debug;
 
 /* Token kinds.  */
 #ifndef HSQL_TOKENTYPE
-# define HSQL_TOKENTYPE
-  enum hsql_tokentype
-  {
-    SQL_HSQL_EMPTY = -2,
-    SQL_YYEOF = 0,                 /* "end of file"  */
-    SQL_HSQL_error = 256,          /* error  */
-    SQL_HSQL_UNDEF = 257,          /* "invalid token"  */
-    SQL_IDENTIFIER = 258,          /* IDENTIFIER  */
-    SQL_STRING = 259,              /* STRING  */
-    SQL_FLOATVAL = 260,            /* FLOATVAL  */
-    SQL_INTVAL = 261,              /* INTVAL  */
-    SQL_DEALLOCATE = 262,          /* DEALLOCATE  */
-    SQL_PARAMETERS = 263,          /* PARAMETERS  */
-    SQL_INTERSECT = 264,           /* INTERSECT  */
-    SQL_TEMPORARY = 265,           /* TEMPORARY  */
-    SQL_TIMESTAMP = 266,           /* TIMESTAMP  */
-    SQL_DISTINCT = 267,            /* DISTINCT  */
-    SQL_NVARCHAR = 268,            /* NVARCHAR  */
-    SQL_RESTRICT = 269,            /* RESTRICT  */
-    SQL_TRUNCATE = 270,            /* TRUNCATE  */
-    SQL_ANALYZE = 271,             /* ANALYZE  */
-    SQL_BETWEEN = 272,             /* BETWEEN  */
-    SQL_CASCADE = 273,             /* CASCADE  */
-    SQL_COLUMNS = 274,             /* COLUMNS  */
-    SQL_CONTROL = 275,             /* CONTROL  */
-    SQL_DEFAULT = 276,             /* DEFAULT  */
-    SQL_EXECUTE = 277,             /* EXECUTE  */
-    SQL_EXPLAIN = 278,             /* EXPLAIN  */
-    SQL_INTEGER = 279,             /* INTEGER  */
-    SQL_NATURAL = 280,             /* NATURAL  */
-    SQL_PREPARE = 281,             /* PREPARE  */
-    SQL_PRIMARY = 282,             /* PRIMARY  */
-    SQL_SCHEMAS = 283,             /* SCHEMAS  */
-    SQL_CHARACTER_VARYING = 284,   /* CHARACTER_VARYING  */
-    SQL_REAL = 285,                /* REAL  */
-    SQL_DECIMAL = 286,             /* DECIMAL  */
-    SQL_SMALLINT = 287,            /* SMALLINT  */
-    SQL_BIGINT = 288,              /* BIGINT  */
-    SQL_SPATIAL = 289,             /* SPATIAL  */
-    SQL_VARCHAR = 290,             /* VARCHAR  */
-    SQL_VIRTUAL = 291,             /* VIRTUAL  */
-    SQL_DESCRIBE = 292,            /* DESCRIBE  */
-    SQL_BEFORE = 293,              /* BEFORE  */
-    SQL_COLUMN = 294,              /* COLUMN  */
-    SQL_CREATE = 295,              /* CREATE  */
-    SQL_DELETE = 296,              /* DELETE  */
-    SQL_DIRECT = 297,              /* DIRECT  */
-    SQL_DOUBLE = 298,              /* DOUBLE  */
-    SQL_ESCAPE = 299,              /* ESCAPE  */
-    SQL_EXCEPT = 300,              /* EXCEPT  */
-    SQL_EXISTS = 301,              /* EXISTS  */
-    SQL_EXTRACT = 302,             /* EXTRACT  */
-    SQL_CAST = 303,                /* CAST  */
-    SQL_FORMAT = 304,              /* FORMAT  */
-    SQL_GLOBAL = 305,              /* GLOBAL  */
-    SQL_HAVING = 306,              /* HAVING  */
-    SQL_IMPORT = 307,              /* IMPORT  */
-    SQL_INSERT = 308,              /* INSERT  */
-    SQL_ISNULL = 309,              /* ISNULL  */
-    SQL_OFFSET = 310,              /* OFFSET  */
-    SQL_RENAME = 311,              /* RENAME  */
-    SQL_SCHEMA = 312,              /* SCHEMA  */
-    SQL_SELECT = 313,              /* SELECT  */
-    SQL_SORTED = 314,              /* SORTED  */
-    SQL_TABLES = 315,              /* TABLES  */
-    SQL_UNIQUE = 316,              /* UNIQUE  */
-    SQL_UNLOAD = 317,              /* UNLOAD  */
-    SQL_UPDATE = 318,              /* UPDATE  */
-    SQL_VALUES = 319,              /* VALUES  */
-    SQL_AFTER = 320,               /* AFTER  */
-    SQL_ALTER = 321,               /* ALTER  */
-    SQL_CROSS = 322,               /* CROSS  */
-    SQL_DELTA = 323,               /* DELTA  */
-    SQL_FLOAT = 324,               /* FLOAT  */
-    SQL_GROUP = 325,               /* GROUP  */
-    SQL_GROUPS = 326,              /* GROUPS  */
-    SQL_INDEX = 327,               /* INDEX  */
-    SQL_INNER = 328,               /* INNER  */
-    SQL_LIMIT = 329,               /* LIMIT  */
-    SQL_LOCAL = 330,               /* LOCAL  */
-    SQL_MERGE = 331,               /* MERGE  */
-    SQL_MINUS = 332,               /* MINUS  */
-    SQL_ORDER = 333,               /* ORDER  */
-    SQL_OVER = 334,                /* OVER  */
-    SQL_RANGE = 335,               /* RANGE  */
-    SQL_ROWS = 336,                /* ROWS  */
-    SQL_OUTER = 337,               /* OUTER  */
-    SQL_RIGHT = 338,               /* RIGHT  */
-    SQL_TABLE = 339,               /* TABLE  */
-    SQL_UNION = 340,               /* UNION  */
-    SQL_USING = 341,               /* USING  */
-    SQL_WHERE = 342,               /* WHERE  */
-    SQL_CALL = 343,                /* CALL  */
-    SQL_CASE = 344,                /* CASE  */
-    SQL_CHAR = 345,                /* CHAR  */
-    SQL_COPY = 346,                /* COPY  */
-    SQL_DATE = 347,                /* DATE  */
-    SQL_DATETIME = 348,            /* DATETIME  */
-    SQL_DESC = 349,                /* DESC  */
-    SQL_DROP = 350,                /* DROP  */
-    SQL_ELSE = 351,                /* ELSE  */
-    SQL_FILE = 352,                /* FILE  */
-    SQL_FROM = 353,                /* FROM  */
-    SQL_FULL = 354,                /* FULL  */
-    SQL_HASH = 355,                /* HASH  */
-    SQL_HINT = 356,                /* HINT  */
-    SQL_INTO = 357,                /* INTO  */
-    SQL_JOIN = 358,                /* JOIN  */
-    SQL_LEFT = 359,                /* LEFT  */
-    SQL_LIKE = 360,                /* LIKE  */
-    SQL_LOAD = 361,                /* LOAD  */
-    SQL_LONG = 362,                /* LONG  */
-    SQL_NULL = 363,                /* NULL  */
-    SQL_PARTITION = 364,           /* PARTITION  */
-    SQL_PLAN = 365,                /* PLAN  */
-    SQL_SHOW = 366,                /* SHOW  */
-    SQL_TEXT = 367,                /* TEXT  */
-    SQL_THEN = 368,                /* THEN  */
-    SQL_TIME = 369,                /* TIME  */
-    SQL_VIEW = 370,                /* VIEW  */
-    SQL_WHEN = 371,                /* WHEN  */
-    SQL_WITH = 372,                /* WITH  */
-    SQL_ADD = 373,                 /* ADD  */
-    SQL_ALL = 374,                 /* ALL  */
-    SQL_AND = 375,                 /* AND  */
-    SQL_ASC = 376,                 /* ASC  */
-    SQL_END = 377,                 /* END  */
-    SQL_FOR = 378,                 /* FOR  */
-    SQL_INT = 379,                 /* INT  */
-    SQL_KEY = 380,                 /* KEY  */
-    SQL_NOT = 381,                 /* NOT  */
-    SQL_OFF = 382,                 /* OFF  */
-    SQL_SET = 383,                 /* SET  */
-    SQL_TOP = 384,                 /* TOP  */
-    SQL_AS = 385,                  /* AS  */
-    SQL_BY = 386,                  /* BY  */
-    SQL_IF = 387,                  /* IF  */
-    SQL_IN = 388,                  /* IN  */
-    SQL_IS = 389,                  /* IS  */
-    SQL_OF = 390,                  /* OF  */
-    SQL_ON = 391,                  /* ON  */
-    SQL_OR = 392,                  /* OR  */
-    SQL_TO = 393,                  /* TO  */
-    SQL_NO = 394,                  /* NO  */
-    SQL_ARRAY = 395,               /* ARRAY  */
-    SQL_CONCAT = 396,              /* CONCAT  */
-    SQL_ILIKE = 397,               /* ILIKE  */
-    SQL_SECOND = 398,              /* SECOND  */
-    SQL_MINUTE = 399,              /* MINUTE  */
-    SQL_HOUR = 400,                /* HOUR  */
-    SQL_DAY = 401,                 /* DAY  */
-    SQL_MONTH = 402,               /* MONTH  */
-    SQL_YEAR = 403,                /* YEAR  */
-    SQL_SECONDS = 404,             /* SECONDS  */
-    SQL_MINUTES = 405,             /* MINUTES  */
-    SQL_HOURS = 406,               /* HOURS  */
-    SQL_DAYS = 407,                /* DAYS  */
-    SQL_MONTHS = 408,              /* MONTHS  */
-    SQL_YEARS = 409,               /* YEARS  */
-    SQL_INTERVAL = 410,            /* INTERVAL  */
-    SQL_TRUE = 411,                /* TRUE  */
-    SQL_FALSE = 412,               /* FALSE  */
-    SQL_BOOLEAN = 413,             /* BOOLEAN  */
-    SQL_TRANSACTION = 414,         /* TRANSACTION  */
-    SQL_BEGIN = 415,               /* BEGIN  */
-    SQL_COMMIT = 416,              /* COMMIT  */
-    SQL_ROLLBACK = 417,            /* ROLLBACK  */
-    SQL_NOWAIT = 418,              /* NOWAIT  */
-    SQL_SKIP = 419,                /* SKIP  */
-    SQL_LOCKED = 420,              /* LOCKED  */
-    SQL_SHARE = 421,               /* SHARE  */
-    SQL_EQUALS = 422,              /* EQUALS  */
-    SQL_NOTEQUALS = 423,           /* NOTEQUALS  */
-    SQL_LESS = 424,                /* LESS  */
-    SQL_GREATER = 425,             /* GREATER  */
-    SQL_LESSEQ = 426,              /* LESSEQ  */
-    SQL_GREATEREQ = 427,           /* GREATEREQ  */
-    SQL_NOTNULL = 428,             /* NOTNULL  */
-    SQL_UMINUS = 429               /* UMINUS  */
-  };
-  typedef enum hsql_tokentype hsql_token_kind_t;
+#define HSQL_TOKENTYPE
+enum hsql_tokentype {
+  SQL_HSQL_EMPTY = -2,
+  SQL_YYEOF = 0,               /* "end of file"  */
+  SQL_HSQL_error = 256,        /* error  */
+  SQL_HSQL_UNDEF = 257,        /* "invalid token"  */
+  SQL_IDENTIFIER = 258,        /* IDENTIFIER  */
+  SQL_STRING = 259,            /* STRING  */
+  SQL_FLOATVAL = 260,          /* FLOATVAL  */
+  SQL_INTVAL = 261,            /* INTVAL  */
+  SQL_DEALLOCATE = 262,        /* DEALLOCATE  */
+  SQL_PARAMETERS = 263,        /* PARAMETERS  */
+  SQL_INTERSECT = 264,         /* INTERSECT  */
+  SQL_TEMPORARY = 265,         /* TEMPORARY  */
+  SQL_TIMESTAMP = 266,         /* TIMESTAMP  */
+  SQL_DISTINCT = 267,          /* DISTINCT  */
+  SQL_NVARCHAR = 268,          /* NVARCHAR  */
+  SQL_RESTRICT = 269,          /* RESTRICT  */
+  SQL_TRUNCATE = 270,          /* TRUNCATE  */
+  SQL_ANALYZE = 271,           /* ANALYZE  */
+  SQL_BETWEEN = 272,           /* BETWEEN  */
+  SQL_CASCADE = 273,           /* CASCADE  */
+  SQL_COLUMNS = 274,           /* COLUMNS  */
+  SQL_CONTROL = 275,           /* CONTROL  */
+  SQL_DEFAULT = 276,           /* DEFAULT  */
+  SQL_EXECUTE = 277,           /* EXECUTE  */
+  SQL_EXPLAIN = 278,           /* EXPLAIN  */
+  SQL_INTEGER = 279,           /* INTEGER  */
+  SQL_NATURAL = 280,           /* NATURAL  */
+  SQL_PREPARE = 281,           /* PREPARE  */
+  SQL_PRIMARY = 282,           /* PRIMARY  */
+  SQL_SCHEMAS = 283,           /* SCHEMAS  */
+  SQL_CHARACTER_VARYING = 284, /* CHARACTER_VARYING  */
+  SQL_REAL = 285,              /* REAL  */
+  SQL_DECIMAL = 286,           /* DECIMAL  */
+  SQL_SMALLINT = 287,          /* SMALLINT  */
+  SQL_BIGINT = 288,            /* BIGINT  */
+  SQL_SPATIAL = 289,           /* SPATIAL  */
+  SQL_VARCHAR = 290,           /* VARCHAR  */
+  SQL_VIRTUAL = 291,           /* VIRTUAL  */
+  SQL_DESCRIBE = 292,          /* DESCRIBE  */
+  SQL_BEFORE = 293,            /* BEFORE  */
+  SQL_COLUMN = 294,            /* COLUMN  */
+  SQL_CREATE = 295,            /* CREATE  */
+  SQL_DELETE = 296,            /* DELETE  */
+  SQL_DIRECT = 297,            /* DIRECT  */
+  SQL_DOUBLE = 298,            /* DOUBLE  */
+  SQL_ESCAPE = 299,            /* ESCAPE  */
+  SQL_EXCEPT = 300,            /* EXCEPT  */
+  SQL_EXISTS = 301,            /* EXISTS  */
+  SQL_EXTRACT = 302,           /* EXTRACT  */
+  SQL_CAST = 303,              /* CAST  */
+  SQL_FORMAT = 304,            /* FORMAT  */
+  SQL_GLOBAL = 305,            /* GLOBAL  */
+  SQL_HAVING = 306,            /* HAVING  */
+  SQL_IMPORT = 307,            /* IMPORT  */
+  SQL_INSERT = 308,            /* INSERT  */
+  SQL_ISNULL = 309,            /* ISNULL  */
+  SQL_OFFSET = 310,            /* OFFSET  */
+  SQL_RENAME = 311,            /* RENAME  */
+  SQL_SCHEMA = 312,            /* SCHEMA  */
+  SQL_SELECT = 313,            /* SELECT  */
+  SQL_SORTED = 314,            /* SORTED  */
+  SQL_TABLES = 315,            /* TABLES  */
+  SQL_UNIQUE = 316,            /* UNIQUE  */
+  SQL_UNLOAD = 317,            /* UNLOAD  */
+  SQL_UPDATE = 318,            /* UPDATE  */
+  SQL_VALUES = 319,            /* VALUES  */
+  SQL_AFTER = 320,             /* AFTER  */
+  SQL_ALTER = 321,             /* ALTER  */
+  SQL_CROSS = 322,             /* CROSS  */
+  SQL_DELTA = 323,             /* DELTA  */
+  SQL_FLOAT = 324,             /* FLOAT  */
+  SQL_GROUP = 325,             /* GROUP  */
+  SQL_INDEX = 326,             /* INDEX  */
+  SQL_INNER = 327,             /* INNER  */
+  SQL_LIMIT = 328,             /* LIMIT  */
+  SQL_LOCAL = 329,             /* LOCAL  */
+  SQL_MERGE = 330,             /* MERGE  */
+  SQL_MINUS = 331,             /* MINUS  */
+  SQL_ORDER = 332,             /* ORDER  */
+  SQL_OVER = 333,              /* OVER  */
+  SQL_OUTER = 334,             /* OUTER  */
+  SQL_RIGHT = 335,             /* RIGHT  */
+  SQL_TABLE = 336,             /* TABLE  */
+  SQL_UNION = 337,             /* UNION  */
+  SQL_USING = 338,             /* USING  */
+  SQL_WHERE = 339,             /* WHERE  */
+  SQL_CALL = 340,              /* CALL  */
+  SQL_CASE = 341,              /* CASE  */
+  SQL_CHAR = 342,              /* CHAR  */
+  SQL_COPY = 343,              /* COPY  */
+  SQL_DATE = 344,              /* DATE  */
+  SQL_DATETIME = 345,          /* DATETIME  */
+  SQL_DESC = 346,              /* DESC  */
+  SQL_DROP = 347,              /* DROP  */
+  SQL_ELSE = 348,              /* ELSE  */
+  SQL_FILE = 349,              /* FILE  */
+  SQL_FROM = 350,              /* FROM  */
+  SQL_FULL = 351,              /* FULL  */
+  SQL_HASH = 352,              /* HASH  */
+  SQL_HINT = 353,              /* HINT  */
+  SQL_INTO = 354,              /* INTO  */
+  SQL_JOIN = 355,              /* JOIN  */
+  SQL_LEFT = 356,              /* LEFT  */
+  SQL_LIKE = 357,              /* LIKE  */
+  SQL_LOAD = 358,              /* LOAD  */
+  SQL_LONG = 359,              /* LONG  */
+  SQL_NULL = 360,              /* NULL  */
+  SQL_PARTITION = 361,         /* PARTITION  */
+  SQL_PLAN = 362,              /* PLAN  */
+  SQL_SHOW = 363,              /* SHOW  */
+  SQL_TEXT = 364,              /* TEXT  */
+  SQL_THEN = 365,              /* THEN  */
+  SQL_TIME = 366,              /* TIME  */
+  SQL_VIEW = 367,              /* VIEW  */
+  SQL_WHEN = 368,              /* WHEN  */
+  SQL_WITH = 369,              /* WITH  */
+  SQL_ADD = 370,               /* ADD  */
+  SQL_ALL = 371,               /* ALL  */
+  SQL_AND = 372,               /* AND  */
+  SQL_ASC = 373,               /* ASC  */
+  SQL_END = 374,               /* END  */
+  SQL_FOR = 375,               /* FOR  */
+  SQL_INT = 376,               /* INT  */
+  SQL_KEY = 377,               /* KEY  */
+  SQL_NOT = 378,               /* NOT  */
+  SQL_OFF = 379,               /* OFF  */
+  SQL_SET = 380,               /* SET  */
+  SQL_TOP = 381,               /* TOP  */
+  SQL_AS = 382,                /* AS  */
+  SQL_BY = 383,                /* BY  */
+  SQL_IF = 384,                /* IF  */
+  SQL_IN = 385,                /* IN  */
+  SQL_IS = 386,                /* IS  */
+  SQL_OF = 387,                /* OF  */
+  SQL_ON = 388,                /* ON  */
+  SQL_OR = 389,                /* OR  */
+  SQL_TO = 390,                /* TO  */
+  SQL_NO = 391,                /* NO  */
+  SQL_ARRAY = 392,             /* ARRAY  */
+  SQL_CONCAT = 393,            /* CONCAT  */
+  SQL_ILIKE = 394,             /* ILIKE  */
+  SQL_SECOND = 395,            /* SECOND  */
+  SQL_MINUTE = 396,            /* MINUTE  */
+  SQL_HOUR = 397,              /* HOUR  */
+  SQL_DAY = 398,               /* DAY  */
+  SQL_MONTH = 399,             /* MONTH  */
+  SQL_YEAR = 400,              /* YEAR  */
+  SQL_SECONDS = 401,           /* SECONDS  */
+  SQL_MINUTES = 402,           /* MINUTES  */
+  SQL_HOURS = 403,             /* HOURS  */
+  SQL_DAYS = 404,              /* DAYS  */
+  SQL_MONTHS = 405,            /* MONTHS  */
+  SQL_YEARS = 406,             /* YEARS  */
+  SQL_INTERVAL = 407,          /* INTERVAL  */
+  SQL_TRUE = 408,              /* TRUE  */
+  SQL_FALSE = 409,             /* FALSE  */
+  SQL_BOOLEAN = 410,           /* BOOLEAN  */
+  SQL_TRANSACTION = 411,       /* TRANSACTION  */
+  SQL_BEGIN = 412,             /* BEGIN  */
+  SQL_COMMIT = 413,            /* COMMIT  */
+  SQL_ROLLBACK = 414,          /* ROLLBACK  */
+  SQL_NOWAIT = 415,            /* NOWAIT  */
+  SQL_SKIP = 416,              /* SKIP  */
+  SQL_LOCKED = 417,            /* LOCKED  */
+  SQL_SHARE = 418,             /* SHARE  */
+  SQL_RANGE = 419,             /* RANGE  */
+  SQL_ROWS = 420,              /* ROWS  */
+  SQL_GROUPS = 421,            /* GROUPS  */
+  SQL_UNBOUNDED = 422,         /* UNBOUNDED  */
+  SQL_FOLLOWING = 423,         /* FOLLOWING  */
+  SQL_PRECEDING = 424,         /* PRECEDING  */
+  SQL_CURRENT_ROW = 425,       /* CURRENT_ROW  */
+  SQL_EQUALS = 426,            /* EQUALS  */
+  SQL_NOTEQUALS = 427,         /* NOTEQUALS  */
+  SQL_LESS = 428,              /* LESS  */
+  SQL_GREATER = 429,           /* GREATER  */
+  SQL_LESSEQ = 430,            /* LESSEQ  */
+  SQL_GREATEREQ = 431,         /* GREATEREQ  */
+  SQL_NOTNULL = 432,           /* NOTNULL  */
+  SQL_UMINUS = 433             /* UMINUS  */
+};
+typedef enum hsql_tokentype hsql_token_kind_t;
 #endif
 
 /* Value type.  */
-#if ! defined HSQL_STYPE && ! defined HSQL_STYPE_IS_DECLARED
-union HSQL_STYPE
-{
+#if !defined HSQL_STYPE && !defined HSQL_STYPE_IS_DECLARED
+union HSQL_STYPE {
 #line 97 "bison_parser.y"
 
   // clang-format on
@@ -300,6 +302,7 @@ union HSQL_STYPE
   hsql::DatetimeField datetime_field;
   hsql::DropColumnAction* drop_action_t;
   hsql::Expr* expr;
+  hsql::FrameBound* frame_bound;
   hsql::FrameDescription* frame_description;
   hsql::FrameType frame_type;
   hsql::GroupByDescription* group_t;
@@ -333,32 +336,26 @@ union HSQL_STYPE
   hsql::RowLockMode lock_mode_t;
   hsql::RowLockWaitPolicy lock_wait_policy_t;
 
-#line 337 "bison_parser.h"
-
+#line 342 "bison_parser.h"
 };
 typedef union HSQL_STYPE HSQL_STYPE;
-# define HSQL_STYPE_IS_TRIVIAL 1
-# define HSQL_STYPE_IS_DECLARED 1
+#define HSQL_STYPE_IS_TRIVIAL 1
+#define HSQL_STYPE_IS_DECLARED 1
 #endif
 
 /* Location type.  */
-#if ! defined HSQL_LTYPE && ! defined HSQL_LTYPE_IS_DECLARED
+#if !defined HSQL_LTYPE && !defined HSQL_LTYPE_IS_DECLARED
 typedef struct HSQL_LTYPE HSQL_LTYPE;
-struct HSQL_LTYPE
-{
+struct HSQL_LTYPE {
   int first_line;
   int first_column;
   int last_line;
   int last_column;
 };
-# define HSQL_LTYPE_IS_DECLARED 1
-# define HSQL_LTYPE_IS_TRIVIAL 1
+#define HSQL_LTYPE_IS_DECLARED 1
+#define HSQL_LTYPE_IS_TRIVIAL 1
 #endif
 
-
-
-
-int hsql_parse (hsql::SQLParserResult* result, yyscan_t scanner);
-
+int hsql_parse(hsql::SQLParserResult* result, yyscan_t scanner);
 
 #endif /* !YY_HSQL_BISON_PARSER_H_INCLUDED  */

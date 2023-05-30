@@ -2,222 +2,271 @@
 #include "sqlhelper.h"
 #include <iostream>
 #include <map>
+#include <sstream>
 #include <string>
 
 namespace hsql {
 
-void printOperatorExpression(Expr* expr, uintmax_t numIndent);
-void printAlias(Alias* alias, uintmax_t numIndent);
+void printOperatorExpression(Expr* expr, uintmax_t num_indent);
+void printAlias(Alias* alias, uintmax_t num_indent);
 
 std::ostream& operator<<(std::ostream& os, const OperatorType& op);
 std::ostream& operator<<(std::ostream& os, const DatetimeField& op);
 
-std::string indent(uintmax_t numIndent) { return std::string(numIndent, '\t'); }
-void inprint(int64_t val, uintmax_t numIndent) { std::cout << indent(numIndent).c_str() << val << "  " << std::endl; }
-void inprint(double val, uintmax_t numIndent) { std::cout << indent(numIndent).c_str() << val << std::endl; }
-void inprint(const char* val, uintmax_t numIndent) { std::cout << indent(numIndent).c_str() << val << std::endl; }
-void inprint(const char* val, const char* val2, uintmax_t numIndent) {
-  std::cout << indent(numIndent).c_str() << val << "->" << val2 << std::endl;
+std::string indent(uintmax_t num_indent) { return std::string(num_indent, '\t'); }
+void inprint(int64_t val, uintmax_t num_indent) { std::cout << indent(num_indent).c_str() << val << "  " << std::endl; }
+void inprint(double val, uintmax_t num_indent) { std::cout << indent(num_indent).c_str() << val << std::endl; }
+void inprint(const char* val, uintmax_t num_indent) { std::cout << indent(num_indent).c_str() << val << std::endl; }
+void inprint(const char* val, const char* val2, uintmax_t num_indent) {
+  std::cout << indent(num_indent).c_str() << val << "->" << val2 << std::endl;
 }
-void inprintC(char val, uintmax_t numIndent) { std::cout << indent(numIndent).c_str() << val << std::endl; }
-void inprint(const OperatorType& op, uintmax_t numIndent) { std::cout << indent(numIndent) << op << std::endl; }
-void inprint(const ColumnType& colType, uintmax_t numIndent) { std::cout << indent(numIndent) << colType << std::endl; }
-void inprint(const DatetimeField& colType, uintmax_t numIndent) {
-  std::cout << indent(numIndent) << colType << std::endl;
+void inprintC(char val, uintmax_t num_indent) { std::cout << indent(num_indent).c_str() << val << std::endl; }
+void inprint(const OperatorType& op, uintmax_t num_indent) { std::cout << indent(num_indent) << op << std::endl; }
+void inprint(const ColumnType& colType, uintmax_t num_indent) {
+  std::cout << indent(num_indent) << colType << std::endl;
+}
+void inprint(const DatetimeField& colType, uintmax_t num_indent) {
+  std::cout << indent(num_indent) << colType << std::endl;
 }
 
-void printTableRefInfo(TableRef* table, uintmax_t numIndent) {
+void printTableRefInfo(TableRef* table, uintmax_t num_indent) {
   switch (table->type) {
     case kTableName:
-      inprint(table->name, numIndent);
+      inprint(table->name, num_indent);
       if (table->schema) {
-        inprint("Schema", numIndent + 1);
-        inprint(table->schema, numIndent + 2);
+        inprint("Schema", num_indent + 1);
+        inprint(table->schema, num_indent + 2);
       }
       break;
     case kTableSelect:
-      printSelectStatementInfo(table->select, numIndent);
+      printSelectStatementInfo(table->select, num_indent);
       break;
     case kTableJoin:
-      inprint("Join Table", numIndent);
-      inprint("Left", numIndent + 1);
-      printTableRefInfo(table->join->left, numIndent + 2);
-      inprint("Right", numIndent + 1);
-      printTableRefInfo(table->join->right, numIndent + 2);
-      inprint("Join Condition", numIndent + 1);
-      printExpression(table->join->condition, numIndent + 2);
+      inprint("Join Table", num_indent);
+      inprint("Left", num_indent + 1);
+      printTableRefInfo(table->join->left, num_indent + 2);
+      inprint("Right", num_indent + 1);
+      printTableRefInfo(table->join->right, num_indent + 2);
+      inprint("Join Condition", num_indent + 1);
+      printExpression(table->join->condition, num_indent + 2);
       break;
     case kTableCrossProduct:
-      for (TableRef* tbl : *table->list) printTableRefInfo(tbl, numIndent);
+      for (TableRef* tbl : *table->list) printTableRefInfo(tbl, num_indent);
       break;
   }
 
   if (table->alias) {
-    printAlias(table->alias, numIndent);
+    printAlias(table->alias, num_indent);
   }
 }
 
-void printAlias(Alias* alias, uintmax_t numIndent) {
-  inprint("Alias", numIndent + 1);
-  inprint(alias->name, numIndent + 2);
+void printAlias(Alias* alias, uintmax_t num_indent) {
+  inprint("Alias", num_indent + 1);
+  inprint(alias->name, num_indent + 2);
 
   if (alias->columns) {
     for (char* column : *(alias->columns)) {
-      inprint(column, numIndent + 3);
+      inprint(column, num_indent + 3);
     }
   }
 }
 
-void printOperatorExpression(Expr* expr, uintmax_t numIndent) {
+void printOperatorExpression(Expr* expr, uintmax_t num_indent) {
   if (expr == nullptr) {
-    inprint("null", numIndent);
+    inprint("null", num_indent);
     return;
   }
 
-  inprint(expr->opType, numIndent);
+  inprint(expr->opType, num_indent);
 
-  printExpression(expr->expr, numIndent + 1);
+  printExpression(expr->expr, num_indent + 1);
   if (expr->expr2) {
-    printExpression(expr->expr2, numIndent + 1);
+    printExpression(expr->expr2, num_indent + 1);
   } else if (expr->exprList) {
-    for (Expr* e : *expr->exprList) printExpression(e, numIndent + 1);
+    for (Expr* e : *expr->exprList) printExpression(e, num_indent + 1);
   }
 }
 
-void printExpression(Expr* expr, uintmax_t numIndent) {
+void printExpression(Expr* expr, uintmax_t num_indent) {
   if (!expr) return;
   switch (expr->type) {
     case kExprStar:
-      inprint("*", numIndent);
+      inprint("*", num_indent);
       break;
     case kExprColumnRef:
-      inprint(expr->name, numIndent);
+      inprint(expr->name, num_indent);
       if (expr->table) {
-        inprint("Table:", numIndent + 1);
-        inprint(expr->table, numIndent + 2);
+        inprint("Table:", num_indent + 1);
+        inprint(expr->table, num_indent + 2);
       }
       break;
-    // case kExprTableColumnRef: inprint(expr->table, expr->name, numIndent); break;
+    // case kExprTableColumnRef: inprint(expr->table, expr->name, num_indent); break;
     case kExprLiteralFloat:
-      inprint(expr->fval, numIndent);
+      inprint(expr->fval, num_indent);
       break;
     case kExprLiteralInt:
-      inprint(expr->ival, numIndent);
+      inprint(expr->ival, num_indent);
       break;
     case kExprLiteralString:
-      inprint(expr->name, numIndent);
+      inprint(expr->name, num_indent);
       break;
     case kExprLiteralDate:
-      inprint(expr->name, numIndent);
+      inprint(expr->name, num_indent);
       break;
     case kExprLiteralNull:
-      inprint("NULL", numIndent);
+      inprint("NULL", num_indent);
       break;
     case kExprLiteralInterval:
-      inprint("INTERVAL", numIndent);
-      inprint(expr->ival, numIndent + 1);
-      inprint(expr->datetimeField, numIndent + 1);
+      inprint("INTERVAL", num_indent);
+      inprint(expr->ival, num_indent + 1);
+      inprint(expr->datetimeField, num_indent + 1);
       break;
     case kExprFunctionRef:
-      inprint(expr->name, numIndent);
-      for (Expr* e : *expr->exprList) printExpression(e, numIndent + 1);
+      inprint(expr->name, num_indent);
+      for (Expr* e : *expr->exprList) printExpression(e, num_indent + 1);
       break;
     case kExprExtract:
-      inprint("EXTRACT", numIndent);
-      inprint(expr->datetimeField, numIndent + 1);
-      printExpression(expr->expr, numIndent + 1);
+      inprint("EXTRACT", num_indent);
+      inprint(expr->datetimeField, num_indent + 1);
+      printExpression(expr->expr, num_indent + 1);
       break;
     case kExprCast:
-      inprint("CAST", numIndent);
-      inprint(expr->columnType, numIndent + 1);
-      printExpression(expr->expr, numIndent + 1);
+      inprint("CAST", num_indent);
+      inprint(expr->columnType, num_indent + 1);
+      printExpression(expr->expr, num_indent + 1);
       break;
     case kExprOperator:
-      printOperatorExpression(expr, numIndent);
+      printOperatorExpression(expr, num_indent);
       break;
     case kExprSelect:
-      printSelectStatementInfo(expr->select, numIndent);
+      printSelectStatementInfo(expr->select, num_indent);
       break;
     case kExprParameter:
-      inprint(expr->ival, numIndent);
+      inprint(expr->ival, num_indent);
       break;
     case kExprArray:
-      for (Expr* e : *expr->exprList) printExpression(e, numIndent + 1);
+      for (Expr* e : *expr->exprList) {
+        printExpression(e, num_indent + 1);
+      }
       break;
     case kExprArrayIndex:
-      printExpression(expr->expr, numIndent + 1);
-      inprint(expr->ival, numIndent);
+      printExpression(expr->expr, num_indent + 1);
+      inprint(expr->ival, num_indent);
+      break;
+    case kExprWindow:
+      printExpression(expr->expr, num_indent);
+      inprint("OVER", num_indent);
+      if (expr->exprList) {
+        inprint("PARTITION BY", num_indent + 1);
+        for (const auto e : *expr->exprList) {
+          printExpression(e, num_indent + 2);
+        }
+      }
+      if (expr->windowDescription) {
+        if (expr->windowDescription->orderList) {
+          inprint("ORDER BY", num_indent + 1);
+          printOrderBy(expr->windowDescription->orderList, num_indent + 2);
+        }
+        if (expr->windowDescription->frameDescription) {
+          printFrameDescription(expr->windowDescription->frameDescription, num_indent + 2);
+        }
+      }
       break;
     default:
       std::cerr << "Unrecognized expression type " << expr->type << std::endl;
       return;
   }
   if (expr->alias) {
-    inprint("Alias", numIndent + 1);
-    inprint(expr->alias, numIndent + 2);
+    inprint("Alias", num_indent + 1);
+    inprint(expr->alias, num_indent + 2);
   }
 }
 
-void printOrderBy(const std::vector<OrderDescription*>* expr, uintmax_t numIndent) {
+void printOrderBy(const std::vector<OrderDescription*>* expr, uintmax_t num_indent) {
   if (!expr) return;
   for (const auto& order_description : *expr) {
-    printExpression(order_description->expr, numIndent);
+    printExpression(order_description->expr, num_indent);
     if (order_description->type == kOrderAsc) {
-      inprint("ascending", numIndent);
+      inprint("ascending", num_indent);
     } else {
-      inprint("descending", numIndent);
+      inprint("descending", num_indent);
     }
   }
 }
 
-void printSelectStatementInfo(const SelectStatement* stmt, uintmax_t numIndent) {
-  inprint("SelectStatement", numIndent);
-  inprint("Fields:", numIndent + 1);
-  for (Expr* expr : *stmt->selectList) printExpression(expr, numIndent + 2);
+void printFrameDescription(FrameDescription* frame_description, uintmax_t num_indent) {
+  std::ostringstream stream;
+  stream << indent(num_indent);
+  switch (frame_description->type) {
+    case kRows:
+      stream << "ROWS";
+      break;
+    case kRange:
+      stream << "RANGE";
+      break;
+    case kGroups:
+      stream << "GROUPS";
+      break;
+  }
+
+  stream << " ";
+
+  if (frame_description->end) {
+    stream << "BETWEEN " << frame_description->start << " AND " << frame_description->end;
+  } else {
+    stream << frame_description->start;
+  }
+  inprint(stream.str().c_str(), num_indent);
+}
+
+void printSelectStatementInfo(const SelectStatement* stmt, uintmax_t num_indent) {
+  inprint("SelectStatement", num_indent);
+  inprint("Fields:", num_indent + 1);
+  for (Expr* expr : *stmt->selectList) printExpression(expr, num_indent + 2);
 
   if (stmt->fromTable) {
-    inprint("Sources:", numIndent + 1);
-    printTableRefInfo(stmt->fromTable, numIndent + 2);
+    inprint("Sources:", num_indent + 1);
+    printTableRefInfo(stmt->fromTable, num_indent + 2);
   }
 
   if (stmt->whereClause) {
-    inprint("Search Conditions:", numIndent + 1);
-    printExpression(stmt->whereClause, numIndent + 2);
+    inprint("Search Conditions:", num_indent + 1);
+    printExpression(stmt->whereClause, num_indent + 2);
   }
 
   if (stmt->groupBy) {
-    inprint("GroupBy:", numIndent + 1);
-    for (Expr* expr : *stmt->groupBy->columns) printExpression(expr, numIndent + 2);
+    inprint("GroupBy:", num_indent + 1);
+    for (Expr* expr : *stmt->groupBy->columns) printExpression(expr, num_indent + 2);
     if (stmt->groupBy->having) {
-      inprint("Having:", numIndent + 1);
-      printExpression(stmt->groupBy->having, numIndent + 2);
+      inprint("Having:", num_indent + 1);
+      printExpression(stmt->groupBy->having, num_indent + 2);
     }
   }
   if (stmt->lockings) {
-    inprint("Lock Info:", numIndent + 1);
+    inprint("Lock Info:", num_indent + 1);
     for (LockingClause* lockingClause : *stmt->lockings) {
-      inprint("Type", numIndent + 2);
+      inprint("Type", num_indent + 2);
       if (lockingClause->rowLockMode == RowLockMode::ForUpdate) {
-        inprint("FOR UPDATE", numIndent + 3);
+        inprint("FOR UPDATE", num_indent + 3);
       } else if (lockingClause->rowLockMode == RowLockMode::ForNoKeyUpdate) {
-        inprint("FOR NO KEY UPDATE", numIndent + 3);
+        inprint("FOR NO KEY UPDATE", num_indent + 3);
       } else if (lockingClause->rowLockMode == RowLockMode::ForShare) {
-        inprint("FOR SHARE", numIndent + 3);
+        inprint("FOR SHARE", num_indent + 3);
       } else if (lockingClause->rowLockMode == RowLockMode::ForKeyShare) {
-        inprint("FOR KEY SHARE", numIndent + 3);
+        inprint("FOR KEY SHARE", num_indent + 3);
       }
       if (lockingClause->tables) {
-        inprint("Target tables:", numIndent + 2);
+        inprint("Target tables:", num_indent + 2);
         for (char* dtable : *lockingClause->tables) {
-          inprint(dtable, numIndent + 3);
+          inprint(dtable, num_indent + 3);
         }
       }
       if (lockingClause->rowLockWaitPolicy != RowLockWaitPolicy::None) {
-        inprint("Waiting policy: ", numIndent + 2);
+        inprint("Waiting policy: ", num_indent + 2);
         if (lockingClause->rowLockWaitPolicy == RowLockWaitPolicy::NoWait)
-          inprint("NOWAIT", numIndent + 3);
+          inprint("NOWAIT", num_indent + 3);
         else
-          inprint("SKIP LOCKED", numIndent + 3);
+          inprint("SKIP LOCKED", num_indent + 3);
       }
     }
   }
@@ -226,141 +275,141 @@ void printSelectStatementInfo(const SelectStatement* stmt, uintmax_t numIndent) 
     for (SetOperation* setOperation : *stmt->setOperations) {
       switch (setOperation->setType) {
         case SetType::kSetIntersect:
-          inprint("Intersect:", numIndent + 1);
+          inprint("Intersect:", num_indent + 1);
           break;
         case SetType::kSetUnion:
-          inprint("Union:", numIndent + 1);
+          inprint("Union:", num_indent + 1);
           break;
         case SetType::kSetExcept:
-          inprint("Except:", numIndent + 1);
+          inprint("Except:", num_indent + 1);
           break;
       }
 
-      printSelectStatementInfo(setOperation->nestedSelectStatement, numIndent + 2);
+      printSelectStatementInfo(setOperation->nestedSelectStatement, num_indent + 2);
 
       if (setOperation->resultOrder) {
-        inprint("SetResultOrderBy:", numIndent + 1);
-        printOrderBy(setOperation->resultOrder, numIndent + 2);
+        inprint("SetResultOrderBy:", num_indent + 1);
+        printOrderBy(setOperation->resultOrder, num_indent + 2);
       }
 
       if (setOperation->resultLimit) {
         if (setOperation->resultLimit->limit) {
-          inprint("SetResultLimit:", numIndent + 1);
-          printExpression(setOperation->resultLimit->limit, numIndent + 2);
+          inprint("SetResultLimit:", num_indent + 1);
+          printExpression(setOperation->resultLimit->limit, num_indent + 2);
         }
 
         if (setOperation->resultLimit->offset) {
-          inprint("SetResultOffset:", numIndent + 1);
-          printExpression(setOperation->resultLimit->offset, numIndent + 2);
+          inprint("SetResultOffset:", num_indent + 1);
+          printExpression(setOperation->resultLimit->offset, num_indent + 2);
         }
       }
     }
   }
 
   if (stmt->order) {
-    inprint("OrderBy:", numIndent + 1);
-    printOrderBy(stmt->order, numIndent + 2);
+    inprint("OrderBy:", num_indent + 1);
+    printOrderBy(stmt->order, num_indent + 2);
   }
 
   if (stmt->limit && stmt->limit->limit) {
-    inprint("Limit:", numIndent + 1);
-    printExpression(stmt->limit->limit, numIndent + 2);
+    inprint("Limit:", num_indent + 1);
+    printExpression(stmt->limit->limit, num_indent + 2);
   }
 
   if (stmt->limit && stmt->limit->offset) {
-    inprint("Offset:", numIndent + 1);
-    printExpression(stmt->limit->offset, numIndent + 2);
+    inprint("Offset:", num_indent + 1);
+    printExpression(stmt->limit->offset, num_indent + 2);
   }
 }
 
-void printImportStatementInfo(const ImportStatement* stmt, uintmax_t numIndent) {
-  inprint("ImportStatement", numIndent);
-  inprint(stmt->filePath, numIndent + 1);
+void printImportStatementInfo(const ImportStatement* stmt, uintmax_t num_indent) {
+  inprint("ImportStatement", num_indent);
+  inprint(stmt->filePath, num_indent + 1);
   switch (stmt->type) {
     case ImportType::kImportCSV:
-      inprint("CSV", numIndent + 1);
+      inprint("CSV", num_indent + 1);
       break;
     case ImportType::kImportTbl:
-      inprint("TBL", numIndent + 1);
+      inprint("TBL", num_indent + 1);
       break;
     case ImportType::kImportBinary:
-      inprint("BINARY", numIndent + 1);
+      inprint("BINARY", num_indent + 1);
       break;
     case ImportType::kImportAuto:
-      inprint("AUTO", numIndent + 1);
+      inprint("AUTO", num_indent + 1);
       break;
   }
-  inprint(stmt->tableName, numIndent + 1);
+  inprint(stmt->tableName, num_indent + 1);
   if (stmt->whereClause) {
-    inprint("WHERE:", numIndent + 1);
-    printExpression(stmt->whereClause, numIndent + 2);
+    inprint("WHERE:", num_indent + 1);
+    printExpression(stmt->whereClause, num_indent + 2);
   }
 }
 
-void printExportStatementInfo(const ExportStatement* stmt, uintmax_t numIndent) {
-  inprint("ExportStatement", numIndent);
-  inprint(stmt->filePath, numIndent + 1);
+void printExportStatementInfo(const ExportStatement* stmt, uintmax_t num_indent) {
+  inprint("ExportStatement", num_indent);
+  inprint(stmt->filePath, num_indent + 1);
   switch (stmt->type) {
     case ImportType::kImportCSV:
-      inprint("CSV", numIndent + 1);
+      inprint("CSV", num_indent + 1);
       break;
     case ImportType::kImportTbl:
-      inprint("TBL", numIndent + 1);
+      inprint("TBL", num_indent + 1);
       break;
     case ImportType::kImportBinary:
-      inprint("BINARY", numIndent + 1);
+      inprint("BINARY", num_indent + 1);
       break;
     case ImportType::kImportAuto:
-      inprint("AUTO", numIndent + 1);
+      inprint("AUTO", num_indent + 1);
       break;
   }
 
   if (stmt->tableName) {
-    inprint(stmt->tableName, numIndent + 1);
+    inprint(stmt->tableName, num_indent + 1);
   } else {
-    printSelectStatementInfo(stmt->select, numIndent + 1);
+    printSelectStatementInfo(stmt->select, num_indent + 1);
   }
 }
 
-void printCreateStatementInfo(const CreateStatement* stmt, uintmax_t numIndent) {
-  inprint("CreateStatement", numIndent);
-  inprint(stmt->tableName, numIndent + 1);
-  if (stmt->filePath) inprint(stmt->filePath, numIndent + 1);
+void printCreateStatementInfo(const CreateStatement* stmt, uintmax_t num_indent) {
+  inprint("CreateStatement", num_indent);
+  inprint(stmt->tableName, num_indent + 1);
+  if (stmt->filePath) inprint(stmt->filePath, num_indent + 1);
 }
 
-void printInsertStatementInfo(const InsertStatement* stmt, uintmax_t numIndent) {
-  inprint("InsertStatement", numIndent);
-  inprint(stmt->tableName, numIndent + 1);
+void printInsertStatementInfo(const InsertStatement* stmt, uintmax_t num_indent) {
+  inprint("InsertStatement", num_indent);
+  inprint(stmt->tableName, num_indent + 1);
   if (stmt->columns) {
-    inprint("Columns", numIndent + 1);
+    inprint("Columns", num_indent + 1);
     for (char* col_name : *stmt->columns) {
-      inprint(col_name, numIndent + 2);
+      inprint(col_name, num_indent + 2);
     }
   }
   switch (stmt->type) {
     case kInsertValues:
-      inprint("Values", numIndent + 1);
+      inprint("Values", num_indent + 1);
       for (Expr* expr : *stmt->values) {
-        printExpression(expr, numIndent + 2);
+        printExpression(expr, num_indent + 2);
       }
       break;
     case kInsertSelect:
-      printSelectStatementInfo(stmt->select, numIndent + 1);
+      printSelectStatementInfo(stmt->select, num_indent + 1);
       break;
   }
 }
 
-void printTransactionStatementInfo(const TransactionStatement* stmt, uintmax_t numIndent) {
-  inprint("TransactionStatement", numIndent);
+void printTransactionStatementInfo(const TransactionStatement* stmt, uintmax_t num_indent) {
+  inprint("TransactionStatement", num_indent);
   switch (stmt->command) {
     case kBeginTransaction:
-      inprint("BEGIN", numIndent + 1);
+      inprint("BEGIN", num_indent + 1);
       break;
     case kCommitTransaction:
-      inprint("COMMIT", numIndent + 1);
+      inprint("COMMIT", num_indent + 1);
       break;
     case kRollbackTransaction:
-      inprint("ROLLBACK", numIndent + 1);
+      inprint("ROLLBACK", num_indent + 1);
       break;
   }
 }
@@ -426,6 +475,29 @@ std::ostream& operator<<(std::ostream& os, const DatetimeField& datetime) {
   } else {
     return os << (*found).second;
   }
+}
+
+std::ostream& operator<<(std::ostream& os, FrameBound* frame_bound) {
+  if (frame_bound->type == kCurrentRow) {
+    os << "CURRENT ROW";
+    return os;
+  }
+
+  if (frame_bound->unbounded) {
+    os << "UNBOUNDED";
+  } else {
+    os << frame_bound->offset;
+  }
+
+  os << " ";
+
+  if (frame_bound->type == kPreceding) {
+    os << "PRECEDING";
+  } else {
+    os << "FOLLOWING";
+  }
+
+  return os;
 }
 
 }  // namespace hsql
