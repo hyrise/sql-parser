@@ -989,23 +989,25 @@ frame_bound : INTVAL IDENTIFIER {
   stream << $1;
   std::string temp_str = stream.str();
 
-  // The destructor for sval (a.k.a char*) uses free(), so we have to use malloc() rather than new char. +2 for NULL
-  // terminator and whitespace.
-  char* char_type = static_cast<char*>(malloc(sizeof(char) * (temp_str.size() + strlen($2) + 2)));
-  strcpy(char_type, temp_str.c_str());
-  strcat(char_type, " ");
-  strcat(char_type, $2);
+  // We must allocate a new char* that has enough space for the result. The destructor for sval (a.k.a char*) uses
+  // free(), so we have to use malloc() rather than new char. +2 for NULL terminator and whitespace.
+  char* result = static_cast<char*>(malloc(sizeof(char) * (temp_str.size() + strlen($2) + 2)));
+  strcpy(result, temp_str.c_str());
+  strcat(result, " ");
+  strcat(result, $2);
   free($2);
-  $$ = char_type;
+  $$ = result;
 }
 | IDENTIFIER IDENTIFIER {
-  char* char_type = static_cast<char*>(malloc(sizeof(char) * (strlen($1) + strlen($2) + 2)));
-  strcpy(char_type, $1);
-  strcat(char_type, " ");
-  strcat(char_type, $2);
+  // We must allocate a new char* that has enough space for the result. The destructor for sval (a.k.a char*) uses
+  // free(), so we have to use malloc() rather than new char. +2 for NULL terminator and whitespace.
+  char* result = static_cast<char*>(malloc(sizeof(char) * (strlen($1) + strlen($2) + 2)));
+  strcpy(result, $1);
+  strcat(result, " ");
+  strcat(result, $2);
   free($1);
   free($2);
-  $$ = char_type;
+  $$ = result;
 };
 
 // CASE grammar based on: flex & bison by John Levine
