@@ -1003,6 +1003,10 @@ TEST(WindowExpression) {
   stmt = (SelectStatement*)result.getStatement(0);
   ASSERT_TRUE(stmt->selectList);
   ASSERT_EQ(stmt->selectList->size(), 3);
+  ASSERT_TRUE(stmt->fromTable);
+  ASSERT_EQ(stmt->fromTable->type, kTableName);
+  ASSERT_STREQ(stmt->fromTable->name, "t");
+
   ASSERT_EQ(stmt->selectList->at(1)->type, kExprWindow);
   ASSERT_FALSE(stmt->selectList->at(1)->exprList);
   ASSERT_TRUE(stmt->selectList->at(1)->expr);
@@ -1015,9 +1019,6 @@ TEST(WindowExpression) {
   ASSERT_TRUE(stmt->selectList->at(1)->windowDescription);
   ASSERT_FALSE(stmt->selectList->at(1)->windowDescription->orderList);
   ASSERT_FALSE(stmt->selectList->at(1)->windowDescription->frameDescription);
-  ASSERT_TRUE(stmt->fromTable);
-  ASSERT_EQ(stmt->fromTable->type, kTableName);
-  ASSERT_STREQ(stmt->fromTable->name, "t");
 
   ASSERT_EQ(stmt->selectList->at(2)->type, kExprWindow);
   ASSERT_FALSE(stmt->selectList->at(2)->exprList);
@@ -1032,13 +1033,14 @@ TEST(WindowExpression) {
   ASSERT_EQ(stmt->selectList->at(2)->windowDescription->orderList->at(0)->expr->type, kExprColumnRef);
   ASSERT_STREQ(stmt->selectList->at(2)->windowDescription->orderList->at(0)->expr->name, "t1");
   ASSERT_FALSE(stmt->selectList->at(2)->windowDescription->frameDescription);
-  ASSERT_TRUE(stmt->fromTable);
-  ASSERT_EQ(stmt->fromTable->type, kTableName);
-  ASSERT_STREQ(stmt->fromTable->name, "t");
 
   stmt = (SelectStatement*)result.getStatement(1);
   ASSERT_TRUE(stmt->selectList);
   ASSERT_EQ(stmt->selectList->size(), 1);
+  ASSERT_TRUE(stmt->fromTable);
+  ASSERT_EQ(stmt->fromTable->type, kTableName);
+  ASSERT_STREQ(stmt->fromTable->name, "t");
+
   ASSERT_EQ(stmt->selectList->at(0)->type, kExprWindow);
   ASSERT_TRUE(stmt->selectList->at(0)->exprList);
   ASSERT_EQ(stmt->selectList->at(0)->exprList->size(), 2);
@@ -1067,9 +1069,6 @@ TEST(WindowExpression) {
   ASSERT_EQ(stmt->selectList->at(0)->windowDescription->frameDescription->start->type, kPreceding);
   ASSERT_TRUE(stmt->selectList->at(0)->windowDescription->frameDescription->start->unbounded);
   ASSERT_FALSE(stmt->selectList->at(0)->windowDescription->frameDescription->end);
-  ASSERT_TRUE(stmt->fromTable);
-  ASSERT_EQ(stmt->fromTable->type, kTableName);
-  ASSERT_STREQ(stmt->fromTable->name, "t");
 
   const auto frame_starts =
       std::vector<FrameBound>{{25, kPreceding, false}, {0, kPreceding, true}, {0, kPreceding, true}};
@@ -1083,6 +1082,10 @@ TEST(WindowExpression) {
 
     ASSERT_TRUE(stmt->selectList);
     ASSERT_EQ(stmt->selectList->size(), 1);
+    ASSERT_TRUE(stmt->fromTable);
+    ASSERT_EQ(stmt->fromTable->type, kTableName);
+    ASSERT_STREQ(stmt->fromTable->name, "t");
+
     ASSERT_EQ(stmt->selectList->at(0)->type, kExprWindow);
     ASSERT_TRUE(stmt->selectList->at(0)->exprList);
     ASSERT_EQ(stmt->selectList->at(0)->exprList->size(), 1);
@@ -1107,8 +1110,5 @@ TEST(WindowExpression) {
     ASSERT_EQ(stmt->selectList->at(0)->windowDescription->frameDescription->end->offset, expected_end.offset);
     ASSERT_EQ(stmt->selectList->at(0)->windowDescription->frameDescription->end->type, expected_end.type);
     ASSERT_EQ(stmt->selectList->at(0)->windowDescription->frameDescription->end->unbounded, expected_end.unbounded);
-    ASSERT_TRUE(stmt->fromTable);
-    ASSERT_EQ(stmt->fromTable->type, kTableName);
-    ASSERT_STREQ(stmt->fromTable->name, "t");
   }
 }
