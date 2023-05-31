@@ -992,7 +992,7 @@ TEST(MultipleLockingClause) {
 TEST(WindowExpression) {
   SelectStatement* stmt;
   TEST_PARSE_SQL_QUERY(
-      "SELECT t2, avg(t1) OVER(), rank() OVER(ORDER BY t1) FROM t;"
+      "SELECT t2, avg(t1) OVER() average, rank() OVER(ORDER BY t1) FROM t;"
       "SELECT avg(t1) OVER(PARTITION BY t2, t3 ORDER BY t4, t5 ROWS UNBOUNDED PRECEDING) FROM t;"
       "SELECT rank() OVER(PARTITION BY t1 ORDER BY t2 ROWS BETWEEN 25 PRECEDING AND 2 FOLLOWING) FROM t;"
       "SELECT rank() OVER(PARTITION BY t1 ORDER BY t2 RANGE BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) FROM "
@@ -1008,6 +1008,7 @@ TEST(WindowExpression) {
   ASSERT_STREQ(stmt->fromTable->name, "t");
 
   ASSERT_EQ(stmt->selectList->at(1)->type, kExprWindow);
+  ASSERT_STREQ(stmt->selectList->at(1)->alias, "average");
   ASSERT_FALSE(stmt->selectList->at(1)->exprList);
   ASSERT_TRUE(stmt->selectList->at(1)->expr);
   ASSERT_EQ(stmt->selectList->at(1)->expr->type, kExprFunctionRef);
