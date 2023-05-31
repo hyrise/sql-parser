@@ -1,8 +1,6 @@
 #ifndef SQLPARSER_SQLHELPER_H
 #define SQLPARSER_SQLHELPER_H
 
-#include <ostream>
-
 #include "../sql/statements.h"
 
 namespace hsql {

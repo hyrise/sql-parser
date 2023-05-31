@@ -992,18 +992,17 @@ TEST(MultipleLockingClause) {
 TEST(WindowExpression) {
   SelectStatement* stmt;
   TEST_PARSE_SQL_QUERY(
-      "SELECT t2, avg(t1) OVER() FROM t;"
-      "SELECT rank() OVER(ORDER BY t1) FROM t;"
+      "SELECT t2, avg(t1) OVER(), rank() OVER(ORDER BY t1) FROM t;"
       "SELECT avg(t1) OVER(PARTITION BY t2, t3 ORDER BY t4, t5 ROWS UNBOUNDED PRECEDING) FROM t;"
       "SELECT rank() OVER(PARTITION BY t1 ORDER BY t2 ROWS BETWEEN 25 PRECEDING AND 2 FOLLOWING) FROM t;"
       "SELECT rank() OVER(PARTITION BY t1 ORDER BY t2 RANGE BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) FROM "
       "t;"
       "SELECT rank() OVER(PARTITION BY t1 ORDER BY t2 GROUPS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) FROM t;",
-      result, 6);
+      result, 5);
 
   stmt = (SelectStatement*)result.getStatement(0);
   ASSERT_TRUE(stmt->selectList);
-  ASSERT_EQ(stmt->selectList->size(), 2);
+  ASSERT_EQ(stmt->selectList->size(), 3);
   ASSERT_EQ(stmt->selectList->at(1)->type, kExprWindow);
   ASSERT_FALSE(stmt->selectList->at(1)->exprList);
   ASSERT_TRUE(stmt->selectList->at(1)->expr);
@@ -1020,27 +1019,24 @@ TEST(WindowExpression) {
   ASSERT_EQ(stmt->fromTable->type, kTableName);
   ASSERT_STREQ(stmt->fromTable->name, "t");
 
-  stmt = (SelectStatement*)result.getStatement(1);
-  ASSERT_TRUE(stmt->selectList);
-  ASSERT_EQ(stmt->selectList->size(), 1);
-  ASSERT_EQ(stmt->selectList->at(0)->type, kExprWindow);
-  ASSERT_FALSE(stmt->selectList->at(0)->exprList);
-  ASSERT_TRUE(stmt->selectList->at(0)->expr);
-  ASSERT_EQ(stmt->selectList->at(0)->expr->type, kExprFunctionRef);
-  ASSERT_STREQ(stmt->selectList->at(0)->expr->name, "rank");
-  ASSERT_TRUE(stmt->selectList->at(0)->expr->exprList);
-  ASSERT_TRUE(stmt->selectList->at(0)->expr->exprList->empty());
-  ASSERT_TRUE(stmt->selectList->at(0)->windowDescription);
-  ASSERT_TRUE(stmt->selectList->at(0)->windowDescription->orderList);
-  ASSERT_EQ(stmt->selectList->at(0)->windowDescription->orderList->size(), 1);
-  ASSERT_EQ(stmt->selectList->at(0)->windowDescription->orderList->at(0)->expr->type, kExprColumnRef);
-  ASSERT_STREQ(stmt->selectList->at(0)->windowDescription->orderList->at(0)->expr->name, "t1");
-  ASSERT_FALSE(stmt->selectList->at(0)->windowDescription->frameDescription);
+  ASSERT_EQ(stmt->selectList->at(2)->type, kExprWindow);
+  ASSERT_FALSE(stmt->selectList->at(2)->exprList);
+  ASSERT_TRUE(stmt->selectList->at(2)->expr);
+  ASSERT_EQ(stmt->selectList->at(2)->expr->type, kExprFunctionRef);
+  ASSERT_STREQ(stmt->selectList->at(2)->expr->name, "rank");
+  ASSERT_TRUE(stmt->selectList->at(2)->expr->exprList);
+  ASSERT_TRUE(stmt->selectList->at(2)->expr->exprList->empty());
+  ASSERT_TRUE(stmt->selectList->at(2)->windowDescription);
+  ASSERT_TRUE(stmt->selectList->at(2)->windowDescription->orderList);
+  ASSERT_EQ(stmt->selectList->at(2)->windowDescription->orderList->size(), 1);
+  ASSERT_EQ(stmt->selectList->at(2)->windowDescription->orderList->at(0)->expr->type, kExprColumnRef);
+  ASSERT_STREQ(stmt->selectList->at(2)->windowDescription->orderList->at(0)->expr->name, "t1");
+  ASSERT_FALSE(stmt->selectList->at(2)->windowDescription->frameDescription);
   ASSERT_TRUE(stmt->fromTable);
   ASSERT_EQ(stmt->fromTable->type, kTableName);
   ASSERT_STREQ(stmt->fromTable->name, "t");
 
-  stmt = (SelectStatement*)result.getStatement(2);
+  stmt = (SelectStatement*)result.getStatement(1);
   ASSERT_TRUE(stmt->selectList);
   ASSERT_EQ(stmt->selectList->size(), 1);
   ASSERT_EQ(stmt->selectList->at(0)->type, kExprWindow);
@@ -1081,7 +1077,7 @@ TEST(WindowExpression) {
       std::vector<FrameBound>{{2, kFollowing, false}, {0, kFollowing, true}, {0, kCurrentRow, false}};
 
   for (auto bound_index = size_t{0}; bound_index < frame_starts.size(); ++bound_index) {
-    stmt = (SelectStatement*)result.getStatement(3 + bound_index);
+    stmt = (SelectStatement*)result.getStatement(2 + bound_index);
     const auto& expected_start = frame_starts[bound_index];
     const auto& expected_end = frame_ends[bound_index];
 
