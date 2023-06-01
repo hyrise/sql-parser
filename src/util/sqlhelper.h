@@ -32,8 +32,8 @@ void printExpression(Expr* expr, uintmax_t num_indent);
 // Prints an ORDER BY clause
 void printOrderBy(const std::vector<OrderDescription*>* expr, uintmax_t num_indent);
 
-// Prints the type and bounds of a WindowExpression's frame.
-void printFrameDescription(FrameDescription* frame_description, uintmax_t num_indent);
+// Prints WindowDescription.
+void printWindowDescription(WindowDescription* window_description, uintmax_t num_indent);
 
 }  // namespace hsql
 

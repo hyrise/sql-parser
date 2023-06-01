@@ -31,8 +31,7 @@ enum ExprType {
   kExprArray,
   kExprArrayIndex,
   kExprExtract,
-  kExprCast,
-  kExprWindow
+  kExprCast
 };
 
 // Operator types. These are important for expressions of type kExprOperator.
@@ -105,16 +104,18 @@ struct FrameDescription {
   FrameBound* end;
 };
 
+typedef struct Expr Expr;
+
 // Description of additional fields for a window expression.
 struct WindowDescription {
-  WindowDescription(std::vector<OrderDescription*>* orderList, FrameDescription* frameDescription);
+  WindowDescription(std::vector<Expr*>* partitionList, std::vector<OrderDescription*>* orderList,
+                    FrameDescription* frameDescription);
   virtual ~WindowDescription();
 
+  std::vector<Expr*>* partitionList;
   std::vector<OrderDescription*>* orderList;
   FrameDescription* frameDescription;
 };
-
-typedef struct Expr Expr;
 
 // Represents SQL expressions (i.e. literals, operators, column_refs).
 // TODO: When destructing a placeholder expression, we might need to alter the
@@ -197,7 +198,7 @@ struct Expr {
 
   static Expr* makeStar(char* table);
 
-  static Expr* makeFunctionRef(char* func_name, std::vector<Expr*>* exprList, bool distinct);
+  static Expr* makeFunctionRef(char* func_name, std::vector<Expr*>* exprList, bool distinct, WindowDescription* window);
 
   static Expr* makeArray(std::vector<Expr*>* exprList);
 
@@ -216,9 +217,6 @@ struct Expr {
   static Expr* makeExtract(DatetimeField datetimeField1, Expr* expr);
 
   static Expr* makeCast(Expr* expr, ColumnType columnType);
-
-  static Expr* makeWindow(Expr* expr, std::vector<Expr*>* partitionList, std::vector<OrderDescription*>* orderList,
-                          FrameDescription* frameDescription);
 };
 
 // Zero initializes an Expr object and assigns it to a space in the heap

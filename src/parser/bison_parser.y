@@ -141,6 +141,7 @@
   hsql::TableName table_name;
   hsql::TableRef* table;
   hsql::UpdateClause* update_t;
+  hsql::WindowDescription* window_description;
   hsql::WithDescription* with_description_t;
 
   std::vector<char*>* str_vec;
@@ -239,9 +240,10 @@
     %type <table_name>             table_name
     %type <sval>                   opt_index_name
     %type <sval>                   file_path prepare_target_query
-    %type <frame_description>      opt_frame_clause
+    %type <frame_description>      frame_clause
     %type <frame_bound>            frame_bound
     %type <frame_type>             frame_type
+    %type <window_description>     opt_window
     %type <bval>                   opt_not_exists opt_exists opt_distinct opt_all
     %type <ival_pair>              opt_decimal_specification
     %type <ival>                   opt_time_precision
@@ -249,7 +251,7 @@
     %type <table>                  opt_from_clause from_clause table_ref table_ref_atomic table_ref_name nonjoin_table_ref_atomic
     %type <table>                  join_clause table_ref_name_no_alias
     %type <expr>                   expr operand scalar_expr unary_expr binary_expr logic_expr exists_expr extract_expr cast_expr
-    %type <expr>                   function_expr between_expr expr_alias param_expr window_expr
+    %type <expr>                   function_expr between_expr expr_alias param_expr
     %type <expr>                   column_name literal int_literal num_literal string_literal bool_literal date_literal interval_literal
     %type <expr>                   comp_expr opt_where join_condition opt_having case_expr case_list in_expr hint
     %type <expr>                   array_expr array_index null_literal
@@ -929,7 +931,7 @@ expr_alias : expr opt_alias {
   }
 };
 
-expr : operand | between_expr | logic_expr | exists_expr | in_expr | window_expr;
+expr : operand | between_expr | logic_expr | exists_expr | in_expr;
 
 operand : '(' expr ')' { $$ = $2; }
 | array_index | scalar_expr | unary_expr | binary_expr | case_expr | function_expr | extract_expr | cast_expr |
@@ -964,27 +966,6 @@ in_expr : operand IN '(' expr_list ')' { $$ = Expr::makeInOperator($1, $4); }
 | operand IN '(' select_no_paren ')' { $$ = Expr::makeInOperator($1, $4); }
 | operand NOT IN '(' select_no_paren ')' { $$ = Expr::makeOpUnary(kOpNot, Expr::makeInOperator($1, $5)); };
 
-// Window function expressions, based on https://www.postgresql.org/docs/15/sql-expressions.html#SYNTAX-WINDOW-FUNCTIONS
-// We do not support named windows (for simplicity) and filters (not part of the SQL standard).
-window_expr : operand OVER '(' opt_partition opt_order opt_frame_clause ')' { $$ = Expr::makeWindow($1, $4, $5, $6); };
-
-opt_partition : PARTITION BY expr_list { $$ = $3; }
-| /* empty */ { $$ = nullptr; };
-
-opt_frame_clause : frame_type frame_bound { $$ = new FrameDescription{$1, $2, nullptr}; }
-| frame_type BETWEEN frame_bound AND frame_bound { $$ = new FrameDescription{$1, $3, $5}; }
-| /* empty */ { $$ = nullptr; };
-
-frame_type : RANGE { $$ = FrameType::kRange; }
-| ROWS { $$ = FrameType::kRows; }
-| GROUPS { $$ = FrameType::kGroups; };
-
-frame_bound : UNBOUNDED PRECEDING { $$ = new FrameBound{0, kPreceding, true}; }
-| INTVAL PRECEDING { $$ = new FrameBound{$1, kPreceding, false}; }
-| UNBOUNDED FOLLOWING { $$ = new FrameBound{0, kFollowing, true}; }
-| INTVAL FOLLOWING { $$ = new FrameBound{$1, kFollowing, false}; }
-| CURRENT_ROW { $$ = new FrameBound{0, kCurrentRow, false}; };
-
 // CASE grammar based on: flex & bison by John Levine
 // https://www.safaribooksonline.com/library/view/flex-bison/9780596805418/ch04.html#id352665
 case_expr : CASE expr case_list END { $$ = Expr::makeCase($2, $3, nullptr); }
@@ -1006,8 +987,35 @@ comp_expr : operand '=' operand { $$ = Expr::makeOpBinary($1, kOpEquals, $3); }
 | operand LESSEQ operand { $$ = Expr::makeOpBinary($1, kOpLessEq, $3); }
 | operand GREATEREQ operand { $$ = Expr::makeOpBinary($1, kOpGreaterEq, $3); };
 
-function_expr : IDENTIFIER '(' ')' { $$ = Expr::makeFunctionRef($1, new std::vector<Expr*>(), false); }
-| IDENTIFIER '(' opt_distinct expr_list ')' { $$ = Expr::makeFunctionRef($1, $4, $3); };
+function_expr : IDENTIFIER '(' ')' opt_window { $$ = Expr::makeFunctionRef($1, new std::vector<Expr*>(), false, $4); }
+| IDENTIFIER '(' opt_distinct expr_list ')' opt_window { $$ = Expr::makeFunctionRef($1, $4, $3, $6); };
+
+// Window function expressions, based on https://www.postgresql.org/docs/15/sql-expressions.html#SYNTAX-WINDOW-FUNCTIONS
+// We do not support named windows, collations and exclusions (for simplicity) and filters (not part of the SQL standard).
+opt_window : OVER '(' opt_partition opt_order frame_clause ')' { $$ = new WindowDescription($3, $4, $5); }
+| /* empty */ { $$ = nullptr; };
+
+opt_partition : PARTITION BY expr_list { $$ = $3; }
+| /* empty */ { $$ = nullptr; };
+
+// We use the Postgres default if the frame end or the whole frame clause is omitted. "If `frame_end` is omitted, the
+// end defaults to `CURRENT ROW`. [...] The default framing option is `RANGE UNBOUNDED PRECEDING`, which is the same as
+// `RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW`."
+frame_clause : frame_type frame_bound { $$ = new FrameDescription{$1, $2, new FrameBound{0, kCurrentRow, false}}; }
+| frame_type BETWEEN frame_bound AND frame_bound { $$ = new FrameDescription{$1, $3, $5}; }
+| /* empty */ {
+  $$ = new FrameDescription{kRange, new FrameBound{0, kPreceding, true}, new FrameBound{0, kCurrentRow, false}};
+};
+
+frame_type : RANGE { $$ = kRange; }
+| ROWS { $$ = kRows; }
+| GROUPS { $$ = kGroups; };
+
+frame_bound : UNBOUNDED PRECEDING { $$ = new FrameBound{0, kPreceding, true}; }
+| INTVAL PRECEDING { $$ = new FrameBound{$1, kPreceding, false}; }
+| UNBOUNDED FOLLOWING { $$ = new FrameBound{0, kFollowing, true}; }
+| INTVAL FOLLOWING { $$ = new FrameBound{$1, kFollowing, false}; }
+| CURRENT_ROW { $$ = new FrameBound{0, kCurrentRow, false}; };
 
 extract_expr : EXTRACT '(' datetime_field FROM expr ')' { $$ = Expr::makeExtract($3, $5); };
 

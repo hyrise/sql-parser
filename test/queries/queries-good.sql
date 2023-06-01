@@ -102,6 +102,7 @@ SELECT * FROM test1, test2 WHERE test2.val = 2 FOR SHARE OF test1, test2;
 SELECT * FROM test1, test2 WHERE test2.val = 2 FOR UPDATE OF test1 FOR SHARE OF test2;
 # WINDOW EXPRESSIONS
 SELECT test1, sum(sum(test2)) OVER (PARTITION BY test3 ORDER BY test4 ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) an_alias FROM test;
+SELECT sum(test2)/sum(sum(test2)) OVER (PARTITION BY test1) FROM test GROUP BY test3;
 SELECT test1, sum(sum(test2)) OVER (PARTITION BY test3, test4 ORDER BY test5, test6 ROWS BETWEEN 1 PRECEDING AND 2 FOLLOWING) FROM test;
 SELECT test1, rank() OVER (ORDER BY test2 DESC, test3 ASC) rnk FROM test;
 SELECT rank() OVER () FROM test;

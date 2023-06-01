@@ -11,7 +11,8 @@ void printOperatorExpression(Expr* expr, uintmax_t num_indent);
 void printAlias(Alias* alias, uintmax_t num_indent);
 
 std::ostream& operator<<(std::ostream& os, const OperatorType& op);
-std::ostream& operator<<(std::ostream& os, const DatetimeField& op);
+std::ostream& operator<<(std::ostream& os, const DatetimeField& datetime);
+std::ostream& operator<<(std::ostream& os, const FrameBound& frame_bound);
 
 std::string indent(uintmax_t num_indent) { return std::string(num_indent, '\t'); }
 void inprint(int64_t val, uintmax_t num_indent) { std::cout << indent(num_indent).c_str() << val << "  " << std::endl; }
@@ -123,7 +124,13 @@ void printExpression(Expr* expr, uintmax_t num_indent) {
       break;
     case kExprFunctionRef:
       inprint(expr->name, num_indent);
-      for (Expr* e : *expr->exprList) printExpression(e, num_indent + 1);
+      for (Expr* e : *expr->exprList) {
+        printExpression(e, num_indent + 1);
+      }
+
+      if (expr->windowDescription) {
+        printWindowDescription(expr->windowDescription, num_indent + 1);
+      }
       break;
     case kExprExtract:
       inprint("EXTRACT", num_indent);
@@ -153,25 +160,6 @@ void printExpression(Expr* expr, uintmax_t num_indent) {
       printExpression(expr->expr, num_indent + 1);
       inprint(expr->ival, num_indent);
       break;
-    case kExprWindow:
-      printExpression(expr->expr, num_indent);
-      inprint("OVER", num_indent);
-      if (expr->exprList) {
-        inprint("PARTITION BY", num_indent + 1);
-        for (const auto e : *expr->exprList) {
-          printExpression(e, num_indent + 2);
-        }
-      }
-      if (expr->windowDescription) {
-        if (expr->windowDescription->orderList) {
-          inprint("ORDER BY", num_indent + 1);
-          printOrderBy(expr->windowDescription->orderList, num_indent + 2);
-        }
-        if (expr->windowDescription->frameDescription) {
-          printFrameDescription(expr->windowDescription->frameDescription, num_indent + 2);
-        }
-      }
-      break;
     default:
       std::cerr << "Unrecognized expression type " << expr->type << std::endl;
       return;
@@ -194,10 +182,22 @@ void printOrderBy(const std::vector<OrderDescription*>* expr, uintmax_t num_inde
   }
 }
 
-void printFrameDescription(FrameDescription* frame_description, uintmax_t num_indent) {
-  std::ostringstream stream;
-  stream << indent(num_indent);
-  switch (frame_description->type) {
+void printWindowDescription(WindowDescription* window_description, uintmax_t num_indent) {
+  inprint("OVER", num_indent);
+  if (window_description->partitionList) {
+    inprint("PARTITION BY", num_indent + 1);
+    for (const auto e : *window_description->partitionList) {
+      printExpression(e, num_indent + 2);
+    }
+  }
+
+  if (window_description->orderList) {
+    inprint("ORDER BY", num_indent + 1);
+    printOrderBy(window_description->orderList, num_indent + 2);
+  }
+
+  std::stringstream stream;
+  switch (window_description->frameDescription->type) {
     case kRows:
       stream << "ROWS";
       break;
@@ -208,15 +208,9 @@ void printFrameDescription(FrameDescription* frame_description, uintmax_t num_in
       stream << "GROUPS";
       break;
   }
-
-  stream << " ";
-
-  if (frame_description->end) {
-    stream << "BETWEEN " << frame_description->start << " AND " << frame_description->end;
-  } else {
-    stream << frame_description->start;
-  }
-  inprint(stream.str().c_str(), num_indent);
+  stream << " BETWEEN " << *window_description->frameDescription->start << " AND "
+         << *window_description->frameDescription->end;
+  inprint(stream.str().c_str(), num_indent + 1);
 }
 
 void printSelectStatementInfo(const SelectStatement* stmt, uintmax_t num_indent) {
@@ -477,21 +471,21 @@ std::ostream& operator<<(std::ostream& os, const DatetimeField& datetime) {
   }
 }
 
-std::ostream& operator<<(std::ostream& os, FrameBound* frame_bound) {
-  if (frame_bound->type == kCurrentRow) {
+std::ostream& operator<<(std::ostream& os, const FrameBound& frame_bound) {
+  if (frame_bound.type == kCurrentRow) {
     os << "CURRENT ROW";
     return os;
   }
 
-  if (frame_bound->unbounded) {
+  if (frame_bound.unbounded) {
     os << "UNBOUNDED";
   } else {
-    os << frame_bound->offset;
+    os << frame_bound.offset;
   }
 
   os << " ";
 
-  if (frame_bound->type == kPreceding) {
+  if (frame_bound.type == kPreceding) {
     os << "PRECEDING";
   } else {
     os << "FOLLOWING";

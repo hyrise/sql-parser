@@ -16,10 +16,18 @@ FrameDescription::~FrameDescription() {
   delete end;
 }
 
-WindowDescription::WindowDescription(std::vector<OrderDescription*>* orderList, FrameDescription* frameDescription)
-    : orderList{orderList}, frameDescription(frameDescription) {}
+WindowDescription::WindowDescription(std::vector<Expr*>* partitionList, std::vector<OrderDescription*>* orderList,
+                                     FrameDescription* frameDescription)
+    : partitionList{partitionList}, orderList{orderList}, frameDescription(frameDescription) {}
 
 WindowDescription::~WindowDescription() {
+  if (partitionList) {
+    for (Expr* e : *partitionList) {
+      delete e;
+    }
+    delete partitionList;
+  }
+
   if (orderList) {
     for (OrderDescription* orderDescription : *orderList) {
       delete orderDescription;
@@ -199,11 +207,12 @@ Expr* Expr::makeStar(char* table) {
   return e;
 }
 
-Expr* Expr::makeFunctionRef(char* func_name, std::vector<Expr*>* exprList, bool distinct) {
+Expr* Expr::makeFunctionRef(char* func_name, std::vector<Expr*>* exprList, bool distinct, WindowDescription* window) {
   Expr* e = new Expr(kExprFunctionRef);
   e->name = func_name;
   e->exprList = exprList;
   e->distinct = distinct;
+  e->windowDescription = window;
   return e;
 }
 
@@ -268,15 +277,6 @@ Expr* Expr::makeCast(Expr* expr, ColumnType columnType) {
   Expr* e = new Expr(kExprCast);
   e->columnType = columnType;
   e->expr = expr;
-  return e;
-}
-
-Expr* Expr::makeWindow(Expr* expr, std::vector<Expr*>* partitionList, std::vector<OrderDescription*>* orderList,
-                       FrameDescription* frameDescription) {
-  Expr* e = new Expr(kExprWindow);
-  e->expr = expr;
-  e->exprList = partitionList;
-  e->windowDescription = new WindowDescription(orderList, frameDescription);
   return e;
 }
 

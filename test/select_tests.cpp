@@ -989,10 +989,10 @@ TEST(MultipleLockingClause) {
   ASSERT_STREQ(stmt->lockings->at(2)->tables->at(1), "s");
 }
 
-TEST(WindowExpression) {
+TEST(WindowFunctions) {
   SelectStatement* stmt;
   TEST_PARSE_SQL_QUERY(
-      "SELECT t2, avg(t1) OVER() average, rank() OVER(ORDER BY t1) FROM t;"
+      "SELECT t2, 1 / avg(t1) OVER(), rank() OVER(ORDER BY t1 DESC) rnk FROM t;"
       "SELECT avg(t1) OVER(PARTITION BY t2, t3 ORDER BY t4, t5 ROWS UNBOUNDED PRECEDING) FROM t;"
       "SELECT rank() OVER(PARTITION BY t1 ORDER BY t2 ROWS BETWEEN 25 PRECEDING AND 2 FOLLOWING) FROM t;"
       "SELECT rank() OVER(PARTITION BY t1 ORDER BY t2 RANGE BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) FROM "
@@ -1007,33 +1007,51 @@ TEST(WindowExpression) {
   ASSERT_EQ(stmt->fromTable->type, kTableName);
   ASSERT_STREQ(stmt->fromTable->name, "t");
 
-  ASSERT_EQ(stmt->selectList->at(1)->type, kExprWindow);
-  ASSERT_STREQ(stmt->selectList->at(1)->alias, "average");
-  ASSERT_FALSE(stmt->selectList->at(1)->exprList);
+  ASSERT_EQ(stmt->selectList->at(1)->type, kExprOperator);
+  ASSERT_EQ(stmt->selectList->at(1)->opType, kOpSlash);
   ASSERT_TRUE(stmt->selectList->at(1)->expr);
-  ASSERT_EQ(stmt->selectList->at(1)->expr->type, kExprFunctionRef);
-  ASSERT_STREQ(stmt->selectList->at(1)->expr->name, "avg");
-  ASSERT_TRUE(stmt->selectList->at(1)->expr->exprList)
-  ASSERT_EQ(stmt->selectList->at(1)->expr->exprList->size(), 1);
-  ASSERT_EQ(stmt->selectList->at(1)->expr->exprList->at(0)->type, kExprColumnRef);
-  ASSERT_STREQ(stmt->selectList->at(1)->expr->exprList->at(0)->name, "t1");
-  ASSERT_TRUE(stmt->selectList->at(1)->windowDescription);
-  ASSERT_FALSE(stmt->selectList->at(1)->windowDescription->orderList);
-  ASSERT_FALSE(stmt->selectList->at(1)->windowDescription->frameDescription);
+  ASSERT_EQ(stmt->selectList->at(1)->expr->type, kExprLiteralInt);
+  ASSERT_EQ(stmt->selectList->at(1)->expr->ival, 1);
 
-  ASSERT_EQ(stmt->selectList->at(2)->type, kExprWindow);
-  ASSERT_FALSE(stmt->selectList->at(2)->exprList);
-  ASSERT_TRUE(stmt->selectList->at(2)->expr);
-  ASSERT_EQ(stmt->selectList->at(2)->expr->type, kExprFunctionRef);
-  ASSERT_STREQ(stmt->selectList->at(2)->expr->name, "rank");
-  ASSERT_TRUE(stmt->selectList->at(2)->expr->exprList);
-  ASSERT_TRUE(stmt->selectList->at(2)->expr->exprList->empty());
+  ASSERT_TRUE(stmt->selectList->at(1)->expr2);
+  ASSERT_EQ(stmt->selectList->at(1)->expr2->type, kExprFunctionRef);
+  ASSERT_STREQ(stmt->selectList->at(1)->expr2->name, "avg");
+  ASSERT_TRUE(stmt->selectList->at(1)->expr2->exprList);
+  ASSERT_EQ(stmt->selectList->at(1)->expr2->exprList->size(), 1);
+  ASSERT_EQ(stmt->selectList->at(1)->expr2->exprList->at(0)->type, kExprColumnRef);
+  ASSERT_STREQ(stmt->selectList->at(1)->expr2->exprList->at(0)->name, "t1");
+
+  ASSERT_TRUE(stmt->selectList->at(1)->expr2->windowDescription);
+  ASSERT_FALSE(stmt->selectList->at(1)->expr2->windowDescription->partitionList);
+  ASSERT_FALSE(stmt->selectList->at(1)->expr2->windowDescription->orderList);
+  ASSERT_TRUE(stmt->selectList->at(1)->expr2->windowDescription->frameDescription);
+  ASSERT_EQ(stmt->selectList->at(1)->expr2->windowDescription->frameDescription->type, kRange);
+  ASSERT_TRUE(stmt->selectList->at(1)->expr2->windowDescription->frameDescription->start);
+  ASSERT_EQ(stmt->selectList->at(1)->expr2->windowDescription->frameDescription->start->offset, 0);
+  ASSERT_EQ(stmt->selectList->at(1)->expr2->windowDescription->frameDescription->start->type, kPreceding);
+  ASSERT_TRUE(stmt->selectList->at(1)->expr2->windowDescription->frameDescription->start->unbounded);
+  ASSERT_TRUE(stmt->selectList->at(1)->expr2->windowDescription->frameDescription->end);
+  ASSERT_EQ(stmt->selectList->at(1)->expr2->windowDescription->frameDescription->end->offset, 0);
+  ASSERT_EQ(stmt->selectList->at(1)->expr2->windowDescription->frameDescription->end->type, kCurrentRow);
+  ASSERT_FALSE(stmt->selectList->at(1)->expr2->windowDescription->frameDescription->end->unbounded);
+
+  ASSERT_TRUE(stmt->selectList->at(2));
+  ASSERT_EQ(stmt->selectList->at(2)->type, kExprFunctionRef);
+  ASSERT_STREQ(stmt->selectList->at(2)->name, "rank");
+  ASSERT_TRUE(stmt->selectList->at(2)->alias);
+  ASSERT_STREQ(stmt->selectList->at(2)->alias, "rnk");
+  ASSERT_TRUE(stmt->selectList->at(2)->exprList);
+  ASSERT_TRUE(stmt->selectList->at(2)->exprList->empty());
+
   ASSERT_TRUE(stmt->selectList->at(2)->windowDescription);
+  ASSERT_FALSE(stmt->selectList->at(2)->windowDescription->partitionList);
   ASSERT_TRUE(stmt->selectList->at(2)->windowDescription->orderList);
   ASSERT_EQ(stmt->selectList->at(2)->windowDescription->orderList->size(), 1);
+  ASSERT_EQ(stmt->selectList->at(2)->windowDescription->orderList->at(0)->type, kOrderDesc);
+  ASSERT_TRUE(stmt->selectList->at(2)->windowDescription->orderList->at(0)->expr);
   ASSERT_EQ(stmt->selectList->at(2)->windowDescription->orderList->at(0)->expr->type, kExprColumnRef);
   ASSERT_STREQ(stmt->selectList->at(2)->windowDescription->orderList->at(0)->expr->name, "t1");
-  ASSERT_FALSE(stmt->selectList->at(2)->windowDescription->frameDescription);
+  ASSERT_TRUE(stmt->selectList->at(2)->windowDescription->frameDescription);
 
   stmt = (SelectStatement*)result.getStatement(1);
   ASSERT_TRUE(stmt->selectList);
@@ -1042,34 +1060,38 @@ TEST(WindowExpression) {
   ASSERT_EQ(stmt->fromTable->type, kTableName);
   ASSERT_STREQ(stmt->fromTable->name, "t");
 
-  ASSERT_EQ(stmt->selectList->at(0)->type, kExprWindow);
-  ASSERT_TRUE(stmt->selectList->at(0)->exprList);
-  ASSERT_EQ(stmt->selectList->at(0)->exprList->size(), 2);
-  ASSERT_EQ(stmt->selectList->at(0)->exprList->at(0)->type, kExprColumnRef);
-  ASSERT_STREQ(stmt->selectList->at(0)->exprList->at(0)->name, "t2");
-  ASSERT_EQ(stmt->selectList->at(0)->exprList->at(1)->type, kExprColumnRef);
-  ASSERT_STREQ(stmt->selectList->at(0)->exprList->at(1)->name, "t3");
-  ASSERT_TRUE(stmt->selectList->at(0)->expr);
-  ASSERT_EQ(stmt->selectList->at(0)->expr->type, kExprFunctionRef);
-  ASSERT_STREQ(stmt->selectList->at(0)->expr->name, "avg");
-  ASSERT_TRUE(stmt->selectList->at(0)->expr->exprList);
-  ASSERT_EQ(stmt->selectList->at(0)->expr->exprList->size(), 1);
-  ASSERT_EQ(stmt->selectList->at(0)->expr->exprList->at(0)->type, kExprColumnRef);
-  ASSERT_STREQ(stmt->selectList->at(0)->expr->exprList->at(0)->name, "t1");
+  ASSERT_EQ(stmt->selectList->at(0)->type, kExprFunctionRef);
+  ASSERT_STREQ(stmt->selectList->at(0)->name, "avg");
+  ASSERT_EQ(stmt->selectList->at(0)->exprList->size(), 1);
+  ASSERT_STREQ(stmt->selectList->at(0)->exprList->at(0)->name, "t1");
+
   ASSERT_TRUE(stmt->selectList->at(0)->windowDescription);
+  ASSERT_TRUE(stmt->selectList->at(0)->windowDescription->partitionList);
+  ASSERT_EQ(stmt->selectList->at(0)->windowDescription->partitionList->size(), 2);
+  ASSERT_EQ(stmt->selectList->at(0)->windowDescription->partitionList->at(0)->type, kExprColumnRef);
+  ASSERT_STREQ(stmt->selectList->at(0)->windowDescription->partitionList->at(0)->name, "t2");
+  ASSERT_EQ(stmt->selectList->at(0)->windowDescription->partitionList->at(1)->type, kExprColumnRef);
+  ASSERT_STREQ(stmt->selectList->at(0)->windowDescription->partitionList->at(1)->name, "t3");
+
   ASSERT_TRUE(stmt->selectList->at(0)->windowDescription->orderList);
   ASSERT_EQ(stmt->selectList->at(0)->windowDescription->orderList->size(), 2);
+  ASSERT_EQ(stmt->selectList->at(0)->windowDescription->orderList->at(0)->type, kOrderAsc);
+  ASSERT_TRUE(stmt->selectList->at(0)->windowDescription->orderList->at(0)->expr);
   ASSERT_EQ(stmt->selectList->at(0)->windowDescription->orderList->at(0)->expr->type, kExprColumnRef);
   ASSERT_STREQ(stmt->selectList->at(0)->windowDescription->orderList->at(0)->expr->name, "t4");
   ASSERT_EQ(stmt->selectList->at(0)->windowDescription->orderList->at(1)->expr->type, kExprColumnRef);
   ASSERT_STREQ(stmt->selectList->at(0)->windowDescription->orderList->at(1)->expr->name, "t5");
+
   ASSERT_TRUE(stmt->selectList->at(0)->windowDescription->frameDescription);
   ASSERT_EQ(stmt->selectList->at(0)->windowDescription->frameDescription->type, kRows);
   ASSERT_TRUE(stmt->selectList->at(0)->windowDescription->frameDescription->start);
   ASSERT_EQ(stmt->selectList->at(0)->windowDescription->frameDescription->start->offset, 0);
   ASSERT_EQ(stmt->selectList->at(0)->windowDescription->frameDescription->start->type, kPreceding);
   ASSERT_TRUE(stmt->selectList->at(0)->windowDescription->frameDescription->start->unbounded);
-  ASSERT_FALSE(stmt->selectList->at(0)->windowDescription->frameDescription->end);
+  ASSERT_TRUE(stmt->selectList->at(0)->windowDescription->frameDescription->end);
+  ASSERT_EQ(stmt->selectList->at(0)->windowDescription->frameDescription->end->offset, 0);
+  ASSERT_EQ(stmt->selectList->at(0)->windowDescription->frameDescription->end->type, kCurrentRow);
+  ASSERT_FALSE(stmt->selectList->at(0)->windowDescription->frameDescription->end->unbounded);
 
   const auto frame_starts =
       std::vector<FrameBound>{{25, kPreceding, false}, {0, kPreceding, true}, {0, kPreceding, true}};
@@ -1087,19 +1109,20 @@ TEST(WindowExpression) {
     ASSERT_EQ(stmt->fromTable->type, kTableName);
     ASSERT_STREQ(stmt->fromTable->name, "t");
 
-    ASSERT_EQ(stmt->selectList->at(0)->type, kExprWindow);
-    ASSERT_TRUE(stmt->selectList->at(0)->exprList);
-    ASSERT_EQ(stmt->selectList->at(0)->exprList->size(), 1);
-    ASSERT_EQ(stmt->selectList->at(0)->exprList->at(0)->type, kExprColumnRef);
-    ASSERT_STREQ(stmt->selectList->at(0)->exprList->at(0)->name, "t1");
-    ASSERT_TRUE(stmt->selectList->at(0)->expr);
-    ASSERT_EQ(stmt->selectList->at(0)->expr->type, kExprFunctionRef);
-    ASSERT_STREQ(stmt->selectList->at(0)->expr->name, "rank");
-    ASSERT_TRUE(stmt->selectList->at(0)->expr->exprList);
-    ASSERT_TRUE(stmt->selectList->at(0)->expr->exprList->empty());
+    ASSERT_EQ(stmt->selectList->at(0)->type, kExprFunctionRef);
+    ASSERT_STREQ(stmt->selectList->at(0)->name, "rank");
+    ASSERT_TRUE(stmt->selectList->at(0)->exprList->empty());
+
     ASSERT_TRUE(stmt->selectList->at(0)->windowDescription);
+    ASSERT_TRUE(stmt->selectList->at(0)->windowDescription->partitionList);
+    ASSERT_EQ(stmt->selectList->at(0)->windowDescription->partitionList->size(), 1);
+    ASSERT_EQ(stmt->selectList->at(0)->windowDescription->partitionList->at(0)->type, kExprColumnRef);
+    ASSERT_STREQ(stmt->selectList->at(0)->windowDescription->partitionList->at(0)->name, "t1");
+
     ASSERT_TRUE(stmt->selectList->at(0)->windowDescription->orderList);
     ASSERT_EQ(stmt->selectList->at(0)->windowDescription->orderList->size(), 1);
+    ASSERT_EQ(stmt->selectList->at(0)->windowDescription->orderList->at(0)->type, kOrderAsc);
+    ASSERT_TRUE(stmt->selectList->at(0)->windowDescription->orderList->at(0)->expr);
     ASSERT_EQ(stmt->selectList->at(0)->windowDescription->orderList->at(0)->expr->type, kExprColumnRef);
     ASSERT_STREQ(stmt->selectList->at(0)->windowDescription->orderList->at(0)->expr->name, "t2");
     ASSERT_TRUE(stmt->selectList->at(0)->windowDescription->frameDescription);

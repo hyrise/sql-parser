@@ -320,6 +320,7 @@ union HSQL_STYPE
   hsql::TableName table_name;
   hsql::TableRef* table;
   hsql::UpdateClause* update_t;
+  hsql::WindowDescription* window_description;
   hsql::WithDescription* with_description_t;
 
   std::vector<char*>* str_vec;
@@ -338,7 +339,7 @@ union HSQL_STYPE
   hsql::RowLockMode lock_mode_t;
   hsql::RowLockWaitPolicy lock_wait_policy_t;
 
-#line 342 "bison_parser.h"
+#line 343 "bison_parser.h"
 
 };
 typedef union HSQL_STYPE HSQL_STYPE;
