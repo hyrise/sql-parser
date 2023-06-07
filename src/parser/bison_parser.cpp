@@ -411,7 +411,7 @@ enum yysymbol_kind_t
   YYSYMBOL_function_expr = 276,            /* function_expr  */
   YYSYMBOL_opt_window = 277,               /* opt_window  */
   YYSYMBOL_opt_partition = 278,            /* opt_partition  */
-  YYSYMBOL_frame_clause = 279,             /* frame_clause  */
+  YYSYMBOL_opt_frame_clause = 279,         /* opt_frame_clause  */
   YYSYMBOL_frame_type = 280,               /* frame_type  */
   YYSYMBOL_frame_bound = 281,              /* frame_bound  */
   YYSYMBOL_extract_expr = 282,             /* extract_expr  */
@@ -961,7 +961,7 @@ static const char *const yytname[] =
   "expr_list", "opt_literal_list", "literal_list", "expr_alias", "expr",
   "operand", "scalar_expr", "unary_expr", "binary_expr", "logic_expr",
   "in_expr", "case_expr", "case_list", "exists_expr", "comp_expr",
-  "function_expr", "opt_window", "opt_partition", "frame_clause",
+  "function_expr", "opt_window", "opt_partition", "opt_frame_clause",
   "frame_type", "frame_bound", "extract_expr", "cast_expr",
   "datetime_field", "datetime_field_plural", "duration_field",
   "array_expr", "array_index", "between_expr", "column_name", "literal",
@@ -2652,7 +2652,7 @@ yydestruct (const char *yymsg,
 #line 2653 "bison_parser.cpp"
         break;
 
-    case YYSYMBOL_frame_clause: /* frame_clause  */
+    case YYSYMBOL_opt_frame_clause: /* opt_frame_clause  */
 #line 190 "bison_parser.y"
                 { delete (((*yyvaluep).frame_description)); }
 #line 2659 "bison_parser.cpp"
@@ -4749,9 +4749,9 @@ yyreduce:
 #line 4750 "bison_parser.cpp"
     break;
 
-  case 220: /* opt_window: OVER '(' opt_partition opt_order frame_clause ')'  */
+  case 220: /* opt_window: OVER '(' opt_partition opt_order opt_frame_clause ')'  */
 #line 995 "bison_parser.y"
-                                                               { (yyval.window_description) = new WindowDescription((yyvsp[-3].expr_vec), (yyvsp[-2].order_vec), (yyvsp[-1].frame_description)); }
+                                                                   { (yyval.window_description) = new WindowDescription((yyvsp[-3].expr_vec), (yyvsp[-2].order_vec), (yyvsp[-1].frame_description)); }
 #line 4756 "bison_parser.cpp"
     break;
 
@@ -4773,19 +4773,19 @@ yyreduce:
 #line 4774 "bison_parser.cpp"
     break;
 
-  case 224: /* frame_clause: frame_type frame_bound  */
+  case 224: /* opt_frame_clause: frame_type frame_bound  */
 #line 1004 "bison_parser.y"
-                                      { (yyval.frame_description) = new FrameDescription{(yyvsp[-1].frame_type), (yyvsp[0].frame_bound), new FrameBound{0, kCurrentRow, false}}; }
+                                          { (yyval.frame_description) = new FrameDescription{(yyvsp[-1].frame_type), (yyvsp[0].frame_bound), new FrameBound{0, kCurrentRow, false}}; }
 #line 4780 "bison_parser.cpp"
     break;
 
-  case 225: /* frame_clause: frame_type BETWEEN frame_bound AND frame_bound  */
+  case 225: /* opt_frame_clause: frame_type BETWEEN frame_bound AND frame_bound  */
 #line 1005 "bison_parser.y"
                                                  { (yyval.frame_description) = new FrameDescription{(yyvsp[-4].frame_type), (yyvsp[-2].frame_bound), (yyvsp[0].frame_bound)}; }
 #line 4786 "bison_parser.cpp"
     break;
 
-  case 226: /* frame_clause: %empty  */
+  case 226: /* opt_frame_clause: %empty  */
 #line 1006 "bison_parser.y"
               {
   (yyval.frame_description) = new FrameDescription{kRange, new FrameBound{0, kPreceding, true}, new FrameBound{0, kCurrentRow, false}};

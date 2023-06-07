@@ -240,7 +240,7 @@
     %type <table_name>             table_name
     %type <sval>                   opt_index_name
     %type <sval>                   file_path prepare_target_query
-    %type <frame_description>      frame_clause
+    %type <frame_description>      opt_frame_clause
     %type <frame_bound>            frame_bound
     %type <frame_type>             frame_type
     %type <window_description>     opt_window
@@ -992,7 +992,7 @@ function_expr : IDENTIFIER '(' ')' opt_window { $$ = Expr::makeFunctionRef($1, n
 
 // Window function expressions, based on https://www.postgresql.org/docs/15/sql-expressions.html#SYNTAX-WINDOW-FUNCTIONS
 // We do not support named windows, collations and exclusions (for simplicity) and filters (not part of the SQL standard).
-opt_window : OVER '(' opt_partition opt_order frame_clause ')' { $$ = new WindowDescription($3, $4, $5); }
+opt_window : OVER '(' opt_partition opt_order opt_frame_clause ')' { $$ = new WindowDescription($3, $4, $5); }
 | /* empty */ { $$ = nullptr; };
 
 opt_partition : PARTITION BY expr_list { $$ = $3; }
@@ -1001,7 +1001,7 @@ opt_partition : PARTITION BY expr_list { $$ = $3; }
 // We use the Postgres default if the frame end or the whole frame clause is omitted. "If `frame_end` is omitted, the
 // end defaults to `CURRENT ROW`. [...] The default framing option is `RANGE UNBOUNDED PRECEDING`, which is the same as
 // `RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW`."
-frame_clause : frame_type frame_bound { $$ = new FrameDescription{$1, $2, new FrameBound{0, kCurrentRow, false}}; }
+opt_frame_clause : frame_type frame_bound { $$ = new FrameDescription{$1, $2, new FrameBound{0, kCurrentRow, false}}; }
 | frame_type BETWEEN frame_bound AND frame_bound { $$ = new FrameDescription{$1, $3, $5}; }
 | /* empty */ {
   $$ = new FrameDescription{kRange, new FrameBound{0, kPreceding, true}, new FrameBound{0, kCurrentRow, false}};
