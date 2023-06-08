@@ -18,7 +18,7 @@ FrameDescription::~FrameDescription() {
 
 WindowDescription::WindowDescription(std::vector<Expr*>* partitionList, std::vector<OrderDescription*>* orderList,
                                      FrameDescription* frameDescription)
-    : partitionList{partitionList}, orderList{orderList}, frameDescription(frameDescription) {}
+    : partitionList{partitionList}, orderList{orderList}, frameDescription{frameDescription} {}
 
 WindowDescription::~WindowDescription() {
   if (partitionList) {

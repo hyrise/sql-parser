@@ -987,6 +987,8 @@ comp_expr : operand '=' operand { $$ = Expr::makeOpBinary($1, kOpEquals, $3); }
 | operand LESSEQ operand { $$ = Expr::makeOpBinary($1, kOpLessEq, $3); }
 | operand GREATEREQ operand { $$ = Expr::makeOpBinary($1, kOpGreaterEq, $3); };
 
+// `function_expr is used for window functions, aggregate expressions, and functions calls because we run into shift/
+// reduce conflicts when splitting them.
 function_expr : IDENTIFIER '(' ')' opt_window { $$ = Expr::makeFunctionRef($1, new std::vector<Expr*>(), false, $4); }
 | IDENTIFIER '(' opt_distinct expr_list ')' opt_window { $$ = Expr::makeFunctionRef($1, $4, $3, $6); };
 
