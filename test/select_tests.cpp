@@ -827,20 +827,20 @@ TEST(LockingClauseWithoutWaitPolicy) {
 
   stmt = (SelectStatement*)result.getStatement(0);
   ASSERT_EQ(stmt->lockings->size(), 1);
-  ASSERT_TRUE(stmt->lockings->at(0)->tables == nullptr);
+  ASSERT_FALSE(stmt->lockings->at(0)->tables);
   ASSERT_EQ(stmt->lockings->at(0)->rowLockMode, RowLockMode::ForUpdate);
   ASSERT_EQ(stmt->lockings->at(0)->rowLockWaitPolicy, RowLockWaitPolicy::None);
 
   stmt = (SelectStatement*)result.getStatement(1);
   ASSERT_EQ(stmt->lockings->size(), 1);
-  ASSERT_TRUE(stmt->lockings->at(0)->tables == nullptr);
+  ASSERT_FALSE(stmt->lockings->at(0)->tables);
   ASSERT_EQ(stmt->lockings->at(0)->rowLockMode, RowLockMode::ForShare);
   ASSERT_EQ(stmt->lockings->at(0)->rowLockWaitPolicy, RowLockWaitPolicy::None);
 
   stmt = (SelectStatement*)result.getStatement(2);
   ASSERT_EQ(stmt->lockings->size(), 2);
-  ASSERT_TRUE(stmt->lockings->at(0)->tables == nullptr);
-  ASSERT_TRUE(stmt->lockings->at(1)->tables == nullptr);
+  ASSERT_FALSE(stmt->lockings->at(0)->tables);
+  ASSERT_FALSE(stmt->lockings->at(1)->tables);
   ASSERT_EQ(stmt->lockings->at(0)->rowLockMode, RowLockMode::ForNoKeyUpdate);
   ASSERT_EQ(stmt->lockings->at(0)->rowLockWaitPolicy, RowLockWaitPolicy::None);
   ASSERT_EQ(stmt->lockings->at(1)->rowLockMode, RowLockMode::ForKeyShare);
@@ -862,49 +862,49 @@ TEST(LockingClauseWithWaitPolicy) {
 
   stmt = (SelectStatement*)result.getStatement(0);
   ASSERT_EQ(stmt->lockings->size(), 1);
-  ASSERT_TRUE(stmt->lockings->at(0)->tables == nullptr);
+  ASSERT_FALSE(stmt->lockings->at(0)->tables);
   ASSERT_EQ(stmt->lockings->at(0)->rowLockMode, RowLockMode::ForUpdate);
   ASSERT_EQ(stmt->lockings->at(0)->rowLockWaitPolicy, RowLockWaitPolicy::NoWait);
 
   stmt = (SelectStatement*)result.getStatement(1);
   ASSERT_EQ(stmt->lockings->size(), 1);
-  ASSERT_TRUE(stmt->lockings->at(0)->tables == nullptr);
+  ASSERT_FALSE(stmt->lockings->at(0)->tables);
   ASSERT_EQ(stmt->lockings->at(0)->rowLockMode, RowLockMode::ForShare);
   ASSERT_EQ(stmt->lockings->at(0)->rowLockWaitPolicy, RowLockWaitPolicy::NoWait);
 
   stmt = (SelectStatement*)result.getStatement(2);
   ASSERT_EQ(stmt->lockings->size(), 1);
-  ASSERT_TRUE(stmt->lockings->at(0)->tables == nullptr);
+  ASSERT_FALSE(stmt->lockings->at(0)->tables);
   ASSERT_EQ(stmt->lockings->at(0)->rowLockMode, RowLockMode::ForNoKeyUpdate);
   ASSERT_EQ(stmt->lockings->at(0)->rowLockWaitPolicy, RowLockWaitPolicy::NoWait);
 
   stmt = (SelectStatement*)result.getStatement(3);
   ASSERT_EQ(stmt->lockings->size(), 1);
-  ASSERT_TRUE(stmt->lockings->at(0)->tables == nullptr);
+  ASSERT_FALSE(stmt->lockings->at(0)->tables);
   ASSERT_EQ(stmt->lockings->at(0)->rowLockMode, RowLockMode::ForKeyShare);
   ASSERT_EQ(stmt->lockings->at(0)->rowLockWaitPolicy, RowLockWaitPolicy::NoWait);
 
   stmt = (SelectStatement*)result.getStatement(4);
   ASSERT_EQ(stmt->lockings->size(), 1);
-  ASSERT_TRUE(stmt->lockings->at(0)->tables == nullptr);
+  ASSERT_FALSE(stmt->lockings->at(0)->tables);
   ASSERT_EQ(stmt->lockings->at(0)->rowLockMode, RowLockMode::ForUpdate);
   ASSERT_EQ(stmt->lockings->at(0)->rowLockWaitPolicy, RowLockWaitPolicy::SkipLocked);
 
   stmt = (SelectStatement*)result.getStatement(5);
   ASSERT_EQ(stmt->lockings->size(), 1);
-  ASSERT_TRUE(stmt->lockings->at(0)->tables == nullptr);
+  ASSERT_FALSE(stmt->lockings->at(0)->tables);
   ASSERT_EQ(stmt->lockings->at(0)->rowLockMode, RowLockMode::ForShare);
   ASSERT_EQ(stmt->lockings->at(0)->rowLockWaitPolicy, RowLockWaitPolicy::SkipLocked);
 
   stmt = (SelectStatement*)result.getStatement(6);
   ASSERT_EQ(stmt->lockings->size(), 1);
-  ASSERT_TRUE(stmt->lockings->at(0)->tables == nullptr);
+  ASSERT_FALSE(stmt->lockings->at(0)->tables);
   ASSERT_EQ(stmt->lockings->at(0)->rowLockMode, RowLockMode::ForNoKeyUpdate);
   ASSERT_EQ(stmt->lockings->at(0)->rowLockWaitPolicy, RowLockWaitPolicy::SkipLocked);
 
   stmt = (SelectStatement*)result.getStatement(7);
   ASSERT_EQ(stmt->lockings->size(), 1);
-  ASSERT_TRUE(stmt->lockings->at(0)->tables == nullptr);
+  ASSERT_FALSE(stmt->lockings->at(0)->tables);
   ASSERT_EQ(stmt->lockings->at(0)->rowLockMode, RowLockMode::ForKeyShare);
   ASSERT_EQ(stmt->lockings->at(0)->rowLockWaitPolicy, RowLockWaitPolicy::SkipLocked);
 }
@@ -975,7 +975,7 @@ TEST(MultipleLockingClause) {
   ASSERT_EQ(stmt->lockings->size(), 3);
   ASSERT_EQ(stmt->lockings->at(0)->rowLockMode, RowLockMode::ForNoKeyUpdate);
   ASSERT_EQ(stmt->lockings->at(0)->rowLockWaitPolicy, RowLockWaitPolicy::None);
-  ASSERT_TRUE(stmt->lockings->at(0)->tables == nullptr);
+  ASSERT_FALSE(stmt->lockings->at(0)->tables);
 
   ASSERT_EQ(stmt->lockings->at(1)->rowLockMode, RowLockMode::ForShare);
   ASSERT_EQ(stmt->lockings->at(1)->rowLockWaitPolicy, RowLockWaitPolicy::SkipLocked);
@@ -987,4 +987,152 @@ TEST(MultipleLockingClause) {
   ASSERT_EQ(stmt->lockings->at(2)->tables->size(), 2);
   ASSERT_STREQ(stmt->lockings->at(2)->tables->at(0), "c");
   ASSERT_STREQ(stmt->lockings->at(2)->tables->at(1), "s");
+}
+
+TEST(WindowFunctions) {
+  SelectStatement* stmt;
+  TEST_PARSE_SQL_QUERY(
+      "SELECT t2, 1 / avg(t1) OVER(), rank() OVER(ORDER BY t1 DESC) rnk FROM t;"
+      "SELECT avg(t1) OVER(PARTITION BY t2, t3 ORDER BY t4, t5 ROWS UNBOUNDED PRECEDING) FROM t;"
+      "SELECT rank() OVER(PARTITION BY t1 ORDER BY t2 ROWS BETWEEN 25 PRECEDING AND 2 FOLLOWING) FROM t;"
+      "SELECT rank() OVER(PARTITION BY t1 ORDER BY t2 RANGE BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) FROM "
+      "t;"
+      "SELECT rank() OVER(PARTITION BY t1 ORDER BY t2 GROUPS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) FROM t;",
+      result, 5);
+
+  stmt = (SelectStatement*)result.getStatement(0);
+  ASSERT_TRUE(stmt->selectList);
+  ASSERT_EQ(stmt->selectList->size(), 3);
+  ASSERT_TRUE(stmt->fromTable);
+  ASSERT_EQ(stmt->fromTable->type, kTableName);
+  ASSERT_STREQ(stmt->fromTable->name, "t");
+
+  ASSERT_EQ(stmt->selectList->at(1)->type, kExprOperator);
+  ASSERT_EQ(stmt->selectList->at(1)->opType, kOpSlash);
+  ASSERT_TRUE(stmt->selectList->at(1)->expr);
+  ASSERT_EQ(stmt->selectList->at(1)->expr->type, kExprLiteralInt);
+  ASSERT_EQ(stmt->selectList->at(1)->expr->ival, 1);
+
+  ASSERT_TRUE(stmt->selectList->at(1)->expr2);
+  ASSERT_EQ(stmt->selectList->at(1)->expr2->type, kExprFunctionRef);
+  ASSERT_STREQ(stmt->selectList->at(1)->expr2->name, "avg");
+  ASSERT_TRUE(stmt->selectList->at(1)->expr2->exprList);
+  ASSERT_EQ(stmt->selectList->at(1)->expr2->exprList->size(), 1);
+  ASSERT_EQ(stmt->selectList->at(1)->expr2->exprList->at(0)->type, kExprColumnRef);
+  ASSERT_STREQ(stmt->selectList->at(1)->expr2->exprList->at(0)->name, "t1");
+
+  ASSERT_TRUE(stmt->selectList->at(1)->expr2->windowDescription);
+  ASSERT_FALSE(stmt->selectList->at(1)->expr2->windowDescription->partitionList);
+  ASSERT_FALSE(stmt->selectList->at(1)->expr2->windowDescription->orderList);
+  ASSERT_TRUE(stmt->selectList->at(1)->expr2->windowDescription->frameDescription);
+  ASSERT_EQ(stmt->selectList->at(1)->expr2->windowDescription->frameDescription->type, kRange);
+  ASSERT_TRUE(stmt->selectList->at(1)->expr2->windowDescription->frameDescription->start);
+  ASSERT_EQ(stmt->selectList->at(1)->expr2->windowDescription->frameDescription->start->offset, 0);
+  ASSERT_EQ(stmt->selectList->at(1)->expr2->windowDescription->frameDescription->start->type, kPreceding);
+  ASSERT_TRUE(stmt->selectList->at(1)->expr2->windowDescription->frameDescription->start->unbounded);
+  ASSERT_TRUE(stmt->selectList->at(1)->expr2->windowDescription->frameDescription->end);
+  ASSERT_EQ(stmt->selectList->at(1)->expr2->windowDescription->frameDescription->end->offset, 0);
+  ASSERT_EQ(stmt->selectList->at(1)->expr2->windowDescription->frameDescription->end->type, kCurrentRow);
+  ASSERT_FALSE(stmt->selectList->at(1)->expr2->windowDescription->frameDescription->end->unbounded);
+
+  ASSERT_TRUE(stmt->selectList->at(2));
+  ASSERT_EQ(stmt->selectList->at(2)->type, kExprFunctionRef);
+  ASSERT_STREQ(stmt->selectList->at(2)->name, "rank");
+  ASSERT_TRUE(stmt->selectList->at(2)->alias);
+  ASSERT_STREQ(stmt->selectList->at(2)->alias, "rnk");
+  ASSERT_TRUE(stmt->selectList->at(2)->exprList);
+  ASSERT_TRUE(stmt->selectList->at(2)->exprList->empty());
+
+  ASSERT_TRUE(stmt->selectList->at(2)->windowDescription);
+  ASSERT_FALSE(stmt->selectList->at(2)->windowDescription->partitionList);
+  ASSERT_TRUE(stmt->selectList->at(2)->windowDescription->orderList);
+  ASSERT_EQ(stmt->selectList->at(2)->windowDescription->orderList->size(), 1);
+  ASSERT_EQ(stmt->selectList->at(2)->windowDescription->orderList->at(0)->type, kOrderDesc);
+  ASSERT_TRUE(stmt->selectList->at(2)->windowDescription->orderList->at(0)->expr);
+  ASSERT_EQ(stmt->selectList->at(2)->windowDescription->orderList->at(0)->expr->type, kExprColumnRef);
+  ASSERT_STREQ(stmt->selectList->at(2)->windowDescription->orderList->at(0)->expr->name, "t1");
+  ASSERT_TRUE(stmt->selectList->at(2)->windowDescription->frameDescription);
+
+  stmt = (SelectStatement*)result.getStatement(1);
+  ASSERT_TRUE(stmt->selectList);
+  ASSERT_EQ(stmt->selectList->size(), 1);
+  ASSERT_TRUE(stmt->fromTable);
+  ASSERT_EQ(stmt->fromTable->type, kTableName);
+  ASSERT_STREQ(stmt->fromTable->name, "t");
+
+  ASSERT_EQ(stmt->selectList->at(0)->type, kExprFunctionRef);
+  ASSERT_STREQ(stmt->selectList->at(0)->name, "avg");
+  ASSERT_EQ(stmt->selectList->at(0)->exprList->size(), 1);
+  ASSERT_STREQ(stmt->selectList->at(0)->exprList->at(0)->name, "t1");
+
+  ASSERT_TRUE(stmt->selectList->at(0)->windowDescription);
+  ASSERT_TRUE(stmt->selectList->at(0)->windowDescription->partitionList);
+  ASSERT_EQ(stmt->selectList->at(0)->windowDescription->partitionList->size(), 2);
+  ASSERT_EQ(stmt->selectList->at(0)->windowDescription->partitionList->at(0)->type, kExprColumnRef);
+  ASSERT_STREQ(stmt->selectList->at(0)->windowDescription->partitionList->at(0)->name, "t2");
+  ASSERT_EQ(stmt->selectList->at(0)->windowDescription->partitionList->at(1)->type, kExprColumnRef);
+  ASSERT_STREQ(stmt->selectList->at(0)->windowDescription->partitionList->at(1)->name, "t3");
+
+  ASSERT_TRUE(stmt->selectList->at(0)->windowDescription->orderList);
+  ASSERT_EQ(stmt->selectList->at(0)->windowDescription->orderList->size(), 2);
+  ASSERT_EQ(stmt->selectList->at(0)->windowDescription->orderList->at(0)->type, kOrderAsc);
+  ASSERT_TRUE(stmt->selectList->at(0)->windowDescription->orderList->at(0)->expr);
+  ASSERT_EQ(stmt->selectList->at(0)->windowDescription->orderList->at(0)->expr->type, kExprColumnRef);
+  ASSERT_STREQ(stmt->selectList->at(0)->windowDescription->orderList->at(0)->expr->name, "t4");
+  ASSERT_EQ(stmt->selectList->at(0)->windowDescription->orderList->at(1)->expr->type, kExprColumnRef);
+  ASSERT_STREQ(stmt->selectList->at(0)->windowDescription->orderList->at(1)->expr->name, "t5");
+
+  ASSERT_TRUE(stmt->selectList->at(0)->windowDescription->frameDescription);
+  ASSERT_EQ(stmt->selectList->at(0)->windowDescription->frameDescription->type, kRows);
+  ASSERT_TRUE(stmt->selectList->at(0)->windowDescription->frameDescription->start);
+  ASSERT_EQ(stmt->selectList->at(0)->windowDescription->frameDescription->start->offset, 0);
+  ASSERT_EQ(stmt->selectList->at(0)->windowDescription->frameDescription->start->type, kPreceding);
+  ASSERT_TRUE(stmt->selectList->at(0)->windowDescription->frameDescription->start->unbounded);
+  ASSERT_TRUE(stmt->selectList->at(0)->windowDescription->frameDescription->end);
+  ASSERT_EQ(stmt->selectList->at(0)->windowDescription->frameDescription->end->offset, 0);
+  ASSERT_EQ(stmt->selectList->at(0)->windowDescription->frameDescription->end->type, kCurrentRow);
+  ASSERT_FALSE(stmt->selectList->at(0)->windowDescription->frameDescription->end->unbounded);
+
+  const auto frame_starts =
+      std::vector<FrameBound>{{25, kPreceding, false}, {0, kPreceding, true}, {0, kPreceding, true}};
+  const auto frame_ends =
+      std::vector<FrameBound>{{2, kFollowing, false}, {0, kFollowing, true}, {0, kCurrentRow, false}};
+
+  for (auto bound_index = size_t{0}; bound_index < frame_starts.size(); ++bound_index) {
+    stmt = (SelectStatement*)result.getStatement(2 + bound_index);
+    const auto& expected_start = frame_starts[bound_index];
+    const auto& expected_end = frame_ends[bound_index];
+
+    ASSERT_TRUE(stmt->selectList);
+    ASSERT_EQ(stmt->selectList->size(), 1);
+    ASSERT_TRUE(stmt->fromTable);
+    ASSERT_EQ(stmt->fromTable->type, kTableName);
+    ASSERT_STREQ(stmt->fromTable->name, "t");
+
+    ASSERT_EQ(stmt->selectList->at(0)->type, kExprFunctionRef);
+    ASSERT_STREQ(stmt->selectList->at(0)->name, "rank");
+    ASSERT_TRUE(stmt->selectList->at(0)->exprList->empty());
+
+    ASSERT_TRUE(stmt->selectList->at(0)->windowDescription);
+    ASSERT_TRUE(stmt->selectList->at(0)->windowDescription->partitionList);
+    ASSERT_EQ(stmt->selectList->at(0)->windowDescription->partitionList->size(), 1);
+    ASSERT_EQ(stmt->selectList->at(0)->windowDescription->partitionList->at(0)->type, kExprColumnRef);
+    ASSERT_STREQ(stmt->selectList->at(0)->windowDescription->partitionList->at(0)->name, "t1");
+
+    ASSERT_TRUE(stmt->selectList->at(0)->windowDescription->orderList);
+    ASSERT_EQ(stmt->selectList->at(0)->windowDescription->orderList->size(), 1);
+    ASSERT_EQ(stmt->selectList->at(0)->windowDescription->orderList->at(0)->type, kOrderAsc);
+    ASSERT_TRUE(stmt->selectList->at(0)->windowDescription->orderList->at(0)->expr);
+    ASSERT_EQ(stmt->selectList->at(0)->windowDescription->orderList->at(0)->expr->type, kExprColumnRef);
+    ASSERT_STREQ(stmt->selectList->at(0)->windowDescription->orderList->at(0)->expr->name, "t2");
+    ASSERT_TRUE(stmt->selectList->at(0)->windowDescription->frameDescription);
+    ASSERT_TRUE(stmt->selectList->at(0)->windowDescription->frameDescription->start);
+    ASSERT_EQ(stmt->selectList->at(0)->windowDescription->frameDescription->start->offset, expected_start.offset);
+    ASSERT_EQ(stmt->selectList->at(0)->windowDescription->frameDescription->start->type, expected_start.type);
+    ASSERT_EQ(stmt->selectList->at(0)->windowDescription->frameDescription->start->unbounded, expected_start.unbounded);
+    ASSERT_TRUE(stmt->selectList->at(0)->windowDescription->frameDescription->end);
+    ASSERT_EQ(stmt->selectList->at(0)->windowDescription->frameDescription->end->offset, expected_end.offset);
+    ASSERT_EQ(stmt->selectList->at(0)->windowDescription->frameDescription->end->type, expected_end.type);
+    ASSERT_EQ(stmt->selectList->at(0)->windowDescription->frameDescription->end->unbounded, expected_end.unbounded);
+  }
 }

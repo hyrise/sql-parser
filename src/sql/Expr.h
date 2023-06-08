@@ -8,6 +8,7 @@
 
 namespace hsql {
 struct SelectStatement;
+struct OrderDescription;
 
 // Helper function used by the lexer.
 // TODO: move to more appropriate place.
@@ -83,7 +84,38 @@ enum DatetimeField {
   kDatetimeYear,
 };
 
+// Description of the frame clause within a window expression.
+enum FrameBoundType { kFollowing, kPreceding, kCurrentRow };
+struct FrameBound {
+  FrameBound(int64_t offset, FrameBoundType type, bool unbounded);
+
+  int64_t offset;
+  FrameBoundType type;
+  bool unbounded;
+};
+
+enum FrameType { kRange, kRows, kGroups };
+struct FrameDescription {
+  FrameDescription(FrameType type, FrameBound* start, FrameBound* end);
+  virtual ~FrameDescription();
+
+  FrameType type;
+  FrameBound* start;
+  FrameBound* end;
+};
+
 typedef struct Expr Expr;
+
+// Description of additional fields for a window expression.
+struct WindowDescription {
+  WindowDescription(std::vector<Expr*>* partitionList, std::vector<OrderDescription*>* orderList,
+                    FrameDescription* frameDescription);
+  virtual ~WindowDescription();
+
+  std::vector<Expr*>* partitionList;
+  std::vector<OrderDescription*>* orderList;
+  FrameDescription* frameDescription;
+};
 
 // Represents SQL expressions (i.e. literals, operators, column_refs).
 // TODO: When destructing a placeholder expression, we might need to alter the
@@ -111,6 +143,8 @@ struct Expr {
 
   OperatorType opType;
   bool distinct;
+
+  WindowDescription* windowDescription;
 
   // Convenience accessor methods.
 
@@ -164,7 +198,7 @@ struct Expr {
 
   static Expr* makeStar(char* table);
 
-  static Expr* makeFunctionRef(char* func_name, std::vector<Expr*>* exprList, bool distinct);
+  static Expr* makeFunctionRef(char* func_name, std::vector<Expr*>* exprList, bool distinct, WindowDescription* window);
 
   static Expr* makeArray(std::vector<Expr*>* exprList);
 

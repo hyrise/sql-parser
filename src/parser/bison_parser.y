@@ -125,10 +125,14 @@
   hsql::DatetimeField datetime_field;
   hsql::DropColumnAction* drop_action_t;
   hsql::Expr* expr;
+  hsql::FrameBound* frame_bound;
+  hsql::FrameDescription* frame_description;
+  hsql::FrameType frame_type;
   hsql::GroupByDescription* group_t;
   hsql::ImportType import_type_t;
   hsql::JoinType join_type;
   hsql::LimitDescription* limit;
+  hsql::LockingClause* locking_t;
   hsql::OrderDescription* order;
   hsql::OrderType order_type;
   hsql::SetOperation* set_operator_t;
@@ -137,8 +141,8 @@
   hsql::TableName table_name;
   hsql::TableRef* table;
   hsql::UpdateClause* update_t;
+  hsql::WindowDescription* window_description;
   hsql::WithDescription* with_description_t;
-  hsql::LockingClause* locking_t;
 
   std::vector<char*>* str_vec;
   std::unordered_set<hsql::ConstraintType>* column_constraint_set;
@@ -161,7 +165,7 @@
      ** Destructor symbols
      *********************************/
     // clang-format off
-    %destructor { } <fval> <ival> <bval> <join_type> <order_type> <datetime_field> <column_type_t> <column_constraint_t> <import_type_t> <column_constraint_set> <lock_mode_t> <lock_wait_policy_t>
+    %destructor { } <fval> <ival> <bval> <join_type> <order_type> <datetime_field> <column_type_t> <column_constraint_t> <import_type_t> <column_constraint_set> <lock_mode_t> <lock_wait_policy_t> <frame_type>
     %destructor {
       free( ($$.name) );
       free( ($$.schema) );
@@ -202,10 +206,10 @@
     %token DOUBLE ESCAPE EXCEPT EXISTS EXTRACT CAST FORMAT GLOBAL HAVING IMPORT
     %token INSERT ISNULL OFFSET RENAME SCHEMA SELECT SORTED
     %token TABLES UNIQUE UNLOAD UPDATE VALUES AFTER ALTER CROSS
-    %token DELTA FLOAT GROUP INDEX INNER LIMIT LOCAL MERGE MINUS ORDER
+    %token DELTA FLOAT GROUP INDEX INNER LIMIT LOCAL MERGE MINUS ORDER OVER
     %token OUTER RIGHT TABLE UNION USING WHERE CALL CASE CHAR COPY DATE DATETIME
     %token DESC DROP ELSE FILE FROM FULL HASH HINT INTO JOIN
-    %token LEFT LIKE LOAD LONG NULL PLAN SHOW TEXT THEN TIME
+    %token LEFT LIKE LOAD LONG NULL PARTITION PLAN SHOW TEXT THEN TIME
     %token VIEW WHEN WITH ADD ALL AND ASC END FOR INT KEY
     %token NOT OFF SET TOP AS BY IF IN IS OF ON OR TO NO
     %token ARRAY CONCAT ILIKE SECOND MINUTE HOUR DAY MONTH YEAR
@@ -213,6 +217,7 @@
     %token TRUE FALSE BOOLEAN
     %token TRANSACTION BEGIN COMMIT ROLLBACK
     %token NOWAIT SKIP LOCKED SHARE
+    %token RANGE ROWS GROUPS UNBOUNDED FOLLOWING PRECEDING CURRENT_ROW
 
     /*********************************
      ** Non-Terminal types (http://www.gnu.org/software/bison/manual/html_node/Type-Decl.html)
@@ -235,6 +240,10 @@
     %type <table_name>             table_name
     %type <sval>                   opt_index_name
     %type <sval>                   file_path prepare_target_query
+    %type <frame_description>      opt_frame_clause
+    %type <frame_bound>            frame_bound
+    %type <frame_type>             frame_type
+    %type <window_description>     opt_window
     %type <bval>                   opt_not_exists opt_exists opt_distinct opt_all
     %type <ival_pair>              opt_decimal_specification
     %type <ival>                   opt_time_precision
@@ -272,7 +281,7 @@
     %type <import_type_t>          opt_file_type file_type
 
     %type <str_vec>                ident_commalist opt_column_list
-    %type <expr_vec>               expr_list select_list opt_literal_list literal_list hint_list opt_hints
+    %type <expr_vec>               expr_list select_list opt_literal_list literal_list hint_list opt_hints opt_partition
     %type <table_vec>              table_ref_commalist
     %type <order_vec>              opt_order order_list
     %type <with_description_vec>   opt_with_clause with_clause with_description_list
@@ -978,8 +987,37 @@ comp_expr : operand '=' operand { $$ = Expr::makeOpBinary($1, kOpEquals, $3); }
 | operand LESSEQ operand { $$ = Expr::makeOpBinary($1, kOpLessEq, $3); }
 | operand GREATEREQ operand { $$ = Expr::makeOpBinary($1, kOpGreaterEq, $3); };
 
-function_expr : IDENTIFIER '(' ')' { $$ = Expr::makeFunctionRef($1, new std::vector<Expr*>(), false); }
-| IDENTIFIER '(' opt_distinct expr_list ')' { $$ = Expr::makeFunctionRef($1, $4, $3); };
+// `function_expr is used for window functions, aggregate expressions, and functions calls because we run into shift/
+// reduce conflicts when splitting them.
+function_expr : IDENTIFIER '(' ')' opt_window { $$ = Expr::makeFunctionRef($1, new std::vector<Expr*>(), false, $4); }
+| IDENTIFIER '(' opt_distinct expr_list ')' opt_window { $$ = Expr::makeFunctionRef($1, $4, $3, $6); };
+
+// Window function expressions, based on https://www.postgresql.org/docs/15/sql-expressions.html#SYNTAX-WINDOW-FUNCTIONS
+// We do not support named windows, collations and exclusions (for simplicity) and filters (not part of the SQL standard).
+opt_window : OVER '(' opt_partition opt_order opt_frame_clause ')' { $$ = new WindowDescription($3, $4, $5); }
+| /* empty */ { $$ = nullptr; };
+
+opt_partition : PARTITION BY expr_list { $$ = $3; }
+| /* empty */ { $$ = nullptr; };
+
+// We use the Postgres default if the frame end or the whole frame clause is omitted. "If `frame_end` is omitted, the
+// end defaults to `CURRENT ROW`. [...] The default framing option is `RANGE UNBOUNDED PRECEDING`, which is the same as
+// `RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW`."
+opt_frame_clause : frame_type frame_bound { $$ = new FrameDescription{$1, $2, new FrameBound{0, kCurrentRow, false}}; }
+| frame_type BETWEEN frame_bound AND frame_bound { $$ = new FrameDescription{$1, $3, $5}; }
+| /* empty */ {
+  $$ = new FrameDescription{kRange, new FrameBound{0, kPreceding, true}, new FrameBound{0, kCurrentRow, false}};
+};
+
+frame_type : RANGE { $$ = kRange; }
+| ROWS { $$ = kRows; }
+| GROUPS { $$ = kGroups; };
+
+frame_bound : UNBOUNDED PRECEDING { $$ = new FrameBound{0, kPreceding, true}; }
+| INTVAL PRECEDING { $$ = new FrameBound{$1, kPreceding, false}; }
+| UNBOUNDED FOLLOWING { $$ = new FrameBound{0, kFollowing, true}; }
+| INTVAL FOLLOWING { $$ = new FrameBound{$1, kFollowing, false}; }
+| CURRENT_ROW { $$ = new FrameBound{0, kCurrentRow, false}; };
 
 extract_expr : EXTRACT '(' datetime_field FROM expr ')' { $$ = Expr::makeExtract($3, $5); };
 

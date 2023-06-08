@@ -5,6 +5,39 @@
 
 namespace hsql {
 
+FrameBound::FrameBound(int64_t offset, FrameBoundType type, bool unbounded)
+    : offset{offset}, type{type}, unbounded{unbounded} {}
+
+FrameDescription::FrameDescription(FrameType type, FrameBound* start, FrameBound* end)
+    : type{type}, start{start}, end{end} {}
+
+FrameDescription::~FrameDescription() {
+  delete start;
+  delete end;
+}
+
+WindowDescription::WindowDescription(std::vector<Expr*>* partitionList, std::vector<OrderDescription*>* orderList,
+                                     FrameDescription* frameDescription)
+    : partitionList{partitionList}, orderList{orderList}, frameDescription{frameDescription} {}
+
+WindowDescription::~WindowDescription() {
+  if (partitionList) {
+    for (Expr* e : *partitionList) {
+      delete e;
+    }
+    delete partitionList;
+  }
+
+  if (orderList) {
+    for (OrderDescription* orderDescription : *orderList) {
+      delete orderDescription;
+    }
+    delete orderList;
+  }
+
+  delete frameDescription;
+}
+
 Expr::Expr(ExprType type)
     : type(type),
       expr(nullptr),
@@ -21,12 +54,15 @@ Expr::Expr(ExprType type)
       columnType(DataType::UNKNOWN, 0),
       isBoolLiteral(false),
       opType(kOpNone),
-      distinct(false) {}
+      distinct(false),
+      windowDescription(nullptr) {}
 
 Expr::~Expr() {
   delete expr;
   delete expr2;
   delete select;
+  delete windowDescription;
+
   free(name);
   free(table);
   free(alias);
@@ -171,11 +207,12 @@ Expr* Expr::makeStar(char* table) {
   return e;
 }
 
-Expr* Expr::makeFunctionRef(char* func_name, std::vector<Expr*>* exprList, bool distinct) {
+Expr* Expr::makeFunctionRef(char* func_name, std::vector<Expr*>* exprList, bool distinct, WindowDescription* window) {
   Expr* e = new Expr(kExprFunctionRef);
   e->name = func_name;
   e->exprList = exprList;
   e->distinct = distinct;
+  e->windowDescription = window;
   return e;
 }
 
