@@ -62,6 +62,7 @@ struct JoinDefinition {
   Expr* condition;
 
   JoinType type;
+  bool namedColumns{false};
 };
 
 }  // namespace hsql

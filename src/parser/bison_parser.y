@@ -161,10 +161,11 @@
   hsql::RowLockWaitPolicy lock_wait_policy_t;
 }
 
+        // clang-format off
     /*********************************
      ** Destructor symbols
      *********************************/
-    // clang-format off
+
     %destructor { } <fval> <ival> <bval> <join_type> <order_type> <datetime_field> <column_type_t> <column_constraint_t> <import_type_t> <column_constraint_set> <lock_mode_t> <lock_wait_policy_t> <frame_type>
     %destructor {
       free( ($$.name) );
@@ -1271,28 +1272,36 @@ join_clause : table_ref_atomic NATURAL JOIN nonjoin_table_ref_atomic {
   $$->join->right = $4;
   $$->join->condition = $6;
 }
-| table_ref_atomic opt_join_type JOIN table_ref_atomic USING '(' column_name ')' {
+| table_ref_atomic opt_join_type JOIN table_ref_atomic USING '(' ident_commalist ')' {
   $$ = new TableRef(kTableJoin);
   $$->join = new JoinDefinition();
-  $$->join->type = (JoinType)$2;
+  $$->join->type = $2;
   $$->join->left = $1;
   $$->join->right = $4;
-  auto left_col = Expr::makeColumnRef(strdup($7->name));
-  if ($7->alias) {
-    left_col->alias = strdup($7->alias);
+  $$->join->namedColumns = true;
+
+  for (auto column_it = $7->rbegin(); column_it != $7->rend(); ++column_it) {
+    auto column_name = *column_it;
+    auto left_col = Expr::makeColumnRef(strdup(column_name));
+    if ($1->getName()) {
+      left_col->table = strdup($1->getName());
+    }
+    auto right_col = Expr::makeColumnRef(strdup(column_name));
+    if ($4->getName()) {
+      right_col->table = strdup($4->getName());
+    }
+
+    free(column_name);
+    auto predicate = Expr::makeOpBinary(left_col, kOpEquals, right_col);
+
+    if (!$$->join->condition) {
+      $$->join->condition = predicate;
+    } else {
+      $$->join->condition = Expr::makeOpBinary(predicate, kOpAnd, $$->join->condition);
+    }
   }
-  if ($1->getName()) {
-    left_col->table = strdup($1->getName());
-  }
-  auto right_col = Expr::makeColumnRef(strdup($7->name));
-  if ($7->alias) {
-    right_col->alias = strdup($7->alias);
-  }
-  if ($4->getName()) {
-    right_col->table = strdup($4->getName());
-  }
-  $$->join->condition = Expr::makeOpBinary(left_col, kOpEquals, right_col);
-  delete $7;
+
+  delete ($7);
 };
 
 opt_join_type : INNER { $$ = kJoinInner; }
