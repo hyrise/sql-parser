@@ -348,7 +348,8 @@ TEST(SelectJoin) {
   ASSERT_STREQ(inner_join->left->name, "fact");
   ASSERT_EQ(inner_join->right->type, kTableName);
   ASSERT_STREQ(inner_join->right->name, "City")
-  ASSERT_FALSE(inner_join->namedColumns);;
+  ASSERT_FALSE(inner_join->namedColumns);
+  ;
 
   ASSERT_EQ(inner_join->condition->opType, kOpEquals);
   ASSERT_STREQ(inner_join->condition->expr->table, "fact");
@@ -384,51 +385,11 @@ TEST(SelectJoinUsing) {
   ASSERT_TRUE(stmt->fromTable->join->right->name);
   ASSERT_STREQ(stmt->fromTable->join->right->name, "bar");
 
-  // ... USING ...
+  // ... USING a, b;
   ASSERT_TRUE(stmt->fromTable->join->namedColumns);
-
-  // Two named columns, resulting in a conjunction of two join predicates.
-  ASSERT_TRUE(stmt->fromTable->join->condition);
-  ASSERT_EQ(stmt->fromTable->join->condition->type, kExprOperator);
-  ASSERT_EQ(stmt->fromTable->join->condition->opType, kOpAnd);
-  ASSERT_TRUE(stmt->fromTable->join->condition->expr);
-  ASSERT_TRUE(stmt->fromTable->join->condition->expr2);
-
-  // foo.a = bar.a
-  ASSERT_EQ(stmt->fromTable->join->condition->expr->type, kExprOperator);
-  ASSERT_EQ(stmt->fromTable->join->condition->expr->opType, kOpEquals);
-  ASSERT_TRUE(stmt->fromTable->join->condition->expr->expr);
-  ASSERT_TRUE(stmt->fromTable->join->condition->expr->expr2);
-
-  ASSERT_EQ(stmt->fromTable->join->condition->expr->expr->type, kExprColumnRef);
-  ASSERT_TRUE(stmt->fromTable->join->condition->expr->expr->name);
-  ASSERT_STREQ(stmt->fromTable->join->condition->expr->expr->name, "a");
-  ASSERT_TRUE(stmt->fromTable->join->condition->expr->expr->table);
-  ASSERT_STREQ(stmt->fromTable->join->condition->expr->expr->table, "foo");
-
-  ASSERT_EQ(stmt->fromTable->join->condition->expr->expr2->type, kExprColumnRef);
-  ASSERT_TRUE(stmt->fromTable->join->condition->expr->expr2->name);
-  ASSERT_STREQ(stmt->fromTable->join->condition->expr->expr2->name, "a");
-  ASSERT_TRUE(stmt->fromTable->join->condition->expr->expr2->table);
-  ASSERT_STREQ(stmt->fromTable->join->condition->expr->expr2->table, "bar");
-
-  // foo.b = bar.b
-  ASSERT_EQ(stmt->fromTable->join->condition->expr2->type, kExprOperator);
-  ASSERT_EQ(stmt->fromTable->join->condition->expr2->opType, kOpEquals);
-  ASSERT_TRUE(stmt->fromTable->join->condition->expr2->expr);
-  ASSERT_TRUE(stmt->fromTable->join->condition->expr2->expr2);
-
-  ASSERT_EQ(stmt->fromTable->join->condition->expr2->expr->type, kExprColumnRef);
-  ASSERT_TRUE(stmt->fromTable->join->condition->expr2->expr->name);
-  ASSERT_STREQ(stmt->fromTable->join->condition->expr2->expr->name, "b");
-  ASSERT_TRUE(stmt->fromTable->join->condition->expr2->expr->table);
-  ASSERT_STREQ(stmt->fromTable->join->condition->expr2->expr->table, "foo");
-
-  ASSERT_EQ(stmt->fromTable->join->condition->expr2->expr2->type, kExprColumnRef);
-  ASSERT_TRUE(stmt->fromTable->join->condition->expr2->expr2->name);
-  ASSERT_STREQ(stmt->fromTable->join->condition->expr2->expr2->name, "b");
-  ASSERT_TRUE(stmt->fromTable->join->condition->expr2->expr2->table);
-  ASSERT_STREQ(stmt->fromTable->join->condition->expr2->expr2->table, "bar");
+  ASSERT_EQ(stmt->fromTable->join->namedColumns->size(), 2);
+  ASSERT_STREQ(stmt->fromTable->join->namedColumns->at(0), "a");
+  ASSERT_STREQ(stmt->fromTable->join->namedColumns->at(1), "b");
 
   stmt = (SelectStatement*)result.getStatement(1);
   // SELECT a, b, c ...
@@ -458,26 +419,10 @@ TEST(SelectJoinUsing) {
   ASSERT_TRUE(stmt->fromTable->join->right->name);
   ASSERT_STREQ(stmt->fromTable->join->right->name, "bar");
 
-  // ... USING ...
+  // ... USING a;
   ASSERT_TRUE(stmt->fromTable->join->namedColumns);
-
-  // One named column, resulting in a one join predicate foo.a = bar.a.
-  ASSERT_EQ(stmt->fromTable->join->condition->type, kExprOperator);
-  ASSERT_EQ(stmt->fromTable->join->condition->opType, kOpEquals);
-  ASSERT_TRUE(stmt->fromTable->join->condition->expr);
-  ASSERT_TRUE(stmt->fromTable->join->condition->expr2);
-
-  ASSERT_EQ(stmt->fromTable->join->condition->expr->type, kExprColumnRef);
-  ASSERT_TRUE(stmt->fromTable->join->condition->expr->name);
-  ASSERT_STREQ(stmt->fromTable->join->condition->expr->name, "a");
-  ASSERT_TRUE(stmt->fromTable->join->condition->expr->table);
-  ASSERT_STREQ(stmt->fromTable->join->condition->expr->table, "foo");
-
-  ASSERT_EQ(stmt->fromTable->join->condition->expr2->type, kExprColumnRef);
-  ASSERT_TRUE(stmt->fromTable->join->condition->expr2->name);
-  ASSERT_STREQ(stmt->fromTable->join->condition->expr2->name, "a");
-  ASSERT_TRUE(stmt->fromTable->join->condition->expr2->table);
-  ASSERT_STREQ(stmt->fromTable->join->condition->expr2->table, "bar");
+  ASSERT_EQ(stmt->fromTable->join->namedColumns->size(), 1);
+  ASSERT_STREQ(stmt->fromTable->join->namedColumns->at(0), "a");
 
   stmt = (SelectStatement*)result.getStatement(2);
   // SELECT b ...
@@ -504,26 +449,10 @@ TEST(SelectJoinUsing) {
   ASSERT_TRUE(stmt->fromTable->join->right->name);
   ASSERT_STREQ(stmt->fromTable->join->right->name, "bar");
 
-  // ... USING ...
+  // ... USING a;
   ASSERT_TRUE(stmt->fromTable->join->namedColumns);
-
-  // One named column, resulting in one join predicate foo.a = bar.a.
-  ASSERT_EQ(stmt->fromTable->join->condition->type, kExprOperator);
-  ASSERT_EQ(stmt->fromTable->join->condition->opType, kOpEquals);
-  ASSERT_TRUE(stmt->fromTable->join->condition->expr);
-  ASSERT_TRUE(stmt->fromTable->join->condition->expr2);
-
-  ASSERT_EQ(stmt->fromTable->join->condition->expr->type, kExprColumnRef);
-  ASSERT_TRUE(stmt->fromTable->join->condition->expr->name);
-  ASSERT_STREQ(stmt->fromTable->join->condition->expr->name, "a");
-  ASSERT_TRUE(stmt->fromTable->join->condition->expr->table);
-  ASSERT_STREQ(stmt->fromTable->join->condition->expr->table, "baz");
-
-  ASSERT_EQ(stmt->fromTable->join->condition->expr2->type, kExprColumnRef);
-  ASSERT_TRUE(stmt->fromTable->join->condition->expr2->name);
-  ASSERT_STREQ(stmt->fromTable->join->condition->expr2->name, "a");
-  ASSERT_TRUE(stmt->fromTable->join->condition->expr2->table);
-  ASSERT_STREQ(stmt->fromTable->join->condition->expr2->table, "bar");
+  ASSERT_EQ(stmt->fromTable->join->namedColumns->size(), 1);
+  ASSERT_STREQ(stmt->fromTable->join->namedColumns->at(0), "a");
 }
 
 TEST(SelectColumnOrder) {

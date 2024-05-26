@@ -53,7 +53,7 @@
 extern int hsql_debug;
 #endif
 /* "%code requires" blocks.  */
-#line 38 "bison_parser.y"
+#line 39 "bison_parser.y"
 
 // %code requires block
 
@@ -271,7 +271,7 @@ extern int hsql_debug;
 #if ! defined HSQL_STYPE && ! defined HSQL_STYPE_IS_DECLARED
 union HSQL_STYPE
 {
-#line 96 "bison_parser.y"
+#line 97 "bison_parser.y"
 
   // clang-format on
   bool bval;
@@ -339,7 +339,9 @@ union HSQL_STYPE
   hsql::RowLockMode lock_mode_t;
   hsql::RowLockWaitPolicy lock_wait_policy_t;
 
-#line 343 "bison_parser.h"
+  // clang-format off
+
+#line 345 "bison_parser.h"
 
 };
 typedef union HSQL_STYPE HSQL_STYPE;

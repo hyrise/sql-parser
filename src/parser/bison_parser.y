@@ -1,7 +1,7 @@
 // clang-format off
 %{
-  // clang-format on
-  /**
+
+/**
  * bison_parser.y
  * defines bison_parser.h
  * outputs bison_parser.c
@@ -9,10 +9,11 @@
  * Grammar File Spec: http://dinosaur.compilertools.net/bison/bison_6.html
  *
  */
-  /*********************************
+/*********************************
  ** Section 1: C Declarations
  *********************************/
 
+// clang-format on
 #include "bison_parser.h"
 #include "flex_lexer.h"
 
@@ -159,165 +160,166 @@
 
   hsql::RowLockMode lock_mode_t;
   hsql::RowLockWaitPolicy lock_wait_policy_t;
+
+  // clang-format off
 }
 
-        // clang-format off
-    /*********************************
-     ** Destructor symbols
-     *********************************/
+/*********************************
+ ** Destructor symbols
+ *********************************/
 
-    %destructor { } <fval> <ival> <bval> <join_type> <order_type> <datetime_field> <column_type_t> <column_constraint_t> <import_type_t> <column_constraint_set> <lock_mode_t> <lock_wait_policy_t> <frame_type>
-    %destructor {
-      free( ($$.name) );
-      free( ($$.schema) );
-    } <table_name>
-    %destructor {
-      if ($$) {
-        for (auto ptr : *($$)) {
-          free(ptr);
-        }
-      }
-      delete ($$);
-    } <str_vec>
-    %destructor { free( ($$) ); } <sval>
-    %destructor {
-      if ($$) {
-        for (auto ptr : *($$)) {
-          delete ptr;
-        }
-      }
-      delete ($$);
-    } <table_vec> <table_element_vec> <update_vec> <expr_vec> <order_vec> <stmt_vec>
-    %destructor { delete ($$); } <*>
+%destructor { } <fval> <ival> <bval> <join_type> <order_type> <datetime_field> <column_type_t> <column_constraint_t> <import_type_t> <column_constraint_set> <lock_mode_t> <lock_wait_policy_t> <frame_type>
+%destructor {
+  free( ($$.name) );
+  free( ($$.schema) );
+} <table_name>
+%destructor {
+  if ($$) {
+    for (auto ptr : *($$)) {
+      free(ptr);
+    }
+  }
+  delete ($$);
+} <str_vec>
+%destructor { free( ($$) ); } <sval>
+%destructor {
+  if ($$) {
+    for (auto ptr : *($$)) {
+      delete ptr;
+    }
+  }
+  delete ($$);
+} <table_vec> <table_element_vec> <update_vec> <expr_vec> <order_vec> <stmt_vec>
+%destructor { delete ($$); } <*>
 
 
-    /*********************************
-     ** Token Definition
-     *********************************/
-    %token <sval> IDENTIFIER STRING
-    %token <fval> FLOATVAL
-    %token <ival> INTVAL
+/*********************************
+ ** Token Definition
+ *********************************/
+%token <sval> IDENTIFIER STRING
+%token <fval> FLOATVAL
+%token <ival> INTVAL
 
-    /* SQL Keywords */
-    %token DEALLOCATE PARAMETERS INTERSECT TEMPORARY TIMESTAMP
-    %token DISTINCT NVARCHAR RESTRICT TRUNCATE ANALYZE BETWEEN
-    %token CASCADE COLUMNS CONTROL DEFAULT EXECUTE EXPLAIN
-    %token INTEGER NATURAL PREPARE PRIMARY SCHEMAS CHARACTER_VARYING REAL DECIMAL SMALLINT BIGINT
-    %token SPATIAL VARCHAR VIRTUAL DESCRIBE BEFORE COLUMN CREATE DELETE DIRECT
-    %token DOUBLE ESCAPE EXCEPT EXISTS EXTRACT CAST FORMAT GLOBAL HAVING IMPORT
-    %token INSERT ISNULL OFFSET RENAME SCHEMA SELECT SORTED
-    %token TABLES UNIQUE UNLOAD UPDATE VALUES AFTER ALTER CROSS
-    %token DELTA FLOAT GROUP INDEX INNER LIMIT LOCAL MERGE MINUS ORDER OVER
-    %token OUTER RIGHT TABLE UNION USING WHERE CALL CASE CHAR COPY DATE DATETIME
-    %token DESC DROP ELSE FILE FROM FULL HASH HINT INTO JOIN
-    %token LEFT LIKE LOAD LONG NULL PARTITION PLAN SHOW TEXT THEN TIME
-    %token VIEW WHEN WITH ADD ALL AND ASC END FOR INT KEY
-    %token NOT OFF SET TOP AS BY IF IN IS OF ON OR TO NO
-    %token ARRAY CONCAT ILIKE SECOND MINUTE HOUR DAY MONTH YEAR
-    %token SECONDS MINUTES HOURS DAYS MONTHS YEARS INTERVAL
-    %token TRUE FALSE BOOLEAN
-    %token TRANSACTION BEGIN COMMIT ROLLBACK
-    %token NOWAIT SKIP LOCKED SHARE
-    %token RANGE ROWS GROUPS UNBOUNDED FOLLOWING PRECEDING CURRENT_ROW
+/* SQL Keywords */
+%token DEALLOCATE PARAMETERS INTERSECT TEMPORARY TIMESTAMP
+%token DISTINCT NVARCHAR RESTRICT TRUNCATE ANALYZE BETWEEN
+%token CASCADE COLUMNS CONTROL DEFAULT EXECUTE EXPLAIN
+%token INTEGER NATURAL PREPARE PRIMARY SCHEMAS CHARACTER_VARYING REAL DECIMAL SMALLINT BIGINT
+%token SPATIAL VARCHAR VIRTUAL DESCRIBE BEFORE COLUMN CREATE DELETE DIRECT
+%token DOUBLE ESCAPE EXCEPT EXISTS EXTRACT CAST FORMAT GLOBAL HAVING IMPORT
+%token INSERT ISNULL OFFSET RENAME SCHEMA SELECT SORTED
+%token TABLES UNIQUE UNLOAD UPDATE VALUES AFTER ALTER CROSS
+%token DELTA FLOAT GROUP INDEX INNER LIMIT LOCAL MERGE MINUS ORDER OVER
+%token OUTER RIGHT TABLE UNION USING WHERE CALL CASE CHAR COPY DATE DATETIME
+%token DESC DROP ELSE FILE FROM FULL HASH HINT INTO JOIN
+%token LEFT LIKE LOAD LONG NULL PARTITION PLAN SHOW TEXT THEN TIME
+%token VIEW WHEN WITH ADD ALL AND ASC END FOR INT KEY
+%token NOT OFF SET TOP AS BY IF IN IS OF ON OR TO NO
+%token ARRAY CONCAT ILIKE SECOND MINUTE HOUR DAY MONTH YEAR
+%token SECONDS MINUTES HOURS DAYS MONTHS YEARS INTERVAL
+%token TRUE FALSE BOOLEAN
+%token TRANSACTION BEGIN COMMIT ROLLBACK
+%token NOWAIT SKIP LOCKED SHARE
+%token RANGE ROWS GROUPS UNBOUNDED FOLLOWING PRECEDING CURRENT_ROW
 
-    /*********************************
-     ** Non-Terminal types (http://www.gnu.org/software/bison/manual/html_node/Type-Decl.html)
-     *********************************/
-    %type <stmt_vec>               statement_list
-    %type <statement>              statement preparable_statement
-    %type <exec_stmt>              execute_statement
-    %type <transaction_stmt>       transaction_statement
-    %type <prep_stmt>              prepare_statement
-    %type <select_stmt>            select_statement select_with_paren select_no_paren select_clause select_within_set_operation select_within_set_operation_no_parentheses
-    %type <import_stmt>            import_statement
-    %type <export_stmt>            export_statement
-    %type <create_stmt>            create_statement
-    %type <insert_stmt>            insert_statement
-    %type <delete_stmt>            delete_statement truncate_statement
-    %type <update_stmt>            update_statement
-    %type <drop_stmt>              drop_statement
-    %type <alter_stmt>             alter_statement
-    %type <show_stmt>              show_statement
-    %type <table_name>             table_name
-    %type <sval>                   opt_index_name
-    %type <sval>                   file_path prepare_target_query
-    %type <frame_description>      opt_frame_clause
-    %type <frame_bound>            frame_bound
-    %type <frame_type>             frame_type
-    %type <window_description>     opt_window
-    %type <bval>                   opt_not_exists opt_exists opt_distinct opt_all
-    %type <ival_pair>              opt_decimal_specification
-    %type <ival>                   opt_time_precision
-    %type <join_type>              opt_join_type
-    %type <table>                  opt_from_clause from_clause table_ref table_ref_atomic table_ref_name nonjoin_table_ref_atomic
-    %type <table>                  join_clause table_ref_name_no_alias
-    %type <expr>                   expr operand scalar_expr unary_expr binary_expr logic_expr exists_expr extract_expr cast_expr
-    %type <expr>                   function_expr between_expr expr_alias param_expr
-    %type <expr>                   column_name literal int_literal num_literal string_literal bool_literal date_literal interval_literal
-    %type <expr>                   comp_expr opt_where join_condition opt_having case_expr case_list in_expr hint
-    %type <expr>                   array_expr array_index null_literal
-    %type <limit>                  opt_limit opt_top
-    %type <order>                  order_desc
-    %type <order_type>             opt_order_type
-    %type <datetime_field>         datetime_field datetime_field_plural duration_field
-    %type <column_t>               column_def
-    %type <table_element_t>        table_elem
-    %type <column_type_t>          column_type
-    %type <table_constraint_t>     table_constraint
-    %type <update_t>               update_clause
-    %type <locking_t>              locking_clause
-    %type <group_t>                opt_group
-    %type <alias_t>                opt_table_alias table_alias opt_alias alias
-    %type <with_description_t>     with_description
-    %type <set_operator_t>         set_operator set_type
-    %type <column_constraint_t>    column_constraint
-    %type <column_constraint_set>  opt_column_constraints
-    %type <column_constraint_set>  column_constraint_set
-    %type <alter_action_t>         alter_action
-    %type <drop_action_t>          drop_action
-    %type <lock_wait_policy_t>     opt_row_lock_policy
-    %type <lock_mode_t>            row_lock_mode
+/*********************************
+ ** Non-Terminal types (http://www.gnu.org/software/bison/manual/html_node/Type-Decl.html)
+ *********************************/
+%type <stmt_vec>               statement_list
+%type <statement>              statement preparable_statement
+%type <exec_stmt>              execute_statement
+%type <transaction_stmt>       transaction_statement
+%type <prep_stmt>              prepare_statement
+%type <select_stmt>            select_statement select_with_paren select_no_paren select_clause select_within_set_operation select_within_set_operation_no_parentheses
+%type <import_stmt>            import_statement
+%type <export_stmt>            export_statement
+%type <create_stmt>            create_statement
+%type <insert_stmt>            insert_statement
+%type <delete_stmt>            delete_statement truncate_statement
+%type <update_stmt>            update_statement
+%type <drop_stmt>              drop_statement
+%type <alter_stmt>             alter_statement
+%type <show_stmt>              show_statement
+%type <table_name>             table_name
+%type <sval>                   opt_index_name
+%type <sval>                   file_path prepare_target_query
+%type <frame_description>      opt_frame_clause
+%type <frame_bound>            frame_bound
+%type <frame_type>             frame_type
+%type <window_description>     opt_window
+%type <bval>                   opt_not_exists opt_exists opt_distinct opt_all
+%type <ival_pair>              opt_decimal_specification
+%type <ival>                   opt_time_precision
+%type <join_type>              opt_join_type
+%type <table>                  opt_from_clause from_clause table_ref table_ref_atomic table_ref_name nonjoin_table_ref_atomic
+%type <table>                  join_clause table_ref_name_no_alias
+%type <expr>                   expr operand scalar_expr unary_expr binary_expr logic_expr exists_expr extract_expr cast_expr
+%type <expr>                   function_expr between_expr expr_alias param_expr
+%type <expr>                   column_name literal int_literal num_literal string_literal bool_literal date_literal interval_literal
+%type <expr>                   comp_expr opt_where join_condition opt_having case_expr case_list in_expr hint
+%type <expr>                   array_expr array_index null_literal
+%type <limit>                  opt_limit opt_top
+%type <order>                  order_desc
+%type <order_type>             opt_order_type
+%type <datetime_field>         datetime_field datetime_field_plural duration_field
+%type <column_t>               column_def
+%type <table_element_t>        table_elem
+%type <column_type_t>          column_type
+%type <table_constraint_t>     table_constraint
+%type <update_t>               update_clause
+%type <locking_t>              locking_clause
+%type <group_t>                opt_group
+%type <alias_t>                opt_table_alias table_alias opt_alias alias
+%type <with_description_t>     with_description
+%type <set_operator_t>         set_operator set_type
+%type <column_constraint_t>    column_constraint
+%type <column_constraint_set>  opt_column_constraints
+%type <column_constraint_set>  column_constraint_set
+%type <alter_action_t>         alter_action
+%type <drop_action_t>          drop_action
+%type <lock_wait_policy_t>     opt_row_lock_policy
+%type <lock_mode_t>            row_lock_mode
 
-    // ImportType is used for compatibility reasons
-    %type <import_type_t>          opt_file_type file_type
+// ImportType is used for compatibility reasons
+%type <import_type_t>          opt_file_type file_type
 
-    %type <str_vec>                ident_commalist opt_column_list
-    %type <expr_vec>               expr_list select_list opt_literal_list literal_list hint_list opt_hints opt_partition
-    %type <table_vec>              table_ref_commalist
-    %type <order_vec>              opt_order order_list
-    %type <with_description_vec>   opt_with_clause with_clause with_description_list
-    %type <update_vec>             update_clause_commalist
-    %type <table_element_vec>      table_elem_commalist
-    %type <locking_clause_vec>     opt_locking_clause_list opt_locking_clause
+%type <str_vec>                ident_commalist opt_column_list
+%type <expr_vec>               expr_list select_list opt_literal_list literal_list hint_list opt_hints opt_partition
+%type <table_vec>              table_ref_commalist
+%type <order_vec>              opt_order order_list
+%type <with_description_vec>   opt_with_clause with_clause with_description_list
+%type <update_vec>             update_clause_commalist
+%type <table_element_vec>      table_elem_commalist
+%type <locking_clause_vec>     opt_locking_clause_list opt_locking_clause
 
-    /******************************
-     ** Token Precedence and Associativity
-     ** Precedence: lowest to highest
-     ******************************/
-    %left     OR
-    %left     AND
-    %right    NOT
-    %nonassoc '=' EQUALS NOTEQUALS LIKE ILIKE
-    %nonassoc '<' '>' LESS GREATER LESSEQ GREATEREQ
+/******************************
+ ** Token Precedence and Associativity
+ ** Precedence: lowest to highest
+ ******************************/
+%left     OR
+%left     AND
+%right    NOT
+%nonassoc '=' EQUALS NOTEQUALS LIKE ILIKE
+%nonassoc '<' '>' LESS GREATER LESSEQ GREATEREQ
 
-    %nonassoc NOTNULL
-    %nonassoc ISNULL
-    %nonassoc IS        /* sets precedence for IS NULL, etc */
-    %left     '+' '-'
-    %left     '*' '/' '%'
-    %left     '^'
-    %left     CONCAT
+%nonassoc NOTNULL
+%nonassoc ISNULL
+%nonassoc IS        /* sets precedence for IS NULL, etc */
+%left     '+' '-'
+%left     '*' '/' '%'
+%left     '^'
+%left     CONCAT
 
-    /* Unary Operators */
-    %right    UMINUS
-    %left     '[' ']'
-    %left     '(' ')'
-    %left     '.'
-    %left     JOIN
+/* Unary Operators */
+%right    UMINUS
+%left     '[' ']'
+%left     '(' ')'
+%left     '.'
+%left     JOIN
 %%
 /*********************************
-  ** Section 3: Grammar Definition
-*********************************/
+ ** Section 3: Grammar Definition
+ *********************************/
 
 // Defines our general input.
 input : statement_list opt_semicolon {
@@ -1278,30 +1280,7 @@ join_clause : table_ref_atomic NATURAL JOIN nonjoin_table_ref_atomic {
   $$->join->type = $2;
   $$->join->left = $1;
   $$->join->right = $4;
-  $$->join->namedColumns = true;
-
-  for (auto column_it = $7->rbegin(); column_it != $7->rend(); ++column_it) {
-    auto column_name = *column_it;
-    auto left_col = Expr::makeColumnRef(strdup(column_name));
-    if ($1->getName()) {
-      left_col->table = strdup($1->getName());
-    }
-    auto right_col = Expr::makeColumnRef(strdup(column_name));
-    if ($4->getName()) {
-      right_col->table = strdup($4->getName());
-    }
-
-    free(column_name);
-    auto predicate = Expr::makeOpBinary(left_col, kOpEquals, right_col);
-
-    if (!$$->join->condition) {
-      $$->join->condition = predicate;
-    } else {
-      $$->join->condition = Expr::makeOpBinary(predicate, kOpAnd, $$->join->condition);
-    }
-  }
-
-  delete ($7);
+  $$->join->namedColumns = $7;
 };
 
 opt_join_type : INNER { $$ = kJoinInner; }
