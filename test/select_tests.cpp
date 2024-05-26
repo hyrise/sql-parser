@@ -349,7 +349,6 @@ TEST(SelectJoin) {
   ASSERT_EQ(inner_join->right->type, kTableName);
   ASSERT_STREQ(inner_join->right->name, "City")
   ASSERT_FALSE(inner_join->namedColumns);
-  ;
 
   ASSERT_EQ(inner_join->condition->opType, kOpEquals);
   ASSERT_STREQ(inner_join->condition->expr->table, "fact");
