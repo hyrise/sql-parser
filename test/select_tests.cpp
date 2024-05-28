@@ -347,7 +347,7 @@ TEST(SelectJoin) {
   ASSERT_EQ(inner_join->left->type, kTableName);
   ASSERT_STREQ(inner_join->left->name, "fact");
   ASSERT_EQ(inner_join->right->type, kTableName);
-  ASSERT_STREQ(inner_join->right->name, "City")
+  ASSERT_STREQ(inner_join->right->name, "City");
   ASSERT_FALSE(inner_join->namedColumns);
 
   ASSERT_EQ(inner_join->condition->opType, kOpEquals);
@@ -809,7 +809,7 @@ TEST(WithClauseSingle) {
   ASSERT_STREQ(stmt->withDescriptions->at(0)->alias, "a");
 
   // with_description – select stmt
-  ASSERT_EQ(stmt->withDescriptions->at(0)->select->selectList->size(), 1)
+  ASSERT_EQ(stmt->withDescriptions->at(0)->select->selectList->size(), 1);
   ASSERT_STREQ(stmt->withDescriptions->at(0)->select->selectList->at(0)->name, std::string("name"));
   ASSERT_STREQ(stmt->withDescriptions->at(0)->select->fromTable->name, std::string("peopleA"));
 
@@ -835,9 +835,9 @@ TEST(WithClauseDouble) {
   ASSERT_STREQ(stmt->withDescriptions->at(1)->alias, "b");
 
   // with_description – select stmts
-  ASSERT_EQ(stmt->withDescriptions->at(0)->select->selectList->size(), 1)
+  ASSERT_EQ(stmt->withDescriptions->at(0)->select->selectList->size(), 1);
   ASSERT_STREQ(stmt->withDescriptions->at(0)->select->fromTable->name, "peopleA");
-  ASSERT_EQ(stmt->withDescriptions->at(1)->select->selectList->size(), 2)
+  ASSERT_EQ(stmt->withDescriptions->at(1)->select->selectList->size(), 2);
   ASSERT_STREQ(stmt->withDescriptions->at(1)->select->fromTable->name, "peopleB");
 
   // main select
