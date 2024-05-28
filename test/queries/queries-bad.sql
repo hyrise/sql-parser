@@ -63,6 +63,7 @@
 # Join USING
 !SELECT * FROM foo INNER JOIN bar USING ();
 !SELECT * FROM foo INNER JOIN bar USING (*);
+# Both the SQL standard and Postgres allow column names only (no column references).
 !SELECT * FROM foo INNER JOIN bar USING (foo.a);
 !SELECT * FROM foo INNER JOIN bar USING (a b);
 !SELECT * FROM foo INNER JOIN bar USING (a AS b);
