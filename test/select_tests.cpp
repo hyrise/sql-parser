@@ -385,6 +385,7 @@ TEST(SelectJoinUsing) {
   ASSERT_STREQ(stmt->fromTable->join->right->name, "bar");
 
   // ... USING a, b;
+  ASSERT_FALSE(stmt->fromTable->join->condition);
   ASSERT_TRUE(stmt->fromTable->join->namedColumns);
   ASSERT_EQ(stmt->fromTable->join->namedColumns->size(), 2);
   ASSERT_STREQ(stmt->fromTable->join->namedColumns->at(0), "a");
@@ -419,6 +420,7 @@ TEST(SelectJoinUsing) {
   ASSERT_STREQ(stmt->fromTable->join->right->name, "bar");
 
   // ... USING a;
+  ASSERT_FALSE(stmt->fromTable->join->condition);
   ASSERT_TRUE(stmt->fromTable->join->namedColumns);
   ASSERT_EQ(stmt->fromTable->join->namedColumns->size(), 1);
   ASSERT_STREQ(stmt->fromTable->join->namedColumns->at(0), "a");
@@ -449,6 +451,7 @@ TEST(SelectJoinUsing) {
   ASSERT_STREQ(stmt->fromTable->join->right->name, "bar");
 
   // ... USING a;
+  ASSERT_FALSE(stmt->fromTable->join->condition);
   ASSERT_TRUE(stmt->fromTable->join->namedColumns);
   ASSERT_EQ(stmt->fromTable->join->namedColumns->size(), 1);
   ASSERT_STREQ(stmt->fromTable->join->namedColumns->at(0), "a");
