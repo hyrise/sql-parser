@@ -803,7 +803,7 @@ TEST(WithClauseSingle) {
       "WITH "
       "a AS (SELECT name FROM peopleA)"
       "SELECT name FROM a;",
-      kStmtSelect, SelectStatement, result, stmt)
+      kStmtSelect, SelectStatement, result, stmt);
 
   // with_description_list – count
   ASSERT_EQ(stmt->withDescriptions->size(), 1);
@@ -828,7 +828,7 @@ TEST(WithClauseDouble) {
       "a AS (SELECT nameA FROM peopleA), "
       "b AS (SELECT nameB, cityB FROM peopleB) "
       "SELECT nameA FROM a;",
-      kStmtSelect, SelectStatement, result, stmt)
+      kStmtSelect, SelectStatement, result, stmt);
 
   // with_description_list – count
   ASSERT_EQ(stmt->withDescriptions->size(), 2);
