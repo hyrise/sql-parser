@@ -368,12 +368,14 @@ const char* TableRef::getName() const {
 }
 
 // JoinDefinition
-JoinDefinition::JoinDefinition() : left(nullptr), right(nullptr), condition(nullptr), type(kJoinInner) {}
+JoinDefinition::JoinDefinition()
+    : left(nullptr), right(nullptr), condition(nullptr), namedColumns(nullptr), type(kJoinInner) {}
 
 JoinDefinition::~JoinDefinition() {
   delete left;
   delete right;
   delete condition;
+  delete namedColumns;
 }
 
 SetOperation::SetOperation() : nestedSelectStatement(nullptr), resultOrder(nullptr), resultLimit(nullptr) {}
