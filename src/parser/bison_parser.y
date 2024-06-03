@@ -933,7 +933,7 @@ casted_extended_literal : extended_literal | CAST '(' extended_literal AS column
 
 extended_literal : literal {
   if ($1->type == ExprType::kExprParameter) {
-    free($1);
+    delete $1;
     yyerror(&yyloc, result, scanner, "Parameter ? is not a valid literal.");
     YYERROR;
   }

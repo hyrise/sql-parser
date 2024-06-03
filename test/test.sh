@@ -37,8 +37,8 @@ if [[ "$unamestr" == 'Linux' ]]; then
     bin/tests -f "test/queries/queries-good.sql" -f "test/queries/queries-bad.sql" \
     3>&1>/dev/null;
 
-  MEM_LEAK_EXECUTED=true
   MEM_LEAK_RET=$?
+  MEM_LEAK_EXECUTED=true
 
   if [ $MEM_LEAK_RET -eq 0 ]; then
     printf "${GREEN}Memory leak check succeeded!${NC}\n"
