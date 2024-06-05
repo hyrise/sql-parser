@@ -375,7 +375,13 @@ JoinDefinition::~JoinDefinition() {
   delete left;
   delete right;
   delete condition;
-  delete namedColumns;
+
+  if (namedColumns) {
+    for (auto* column : *namedColumns) {
+      free(column);
+    }
+    delete namedColumns;
+  }
 }
 
 SetOperation::SetOperation() : nestedSelectStatement(nullptr), resultOrder(nullptr), resultLimit(nullptr) {}

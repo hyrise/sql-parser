@@ -4529,7 +4529,7 @@ yyreduce:
 #line 934 "bison_parser.y"
                            {
   if ((yyvsp[0].expr)->type == ExprType::kExprParameter) {
-    free((yyvsp[0].expr));
+    delete (yyvsp[0].expr);
     yyerror(&yyloc, result, scanner, "Parameter ? is not a valid literal.");
     YYERROR;
   }
