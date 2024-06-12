@@ -147,6 +147,24 @@ TEST(SelectHavingTest) {
   ASSERT_EQ(group->having->expr2->expr->fval, 2.0);
 }
 
+TEST(SelectFloatValTest) {
+  TEST_PARSE_SINGLE_SQL("SELECT * WHERE duration < 2e-2",
+                        kStmtSelect, SelectStatement, result, stmt);
+
+  Expr* expr = stmt->whereClause;
+  ASSERT_NOTNULL(expr);
+  ASSERT_TRUE(expr->isType(kExprOperator));
+  ASSERT_EQ(expr->opType, kOpLess);
+  Expr* e1 = expr->expr;
+  ASSERT_NOTNULL(e1);
+  ASSERT_TRUE(e1->isType(kExprColumnRef));
+  ASSERT_STREQ(e1->name, "duration");
+  Expr* e2 = expr->expr2;
+  ASSERT_NOTNULL(e2);
+  ASSERT_TRUE(e2->isType(kExprLiteralFloat));
+  ASSERT_TRUE(std::abs(e2->fval - 0.02) < std::numeric_limits<double>::epsilon());
+}
+
 TEST(SelectDistinctTest) {
   TEST_PARSE_SINGLE_SQL("SELECT DISTINCT grade, city FROM students;", kStmtSelect, SelectStatement, result, stmt);
 
