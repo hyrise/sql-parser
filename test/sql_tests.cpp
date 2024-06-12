@@ -224,11 +224,45 @@ TEST(UpdateStatementTest) {
 }
 
 TEST(InsertStatementTest) {
-  TEST_PARSE_SINGLE_SQL("INSERT INTO students VALUES ('Max Mustermann', 12345, 'Musterhausen', 2.0)", kStmtInsert,
-                        InsertStatement, result, stmt);
+  TEST_PARSE_SINGLE_SQL(
+      "INSERT INTO students VALUES ('Max Mustermann', 12345, 'Musterhausen', 2.0, -1, 1 month, "
+      " CAST('2000-02-02' AS DATE), - INTERVAL '3 seconds', DATE '2000-02-02', FALSE, NULL)",
+      kStmtInsert, InsertStatement, result, stmt);
 
-  ASSERT_EQ(stmt->values->size(), 4);
-  // TODO
+  ASSERT_EQ(stmt->values->size(), 11);
+  ASSERT_EQ(stmt->values->at(0)->type, kExprLiteralString);
+  ASSERT_STREQ(stmt->values->at(0)->name, "Max Mustermann");
+  ASSERT_EQ(stmt->values->at(1)->type, kExprLiteralInt);
+  ASSERT_EQ(stmt->values->at(1)->ival, 12345);
+  ASSERT_EQ(stmt->values->at(2)->type, kExprLiteralString);
+  ASSERT_STREQ(stmt->values->at(2)->name, "Musterhausen");
+  ASSERT_EQ(stmt->values->at(3)->type, kExprLiteralFloat);
+  ASSERT_EQ(stmt->values->at(3)->fval, 2.0);
+  ASSERT_EQ(stmt->values->at(4)->type, kExprOperator);
+  ASSERT_EQ(stmt->values->at(4)->opType, kOpUnaryMinus);
+  ASSERT(stmt->values->at(4)->expr);
+  ASSERT_EQ(stmt->values->at(4)->expr->type, kExprLiteralInt);
+  ASSERT_EQ(stmt->values->at(4)->expr->ival, 1);
+  ASSERT_EQ(stmt->values->at(5)->type, kExprLiteralInterval);
+  ASSERT_EQ(stmt->values->at(5)->ival, 1);
+  ASSERT_EQ(stmt->values->at(5)->datetimeField, kDatetimeMonth);
+  ASSERT_EQ(stmt->values->at(6)->type, kExprCast);
+  ASSERT_EQ(stmt->values->at(6)->columnType, ColumnType{DataType::DATE});
+  ASSERT(stmt->values->at(6)->expr);
+  ASSERT_EQ(stmt->values->at(6)->expr->type, kExprLiteralString);
+  ASSERT_STREQ(stmt->values->at(6)->expr->name, "2000-02-02");
+  ASSERT_EQ(stmt->values->at(7)->type, kExprOperator);
+  ASSERT_EQ(stmt->values->at(7)->opType, kOpUnaryMinus);
+  ASSERT(stmt->values->at(7)->expr);
+  ASSERT_EQ(stmt->values->at(7)->expr->type, kExprLiteralInterval);
+  ASSERT_EQ(stmt->values->at(7)->expr->ival, 3);
+  ASSERT_EQ(stmt->values->at(7)->expr->datetimeField, kDatetimeSecond);
+  ASSERT_EQ(stmt->values->at(8)->type, kExprLiteralDate);
+  ASSERT_STREQ(stmt->values->at(8)->name, "2000-02-02");
+  ASSERT_EQ(stmt->values->at(9)->type, kExprLiteralInt);
+  ASSERT_EQ(stmt->values->at(9)->ival, 0);
+  ASSERT_TRUE(stmt->values->at(9)->isBoolLiteral);
+  ASSERT_EQ(stmt->values->at(10)->type, kExprLiteralNull);
 }
 
 TEST(AlterStatementDropActionTest) {

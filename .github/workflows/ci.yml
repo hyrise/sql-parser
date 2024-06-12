@@ -27,19 +27,19 @@ jobs:
             os: ubuntu-latest
             container: ubuntu:18.04
 
-          - name: gcc-12
-            cc: gcc-12
-            cxx: g++-12
+          - name: gcc-13
+            cc: gcc-13
+            cxx: g++-13
             os: ubuntu-latest
-            container: ubuntu:22.04
+            container: ubuntu:24.04
             # We need relaxed builds for debug mode with current GCC versions, see #218.
             build_options: "relaxed_build=on"
 
-          - name: clang-15
-            cc: clang-15
-            cxx: clang++-15
+          - name: clang-18
+            cc: clang-18
+            cxx: clang++-18
             os: ubuntu-latest
-            container: ubuntu:22.04
+            container: ubuntu:24.04
 
           - name: clang-macOS
             cc: clang

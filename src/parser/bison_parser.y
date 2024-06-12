@@ -257,7 +257,7 @@
 %type <expr>                   function_expr between_expr expr_alias param_expr
 %type <expr>                   column_name literal int_literal num_literal string_literal bool_literal date_literal interval_literal
 %type <expr>                   comp_expr opt_where join_condition opt_having case_expr case_list in_expr hint
-%type <expr>                   array_expr array_index null_literal
+%type <expr>                   array_expr array_index null_literal extended_literal casted_extended_literal
 %type <limit>                  opt_limit opt_top
 %type <order>                  order_desc
 %type <order_type>             opt_order_type
@@ -284,7 +284,7 @@
 %type <import_type_t>          opt_file_type file_type
 
 %type <str_vec>                ident_commalist opt_column_list
-%type <expr_vec>               expr_list select_list opt_literal_list literal_list hint_list opt_hints opt_partition
+%type <expr_vec>               expr_list select_list opt_extended_literal_list extended_literal_list hint_list opt_hints opt_partition
 %type <table_vec>              table_ref_commalist
 %type <order_vec>              opt_order order_list
 %type <with_description_vec>   opt_with_clause with_clause with_description_list
@@ -397,7 +397,7 @@ hint : IDENTIFIER {
   $$ = Expr::make(kExprHint);
   $$->name = $1;
 }
-| IDENTIFIER '(' literal_list ')' {
+| IDENTIFIER '(' extended_literal_list ')' {
   $$ = Expr::make(kExprHint);
   $$->name = $1;
   $$->exprList = $3;
@@ -423,13 +423,13 @@ prepare_statement : PREPARE IDENTIFIER FROM prepare_target_query {
   $$->query = $4;
 };
 
-prepare_target_query : STRING
+prepare_target_query : STRING;
 
-                           execute_statement : EXECUTE IDENTIFIER {
+execute_statement : EXECUTE IDENTIFIER {
   $$ = new ExecuteStatement();
   $$->name = $2;
 }
-| EXECUTE IDENTIFIER '(' opt_literal_list ')' {
+| EXECUTE IDENTIFIER '(' opt_extended_literal_list ')' {
   $$ = new ExecuteStatement();
   $$->name = $2;
   $$->parameters = $4;
@@ -708,7 +708,7 @@ truncate_statement : TRUNCATE table_name {
  * INSERT INTO students VALUES ('Max', 1112233, 'Musterhausen', 2.3)
  * INSERT INTO employees SELECT * FROM stundents
  ******************************/
-insert_statement : INSERT INTO table_name opt_column_list VALUES '(' literal_list ')' {
+insert_statement : INSERT INTO table_name opt_column_list VALUES '(' extended_literal_list ')' {
   $$ = new InsertStatement(kInsertValues);
   $$->schema = $3.schema;
   $$->tableName = $3.name;
@@ -914,17 +914,33 @@ expr_list : expr_alias {
   $$ = $1;
 };
 
-opt_literal_list : literal_list { $$ = $1; }
+// Literals, casted literals, and negative numbers/intervals are allowed for INSERT and EXECUTE statements or hints.
+opt_extended_literal_list : extended_literal_list { $$ = $1; }
 | /* empty */ { $$ = nullptr; };
 
-literal_list : literal {
+extended_literal_list : casted_extended_literal {
   $$ = new std::vector<Expr*>();
   $$->push_back($1);
 }
-| literal_list ',' literal {
+| extended_literal_list ',' casted_extended_literal {
   $1->push_back($3);
   $$ = $1;
 };
+
+casted_extended_literal : extended_literal | CAST '(' extended_literal AS column_type ')' {
+  $$ = Expr::makeCast($3, $5);
+};
+
+extended_literal : literal {
+  if ($1->type == ExprType::kExprParameter) {
+    delete $1;
+    yyerror(&yyloc, result, scanner, "Parameter ? is not a valid literal.");
+    YYERROR;
+  }
+  $$ = $1;
+}
+| '-' num_literal { $$ = Expr::makeOpUnary(kOpUnaryMinus, $2); };
+| '-' interval_literal { $$ = Expr::makeOpUnary(kOpUnaryMinus, $2); };
 
 expr_alias : expr opt_alias {
   $$ = $1;
@@ -1078,10 +1094,7 @@ date_literal : DATE STRING {
   $$ = Expr::makeDateLiteral($2);
 };
 
-interval_literal : int_literal duration_field {
-  $$ = Expr::makeIntervalLiteral($1->ival, $2);
-  delete $1;
-}
+interval_literal : INTVAL duration_field { $$ = Expr::makeIntervalLiteral($1, $2); }
 | INTERVAL STRING datetime_field {
   int duration{0}, chars_parsed{0};
   // If the whole string is parsed, chars_parsed points to the terminating null byte after the last character
@@ -1314,9 +1327,11 @@ ident_commalist : IDENTIFIER {
 
 // clang-format off
 %%
-    // clang-format on
-    /*********************************
+
+/*********************************
  ** Section 4: Additional C code
  *********************************/
 
-    /* empty */
+/* empty */
+
+    // clang-format on
