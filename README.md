@@ -44,6 +44,18 @@ To use the SQL parser in your own projects you simply have to follow these few s
     }
 }
 ```
+  7. The corresponding `example` executable can be used to test/parse specific custom SQL statements:
+     
+     Running, for example, `./example/example "SELECT * FROM test;"` produces:
+```
+Parsed successfully!
+Number of statements: 1
+SelectStatement
+	Fields:
+		*
+	Sources:
+		test
+```     
 
 Quick Links:
 
