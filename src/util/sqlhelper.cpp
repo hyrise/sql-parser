@@ -4,6 +4,7 @@
 #include <map>
 #include <sstream>
 #include <string>
+#include <cstdint>
 
 namespace hsql {
 
@@ -15,7 +16,7 @@ std::ostream& operator<<(std::ostream& os, const DatetimeField& datetime);
 std::ostream& operator<<(std::ostream& os, const FrameBound& frame_bound);
 
 std::string indent(uintmax_t num_indent) { return std::string(num_indent, '\t'); }
-void inprint(int64_t val, uintmax_t num_indent) { std::cout << indent(num_indent).c_str() << val << "  " << std::endl; }
+void inprint(std::int64_t val, uintmax_t num_indent) { std::cout << indent(num_indent).c_str() << val << "  " << std::endl; }
 void inprint(double val, uintmax_t num_indent) { std::cout << indent(num_indent).c_str() << val << std::endl; }
 void inprint(const char* val, uintmax_t num_indent) { std::cout << indent(num_indent).c_str() << val << std::endl; }
 void inprint(const char* val, const char* val2, uintmax_t num_indent) {
@@ -452,7 +453,7 @@ std::ostream& operator<<(std::ostream& os, const OperatorType& op) {
 
   const auto found = operatorToToken.find(op);
   if (found == operatorToToken.cend()) {
-    return os << static_cast<uint64_t>(op);
+    return os << static_cast<std::uint64_t>(op);
   } else {
     return os << (*found).second;
   }
@@ -465,7 +466,7 @@ std::ostream& operator<<(std::ostream& os, const DatetimeField& datetime) {
 
   const auto found = operatorToToken.find(datetime);
   if (found == operatorToToken.cend()) {
-    return os << static_cast<uint64_t>(datetime);
+    return os << static_cast<std::uint64_t>(datetime);
   } else {
     return os << (*found).second;
   }

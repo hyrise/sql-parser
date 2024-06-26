@@ -2,10 +2,11 @@
 #include <stdio.h>
 #include <string.h>
 #include "SelectStatement.h"
+#include <cstdint>
 
 namespace hsql {
 
-FrameBound::FrameBound(int64_t offset, FrameBoundType type, bool unbounded)
+FrameBound::FrameBound(std::int64_t offset, FrameBoundType type, bool unbounded)
     : offset{offset}, type{type}, unbounded{unbounded} {}
 
 FrameDescription::FrameDescription(FrameType type, FrameBound* start, FrameBound* end)
@@ -140,7 +141,7 @@ Expr* Expr::makeCase(Expr* expr, Expr* caseList, Expr* elseExpr) {
   return e;
 }
 
-Expr* Expr::makeLiteral(int64_t val) {
+Expr* Expr::makeLiteral(std::int64_t val) {
   Expr* e = new Expr(kExprLiteralInt);
   e->ival = val;
   return e;
@@ -176,7 +177,7 @@ Expr* Expr::makeDateLiteral(char* string) {
   return e;
 }
 
-Expr* Expr::makeIntervalLiteral(int64_t duration, DatetimeField unit) {
+Expr* Expr::makeIntervalLiteral(std::int64_t duration, DatetimeField unit) {
   Expr* e = new Expr(kExprLiteralInterval);
   e->ival = duration;
   e->datetimeField = unit;
@@ -222,7 +223,7 @@ Expr* Expr::makeArray(std::vector<Expr*>* exprList) {
   return e;
 }
 
-Expr* Expr::makeArrayIndex(Expr* expr, int64_t index) {
+Expr* Expr::makeArrayIndex(Expr* expr, std::int64_t index) {
   Expr* e = new Expr(kExprArrayIndex);
   e->expr = expr;
   e->ival = index;
