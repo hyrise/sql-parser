@@ -13,37 +13,58 @@ In March 2015 we've also written a short paper outlining discussing some develop
 
 **Note:** You can also find a detailed usage description [here](docs/basic-usage.md).
 
-To use the SQL parser in your own projects you simply have to follow these few steps.
+
+### Build and Test
 
  1. Download the [latest release here](https://github.com/hyrise/sql-parser/releases)
  2. Compile the library `make` to create `libsqlparser.so`
  3. *(Optional, Recommended)* Run `make install` to copy the library to `/usr/local/lib/`
  4. Run the tests `make test` to make sure everything worked
- 5. Include the `SQLParser.h` from `src/` (or from `/usr/local/lib/hsql/` if you installed it) and link the library in your project
- 6. Take a look at the [example project here](https://github.com/hyrise/sql-parser/tree/master/example)
 
-```cpp
-#include "hsql/SQLParser.h"
+### Test/Parse Custom SQL Statements
 
-/* ... */
+5. The build `example` executable can be used to test/parse specific custom SQL statements:
+     
+     Running, for example, `./example/example "SELECT * FROM test;"` produces:
+	```
+	Parsed successfully!
+	Number of statements: 1
+	SelectStatement
+		Fields:
+			*
+		Sources:
+			test
+	``` 
 
-{
-    // Basic Usage Example
+### Using the SQL Parser in Projects
 
-    const std::string query = "...";
-    hsql::SQLParserResult result;
-    hsql::SQLParser::parse(query, &result);
+5. To use the SQL parser in your own projects, you must include the `SQLParser.h` from `src/` (or from `/usr/local/lib/hsql/` if you installed it) and link the library in your project:
 
-    if (result.isValid() && result.size() > 0) {
-        const hsql::SQLStatement* statement = result.getStatement(0);
-
-        if (statement->isType(hsql::kStmtSelect)) {
-            const auto* select = static_cast<const hsql::SelectStatement*>(statement);
-            /* ... */
-        }
-    }
-}
-```
+   Take a look at the [example project here](https://github.com/hyrise/sql-parser/tree/master/example)
+	
+	```cpp
+	#include "hsql/SQLParser.h"
+	
+	/* ... */
+	
+	{
+	    // Basic Usage Example
+	
+	    const std::string query = "...";
+	    hsql::SQLParserResult result;
+	    hsql::SQLParser::parse(query, &result);
+	
+	    if (result.isValid() && result.size() > 0) {
+	        const hsql::SQLStatement* statement = result.getStatement(0);
+	
+	        if (statement->isType(hsql::kStmtSelect)) {
+	            const auto* select = static_cast<const hsql::SelectStatement*>(statement);
+	            /* ... */
+	        }
+	    }
+	}
+	```
+    
 
 Quick Links:
 
