@@ -87,9 +87,9 @@ enum DatetimeField {
 // Description of the frame clause within a window expression.
 enum FrameBoundType { kFollowing, kPreceding, kCurrentRow };
 struct FrameBound {
-  FrameBound(std::int64_t offset, FrameBoundType type, bool unbounded);
+  FrameBound(int64_t offset, FrameBoundType type, bool unbounded);
 
-  std::int64_t offset;
+  int64_t offset;
   FrameBoundType type;
   bool unbounded;
 };
@@ -135,8 +135,8 @@ struct Expr {
   char* table;
   char* alias;
   double fval;
-  std::int64_t ival;
-  std::int64_t ival2;
+  int64_t ival;
+  int64_t ival2;
   DatetimeField datetimeField;
   ColumnType columnType;
   bool isBoolLiteral;
@@ -176,7 +176,7 @@ struct Expr {
 
   static Expr* makeCase(Expr* expr, Expr* when, Expr* elseExpr);
 
-  static Expr* makeLiteral(std::int64_t val);
+  static Expr* makeLiteral(int64_t val);
 
   static Expr* makeLiteral(double val);
 
@@ -188,7 +188,7 @@ struct Expr {
 
   static Expr* makeDateLiteral(char* val);
 
-  static Expr* makeIntervalLiteral(std::int64_t duration, DatetimeField unit);
+  static Expr* makeIntervalLiteral(int64_t duration, DatetimeField unit);
 
   static Expr* makeColumnRef(char* name);
 
@@ -202,7 +202,7 @@ struct Expr {
 
   static Expr* makeArray(std::vector<Expr*>* exprList);
 
-  static Expr* makeArrayIndex(Expr* expr, std::int64_t index);
+  static Expr* makeArrayIndex(Expr* expr, int64_t index);
 
   static Expr* makeParameter(int id);
 
