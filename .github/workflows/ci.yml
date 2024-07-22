@@ -48,6 +48,16 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        if: matrix.name != 'gcc-6'
+
+      - name: Checkout (Ubuntu 18.04)
+        if: matrix.name == 'gcc-6'
+        run: |
+          apt-get update
+          apt-get install -y git
+          git config --global --add safe.directory '*'
+          git clone https://github.com/hyrise/sql-parser .
+          git checkout $GITHUB_HEAD_REF
 
       - name: Setup (macOS)
         if: matrix.name == 'clang-macOS'
