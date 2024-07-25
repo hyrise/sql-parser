@@ -60,7 +60,6 @@ jobs:
           apt-get install -y git
           git config --global --add safe.directory '*'
           git clone "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}" .
-          echo "checkout ${GITHUB_HEAD_REF}"
           git checkout $GITHUB_HEAD_REF
 
       - name: Setup (macOS)
