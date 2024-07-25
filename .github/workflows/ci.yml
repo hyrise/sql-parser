@@ -47,7 +47,20 @@ jobs:
             os: macos-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v4
+        if: matrix.name != 'gcc-6'
+
+      - name: Checkout (Ubuntu 18.04)
+        if: matrix.name == 'gcc-6'
+        # Recent versions of Github's checkout action do not run on older Ubuntu versions because they use a too recent
+        # Node.js version. Thus, we have to checkout the code manually.
+        run: |
+          apt-get update
+          apt-get install -y git
+          git config --global --add safe.directory '*'
+          git clone "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}" .
+          git checkout $GITHUB_HEAD_REF
 
       - name: Setup (macOS)
         if: matrix.name == 'clang-macOS'
