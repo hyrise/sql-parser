@@ -60,6 +60,7 @@ jobs:
           apt-get install -y git
           git config --global --add safe.directory '*'
           git clone https://github.com/hyrise/sql-parser .
+          echo "checkout ${GITHUB_HEAD_REF}"
           git checkout $GITHUB_HEAD_REF
 
       - name: Setup (macOS)
