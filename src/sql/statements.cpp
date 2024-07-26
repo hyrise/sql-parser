@@ -1,5 +1,6 @@
 #include "statements.h"
 #include "AlterStatement.h"
+#include <stdint.h>
 
 namespace hsql {
 

@@ -4,6 +4,7 @@
 #include <map>
 #include <sstream>
 #include <string>
+#include <stdint.h>
 
 namespace hsql {
 

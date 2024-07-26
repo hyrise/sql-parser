@@ -1,6 +1,7 @@
 #include "Expr.h"
 #include <stdio.h>
 #include <string.h>
+#include <stdint.h>
 #include "SelectStatement.h"
 
 namespace hsql {
