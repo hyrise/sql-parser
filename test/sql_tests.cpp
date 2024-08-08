@@ -400,10 +400,11 @@ TEST(ImportStatementTest) {
   ASSERT_NOTNULL(stmt->tableName);
   ASSERT_STREQ(stmt->tableName, "students");
   ASSERT_STREQ(stmt->filePath, "students_file");
+  ASSERT_NULL(stmt->encoding);
 }
 
 TEST(CopyStatementTest) {
-  TEST_PARSE_SINGLE_SQL("COPY students FROM 'students_file' WITH FORMAT BINARY;", kStmtImport, ImportStatement,
+  TEST_PARSE_SINGLE_SQL("COPY students FROM 'students_file' WITH (FORMAT BINARY);", kStmtImport, ImportStatement,
                         import_result, import_stmt);
 
   ASSERT_EQ(import_stmt->type, kImportBinary);
@@ -412,6 +413,7 @@ TEST(CopyStatementTest) {
   ASSERT_NOTNULL(import_stmt->filePath);
   ASSERT_STREQ(import_stmt->filePath, "students_file");
   ASSERT_NULL(import_stmt->whereClause);
+  ASSERT_NULL(import_stmt->encoding);
 
   TEST_PARSE_SINGLE_SQL("COPY students FROM 'students_file' WHERE lastname = 'Potter';", kStmtImport, ImportStatement,
                         import_filter_result, import_filter_stmt);
@@ -427,9 +429,10 @@ TEST(CopyStatementTest) {
   ASSERT_STREQ(import_filter_stmt->whereClause->expr->name, "lastname");
   ASSERT_EQ(import_filter_stmt->whereClause->expr2->type, kExprLiteralString);
   ASSERT_STREQ(import_filter_stmt->whereClause->expr2->name, "Potter");
+  ASSERT_NULL(import_filter_stmt->encoding);
 
-  TEST_PARSE_SINGLE_SQL("COPY students TO 'students_file' WITH FORMAT CSV;", kStmtExport, ExportStatement,
-                        export_table_result, export_table_stmt);
+  TEST_PARSE_SINGLE_SQL("COPY students TO 'students_file' WITH (ENCODING 'FSST', FORMAT CSV);", kStmtExport,
+                        ExportStatement, export_table_result, export_table_stmt);
 
   ASSERT_EQ(export_table_stmt->type, kImportCSV);
   ASSERT_NOTNULL(export_table_stmt->tableName);
@@ -437,14 +440,17 @@ TEST(CopyStatementTest) {
   ASSERT_NOTNULL(export_table_stmt->filePath);
   ASSERT_STREQ(export_table_stmt->filePath, "students_file");
   ASSERT_NULL(export_table_stmt->select);
+  ASSERT_STREQ(export_table_stmt->encoding, "FSST");
 
-  TEST_PARSE_SINGLE_SQL("COPY (SELECT firstname, lastname FROM students) TO 'students_file';", kStmtExport,
-                        ExportStatement, export_select_result, export_select_stmt);
+  TEST_PARSE_SINGLE_SQL(
+      "COPY (SELECT firstname, lastname FROM students) TO 'students_file' WITH (ENCODING 'Dictionary');", kStmtExport,
+      ExportStatement, export_select_result, export_select_stmt);
 
   ASSERT_EQ(export_select_stmt->type, kImportAuto);
   ASSERT_NULL(export_select_stmt->tableName);
   ASSERT_NOTNULL(export_select_stmt->filePath);
   ASSERT_STREQ(export_select_stmt->filePath, "students_file");
+  ASSERT_STREQ(export_select_stmt->encoding, "Dictionary");
 
   ASSERT_NOTNULL(export_select_stmt->select);
   const auto& select_stmt = export_select_stmt->select;

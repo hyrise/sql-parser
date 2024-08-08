@@ -1,7 +1,7 @@
 #ifndef SQLPARSER_EXPORT_STATEMENT_H
 #define SQLPARSER_EXPORT_STATEMENT_H
 
-#include "ImportStatement.h"
+#include "ImportExportOptions.h"
 #include "SQLStatement.h"
 #include "SelectStatement.h"
 
@@ -17,6 +17,7 @@ struct ExportStatement : SQLStatement {
   char* schema;
   char* tableName;
   SelectStatement* select;
+  char* encoding;
 };
 
 }  // namespace hsql

@@ -1,5 +1,6 @@
 #include "statements.h"
 #include "AlterStatement.h"
+#include "ImportExportOptions.h"
 
 namespace hsql {
 
@@ -108,7 +109,7 @@ DropStatement::~DropStatement() {
 
 // AlterStatement and supportive classes
 
-AlterAction::AlterAction(ActionType type) : type(type) {}
+AlterAction::AlterAction(ActionType init_type) : type(init_type) {}
 
 AlterAction::~AlterAction() = default;
 
@@ -148,14 +149,25 @@ ExecuteStatement::~ExecuteStatement() {
 
 // ExportStatement
 ExportStatement::ExportStatement(ImportType type)
-    : SQLStatement(kStmtExport), type(type), filePath(nullptr), schema(nullptr), tableName(nullptr), select(nullptr) {}
+    : SQLStatement(kStmtExport),
+      type(type),
+      filePath(nullptr),
+      schema(nullptr),
+      tableName(nullptr),
+      select(nullptr),
+      encoding(nullptr) {}
 
 ExportStatement::~ExportStatement() {
   free(filePath);
   free(schema);
   free(tableName);
   delete select;
+  free(encoding);
 }
+
+ImportExportOptions::ImportExportOptions() : format(kImportAuto), encoding(nullptr) {}
+
+ImportExportOptions::~ImportExportOptions() { free(encoding); }
 
 // ImportStatement
 ImportStatement::ImportStatement(ImportType type)
@@ -164,13 +176,15 @@ ImportStatement::ImportStatement(ImportType type)
       filePath(nullptr),
       schema(nullptr),
       tableName(nullptr),
-      whereClause(nullptr) {}
+      whereClause(nullptr),
+      encoding(nullptr) {}
 
 ImportStatement::~ImportStatement() {
   free(filePath);
   free(schema);
   free(tableName);
   delete whereClause;
+  free(encoding);
 }
 
 // InsertStatement

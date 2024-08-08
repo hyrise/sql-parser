@@ -161,6 +161,8 @@
   hsql::RowLockMode lock_mode_t;
   hsql::RowLockWaitPolicy lock_wait_policy_t;
 
+  hsql::ImportExportOptions* import_export_option_t;
+
   // clang-format off
 }
 
@@ -203,7 +205,7 @@
 /* SQL Keywords */
 %token DEALLOCATE PARAMETERS INTERSECT TEMPORARY TIMESTAMP
 %token DISTINCT NVARCHAR RESTRICT TRUNCATE ANALYZE BETWEEN
-%token CASCADE COLUMNS CONTROL DEFAULT EXECUTE EXPLAIN
+%token CASCADE COLUMNS CONTROL DEFAULT EXECUTE EXPLAIN ENCODING
 %token INTEGER NATURAL PREPARE PRIMARY SCHEMAS CHARACTER_VARYING REAL DECIMAL SMALLINT BIGINT
 %token SPATIAL VARCHAR VIRTUAL DESCRIBE BEFORE COLUMN CREATE DELETE DIRECT
 %token DOUBLE ESCAPE EXCEPT EXISTS EXTRACT CAST FORMAT GLOBAL HAVING IMPORT
@@ -281,7 +283,8 @@
 %type <lock_mode_t>            row_lock_mode
 
 // ImportType is used for compatibility reasons
-%type <import_type_t>          opt_file_type file_type
+%type <import_type_t>          file_type
+%type <import_export_option_t> opt_import_export_options import_export_options
 
 %type <str_vec>                ident_commalist opt_column_list
 %type <expr_vec>               expr_list select_list opt_extended_literal_list extended_literal_list hint_list opt_hints opt_partition
@@ -438,7 +441,7 @@ execute_statement : EXECUTE IDENTIFIER {
 /******************************
  * Import Statement
  * IMPORT FROM TBL FILE 'test/students.tbl' INTO students
- * COPY students FROM 'test/students.tbl' [WITH FORMAT TBL]
+ * COPY students FROM 'test/students.tbl' WITH (FORMAT TBL, ENCODING 'Dictionary')
  ******************************/
 import_statement : IMPORT FROM file_type FILE file_path INTO table_name {
   $$ = new ImportStatement($3);
@@ -446,12 +449,17 @@ import_statement : IMPORT FROM file_type FILE file_path INTO table_name {
   $$->schema = $7.schema;
   $$->tableName = $7.name;
 }
-| COPY table_name FROM file_path opt_file_type opt_where {
-  $$ = new ImportStatement($5);
+| COPY table_name FROM file_path opt_import_export_options opt_where {
+  $$ = new ImportStatement($5->format);
   $$->filePath = $4;
   $$->schema = $2.schema;
   $$->tableName = $2.name;
   $$->whereClause = $6;
+  if ($5->encoding) {
+    $$->encoding = $5->encoding;
+    $5->encoding = nullptr;
+  }
+  free($5);
 };
 
 file_type : IDENTIFIER {
@@ -474,23 +482,62 @@ file_path : string_literal {
   delete $1;
 };
 
-opt_file_type : WITH FORMAT file_type { $$ = $3; }
-| /* empty */ { $$ = kImportAuto; };
+opt_import_export_options : WITH '(' import_export_options ')' { $$ = $3; }
+| '(' import_export_options ')' { $$ = $2; }
+| /* empty */ { $$ = new ImportExportOptions{}; };
+
+import_export_options : import_export_options ',' FORMAT file_type {
+  if ($1->format != kImportAuto) {
+    free($1);
+    yyerror(&yyloc, result, scanner, "File type must only be provided once.");
+    YYERROR;
+  }
+  $1->format = $4;
+  $$ = $1;
+}
+| FORMAT file_type {
+  $$ = new ImportExportOptions{};
+  $$->format = $2;
+}
+| import_export_options ',' ENCODING STRING {
+  if ($1->encoding) {
+    free($1);
+    free($4);
+    yyerror(&yyloc, result, scanner, "Encoding type must only be provided once.");
+    YYERROR;
+  }
+  $1->encoding = $4;
+  $$ = $1;
+}
+| ENCODING STRING {
+  $$ = new ImportExportOptions{};
+  $$->encoding = $2;
+};
 
 /******************************
  * Export Statement
- * COPY students TO 'test/students.tbl' (WITH FORMAT TBL)
+ * COPY students TO 'test/students.tbl' WITH (FORMAT TBL, ENCODING 'Dictionary')
  ******************************/
-export_statement : COPY table_name TO file_path opt_file_type {
-  $$ = new ExportStatement($5);
+export_statement : COPY table_name TO file_path opt_import_export_options {
+  $$ = new ExportStatement($5->format);
   $$->filePath = $4;
   $$->schema = $2.schema;
   $$->tableName = $2.name;
+  if ($5->encoding) {
+    $$->encoding = $5->encoding;
+    $5->encoding = nullptr;
+  }
+  free($5);
 }
-| COPY select_with_paren TO file_path opt_file_type {
-  $$ = new ExportStatement($5);
+| COPY select_with_paren TO file_path opt_import_export_options {
+  $$ = new ExportStatement($5->format);
   $$->filePath = $4;
   $$->select = $2;
+  if ($5->encoding) {
+    $$->encoding = $5->encoding;
+    $5->encoding = nullptr;
+  }
+  free($5);
 };
 
 /******************************

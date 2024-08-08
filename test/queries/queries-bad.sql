@@ -12,8 +12,14 @@
 !DESCRIBE;
 !COPY;
 !COPY students;
-!COPY students FROM 'students_file' WITH FORMAT XYZ;
-!COPY students TO 'students_file' WITH FORMAT XYZ;
+!COPY students FROM 'students_file' WITH (FORMAT XYZ);
+!COPY students TO 'students_file' WITH (FORMAT XYZ);
+!COPY students FROM 'students_file' WITH ();
+!COPY students TO 'students_file' WITH ();
+!COPY students TO 'students_file' WITH (FORMAT CSV ENCODING 'Dictionary');
+!COPY students TO 'students_file' WITH FORMAT CSV;
+!COPY students TO 'students_file' WITH (FORMAT CSV, FORMAT BINARY);
+!COPY students FROM 'students_file' WITH (ENCODING Dictionary);
 !select a + 2 as b(spam, eggs) from B;
 !WITH a AS SELECT 1 SELECT 1;
 !WITH a AS (SELECT ) SELECT 1;
