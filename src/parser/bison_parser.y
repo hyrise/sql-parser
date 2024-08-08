@@ -459,7 +459,7 @@ import_statement : IMPORT FROM file_type FILE file_path INTO table_name {
     $$->encoding = $5->encoding;
     $5->encoding = nullptr;
   }
-  free($5);
+  delete $5;
 };
 
 file_type : IDENTIFIER {
@@ -488,7 +488,7 @@ opt_import_export_options : WITH '(' import_export_options ')' { $$ = $3; }
 
 import_export_options : import_export_options ',' FORMAT file_type {
   if ($1->format != kImportAuto) {
-    free($1);
+    delete $1;
     yyerror(&yyloc, result, scanner, "File type must only be provided once.");
     YYERROR;
   }
@@ -501,7 +501,7 @@ import_export_options : import_export_options ',' FORMAT file_type {
 }
 | import_export_options ',' ENCODING STRING {
   if ($1->encoding) {
-    free($1);
+    delete $1;
     free($4);
     yyerror(&yyloc, result, scanner, "Encoding type must only be provided once.");
     YYERROR;
@@ -527,7 +527,7 @@ export_statement : COPY table_name TO file_path opt_import_export_options {
     $$->encoding = $5->encoding;
     $5->encoding = nullptr;
   }
-  free($5);
+  delete $5;
 }
 | COPY select_with_paren TO file_path opt_import_export_options {
   $$ = new ExportStatement($5->format);
@@ -537,7 +537,7 @@ export_statement : COPY table_name TO file_path opt_import_export_options {
     $$->encoding = $5->encoding;
     $5->encoding = nullptr;
   }
-  free($5);
+  delete $5;
 };
 
 /******************************

@@ -3565,7 +3565,7 @@ yyreduce:
     (yyval.import_stmt)->encoding = (yyvsp[-1].import_export_option_t)->encoding;
     (yyvsp[-1].import_export_option_t)->encoding = nullptr;
   }
-  free((yyvsp[-1].import_export_option_t));
+  delete (yyvsp[-1].import_export_option_t);
 }
 #line 3571 "bison_parser.cpp"
     break;
@@ -3620,7 +3620,7 @@ yyreduce:
 #line 489 "bison_parser.y"
                                                                    {
   if ((yyvsp[-3].import_export_option_t)->format != kImportAuto) {
-    free((yyvsp[-3].import_export_option_t));
+    delete (yyvsp[-3].import_export_option_t);
     yyerror(&yyloc, result, scanner, "File type must only be provided once.");
     YYERROR;
   }
@@ -3643,7 +3643,7 @@ yyreduce:
 #line 502 "bison_parser.y"
                                             {
   if ((yyvsp[-3].import_export_option_t)->encoding) {
-    free((yyvsp[-3].import_export_option_t));
+    delete (yyvsp[-3].import_export_option_t);
     free((yyvsp[0].sval));
     yyerror(&yyloc, result, scanner, "Encoding type must only be provided once.");
     YYERROR;
@@ -3674,7 +3674,7 @@ yyreduce:
     (yyval.export_stmt)->encoding = (yyvsp[0].import_export_option_t)->encoding;
     (yyvsp[0].import_export_option_t)->encoding = nullptr;
   }
-  free((yyvsp[0].import_export_option_t));
+  delete (yyvsp[0].import_export_option_t);
 }
 #line 3680 "bison_parser.cpp"
     break;
@@ -3689,7 +3689,7 @@ yyreduce:
     (yyval.export_stmt)->encoding = (yyvsp[0].import_export_option_t)->encoding;
     (yyvsp[0].import_export_option_t)->encoding = nullptr;
   }
-  free((yyvsp[0].import_export_option_t));
+  delete (yyvsp[0].import_export_option_t);
 }
 #line 3695 "bison_parser.cpp"
     break;
