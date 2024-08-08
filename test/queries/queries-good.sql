@@ -66,16 +66,19 @@ EXECUTE prep;
 DEALLOCATE PREPARE prep;
 # COPY
 COPY students FROM 'student.tbl';
-COPY students FROM 'file_path' WITH FORMAT TBL;
-COPY students FROM 'file_path' WITH FORMAT CSV;
-COPY students FROM 'file_path' WITH FORMAT BIN;
-COPY students FROM 'file_path' WITH FORMAT BINARY;
+COPY students FROM 'file_path' WITH (FORMAT TBL);
+COPY students FROM 'file_path' WITH (FORMAT CSV);
+COPY students FROM 'file_path' WITH (FORMAT BIN);
+COPY students FROM 'file_path' WITH (FORMAT BINARY);
+COPY students FROM 'file_path' (FORMAT TBL);
 COPY good_students FROM 'file_path' WHERE grade > (SELECT AVG(grade) from alumni);
 COPY students TO 'student.tbl';
-COPY students TO 'file_path' WITH FORMAT TBL;
-COPY students TO 'file_path' WITH FORMAT CSV;
-COPY students TO 'file_path' WITH FORMAT BIN;
-COPY students TO 'file_path' WITH FORMAT BINARY;
+COPY students TO 'file_path' WITH (ENCODING 'some_encoding', FORMAT TBL);
+COPY students TO 'file_path' WITH (FORMAT CSV);
+COPY students TO 'file_path' WITH (FORMAT BIN);
+COPY students TO 'file_path' WITH (FORMAT BINARY);
+COPY students TO 'file_path' (FORMAT BINARY, ENCODING 'FSST');
+COPY students TO 'file_path' WITH (ENCODING 'Dictionary');
 COPY (SELECT firstname, COUNT(*) FROM students GROUP BY firstname) TO 'student_names.csv';
 # HINTS
 SELECT * FROM test WITH HINT(NO_CACHE);

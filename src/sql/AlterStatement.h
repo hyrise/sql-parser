@@ -11,7 +11,7 @@ enum ActionType {
 };
 
 struct AlterAction {
-  AlterAction(ActionType type);
+  AlterAction(ActionType init_type);
   ActionType type;
   virtual ~AlterAction();
 };
