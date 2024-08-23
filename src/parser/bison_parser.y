@@ -63,6 +63,8 @@
 // %output  "bison_parser.cpp"
 // %defines "bison_parser.h"
 
+%expect 0
+
 // Tell bison to create a reentrant parser
 %define api.pure full
 
@@ -232,7 +234,8 @@
 %type <exec_stmt>              execute_statement
 %type <transaction_stmt>       transaction_statement
 %type <prep_stmt>              prepare_statement
-%type <select_stmt>            select_statement select_with_paren select_no_paren select_clause select_within_set_operation select_within_set_operation_no_parentheses
+%type <select_stmt>            query_expression query_expression_body query_expression_parens query_term
+                               query_primary select_statement subquery
 %type <import_stmt>            import_statement
 %type <export_stmt>            export_statement
 %type <create_stmt>            create_statement
@@ -290,7 +293,7 @@
 %type <expr_vec>               expr_list select_list opt_extended_literal_list extended_literal_list hint_list opt_hints opt_partition
 %type <table_vec>              table_ref_commalist
 %type <order_vec>              opt_order order_list
-%type <with_description_vec>   opt_with_clause with_clause with_description_list
+%type <with_description_vec>   with_clause with_description_list
 %type <update_vec>             update_clause_commalist
 %type <table_element_vec>      table_elem_commalist
 %type <locking_clause_vec>     opt_locking_clause_list opt_locking_clause
@@ -478,9 +481,7 @@ file_type : IDENTIFIER {
   free($1);
 };
 
-file_path : STRING {
-  $$ = $1;
-};
+file_path : STRING { $$ = $1; };
 
 opt_import_export_options : WITH '(' import_export_options ')' { $$ = $3; }
 | '(' import_export_options ')' { $$ = $2; }
@@ -530,7 +531,7 @@ export_statement : COPY table_name TO file_path opt_import_export_options {
   }
   delete $5;
 }
-| COPY select_with_paren TO file_path opt_import_export_options {
+| COPY subquery TO file_path opt_import_export_options {
   $$ = new ExportStatement($5->format);
   $$->filePath = $4;
   $$->select = $2;
@@ -763,7 +764,7 @@ insert_statement : INSERT INTO table_name opt_column_list VALUES '(' extended_li
   $$->columns = $4;
   $$->values = $7;
 }
-| INSERT INTO table_name opt_column_list select_no_paren {
+| INSERT INTO table_name opt_column_list query_term {
   $$ = new InsertStatement(kInsertSelect);
   $$->schema = $3.schema;
   $$->tableName = $3.name;
@@ -804,67 +805,96 @@ update_clause : IDENTIFIER '=' expr {
 /******************************
  * Select Statement
  ******************************/
+select_statement : query_expression | query_expression_parens;
 
-select_statement : opt_with_clause select_with_paren {
-  $$ = $2;
-  $$->withDescriptions = $1;
-}
-| opt_with_clause select_no_paren {
-  $$ = $2;
-  $$->withDescriptions = $1;
-}
-| opt_with_clause select_with_paren set_operator select_within_set_operation opt_order opt_limit {
-  $$ = $2;
-  if ($$->setOperations == nullptr) {
-    $$->setOperations = new std::vector<SetOperation*>();
+query_expression : query_expression_body opt_order opt_limit opt_locking_clause {
+  if ($1->setOperations == nullptr) {
+    $1->order = $2;
+
+    // Limit could have been set by TOP.
+    if ($3 != nullptr) {
+      delete $1->limit;
+      $1->limit = $3;
+    }
+
+    if ($4 != nullptr) {
+      $1->lockings = $4;
+    }
+  } else {
+    $1->setOperations->back()->resultOrder = $2;
+    $1->setOperations->back()->resultLimit = $3;
   }
-  $$->setOperations->push_back($3);
-  $$->setOperations->back()->nestedSelectStatement = $4;
-  $$->setOperations->back()->resultOrder = $5;
-  $$->setOperations->back()->resultLimit = $6;
-  $$->withDescriptions = $1;
+
+  $$ = $1;
+}
+| with_clause query_expression_body opt_order opt_limit opt_locking_clause {
+  $2->withDescriptions = $1;
+  if ($2->setOperations == nullptr) {
+    $2->order = $3;
+
+    // Limit could have been set by TOP.
+    if ($4 != nullptr) {
+      delete $2->limit;
+      $2->limit = $4;
+    }
+
+    if ($5 != nullptr) {
+      $2->lockings = $5;
+    }
+  } else {
+    $2->setOperations->back()->resultOrder = $3;
+    $2->setOperations->back()->resultLimit = $4;
+  }
+
+  $$ = $2;
+}
+
+/*
+ * The SQL standard defines this rule as left-recursive, however, the parser
+ * tree structure is right-recursive. To overcome this impedance mismatch, we
+ * have to build the parse tree top-down, by running down the tree to the
+ * deepest node and adding the set operation there.
+ */
+query_expression_body : query_term | query_expression_body set_operator query_term {
+  $$ = $1;
+  auto* setOperations = &$1->setOperations;
+  while (*setOperations != nullptr) {
+    setOperations = &(*setOperations)->back()->nestedSelectStatement->setOperations;
+  }
+  $2->nestedSelectStatement = $3;
+  *setOperations = new std::vector<SetOperation*>({$2});
+
+  $$ = $1;
+}
+| query_expression_parens set_operator query_term {
+  $$ = $1;
+  auto* setOperations = &$1->setOperations;
+  while (*setOperations != nullptr) {
+    setOperations = &(*setOperations)->back()->nestedSelectStatement->setOperations;
+  }
+  $2->nestedSelectStatement = $3;
+  *setOperations = new std::vector<SetOperation*>({$2});
+
+  $$ = $1;
+}
+| query_expression_body set_operator query_expression_parens {
+  $$ = $1;
+  auto* setOperations = &$1->setOperations;
+  while (*setOperations != nullptr) {
+    setOperations = &(*setOperations)->back()->nestedSelectStatement->setOperations;
+  }
+  $2->nestedSelectStatement = $3;
+  *setOperations = new std::vector<SetOperation*>({$2});
+
+  $$ = $1;
 };
 
-select_within_set_operation : select_with_paren | select_within_set_operation_no_parentheses;
+query_expression_parens : '(' query_expression_parens ')' { $$ = $2; }
+| '(' query_expression ')' { $$ = $2; };
 
-select_within_set_operation_no_parentheses : select_clause { $$ = $1; }
-| select_clause set_operator select_within_set_operation {
-  $$ = $1;
-  if ($$->setOperations == nullptr) {
-    $$->setOperations = new std::vector<SetOperation*>();
-  }
-  $$->setOperations->push_back($2);
-  $$->setOperations->back()->nestedSelectStatement = $3;
-};
+query_term : query_primary;
 
-select_with_paren : '(' select_no_paren ')' { $$ = $2; }
-| '(' select_with_paren ')' { $$ = $2; };
-
-select_no_paren : select_clause opt_order opt_limit opt_locking_clause {
-  $$ = $1;
-  $$->order = $2;
-
-  // Limit could have been set by TOP.
-  if ($3) {
-    delete $$->limit;
-    $$->limit = $3;
-  }
-
-  if ($4) {
-    $$->lockings = $4;
-  }
-}
-| select_clause set_operator select_within_set_operation opt_order opt_limit opt_locking_clause {
-  $$ = $1;
-  if ($$->setOperations == nullptr) {
-    $$->setOperations = new std::vector<SetOperation*>();
-  }
-  $$->setOperations->push_back($2);
-  $$->setOperations->back()->nestedSelectStatement = $3;
-  $$->setOperations->back()->resultOrder = $4;
-  $$->setOperations->back()->resultLimit = $5;
-  $$->lockings = $6;
-};
+subquery : '(' query_expression ')' { $$ = $2; };
 
 set_operator : set_type opt_all {
   $$ = $1;
@@ -887,7 +917,7 @@ set_type : UNION {
 opt_all : ALL { $$ = true; }
 | /* empty */ { $$ = false; };
 
-select_clause : SELECT opt_top opt_distinct select_list opt_from_clause opt_where opt_group {
+query_primary : SELECT opt_top opt_distinct select_list opt_from_clause opt_where opt_group {
   $$ = new SelectStatement();
   $$->limit = $2;
   $$->selectDistinct = $3;
@@ -1003,7 +1033,7 @@ expr : operand | between_expr | logic_expr | exists_expr | in_expr;
 
 operand : '(' expr ')' { $$ = $2; }
 | array_index | scalar_expr | unary_expr | binary_expr | case_expr | function_expr | extract_expr | cast_expr |
-    array_expr | '(' select_no_paren ')' {
+    array_expr | '(' query_primary ')' {
   $$ = Expr::makeSelect($2);
 };
 
@@ -1031,8 +1061,8 @@ logic_expr : expr AND expr { $$ = Expr::makeOpBinary($1, kOpAnd, $3); }
 
 in_expr : operand IN '(' expr_list ')' { $$ = Expr::makeInOperator($1, $4); }
 | operand NOT IN '(' expr_list ')' { $$ = Expr::makeOpUnary(kOpNot, Expr::makeInOperator($1, $5)); }
-| operand IN '(' select_no_paren ')' { $$ = Expr::makeInOperator($1, $4); }
-| operand NOT IN '(' select_no_paren ')' { $$ = Expr::makeOpUnary(kOpNot, Expr::makeInOperator($1, $5)); };
+| operand IN '(' query_primary ')' { $$ = Expr::makeInOperator($1, $4); }
+| operand NOT IN '(' query_primary ')' { $$ = Expr::makeOpUnary(kOpNot, Expr::makeInOperator($1, $5)); };
 
 // CASE grammar based on: flex & bison by John Levine
 // https://www.safaribooksonline.com/library/view/flex-bison/9780596805418/ch04.html#id352665
@@ -1044,8 +1074,8 @@ case_expr : CASE expr case_list END { $$ = Expr::makeCase($2, $3, nullptr); }
 case_list : WHEN expr THEN expr { $$ = Expr::makeCaseList(Expr::makeCaseListElement($2, $4)); }
 | case_list WHEN expr THEN expr { $$ = Expr::caseListAppend($1, Expr::makeCaseListElement($3, $5)); };
 
-exists_expr : EXISTS '(' select_no_paren ')' { $$ = Expr::makeExists($3); }
-| NOT EXISTS '(' select_no_paren ')' { $$ = Expr::makeOpUnary(kOpNot, Expr::makeExists($4)); };
+exists_expr : EXISTS '(' query_primary ')' { $$ = Expr::makeExists($3); }
+| NOT EXISTS '(' query_primary ')' { $$ = Expr::makeOpUnary(kOpNot, Expr::makeExists($4)); };
 
 comp_expr : operand '=' operand { $$ = Expr::makeOpBinary($1, kOpEquals, $3); }
 | operand EQUALS operand { $$ = Expr::makeOpBinary($1, kOpEquals, $3); }
@@ -1298,8 +1328,6 @@ opt_row_lock_policy : SKIP LOCKED { $$ = RowLockWaitPolicy::SkipLocked; }
  * With Descriptions
  ******************************/
 
-opt_with_clause : with_clause | /* empty */ { $$ = nullptr; };
-
 with_clause : WITH with_description_list { $$ = $2; };
 
 with_description_list : with_description {
@@ -1311,7 +1339,13 @@ with_description_list : with_description {
   $$ = $1;
 };
 
-with_description : IDENTIFIER AS select_with_paren {
+with_description : IDENTIFIER AS subquery {
+  if ($3->withDescriptions != nullptr) {
+    free($1);
+    delete $3;
+    yyerror(&yyloc, result, scanner, "Nested CTE is not allowed.");
+    YYERROR;
+  }
   $$ = new WithDescription();
   $$->alias = $1;
   $$->select = $3;
