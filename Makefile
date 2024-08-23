@@ -73,7 +73,7 @@ $(SRCPARSER)/bison_parser.o: $(SRCPARSER)/bison_parser.cpp
 	$(CXX) $(LIB_CFLAGS) -c -o $@ $< -Wno-unused-but-set-variable
 
 %.o: %.cpp $(PARSER_CPP) $(LIB_H)
-	$(CXX) $(LIB_CFLAGS) -c -o $@ $<
+	$(CXX) $(LIB_CFLAGS) $(CXXFLAGS) -c -o $@ $<
 
 $(SRCPARSER)/bison_parser.cpp: $(SRCPARSER)/bison_parser.y
 	$(GMAKE) -C $(SRCPARSER)/ bison_parser.cpp
@@ -140,7 +140,7 @@ test: $(TEST_BUILD)
 
 $(TEST_BUILD): $(TEST_ALL) $(LIB_BUILD)
 	@mkdir -p $(BIN)/
-	$(CXX) $(TEST_CFLAGS) $(TEST_CPP) -o $(TEST_BUILD) -lsqlparser -lstdc++
+	$(CXX) $(CXXFLAGS) $(TEST_CFLAGS) $(TEST_CPP) -o $(TEST_BUILD) -lsqlparser -lstdc++
 
 test_example:
 	$(GMAKE) -C example/
