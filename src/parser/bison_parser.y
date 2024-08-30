@@ -887,6 +887,17 @@ query_expression_body : query_term | query_expression_body set_operator query_te
   *setOperations = new std::vector<SetOperation*>({$2});
 
   $$ = $1;
+}
+| query_expression_parens set_operator query_expression_parens {
+  $$ = $1;
+  auto* setOperations = &$1->setOperations;
+  while (*setOperations != nullptr) {
+    setOperations = &(*setOperations)->back()->nestedSelectStatement->setOperations;
+  }
+  $2->nestedSelectStatement = $3;
+  *setOperations = new std::vector<SetOperation*>({$2});
+
+  $$ = $1;
 };
 
 query_expression_parens : '(' query_expression_parens ')' { $$ = $2; }
