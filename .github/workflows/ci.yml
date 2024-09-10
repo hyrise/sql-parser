@@ -59,7 +59,7 @@ jobs:
           apt-get update
           apt-get install -y git
           git config --global --add safe.directory '*'
-          git clone "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}" .
+          git clone $(awk -v a=${{github.event.pull_request.head.repo.clone_url}} -v b=${{github.repositoryUrl}} 'BEGIN { if (a == "")  { print b } else { print a } }') .
           git checkout $GITHUB_HEAD_REF
 
       - name: Setup (macOS)
