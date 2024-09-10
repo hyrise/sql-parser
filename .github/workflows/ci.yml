@@ -62,7 +62,7 @@ jobs:
           echo "${GITHUB_REF}"
           echo "${GITHUB_REF_NAME}"
           echo "${{github.repositoryUrl}}"
-          echo "${{github.event.repository.pull_request}}"
+          echo "${{github.event.pull_request}}"
           echo "${{github.repository_owner}}/${{github.repository}}"
           apt-get update
           apt-get install -y git
