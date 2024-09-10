@@ -57,8 +57,10 @@ jobs:
         # Node.js version. Thus, we have to checkout the code manually.
         run: |
           echo "${GITHUB_REPOSITORY_OWNER}"
+          echo "${GITHUB_REPOSITORY}"
           echo "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}:${GITHUB_HEAD_REF}"
           echo "${GITHUB_REF}"
+          echo "${GITHUB_REF_NAME}"
           apt-get update
           apt-get install -y git
           git config --global --add safe.directory '*'
