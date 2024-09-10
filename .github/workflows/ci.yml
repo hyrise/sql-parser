@@ -62,6 +62,7 @@ jobs:
           echo "${GITHUB_REF}"
           echo "${GITHUB_REF_NAME}"
           echo "${{github.repository}}"
+          echo "${{github.context.repo.owner}}/${{github.context.repo.repo}}"
           apt-get update
           apt-get install -y git
           git config --global --add safe.directory '*'
