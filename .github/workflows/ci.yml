@@ -59,6 +59,7 @@ jobs:
           apt-get update
           apt-get install -y git
           git config --global --add safe.directory '*'
+          echo "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}:${GITHUB_HEAD_REF}"
           git clone "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}" .
           git checkout $GITHUB_HEAD_REF
 
