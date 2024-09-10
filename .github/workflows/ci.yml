@@ -56,13 +56,11 @@ jobs:
         # Recent versions of Github's checkout action do not run on older Ubuntu versions because they use a too recent
         # Node.js version. Thus, we have to checkout the code manually.
         run: |
-          echo "REPO_URL=$(awk -v a=${github.event.pull_request.head.repo.clone_url} -v b=${github.repositoryUrl} 'BEGIN { if (a == "")  { print b } else { print a } }')" >> $GITHUB_ENV
-          echo $GITHUB_ENV
-          echo $REPO_URL
+          echo $(awk -v a=${{github.event.pull_request.head.repo.clone_url}} -v b=${{github.repositoryUrl}} 'BEGIN { if (a == "")  { print b } else { print a } }')
           apt-get update
           apt-get install -y git
           git config --global --add safe.directory '*'
-          git clone "${REPO_URL}" .
+          git clone $(awk -v a=${{github.event.pull_request.head.repo.clone_url}} -v b=${{github.repositoryUrl}} 'BEGIN { if (a == "")  { print b } else { print a } }') .
           git checkout $GITHUB_HEAD_REF
 
       - name: Setup (macOS)
