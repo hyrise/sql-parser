@@ -4,6 +4,7 @@ on:
   pull_request:
   push:
     branches:
+      - dey4ss/test-clone-branch
       - master
 
 jobs:
