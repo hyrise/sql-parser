@@ -42,7 +42,7 @@ relaxed_build ?= "off"
 ifeq ($(relaxed_build), on)
     $(warning $(NAME) will be built with most compiler warnings deactivated. This is fine if you want to test $(NAME) but will become an issue when you want to contribute code.)
 else
-    LIB_CLFAGS += -Wall -Werror
+    LIB_CFLAGS += -Wall -Werror
 endif
 
 static ?= no
@@ -68,6 +68,9 @@ $(LIB_BUILD): $(LIB_OBJ)
 
 $(SRCPARSER)/flex_lexer.o: $(SRCPARSER)/flex_lexer.cpp $(SRCPARSER)/bison_parser.cpp
 	$(CXX) $(LIB_CFLAGS) -c -o $@ $< -Wno-sign-compare -Wno-unneeded-internal-declaration -Wno-register
+
+$(SRCPARSER)/bison_parser.o: $(SRCPARSER)/bison_parser.cpp
+	$(CXX) $(LIB_CFLAGS) -c -o $@ $< -Wno-unused-but-set-variable
 
 %.o: %.cpp $(PARSER_CPP) $(LIB_H)
 	$(CXX) $(LIB_CFLAGS) -c -o $@ $<
