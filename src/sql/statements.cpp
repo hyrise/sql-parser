@@ -109,7 +109,7 @@ DropStatement::~DropStatement() {
 
 // AlterStatement and supportive classes
 
-AlterAction::AlterAction(ActionType init_type) : type(init_type) {}
+AlterAction::AlterAction(ActionType type) : type(type) {}
 
 AlterAction::~AlterAction() = default;
 
