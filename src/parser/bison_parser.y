@@ -441,6 +441,7 @@ execute_statement : EXECUTE IDENTIFIER {
 /******************************
  * Import Statement
  * IMPORT FROM TBL FILE 'test/students.tbl' INTO students
+ * COPY students FROM 'test/students.tbl'
  * COPY students FROM 'test/students.tbl' WITH (FORMAT TBL, ENCODING 'Dictionary')
  ******************************/
 import_statement : IMPORT FROM file_type FILE file_path INTO table_name {
@@ -516,7 +517,8 @@ import_export_options : import_export_options ',' FORMAT file_type {
 
 /******************************
  * Export Statement
- * COPY students TO 'test/students.tbl' WITH (FORMAT TBL, ENCODING 'Dictionary')
+ * COPY students TO 'test/students.tbl'
+ * COPY students TO 'test/students.tbl' WITH (FORMAT BINARY, ENCODING 'Dictionary')
  ******************************/
 export_statement : COPY table_name TO file_path opt_import_export_options {
   $$ = new ExportStatement($5->format);
