@@ -478,9 +478,8 @@ file_type : IDENTIFIER {
   free($1);
 };
 
-file_path : string_literal {
-  $$ = strdup($1->name);
-  delete $1;
+file_path : STRING {
+  $$ = $1;
 };
 
 opt_import_export_options : WITH '(' import_export_options ')' { $$ = $3; }
@@ -994,7 +993,8 @@ extended_literal : literal {
 expr_alias : expr opt_alias {
   $$ = $1;
   if ($2) {
-    $$->alias = strdup($2->name);
+    $$->alias = $2->name;
+    $2->name = nullptr;
     delete $2;
   }
 };
