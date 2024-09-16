@@ -262,7 +262,8 @@ enum hsql_tokentype {
   SQL_LESSEQ = 431,            /* LESSEQ  */
   SQL_GREATEREQ = 432,         /* GREATEREQ  */
   SQL_NOTNULL = 433,           /* NOTNULL  */
-  SQL_UMINUS = 434             /* UMINUS  */
+  SQL_UMINUS = 434,            /* UMINUS  */
+  SQL_SUBQUERY_AS_EXPR = 435   /* SUBQUERY_AS_EXPR  */
 };
 typedef enum hsql_tokentype hsql_token_kind_t;
 #endif
@@ -342,7 +343,7 @@ union HSQL_STYPE {
 
   // clang-format off
 
-#line 348 "bison_parser.h"
+#line 349 "bison_parser.h"
 
 };
 typedef union HSQL_STYPE HSQL_STYPE;

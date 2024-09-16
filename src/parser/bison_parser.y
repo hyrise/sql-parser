@@ -906,7 +906,7 @@ query_expression_parens : '(' query_expression_parens ')' { $$ = $2; }
 
 query_term : query_primary;
 
-subquery : query_expression_parens % prec SUBQUERY_AS_EXPR
+subquery : query_expression_parens %prec SUBQUERY_AS_EXPR
 
                                          set_operator : set_type opt_all {
   $$ = $1;
