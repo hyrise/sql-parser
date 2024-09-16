@@ -319,6 +319,7 @@
 /* Unary Operators */
 %right    UMINUS
 %left     '[' ']'
+%left SUBQUERY_AS_EXPR
 %left     '(' ')'
 %left     '.'
 %left     JOIN
@@ -905,9 +906,9 @@ query_expression_parens : '(' query_expression_parens ')' { $$ = $2; }
 
 query_term : query_primary;
 
-subquery : '(' query_expression ')' { $$ = $2; };
+subquery : query_expression_parens % prec SUBQUERY_AS_EXPR
 
-set_operator : set_type opt_all {
+                                         set_operator : set_type opt_all {
   $$ = $1;
   $$->isAll = $2;
 };
@@ -1044,8 +1045,8 @@ expr : operand | between_expr | logic_expr | exists_expr | in_expr;
 
 operand : '(' expr ')' { $$ = $2; }
 | array_index | scalar_expr | unary_expr | binary_expr | case_expr | function_expr | extract_expr | cast_expr |
-    array_expr | '(' query_primary ')' {
-  $$ = Expr::makeSelect($2);
+    array_expr | subquery {
+  $$ = Expr::makeSelect($1);
 };
 
 scalar_expr : column_name | literal;

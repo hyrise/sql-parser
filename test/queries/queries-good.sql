@@ -18,6 +18,7 @@ SELECT * FROM t WHERE a = ? AND b = ?;
 SELECT City.name, Product.category, SUM(price) FROM fact INNER JOIN City ON fact.city_id = City.id INNER JOIN Product ON fact.product_id = Product.id GROUP BY City.name, Product.category;
 SELECT SUBSTR(a, 3, 5) FROM t;
 SELECT * FROM t WHERE a = DATE '1996-12-31';
+# Top-level union syntax
 SELECT 1 UNION SELECT 1;
 (SELECT 1 UNION SELECT 1);
 ((SELECT 1 UNION SELECT 1));
@@ -46,6 +47,16 @@ SELECT 1 UNION ((SELECT 1));
 ((SELECT 1)) UNION ((SELECT 1));
 (((SELECT 1)) UNION ((SELECT 1)));
 ((((SELECT 1)) UNION ((SELECT 1))));
+# Union in scalar subquery syntax
+SELECT (SELECT 1  UNION SELECT 1);
+SELECT ((SELECT 1) UNION SELECT 1);
+SELECT (((SELECT 1)) UNION SELECT 1);
+SELECT (SELECT 1 UNION (SELECT 1));
+SELECT (SELECT 1 UNION ((SELECT 1)));
+SELECT ((SELECT 1 UNION ((SELECT 1))));
+SELECT ((SELECT 1) UNION (SELECT 1));
+SELECT (((SELECT 1) UNION (SELECT 1)));
+SELECT ((((SELECT 1)) UNION ((SELECT 1))));
 # JOIN
 SELECT t1.a, t1.b, t2.c FROM "table" AS t1 JOIN (SELECT * FROM foo JOIN bar ON foo.id = bar.id) t2 ON t1.a = t2.b WHERE (t1.b OR NOT t1.a) AND t2.c = 12.5
 SELECT * FROM t1 JOIN t2 ON c1 = c2;
