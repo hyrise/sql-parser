@@ -238,8 +238,11 @@ CHARACTER[ \t\n]+VARYING TOKEN(CHARACTER_VARYING)
 [-+*/(){},.;<>=^%:?[\]|]    { return yytext[0]; }
 
 [0-9]+"."[0-9]* |
-"."[0-9]*  {
-  yylval->fval = atof(yytext);
+"."[0-9]+     |
+[0-9]+E[-+]?[0-9]+    |
+[0-9]+"."[0-9]*E[-+]?[0-9]+ |
+"."[0-9]+E[-+]?[0-9]+ {
+  yylval->fval = atof(yytext) ;
   return SQL_FLOATVAL;
 }
 
