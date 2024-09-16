@@ -66,9 +66,9 @@ library: $(LIB_BUILD)
 $(LIB_BUILD): $(LIB_OBJ)
 	$(LIBLINKER) $(LIB_LFLAGS) $(LIB_BUILD) $(LIB_OBJ)
 
+# The auto-generated code from bison and flex contains some parts the compiler complains about with -Wall.
 $(SRCPARSER)/flex_lexer.o: $(SRCPARSER)/flex_lexer.cpp $(SRCPARSER)/bison_parser.cpp
 	$(CXX) $(LIB_CFLAGS) -c -o $@ $< -Wno-sign-compare -Wno-unneeded-internal-declaration -Wno-register
-
 $(SRCPARSER)/bison_parser.o: $(SRCPARSER)/bison_parser.cpp
 	$(CXX) $(LIB_CFLAGS) -c -o $@ $< -Wno-unused-but-set-variable
 

@@ -3,7 +3,8 @@
 
 namespace hsql {
 
-// Name unchanged for compatibility.
+// Name unchanged for compatibility. Historically, this was only used for import statements before we introduced export
+// statements (`COPY ... TO`). We did not change the enum name to accomodate forks.
 enum ImportType {
   kImportCSV,
   kImportTbl,  // Hyrise file format.
