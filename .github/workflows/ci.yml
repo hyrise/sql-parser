@@ -4,7 +4,7 @@ on:
   pull_request:
   push:
     branches:
-      - master
+      - main
 
 jobs:
   build:
@@ -57,7 +57,7 @@ jobs:
         # Node.js version. Thus, we have to checkout the code manually.
         # Doing so is a bit tricky when it comes to PRs from forks (see #249 for details). The general idea here is that
         # we access Github's context information for the event triggering the action's execution and use some details on
-        # the PR's HEAD if given. Otherwise (for executions due to master updates), we still use the provided
+        # the PR's HEAD if given. Otherwise (for executions due to main branch updates), we still use the provided
         # environment variables.
         run: |
           apt-get update
