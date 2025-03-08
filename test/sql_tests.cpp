@@ -11,8 +11,20 @@
 
 using namespace hsql;
 
+SQLParserResult parse_and_move(std::string query) {
+  auto result = SQLParserResult{};
+  SQLParser::parse(query, &result);
+  // Moves on return.
+  return result;
+}
+
+SQLParserResult move_in_and_back(SQLParserResult res) {
+  // Moves on return.
+  return res;
+}
+
 TEST(DeleteStatementTest) {
-  SQLParserResult result;
+  auto result = SQLParserResult{};
   SQLParser::parse("DELETE FROM students WHERE grade > 2.0;", &result);
 
   ASSERT(result.isValid());
@@ -28,7 +40,7 @@ TEST(DeleteStatementTest) {
 }
 
 TEST(CreateStatementTest) {
-  SQLParserResult result;
+  auto result = SQLParserResult{};
   SQLParser::parse(
       "CREATE TABLE dummy_table ("
       "  c_bigint BIGINT, "
@@ -176,8 +188,71 @@ TEST(CreateStatementTest) {
   ASSERT_STREQ(stmt->tableConstraints->at(0)->columnNames->at(1), "c_int");
 }
 
+TEST(CreateStatementForeignKeyTest) {
+  auto result = parse_and_move("CREATE TABLE foo (a int, b int REFERENCES bar.baz (x))");
+  ASSERT(result.isValid());
+  ASSERT_EQ(result.size(), 1);
+  ASSERT_EQ(result.getStatement(0)->type(), kStmtCreate);
+  const auto* stmt = (const CreateStatement*)result.getStatement(0);
+  // We focus on the correct parsing of the FKs here. The remaining functionality is tested in CreateStatementTest.
+  ASSERT_EQ(stmt->type, kCreateTable);
+  ASSERT_TRUE(stmt->tableConstraints->empty());
+  ASSERT_TRUE(stmt->columns);
+  ASSERT_EQ(stmt->columns->size(), 2);
+  ASSERT_TRUE(stmt->columns->at(1));
+  ASSERT_STREQ(stmt->columns->at(1)->name, "b");
+  ASSERT_TRUE(stmt->columns->at(1)->references);
+  ASSERT_EQ(stmt->columns->at(1)->references->size(), 1);
+  ASSERT_STREQ(stmt->columns->at(1)->references->at(0)->schema, "bar");
+  ASSERT_STREQ(stmt->columns->at(1)->references->at(0)->table, "baz");
+  ASSERT_TRUE(stmt->columns->at(1)->references->at(0)->columns);
+  ASSERT_EQ(stmt->columns->at(1)->references->at(0)->columns->size(), 1);
+  ASSERT_STREQ(stmt->columns->at(1)->references->at(0)->columns->at(0), "x");
+
+  result = parse_and_move("CREATE TABLE foo (a int, b int, FOREIGN KEY (a, b) REFERENCES bar.baz (x, y))");
+  ASSERT(result.isValid());
+  ASSERT_EQ(result.size(), 1);
+  ASSERT_EQ(result.getStatement(0)->type(), kStmtCreate);
+  stmt = (const CreateStatement*)result.getStatement(0);
+  ASSERT_EQ(stmt->type, kCreateTable);
+  ASSERT_TRUE(stmt->tableConstraints);
+  ASSERT_EQ(stmt->tableConstraints->size(), 1);
+  ASSERT_EQ(stmt->tableConstraints->at(0)->type, ConstraintType::ForeignKey);
+  const auto* foreign_key = (const ForeignKeyConstraint*)stmt->tableConstraints->at(0);
+  ASSERT_TRUE(foreign_key->columnNames);
+  ASSERT_EQ(foreign_key->columnNames->size(), 2);
+  ASSERT_STREQ(foreign_key->columnNames->at(0), "a");
+  ASSERT_STREQ(foreign_key->columnNames->at(1), "b");
+  ASSERT_TRUE(foreign_key->references);
+  ASSERT_STREQ(foreign_key->references->schema, "bar");
+  ASSERT_STREQ(foreign_key->references->table, "baz");
+  ASSERT_TRUE(foreign_key->references->columns);
+  ASSERT_EQ(foreign_key->references->columns->size(), 2);
+  ASSERT_STREQ(foreign_key->references->columns->at(0), "x");
+  ASSERT_STREQ(foreign_key->references->columns->at(1), "y");
+
+  result = parse_and_move("CREATE TABLE foo (a int, b int, FOREIGN KEY (b) REFERENCES baz)");
+  ASSERT(result.isValid());
+  ASSERT_EQ(result.size(), 1);
+  ASSERT_EQ(result.getStatement(0)->type(), kStmtCreate);
+  stmt = (const CreateStatement*)result.getStatement(0);
+  ASSERT_EQ(stmt->type, kCreateTable);
+  ASSERT_TRUE(stmt->tableConstraints);
+  ASSERT_EQ(stmt->tableConstraints->size(), 1);
+  ASSERT_EQ(stmt->tableConstraints->at(0)->type, ConstraintType::ForeignKey);
+  foreign_key = (const ForeignKeyConstraint*)stmt->tableConstraints->at(0);
+  ASSERT_TRUE(foreign_key->columnNames);
+  printf("%zu\n", foreign_key->columnNames->size());
+  ASSERT_EQ(foreign_key->columnNames->size(), 1);
+  ASSERT_STREQ(foreign_key->columnNames->at(0), "b");
+  ASSERT_TRUE(foreign_key->references);
+  ASSERT_FALSE(foreign_key->references->schema);
+  ASSERT_STREQ(foreign_key->references->table, "baz");
+  ASSERT_FALSE(foreign_key->references->columns);
+}
+
 TEST(CreateAsSelectStatementTest) {
-  SQLParserResult result;
+  auto result = SQLParserResult{};
   SQLParser::parse("CREATE TABLE students_2 AS SELECT student_number, grade FROM students", &result);
 
   ASSERT(result.isValid());
@@ -196,7 +271,7 @@ TEST(CreateAsSelectStatementTest) {
 }
 
 TEST(UpdateStatementTest) {
-  SQLParserResult result;
+  auto result = SQLParserResult{};
   SQLParser::parse("UPDATE students SET grade = 5.0, name = 'test' WHERE name = 'Max O''Mustermann';", &result);
 
   ASSERT(result.isValid());
@@ -266,7 +341,7 @@ TEST(InsertStatementTest) {
 }
 
 TEST(AlterStatementDropActionTest) {
-  SQLParserResult result;
+  auto result = SQLParserResult{};
   SQLParser::parse("ALTER TABLE mytable DROP COLUMN IF EXISTS mycolumn", &result);
 
   ASSERT(result.isValid());
@@ -283,7 +358,7 @@ TEST(AlterStatementDropActionTest) {
 }
 
 TEST(CreateIndexStatementTest) {
-  SQLParserResult result;
+  auto result = SQLParserResult{};
   SQLParser::parse("CREATE INDEX myindex ON myTable (col1);", &result);
 
   ASSERT(result.isValid());
@@ -298,7 +373,7 @@ TEST(CreateIndexStatementTest) {
 }
 
 TEST(CreateIndexStatementIfNotExistsTest) {
-  SQLParserResult result;
+  auto result = SQLParserResult{};
   SQLParser::parse("CREATE INDEX IF NOT EXISTS myindex ON myTable (col1, col2);", &result);
 
   ASSERT(result.isValid());
@@ -313,7 +388,7 @@ TEST(CreateIndexStatementIfNotExistsTest) {
 }
 
 TEST(DropIndexTest) {
-  SQLParserResult result;
+  auto result = SQLParserResult{};
   SQLParser::parse("DROP INDEX myindex", &result);
 
   ASSERT(result.isValid());
@@ -325,7 +400,7 @@ TEST(DropIndexTest) {
 }
 
 TEST(DropIndexIfExistsTest) {
-  SQLParserResult result;
+  auto result = SQLParserResult{};
   SQLParser::parse("DROP INDEX IF EXISTS myindex", &result);
 
   ASSERT(result.isValid());
@@ -465,25 +540,13 @@ TEST(CopyStatementTest) {
   ASSERT_STREQ(select_stmt->fromTable->name, "students");
 }
 
-SQLParserResult parse_and_move(std::string query) {
-  hsql::SQLParserResult result;
-  hsql::SQLParser::parse(query, &result);
-  // Moves on return.
-  return result;
-}
-
-SQLParserResult move_in_and_back(SQLParserResult res) {
-  // Moves on return.
-  return res;
-}
-
 TEST(MoveSQLResultTest) {
-  SQLParserResult res = parse_and_move("SELECT * FROM test;");
+  auto res = parse_and_move("SELECT * FROM test;");
   ASSERT(res.isValid());
   ASSERT_EQ(1, res.size());
 
   // Moved around.
-  SQLParserResult new_res = move_in_and_back(std::move(res));
+  auto new_res = move_in_and_back(std::move(res));
 
   // Original object should be invalid.
   ASSERT_FALSE(res.isValid());

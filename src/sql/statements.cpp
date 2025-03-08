@@ -1,34 +1,15 @@
 #include "statements.h"
-#include "AlterStatement.h"
 #include "ImportExportOptions.h"
 
 namespace hsql {
-
-// KeyConstraints
-TableConstraint::TableConstraint(ConstraintType type, std::vector<char*>* columnNames)
-    : type(type), columnNames(columnNames) {}
-
-TableConstraint::~TableConstraint() {
-  for (char* def : *columnNames) {
-    free(def);
-  }
-  delete columnNames;
-}
-
-// ColumnDefinition
-ColumnDefinition::ColumnDefinition(char* name, ColumnType type, std::unordered_set<ConstraintType>* column_constraints)
-    : column_constraints(column_constraints), name(name), type(type), nullable(true) {}
-
-ColumnDefinition::~ColumnDefinition() {
-  free(name);
-  delete column_constraints;
-}
 
 ColumnType::ColumnType(DataType data_type, int64_t length, int64_t precision, int64_t scale)
     : data_type(data_type), length(length), precision(precision), scale(scale) {}
 
 bool operator==(const ColumnType& lhs, const ColumnType& rhs) {
-  if (lhs.data_type != rhs.data_type) return false;
+  if (lhs.data_type != rhs.data_type) {
+    return false;
+  }
   return lhs.length == rhs.length && lhs.precision == rhs.precision && lhs.scale == rhs.scale;
 }
 

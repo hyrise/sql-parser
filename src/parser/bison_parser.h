@@ -241,29 +241,31 @@ extern int hsql_debug;
     SQL_TRUE = 409,                /* TRUE  */
     SQL_FALSE = 410,               /* FALSE  */
     SQL_BOOLEAN = 411,             /* BOOLEAN  */
-    SQL_TRANSACTION = 412,         /* TRANSACTION  */
-    SQL_BEGIN = 413,               /* BEGIN  */
-    SQL_COMMIT = 414,              /* COMMIT  */
-    SQL_ROLLBACK = 415,            /* ROLLBACK  */
-    SQL_NOWAIT = 416,              /* NOWAIT  */
-    SQL_SKIP = 417,                /* SKIP  */
-    SQL_LOCKED = 418,              /* LOCKED  */
-    SQL_SHARE = 419,               /* SHARE  */
-    SQL_RANGE = 420,               /* RANGE  */
-    SQL_ROWS = 421,                /* ROWS  */
-    SQL_GROUPS = 422,              /* GROUPS  */
-    SQL_UNBOUNDED = 423,           /* UNBOUNDED  */
-    SQL_FOLLOWING = 424,           /* FOLLOWING  */
-    SQL_PRECEDING = 425,           /* PRECEDING  */
-    SQL_CURRENT_ROW = 426,         /* CURRENT_ROW  */
-    SQL_EQUALS = 427,              /* EQUALS  */
-    SQL_NOTEQUALS = 428,           /* NOTEQUALS  */
-    SQL_LESS = 429,                /* LESS  */
-    SQL_GREATER = 430,             /* GREATER  */
-    SQL_LESSEQ = 431,              /* LESSEQ  */
-    SQL_GREATEREQ = 432,           /* GREATEREQ  */
-    SQL_NOTNULL = 433,             /* NOTNULL  */
-    SQL_UMINUS = 434               /* UMINUS  */
+    SQL_FOREIGN = 412,             /* FOREIGN  */
+    SQL_TRANSACTION = 413,         /* TRANSACTION  */
+    SQL_BEGIN = 414,               /* BEGIN  */
+    SQL_COMMIT = 415,              /* COMMIT  */
+    SQL_ROLLBACK = 416,            /* ROLLBACK  */
+    SQL_NOWAIT = 417,              /* NOWAIT  */
+    SQL_SKIP = 418,                /* SKIP  */
+    SQL_LOCKED = 419,              /* LOCKED  */
+    SQL_SHARE = 420,               /* SHARE  */
+    SQL_REFERENCES = 421,          /* REFERENCES  */
+    SQL_RANGE = 422,               /* RANGE  */
+    SQL_ROWS = 423,                /* ROWS  */
+    SQL_GROUPS = 424,              /* GROUPS  */
+    SQL_UNBOUNDED = 425,           /* UNBOUNDED  */
+    SQL_FOLLOWING = 426,           /* FOLLOWING  */
+    SQL_PRECEDING = 427,           /* PRECEDING  */
+    SQL_CURRENT_ROW = 428,         /* CURRENT_ROW  */
+    SQL_EQUALS = 429,              /* EQUALS  */
+    SQL_NOTEQUALS = 430,           /* NOTEQUALS  */
+    SQL_LESS = 431,                /* LESS  */
+    SQL_GREATER = 432,             /* GREATER  */
+    SQL_LESSEQ = 433,              /* LESSEQ  */
+    SQL_GREATEREQ = 434,           /* GREATEREQ  */
+    SQL_NOTNULL = 435,             /* NOTNULL  */
+    SQL_UMINUS = 436               /* UMINUS  */
   };
   typedef enum hsql_tokentype hsql_token_kind_t;
 #endif
@@ -272,7 +274,7 @@ extern int hsql_debug;
 #if ! defined HSQL_STYPE && ! defined HSQL_STYPE_IS_DECLARED
 union HSQL_STYPE
 {
-#line 97 "bison_parser.y"
+#line 100 "bison_parser.y"
 
   // clang-format on
   bool bval;
@@ -299,9 +301,10 @@ union HSQL_STYPE
 
   hsql::Alias* alias_t;
   hsql::AlterAction* alter_action_t;
+  hsql::ConstraintType column_constraint_t;
+  hsql::ColumnConstraints* column_constraints_t;
   hsql::ColumnDefinition* column_t;
   hsql::ColumnType column_type_t;
-  hsql::ConstraintType column_constraint_t;
   hsql::DatetimeField datetime_field;
   hsql::DropColumnAction* drop_action_t;
   hsql::Expr* expr;
@@ -315,6 +318,7 @@ union HSQL_STYPE
   hsql::LockingClause* locking_t;
   hsql::OrderDescription* order;
   hsql::OrderType order_type;
+  hsql::ReferencesSpecification* references_spec_t;
   hsql::SetOperation* set_operator_t;
   hsql::TableConstraint* table_constraint_t;
   hsql::TableElement* table_element_t;
@@ -325,7 +329,6 @@ union HSQL_STYPE
   hsql::WithDescription* with_description_t;
 
   std::vector<char*>* str_vec;
-  std::unordered_set<hsql::ConstraintType>* column_constraint_set;
   std::vector<hsql::Expr*>* expr_vec;
   std::vector<hsql::OrderDescription*>* order_vec;
   std::vector<hsql::SQLStatement*>* stmt_vec;
@@ -344,7 +347,7 @@ union HSQL_STYPE
 
   // clang-format off
 
-#line 348 "bison_parser.h"
+#line 351 "bison_parser.h"
 
 };
 typedef union HSQL_STYPE HSQL_STYPE;
