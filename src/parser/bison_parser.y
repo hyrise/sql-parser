@@ -657,7 +657,7 @@ column_type : BIGINT { $$ = ColumnType{DataType::BIGINT}; }
 | TEXT { $$ = ColumnType{DataType::TEXT}; }
 | TIME opt_time_precision { $$ = ColumnType{DataType::TIME, 0, $2}; }
 | TIMESTAMP { $$ = ColumnType{DataType::DATETIME}; }
-| VARCHAR '(' INTVAL ')' { $$ = ColumnType{DataType::VARCHAR, $3}; }
+| VARCHAR '(' INTVAL ')' { $$ = ColumnType{DataType::VARCHAR, $3}; };
 
 opt_time_precision : '(' INTVAL ')' { $$ = $2; }
 | /* empty */ { $$ = 0; };
@@ -688,7 +688,7 @@ column_constraints : column_constraint {
   $1->constraints->insert(ConstraintType::ForeignKey);
   $1->references->emplace_back($2);
   $$ = $1;
-}
+};
 
 column_constraint : PRIMARY KEY { $$ = ConstraintType::PrimaryKey; }
 | UNIQUE { $$ = ConstraintType::Unique; }
