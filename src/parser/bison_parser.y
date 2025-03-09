@@ -123,10 +123,10 @@
 
   hsql::Alias* alias_t;
   hsql::AlterAction* alter_action_t;
-  hsql::ConstraintType column_constraint_t;
   hsql::ColumnConstraints* column_constraints_t;
   hsql::ColumnDefinition* column_t;
   hsql::ColumnType column_type_t;
+  hsql::ConstraintType column_constraint_t;
   hsql::DatetimeField datetime_field;
   hsql::DropColumnAction* drop_action_t;
   hsql::Expr* expr;
@@ -225,9 +225,9 @@
 %token SECONDS MINUTES HOURS DAYS MONTHS YEARS INTERVAL
 %token TRUE FALSE BOOLEAN
 %token TRANSACTION BEGIN COMMIT ROLLBACK
-%token NOWAIT SKIP LOCKED SHARE REFERENCES
+%token NOWAIT SKIP LOCKED SHARE
 %token RANGE ROWS GROUPS UNBOUNDED FOLLOWING PRECEDING CURRENT_ROW
-%token UNIQUE PRIMARY FOREIGN KEY
+%token UNIQUE PRIMARY FOREIGN KEY REFERENCES
 
 /*********************************
  ** Non-Terminal types (http://www.gnu.org/software/bison/manual/html_node/Type-Decl.html)

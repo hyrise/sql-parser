@@ -246,18 +246,18 @@ extern int hsql_debug;
     SQL_SKIP = 414,                /* SKIP  */
     SQL_LOCKED = 415,              /* LOCKED  */
     SQL_SHARE = 416,               /* SHARE  */
-    SQL_REFERENCES = 417,          /* REFERENCES  */
-    SQL_RANGE = 418,               /* RANGE  */
-    SQL_ROWS = 419,                /* ROWS  */
-    SQL_GROUPS = 420,              /* GROUPS  */
-    SQL_UNBOUNDED = 421,           /* UNBOUNDED  */
-    SQL_FOLLOWING = 422,           /* FOLLOWING  */
-    SQL_PRECEDING = 423,           /* PRECEDING  */
-    SQL_CURRENT_ROW = 424,         /* CURRENT_ROW  */
-    SQL_UNIQUE = 425,              /* UNIQUE  */
-    SQL_PRIMARY = 426,             /* PRIMARY  */
-    SQL_FOREIGN = 427,             /* FOREIGN  */
-    SQL_KEY = 428,                 /* KEY  */
+    SQL_RANGE = 417,               /* RANGE  */
+    SQL_ROWS = 418,                /* ROWS  */
+    SQL_GROUPS = 419,              /* GROUPS  */
+    SQL_UNBOUNDED = 420,           /* UNBOUNDED  */
+    SQL_FOLLOWING = 421,           /* FOLLOWING  */
+    SQL_PRECEDING = 422,           /* PRECEDING  */
+    SQL_CURRENT_ROW = 423,         /* CURRENT_ROW  */
+    SQL_UNIQUE = 424,              /* UNIQUE  */
+    SQL_PRIMARY = 425,             /* PRIMARY  */
+    SQL_FOREIGN = 426,             /* FOREIGN  */
+    SQL_KEY = 427,                 /* KEY  */
+    SQL_REFERENCES = 428,          /* REFERENCES  */
     SQL_EQUALS = 429,              /* EQUALS  */
     SQL_NOTEQUALS = 430,           /* NOTEQUALS  */
     SQL_LESS = 431,                /* LESS  */
@@ -301,10 +301,10 @@ union HSQL_STYPE
 
   hsql::Alias* alias_t;
   hsql::AlterAction* alter_action_t;
-  hsql::ConstraintType column_constraint_t;
   hsql::ColumnConstraints* column_constraints_t;
   hsql::ColumnDefinition* column_t;
   hsql::ColumnType column_type_t;
+  hsql::ConstraintType column_constraint_t;
   hsql::DatetimeField datetime_field;
   hsql::DropColumnAction* drop_action_t;
   hsql::Expr* expr;

@@ -15,7 +15,7 @@ std::ostream& operator<<(std::ostream& os, const ConstraintType constraint_type)
       os << "FOREIGN KEY";
       break;
     case ConstraintType::PrimaryKey:
-      os << "PRUMARY KEY";
+      os << "PRIMARY KEY";
       break;
     case ConstraintType::Unique:
       os << "UNIQUE";
