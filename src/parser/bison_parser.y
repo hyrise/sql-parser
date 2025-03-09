@@ -176,8 +176,8 @@
 
 %destructor { } <fval> <ival> <bval> <join_type> <order_type> <datetime_field> <column_type_t> <column_constraint_t> <import_type_t> <lock_mode_t> <lock_wait_policy_t> <frame_type>
 %destructor {
-  free( ($$.name) );
-  free( ($$.schema) );
+  free($$.name);
+  free($$.schema);
 } <table_name>
 %destructor {
   if ($$) {
@@ -187,7 +187,7 @@
   }
   delete ($$);
 } <str_vec>
-%destructor { free( ($$) ); } <sval>
+%destructor { free($$); } <sval>
 %destructor {
   if ($$) {
     for (auto ptr : *($$)) {
@@ -210,23 +210,24 @@
 %token DEALLOCATE PARAMETERS INTERSECT TEMPORARY TIMESTAMP
 %token DISTINCT NVARCHAR RESTRICT TRUNCATE ANALYZE BETWEEN
 %token CASCADE COLUMNS CONTROL DEFAULT EXECUTE EXPLAIN ENCODING
-%token INTEGER NATURAL PREPARE PRIMARY SCHEMAS CHARACTER_VARYING REAL DECIMAL SMALLINT BIGINT
+%token INTEGER NATURAL PREPARE SCHEMAS CHARACTER_VARYING REAL DECIMAL SMALLINT BIGINT
 %token SPATIAL VARCHAR VIRTUAL DESCRIBE BEFORE COLUMN CREATE DELETE DIRECT
 %token DOUBLE ESCAPE EXCEPT EXISTS EXTRACT CAST FORMAT GLOBAL HAVING IMPORT
 %token INSERT ISNULL OFFSET RENAME SCHEMA SELECT SORTED
-%token TABLES UNIQUE UNLOAD UPDATE VALUES AFTER ALTER CROSS
+%token TABLES UNLOAD UPDATE VALUES AFTER ALTER CROSS
 %token DELTA FLOAT GROUP INDEX INNER LIMIT LOCAL MERGE MINUS ORDER OVER
 %token OUTER RIGHT TABLE UNION USING WHERE CALL CASE CHAR COPY DATE DATETIME
 %token DESC DROP ELSE FILE FROM FULL HASH HINT INTO JOIN
 %token LEFT LIKE LOAD LONG NULL PARTITION PLAN SHOW TEXT THEN TIME
-%token VIEW WHEN WITH ADD ALL AND ASC END FOR INT KEY
+%token VIEW WHEN WITH ADD ALL AND ASC END FOR INT
 %token NOT OFF SET TOP AS BY IF IN IS OF ON OR TO NO
 %token ARRAY CONCAT ILIKE SECOND MINUTE HOUR DAY MONTH YEAR
 %token SECONDS MINUTES HOURS DAYS MONTHS YEARS INTERVAL
-%token TRUE FALSE BOOLEAN FOREIGN
+%token TRUE FALSE BOOLEAN
 %token TRANSACTION BEGIN COMMIT ROLLBACK
 %token NOWAIT SKIP LOCKED SHARE REFERENCES
 %token RANGE ROWS GROUPS UNBOUNDED FOLLOWING PRECEDING CURRENT_ROW
+%token UNIQUE PRIMARY FOREIGN KEY
 
 /*********************************
  ** Non-Terminal types (http://www.gnu.org/software/bison/manual/html_node/Type-Decl.html)
@@ -633,6 +634,7 @@ column_def : IDENTIFIER column_type opt_column_constraints {
   if (!$$->trySetNullableExplicit()) {
     yyerror(&yyloc, result, scanner, ("Conflicting nullability constraints for " + std::string{$1}).c_str());
   }
+  delete $3;
 };
 
 column_type : BIGINT { $$ = ColumnType{DataType::BIGINT}; }

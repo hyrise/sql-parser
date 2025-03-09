@@ -9,19 +9,7 @@
 
 #include "sql_asserts.h"
 
-using namespace hsql;
-
-SQLParserResult parse_and_move(std::string query) {
-  auto result = SQLParserResult{};
-  SQLParser::parse(query, &result);
-  // Moves on return.
-  return result;
-}
-
-SQLParserResult move_in_and_back(SQLParserResult res) {
-  // Moves on return.
-  return res;
-}
+namespace hsql {
 
 TEST(DeleteStatementTest) {
   auto result = SQLParserResult{};
@@ -189,9 +177,14 @@ TEST(CreateStatementTest) {
 }
 
 TEST(CreateStatementForeignKeyTest) {
-  auto result = parse_and_move("CREATE TABLE foo (a int, b int REFERENCES bar.baz (x))");
+  auto result = SQLParserResult{};
+  SQLParser::parse(
+      "CREATE TABLE foo (a int, b int REFERENCES bar.baz (x)); "
+      "CREATE TABLE foo (a int, b int, FOREIGN KEY (a, b) REFERENCES bar.baz (x, y)); "
+      "CREATE TABLE foo (a int, b int, FOREIGN KEY (b) REFERENCES baz)",
+      &result);
   ASSERT(result.isValid());
-  ASSERT_EQ(result.size(), 1);
+  ASSERT_EQ(result.size(), 3);
   ASSERT_EQ(result.getStatement(0)->type(), kStmtCreate);
   const auto* stmt = (const CreateStatement*)result.getStatement(0);
   // We focus on the correct parsing of the FKs here. The remaining functionality is tested in CreateStatementTest.
@@ -209,11 +202,8 @@ TEST(CreateStatementForeignKeyTest) {
   ASSERT_EQ(stmt->columns->at(1)->references->at(0)->columns->size(), 1);
   ASSERT_STREQ(stmt->columns->at(1)->references->at(0)->columns->at(0), "x");
 
-  result = parse_and_move("CREATE TABLE foo (a int, b int, FOREIGN KEY (a, b) REFERENCES bar.baz (x, y))");
-  ASSERT(result.isValid());
-  ASSERT_EQ(result.size(), 1);
-  ASSERT_EQ(result.getStatement(0)->type(), kStmtCreate);
-  stmt = (const CreateStatement*)result.getStatement(0);
+  ASSERT_EQ(result.getStatement(1)->type(), kStmtCreate);
+  stmt = (const CreateStatement*)result.getStatement(1);
   ASSERT_EQ(stmt->type, kCreateTable);
   ASSERT_TRUE(stmt->tableConstraints);
   ASSERT_EQ(stmt->tableConstraints->size(), 1);
@@ -231,11 +221,8 @@ TEST(CreateStatementForeignKeyTest) {
   ASSERT_STREQ(foreign_key->references->columns->at(0), "x");
   ASSERT_STREQ(foreign_key->references->columns->at(1), "y");
 
-  result = parse_and_move("CREATE TABLE foo (a int, b int, FOREIGN KEY (b) REFERENCES baz)");
-  ASSERT(result.isValid());
-  ASSERT_EQ(result.size(), 1);
-  ASSERT_EQ(result.getStatement(0)->type(), kStmtCreate);
-  stmt = (const CreateStatement*)result.getStatement(0);
+  ASSERT_EQ(result.getStatement(2)->type(), kStmtCreate);
+  stmt = (const CreateStatement*)result.getStatement(2);
   ASSERT_EQ(stmt->type, kCreateTable);
   ASSERT_TRUE(stmt->tableConstraints);
   ASSERT_EQ(stmt->tableConstraints->size(), 1);
@@ -353,7 +340,7 @@ TEST(AlterStatementDropActionTest) {
 
   auto dropAction = (const DropColumnAction*)stmt->action;
 
-  ASSERT_EQ(dropAction->type, hsql::ActionType::DropColumn);
+  ASSERT_EQ(dropAction->type, ActionType::DropColumn);
   ASSERT_STREQ(dropAction->columnName, "mycolumn");
 }
 
@@ -538,6 +525,18 @@ TEST(CopyStatementTest) {
   ASSERT_STREQ(select_stmt->selectList->at(1)->getName(), "lastname");
   ASSERT_NOTNULL(select_stmt->fromTable);
   ASSERT_STREQ(select_stmt->fromTable->name, "students");
+}
+
+SQLParserResult parse_and_move(std::string query) {
+  auto result = SQLParserResult{};
+  SQLParser::parse(query, &result);
+  // Moves on return.
+  return result;
+}
+
+SQLParserResult move_in_and_back(SQLParserResult res) {
+  // Moves on return.
+  return res;
 }
 
 TEST(MoveSQLResultTest) {
@@ -737,7 +736,7 @@ TEST(NestedSetOperationsWithMultipleWithClauses) {
 }
 
 TEST(WrongOrderByStatementTest) {
-  SQLParserResult res = parse_and_move("SELECT * FROM students ORDER BY name INTERSECT SELECT grade FROM students_2;");
+  auto res = parse_and_move("SELECT * FROM students ORDER BY name INTERSECT SELECT grade FROM students_2;");
   ASSERT_FALSE(res.isValid());
 }
 
@@ -778,5 +777,7 @@ TEST(CastAsType) {
   ASSERT_EQ(stmt->selectList->front()->columnType.data_type, DataType::VARCHAR);
   ASSERT_EQ(stmt->selectList->front()->columnType.length, 8);
 }
+
+}  // namespace hsql
 
 TEST_MAIN();

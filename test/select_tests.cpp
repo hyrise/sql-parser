@@ -5,7 +5,7 @@
 #include "sql_asserts.h"
 #include "thirdparty/microtest/microtest.h"
 
-using namespace hsql;
+namespace hsql {
 
 TEST(SelectTest) {
   TEST_PARSE_SINGLE_SQL("SELECT * FROM students;", kStmtSelect, SelectStatement, result, stmt);
@@ -1248,3 +1248,5 @@ TEST(WindowFunctions) {
     ASSERT_EQ(stmt->selectList->at(0)->windowDescription->frameDescription->end->unbounded, expected_end.unbounded);
   }
 }
+
+}  // namespace hsql

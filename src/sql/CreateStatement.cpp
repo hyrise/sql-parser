@@ -51,7 +51,7 @@ ReferencesSpecification::~ReferencesSpecification() {
 }
 
 ForeignKeyConstraint::ForeignKeyConstraint(std::vector<char*>* columnNames, ReferencesSpecification* references)
-    : TableConstraint(ConstraintType::ForeignKey, columnNames), references(references) {}
+    : TableConstraint(ConstraintType::ForeignKey, columnNames), references{references} {}
 
 ForeignKeyConstraint::~ForeignKeyConstraint() { delete references; }
 
@@ -67,8 +67,8 @@ ColumnDefinition::~ColumnDefinition() {
   free(name);
   delete column_constraints;
   if (references) {
-    for (auto* references : *references) {
-      delete references;
+    for (auto* ref : *references) {
+      delete ref;
     }
   }
   delete references;
@@ -108,14 +108,14 @@ CreateStatement::~CreateStatement() {
   delete select;
 
   if (columns) {
-    for (ColumnDefinition* def : *columns) {
+    for (auto* def : *columns) {
       delete def;
     }
     delete columns;
   }
 
   if (tableConstraints) {
-    for (TableConstraint* def : *tableConstraints) {
+    for (auto* def : *tableConstraints) {
       delete def;
     }
     delete tableConstraints;

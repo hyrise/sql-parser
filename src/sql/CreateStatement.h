@@ -35,14 +35,12 @@ struct ReferencesSpecification {
 
   char* schema;
   char* table;
-
   std::vector<char*>* columns;
 };
 
 // Foreign key constraint on table level (when specified as table element).
 struct ForeignKeyConstraint : TableConstraint {
   ForeignKeyConstraint(std::vector<char*>* columnNames, ReferencesSpecification* references);
-
   ~ForeignKeyConstraint() override;
 
   ReferencesSpecification* references;
@@ -52,7 +50,6 @@ struct ForeignKeyConstraint : TableConstraint {
 struct ColumnDefinition : TableElement {
   ColumnDefinition(char* name, ColumnType type, std::unordered_set<ConstraintType>* column_constraints,
                    std::vector<ReferencesSpecification*>* references);
-
   ~ColumnDefinition() override;
 
   // By default, columns are nullable. However, we track if a column is explicitly requested to be nullable to
@@ -68,6 +65,7 @@ struct ColumnDefinition : TableElement {
 
 struct ColumnConstraints {
   explicit ColumnConstraints();
+
   std::unordered_set<ConstraintType>* constraints;
   std::vector<ReferencesSpecification*>* references;
 };
