@@ -1,8 +1,9 @@
-
 #include "sqlhelper.h"
+
 #include <iostream>
 #include <map>
 #include <sstream>
+#include <stdint.h>
 #include <string>
 
 namespace hsql {
