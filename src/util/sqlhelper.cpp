@@ -1,10 +1,10 @@
-
 #include "sqlhelper.h"
+
 #include <iostream>
 #include <map>
 #include <sstream>
-#include <string>
 #include <stdint.h>
+#include <string>
 
 namespace hsql {
 
