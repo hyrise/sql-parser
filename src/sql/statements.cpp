@@ -1,4 +1,8 @@
 #include "statements.h"
+
+#include <stdint.h>
+
+#include "AlterStatement.h"
 #include "ImportExportOptions.h"
 
 namespace hsql {
