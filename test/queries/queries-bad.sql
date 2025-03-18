@@ -6,6 +6,14 @@
 !gibberish;
 !CREATE TABLE "table" FROM TBL FILE 'students.tbl';gibberish
 !CREATE TABLE "table" FROM TBL FILE 'students.tbl';1
+!CREATE TABLE foo (a int, b int bar);
+!CREATE TABLE foo (a int, b REFERENCES bar);
+!CREATE TABLE foo (a int, b int, FOREIGN (b) REFERENCES bar);
+!CREATE TABLE foo (a int, b int, KEY (b) REFERENCES bar);
+!CREATE TABLE foo (a int, b int, FOREIGN KEY (b) bar);
+!CREATE TABLE foo (a int, b int, FOREIGN KEY REFERENCES bar);
+!CREATE TABLE foo (a int, b int, FOREIGN KEY b REFERENCES bar);
+!CREATE TABLE foo (a int, b int, FOREIGN KEY (b) REFERENCES bar x);
 !INSERT INTO test_table VALUESd (1, 2, 'test');
 !SELECT * FROM t WHERE a = ? AND b = ?;gibberish;
 !SHOW COLUMNS;
