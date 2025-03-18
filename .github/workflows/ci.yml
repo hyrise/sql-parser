@@ -32,6 +32,8 @@ jobs:
             cxx: g++-14
             os: ubuntu-latest
             container: ubuntu:24.04
+            # We need relaxed builds for debug mode with current GCC versions, see #218.
+            build_options: "relaxed_build=on"
 
           - name: clang-19
             cc: clang-19
