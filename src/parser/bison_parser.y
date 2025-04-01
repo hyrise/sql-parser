@@ -63,7 +63,12 @@
 // %output  "bison_parser.cpp"
 // %defines "bison_parser.h"
 
-// Tell bison to create a reentrant parser
+// Raise error on shift/reduce conflict, i.e., when bison's one-token lookahead cannot decide on a single next state.
+// Without this line, only a warning is printed. The line raises an error when the expected number of conflicts (0)
+// does not occur.
+%expect 0
+
+// Tell bison to create a reentrant parser.
 %define api.pure full
 
 // Prefix the parser
@@ -120,6 +125,7 @@
 
   hsql::Alias* alias_t;
   hsql::AlterAction* alter_action_t;
+  hsql::ColumnConstraints* column_constraints_t;
   hsql::ColumnDefinition* column_t;
   hsql::ColumnType column_type_t;
   hsql::ConstraintType column_constraint_t;
@@ -136,6 +142,7 @@
   hsql::LockingClause* locking_t;
   hsql::OrderDescription* order;
   hsql::OrderType order_type;
+  hsql::ReferencesSpecification* references_spec_t;
   hsql::SetOperation* set_operator_t;
   hsql::TableConstraint* table_constraint_t;
   hsql::TableElement* table_element_t;
@@ -146,7 +153,6 @@
   hsql::WithDescription* with_description_t;
 
   std::vector<char*>* str_vec;
-  std::unordered_set<hsql::ConstraintType>* column_constraint_set;
   std::vector<hsql::Expr*>* expr_vec;
   std::vector<hsql::OrderDescription*>* order_vec;
   std::vector<hsql::SQLStatement*>* stmt_vec;
@@ -170,10 +176,10 @@
  ** Destructor symbols
  *********************************/
 
-%destructor { } <fval> <ival> <bval> <join_type> <order_type> <datetime_field> <column_type_t> <column_constraint_t> <import_type_t> <column_constraint_set> <lock_mode_t> <lock_wait_policy_t> <frame_type>
+%destructor { } <fval> <ival> <bval> <join_type> <order_type> <datetime_field> <column_type_t> <column_constraint_t> <import_type_t> <lock_mode_t> <lock_wait_policy_t> <frame_type>
 %destructor {
-  free( ($$.name) );
-  free( ($$.schema) );
+  free($$.name);
+  free($$.schema);
 } <table_name>
 %destructor {
   if ($$) {
@@ -183,7 +189,7 @@
   }
   delete ($$);
 } <str_vec>
-%destructor { free( ($$) ); } <sval>
+%destructor { free($$); } <sval>
 %destructor {
   if ($$) {
     for (auto ptr : *($$)) {
@@ -206,16 +212,16 @@
 %token DEALLOCATE PARAMETERS INTERSECT TEMPORARY TIMESTAMP
 %token DISTINCT NVARCHAR RESTRICT TRUNCATE ANALYZE BETWEEN
 %token CASCADE COLUMNS CONTROL DEFAULT EXECUTE EXPLAIN ENCODING
-%token INTEGER NATURAL PREPARE PRIMARY SCHEMAS CHARACTER_VARYING REAL DECIMAL SMALLINT BIGINT
+%token INTEGER NATURAL PREPARE SCHEMAS CHARACTER_VARYING REAL DECIMAL SMALLINT BIGINT
 %token SPATIAL VARCHAR VIRTUAL DESCRIBE BEFORE COLUMN CREATE DELETE DIRECT
 %token DOUBLE ESCAPE EXCEPT EXISTS EXTRACT CAST FORMAT GLOBAL HAVING IMPORT
 %token INSERT ISNULL OFFSET RENAME SCHEMA SELECT SORTED
-%token TABLES UNIQUE UNLOAD UPDATE VALUES AFTER ALTER CROSS
+%token TABLES UNLOAD UPDATE VALUES AFTER ALTER CROSS
 %token DELTA FLOAT GROUP INDEX INNER LIMIT LOCAL MERGE MINUS ORDER OVER
 %token OUTER RIGHT TABLE UNION USING WHERE CALL CASE CHAR COPY DATE DATETIME
 %token DESC DROP ELSE FILE FROM FULL HASH HINT INTO JOIN
 %token LEFT LIKE LOAD LONG NULL PARTITION PLAN SHOW TEXT THEN TIME
-%token VIEW WHEN WITH ADD ALL AND ASC END FOR INT KEY
+%token VIEW WHEN WITH ADD ALL AND ASC END FOR INT
 %token NOT OFF SET TOP AS BY IF IN IS OF ON OR TO NO
 %token ARRAY CONCAT ILIKE SECOND MINUTE HOUR DAY MONTH YEAR
 %token SECONDS MINUTES HOURS DAYS MONTHS YEARS INTERVAL
@@ -223,6 +229,7 @@
 %token TRANSACTION BEGIN COMMIT ROLLBACK
 %token NOWAIT SKIP LOCKED SHARE
 %token RANGE ROWS GROUPS UNBOUNDED FOLLOWING PRECEDING CURRENT_ROW
+%token UNIQUE PRIMARY FOREIGN KEY REFERENCES
 
 /*********************************
  ** Non-Terminal types (http://www.gnu.org/software/bison/manual/html_node/Type-Decl.html)
@@ -267,6 +274,7 @@
 %type <column_t>               column_def
 %type <table_element_t>        table_elem
 %type <column_type_t>          column_type
+%type <references_spec_t>      references_spec
 %type <table_constraint_t>     table_constraint
 %type <update_t>               update_clause
 %type <locking_t>              locking_clause
@@ -275,8 +283,7 @@
 %type <with_description_t>     with_description
 %type <set_operator_t>         set_operator set_type
 %type <column_constraint_t>    column_constraint
-%type <column_constraint_set>  opt_column_constraints
-%type <column_constraint_set>  column_constraint_set
+%type <column_constraints_t>   opt_column_constraints column_constraints
 %type <alter_action_t>         alter_action
 %type <drop_action_t>          drop_action
 %type <lock_wait_policy_t>     opt_row_lock_policy
@@ -478,9 +485,7 @@ file_type : IDENTIFIER {
   free($1);
 };
 
-file_path : STRING {
-  $$ = $1;
-};
+file_path : STRING { $$ = $1; };
 
 opt_import_export_options : WITH '(' import_export_options ')' { $$ = $3; }
 | '(' import_export_options ')' { $$ = $2; }
@@ -627,10 +632,11 @@ table_elem : column_def { $$ = $1; }
 | table_constraint { $$ = $1; };
 
 column_def : IDENTIFIER column_type opt_column_constraints {
-  $$ = new ColumnDefinition($1, $2, $3);
+  $$ = new ColumnDefinition($1, $2, $3->constraints, $3->references);
   if (!$$->trySetNullableExplicit()) {
     yyerror(&yyloc, result, scanner, ("Conflicting nullability constraints for " + std::string{$1}).c_str());
   }
+  delete $3;
 };
 
 column_type : BIGINT { $$ = ColumnType{DataType::BIGINT}; }
@@ -653,7 +659,7 @@ column_type : BIGINT { $$ = ColumnType{DataType::BIGINT}; }
 | TEXT { $$ = ColumnType{DataType::TEXT}; }
 | TIME opt_time_precision { $$ = ColumnType{DataType::TIME, 0, $2}; }
 | TIMESTAMP { $$ = ColumnType{DataType::DATETIME}; }
-| VARCHAR '(' INTVAL ')' { $$ = ColumnType{DataType::VARCHAR, $3}; }
+| VARCHAR '(' INTVAL ')' { $$ = ColumnType{DataType::VARCHAR, $3}; };
 
 opt_time_precision : '(' INTVAL ')' { $$ = $2; }
 | /* empty */ { $$ = 0; };
@@ -662,17 +668,29 @@ opt_decimal_specification : '(' INTVAL ',' INTVAL ')' { $$ = new std::pair<int64
 | '(' INTVAL ')' { $$ = new std::pair<int64_t, int64_t>{$2, 0}; }
 | /* empty */ { $$ = new std::pair<int64_t, int64_t>{0, 0}; };
 
-opt_column_constraints : column_constraint_set { $$ = $1; }
-| /* empty */ { $$ = new std::unordered_set<ConstraintType>(); };
+opt_column_constraints : column_constraints { $$ = $1; }
+| /* empty */ { $$ = new ColumnConstraints(); };
 
-column_constraint_set : column_constraint {
-  $$ = new std::unordered_set<ConstraintType>();
-  $$->insert($1);
+column_constraints : column_constraint {
+  $$ = new ColumnConstraints();
+  $$->constraints->insert($1);
 }
-| column_constraint_set column_constraint {
-  $1->insert($2);
+| column_constraints column_constraint {
+  $1->constraints->insert($2);
   $$ = $1;
 }
+| references_spec {
+  $$ = new ColumnConstraints();
+  $$->constraints->insert(ConstraintType::ForeignKey);
+  $$->references->emplace_back($1);
+}
+| column_constraints references_spec {
+  // Multiple foreign keys for the same column could be possible, so we do not raise an error in that case.
+  // Think of foreign keys referenced on multiple levels (returned item references sold item references items).
+  $1->constraints->insert(ConstraintType::ForeignKey);
+  $1->references->emplace_back($2);
+  $$ = $1;
+};
 
 column_constraint : PRIMARY KEY { $$ = ConstraintType::PrimaryKey; }
 | UNIQUE { $$ = ConstraintType::Unique; }
@@ -680,7 +698,10 @@ column_constraint : PRIMARY KEY { $$ = ConstraintType::PrimaryKey; }
 | NOT NULL { $$ = ConstraintType::NotNull; };
 
 table_constraint : PRIMARY KEY '(' ident_commalist ')' { $$ = new TableConstraint(ConstraintType::PrimaryKey, $4); }
-| UNIQUE '(' ident_commalist ')' { $$ = new TableConstraint(ConstraintType::Unique, $3); };
+| UNIQUE '(' ident_commalist ')' { $$ = new TableConstraint(ConstraintType::Unique, $3); }
+| FOREIGN KEY '(' ident_commalist ')' references_spec { $$ = new ForeignKeyConstraint($4, $6); };
+
+references_spec : REFERENCES table_name opt_column_list { $$ = new ReferencesSpecification($2.schema, $2.name, $3); };
 
 /******************************
  * Drop Statement

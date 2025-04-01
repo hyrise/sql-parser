@@ -33,6 +33,10 @@ CREATE TABLE teachers (name CHARACTER VARYING(30));
 CREATE TABLE students_2 AS SELECT * FROM students
 CREATE TABLE students_3 AS SELECT city, grade FROM students WHERE grade > 3.0
 CREATE TABLE students (date_of_birth DATE, matriculation_date DATETIME, graduation_date TIMESTAMP, graduated BOOLEAN);
+CREATE TABLE foo (a int, b int REFERENCES bar REFERENCES baz);
+CREATE TABLE foo (a int, b int REFERENCES bar (x) REFERENCES baz (y));
+CREATE TABLE foo (a int, b int, FOREIGN KEY (b) REFERENCES bar, FOREIGN KEY (b) REFERENCES baz);
+CREATE TABLE foo (a int, b int, FOREIGN KEY (b) REFERENCES bar (x), FOREIGN KEY (b) REFERENCES baz (y));
 # Multiple statements
 CREATE TABLE "table" FROM TBL FILE 'students.tbl'; SELECT * FROM "table";
 # INSERT
