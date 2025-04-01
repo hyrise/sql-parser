@@ -63,10 +63,12 @@
 // %output  "bison_parser.cpp"
 // %defines "bison_parser.h"
 
-// Raise error on shift/reduce conflict.
+// Raise error on shift/reduce conflict, i.e., when bison's one-token lookahead cannot decide on a single next state.
+// Without this line, only a warning is printed. The line raises an error when the expected number of conflicts (0)
+// does not occur.
 %expect 0
 
-// Tell bison to create a reentrant parser
+// Tell bison to create a reentrant parser.
 %define api.pure full
 
 // Prefix the parser

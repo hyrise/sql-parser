@@ -274,7 +274,7 @@ extern int hsql_debug;
 #if ! defined HSQL_STYPE && ! defined HSQL_STYPE_IS_DECLARED
 union HSQL_STYPE
 {
-#line 100 "bison_parser.y"
+#line 102 "bison_parser.y"
 
   // clang-format on
   bool bval;
