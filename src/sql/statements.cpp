@@ -69,6 +69,9 @@ std::ostream& operator<<(std::ostream& stream, const ColumnType& column_type) {
     case DataType::BOOLEAN:
       stream << "BOOLEAN";
       break;
+    case DataType::INTERVAL:
+      stream << "INTERVAL";
+      break;
   }
   return stream;
 }

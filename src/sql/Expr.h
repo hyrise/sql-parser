@@ -21,6 +21,11 @@ enum ExprType {
   kExprLiteralNull,
   kExprLiteralDate,
   kExprLiteralInterval,
+  kExprLiteralTimestamp,
+  kExprLiteralTime,
+  kExprCurrentTimestamp,
+  kExprCurrentDate,
+  kExprCurrentTime,
   kExprStar,
   kExprParameter,
   kExprColumnRef,
@@ -188,7 +193,17 @@ struct Expr {
 
   static Expr* makeDateLiteral(char* val);
 
+  static Expr* makeTimestampLiteral(char* val);
+
+  static Expr* makeTimeLiteral(char* val);
+
   static Expr* makeIntervalLiteral(int64_t duration, DatetimeField unit);
+
+  static Expr* makeCurrentTimestamp();
+
+  static Expr* makeCurrentDate();
+
+  static Expr* makeCurrentTime();
 
   static Expr* makeColumnRef(char* name);
 
