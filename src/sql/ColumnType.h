@@ -16,6 +16,7 @@ enum class DataType {
   DOUBLE,
   FLOAT,
   INT,
+  INTERVAL,
   LONG,
   REAL,
   SMALLINT,

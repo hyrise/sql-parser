@@ -778,6 +778,219 @@ TEST(CastAsType) {
   ASSERT_EQ(stmt->selectList->front()->columnType.length, 8);
 }
 
+TEST(IntervalColumnTypeTest) {
+  auto result = SQLParserResult{};
+  SQLParser::parse(
+      "CREATE TABLE interval_table (c_interval INTERVAL )",
+      &result);
+
+  ASSERT(result.isValid());
+  ASSERT_EQ(result.size(), 1);
+  ASSERT_EQ(result.getStatement(0)->type(), kStmtCreate);
+
+  const CreateStatement* stmt = (const CreateStatement*)result.getStatement(0);
+  ASSERT_EQ(stmt->type, kCreateTable);
+  ASSERT_STREQ(stmt->tableName, "interval_table");
+  ASSERT_NOTNULL(stmt->columns);
+
+  // c_interval INTERVAL
+  ASSERT_STREQ(stmt->columns->at(0)->name, "c_interval");
+  ASSERT_EQ(stmt->columns->at(0)->type, (ColumnType{DataType::INTERVAL}));
+  ASSERT_EQ(stmt->columns->at(0)->nullable, true);
+}
+
+TEST(IntervalInsertTest) {
+  TEST_PARSE_SINGLE_SQL(
+      "INSERT INTO interval_table VALUES (INTERVAL '1' YEAR)",
+      kStmtInsert, InsertStatement, result_year, stmt_year);
+
+  // INTERVAL '1' YEAR
+  ASSERT_EQ(stmt_year->values->at(0)->type, kExprLiteralInterval);
+  ASSERT_EQ(stmt_year->values->at(0)->ival, 1);
+  ASSERT_EQ(stmt_year->values->at(0)->datetimeField, kDatetimeYear);
+}
+
+TEST(CurrentDateTest) {
+  TEST_PARSE_SINGLE_SQL("SELECT * FROM students WHERE graduation_date = CURRENT_DATE;",
+                       kStmtSelect, SelectStatement, result, stmt);
+
+  ASSERT_TRUE(result.isValid());
+  ASSERT_NOTNULL(stmt->whereClause);
+  ASSERT_EQ(stmt->whereClause->opType, kOpEquals);
+  ASSERT_STREQ(stmt->whereClause->expr->name, "graduation_date");
+  ASSERT_EQ(stmt->whereClause->expr2->type, kExprCurrentDate);
+}
+
+TEST(CurrentTimeTest) {
+  TEST_PARSE_SINGLE_SQL("SELECT * FROM students WHERE class_time = CURRENT_TIME;",
+                       kStmtSelect, SelectStatement, result, stmt);
+
+  ASSERT_TRUE(result.isValid());
+  ASSERT_NOTNULL(stmt->whereClause);
+  ASSERT_EQ(stmt->whereClause->opType, kOpEquals);
+  ASSERT_STREQ(stmt->whereClause->expr->name, "class_time");
+  ASSERT_EQ(stmt->whereClause->expr2->type, kExprCurrentTime);
+}
+
+TEST(CurrentTimestampTest) {
+  TEST_PARSE_SINGLE_SQL("SELECT * FROM students WHERE last_update = CURRENT_TIMESTAMP;",
+                       kStmtSelect, SelectStatement, result, stmt);
+
+  ASSERT_TRUE(result.isValid());
+  ASSERT_NOTNULL(stmt->whereClause);
+  ASSERT_EQ(stmt->whereClause->opType, kOpEquals);
+  ASSERT_STREQ(stmt->whereClause->expr->name, "last_update");
+  ASSERT_EQ(stmt->whereClause->expr2->type, kExprCurrentTimestamp);
+}
+
+TEST(CurrentDateTimeFunctionsInInsertTest) {
+  TEST_PARSE_SINGLE_SQL("INSERT INTO logs VALUES (101, CURRENT_TIMESTAMP, CURRENT_DATE, CURRENT_TIME);",
+                       kStmtInsert, InsertStatement, result, stmt);
+
+  ASSERT_TRUE(result.isValid());
+  ASSERT_EQ(stmt->values->size(), 4);
+
+  // First value is a regular integer
+  ASSERT_EQ(stmt->values->at(0)->type, kExprLiteralInt);
+  ASSERT_EQ(stmt->values->at(0)->ival, 101);
+
+  // CURRENT_TIMESTAMP
+  ASSERT_EQ(stmt->values->at(1)->type, kExprCurrentTimestamp);
+
+  // CURRENT_DATE
+  ASSERT_EQ(stmt->values->at(2)->type, kExprCurrentDate);
+
+  // CURRENT_TIME
+  ASSERT_EQ(stmt->values->at(3)->type, kExprCurrentTime);
+}
+
+TEST(CurrentDateTimeFunctionsInUpdateTest) {
+  TEST_PARSE_SINGLE_SQL("UPDATE logs SET timestamp_col = CURRENT_TIMESTAMP, date_col = CURRENT_DATE, time_col = CURRENT_TIME WHERE id = 101;",
+                       kStmtUpdate, UpdateStatement, result, stmt);
+
+  ASSERT_TRUE(result.isValid());
+  ASSERT_EQ(stmt->updates->size(), 3);
+
+  // CURRENT_TIMESTAMP
+  ASSERT_STREQ(stmt->updates->at(0)->column, "timestamp_col");
+  ASSERT_EQ(stmt->updates->at(0)->value->type, kExprCurrentTimestamp);
+
+  // CURRENT_DATE
+  ASSERT_STREQ(stmt->updates->at(1)->column, "date_col");
+  ASSERT_EQ(stmt->updates->at(1)->value->type, kExprCurrentDate);
+
+  // CURRENT_TIME
+  ASSERT_STREQ(stmt->updates->at(2)->column, "time_col");
+  ASSERT_EQ(stmt->updates->at(2)->value->type, kExprCurrentTime);
+}
+
+TEST(CurrentDateWithIntervalTest) {
+  TEST_PARSE_SINGLE_SQL("SELECT * FROM students WHERE graduation_date = CURRENT_DATE + INTERVAL '1' YEAR;",
+                       kStmtSelect, SelectStatement, result, stmt);
+
+  ASSERT_TRUE(result.isValid());
+  ASSERT_NOTNULL(stmt->whereClause);
+  ASSERT_EQ(stmt->whereClause->opType, kOpEquals);
+  ASSERT_STREQ(stmt->whereClause->expr->name, "graduation_date");
+  ASSERT_EQ(stmt->whereClause->expr2->type, kExprOperator);
+  ASSERT_EQ(stmt->whereClause->expr2->opType, kOpPlus);
+  ASSERT_EQ(stmt->whereClause->expr2->expr->type, kExprCurrentDate);
+  ASSERT_EQ(stmt->whereClause->expr2->expr2->type, kExprLiteralInterval);
+  ASSERT_EQ(stmt->whereClause->expr2->expr2->ival, 1);
+  ASSERT_EQ(stmt->whereClause->expr2->expr2->datetimeField, kDatetimeYear);
+}
+
+TEST(IntervalYearTest) {
+  TEST_PARSE_SINGLE_SQL("SELECT * FROM students WHERE graduation_date = DATE '2025-04-04' + INTERVAL '1' YEAR;",
+                       kStmtSelect, SelectStatement, result, stmt);
+
+  ASSERT_TRUE(result.isValid());
+  ASSERT_NOTNULL(stmt->whereClause);
+  ASSERT_EQ(stmt->whereClause->opType, kOpEquals);
+  ASSERT_STREQ(stmt->whereClause->expr->name, "graduation_date");
+  ASSERT_EQ(stmt->whereClause->expr2->type, kExprOperator);
+  ASSERT_EQ(stmt->whereClause->expr2->opType, kOpPlus);
+  ASSERT_EQ(stmt->whereClause->expr2->expr->type, kExprLiteralDate);
+  ASSERT_STREQ(stmt->whereClause->expr2->expr->name, "2025-04-04");
+  ASSERT_EQ(stmt->whereClause->expr2->expr2->type, kExprLiteralInterval);
+  ASSERT_EQ(stmt->whereClause->expr2->expr2->ival, 1);
+  ASSERT_EQ(stmt->whereClause->expr2->expr2->datetimeField, kDatetimeYear);
+}
+
+TEST(IntervalYearToMonthTest) {
+  TEST_PARSE_SINGLE_SQL("SELECT * FROM students WHERE graduation_date = DATE '2025-04-04' + INTERVAL '1' MONTH;",
+                       kStmtSelect, SelectStatement, result, stmt);
+
+  ASSERT_TRUE(result.isValid());
+  ASSERT_NOTNULL(stmt->whereClause);
+  ASSERT_EQ(stmt->whereClause->opType, kOpEquals);
+  ASSERT_STREQ(stmt->whereClause->expr->name, "graduation_date");
+  ASSERT_EQ(stmt->whereClause->expr2->type, kExprOperator);
+  ASSERT_EQ(stmt->whereClause->expr2->opType, kOpPlus);
+  ASSERT_EQ(stmt->whereClause->expr2->expr->type, kExprLiteralDate);
+  ASSERT_STREQ(stmt->whereClause->expr2->expr->name, "2025-04-04");
+  ASSERT_EQ(stmt->whereClause->expr2->expr2->type, kExprLiteralInterval);
+  ASSERT_EQ(stmt->whereClause->expr2->expr2->ival, 1);
+  ASSERT_EQ(stmt->whereClause->expr2->expr2->datetimeField, kDatetimeMonth);
+}
+
+TEST(IntervalDayToSecondTest) {
+  TEST_PARSE_SINGLE_SQL("SELECT * FROM students WHERE graduation_date = DATE '2025-04-04' + INTERVAL '45' SECOND;",
+                       kStmtSelect, SelectStatement, result, stmt);
+
+  ASSERT_TRUE(result.isValid());
+  ASSERT_NOTNULL(stmt->whereClause);
+  ASSERT_EQ(stmt->whereClause->opType, kOpEquals);
+  ASSERT_STREQ(stmt->whereClause->expr->name, "graduation_date");
+  ASSERT_EQ(stmt->whereClause->expr2->type, kExprOperator);
+  ASSERT_EQ(stmt->whereClause->expr2->opType, kOpPlus);
+  ASSERT_EQ(stmt->whereClause->expr2->expr->type, kExprLiteralDate);
+  ASSERT_STREQ(stmt->whereClause->expr2->expr->name, "2025-04-04");
+  ASSERT_EQ(stmt->whereClause->expr2->expr2->type, kExprLiteralInterval);
+  ASSERT_EQ(stmt->whereClause->expr2->expr2->ival, 45);  // seconds
+  ASSERT_EQ(stmt->whereClause->expr2->expr2->datetimeField, kDatetimeSecond);
+}
+
+TEST(NegativeIntervalTest) {
+  TEST_PARSE_SINGLE_SQL("SELECT * FROM students WHERE graduation_date = DATE '2025-04-04' - INTERVAL '1' YEAR;",
+                       kStmtSelect, SelectStatement, result, stmt);
+
+  ASSERT_TRUE(result.isValid());
+  ASSERT_NOTNULL(stmt->whereClause);
+  ASSERT_EQ(stmt->whereClause->opType, kOpEquals);
+  ASSERT_STREQ(stmt->whereClause->expr->name, "graduation_date");
+  ASSERT_EQ(stmt->whereClause->expr2->type, kExprOperator);
+  ASSERT_EQ(stmt->whereClause->expr2->opType, kOpMinus);
+  ASSERT_EQ(stmt->whereClause->expr2->expr->type, kExprLiteralDate);
+  ASSERT_STREQ(stmt->whereClause->expr2->expr->name, "2025-04-04");
+  ASSERT_EQ(stmt->whereClause->expr2->expr2->type, kExprLiteralInterval);
+  ASSERT_EQ(stmt->whereClause->expr2->expr2->ival, 1);
+  ASSERT_EQ(stmt->whereClause->expr2->expr2->datetimeField, kDatetimeYear);
+}
+
+TEST(IntervalLiteralsInInsertTest) {
+  TEST_PARSE_SINGLE_SQL("INSERT INTO interval_table VALUES (INTERVAL '1 YEAR', INTERVAL '2 MONTHS', INTERVAL '1 DAY');",
+                       kStmtInsert, InsertStatement, result, stmt);
+
+  ASSERT_TRUE(result.isValid());
+  ASSERT_EQ(stmt->values->size(), 3);
+
+  // INTERVAL '1 YEAR'
+  ASSERT_EQ(stmt->values->at(0)->type, kExprLiteralInterval);
+  ASSERT_EQ(stmt->values->at(0)->ival, 1);
+  ASSERT_EQ(stmt->values->at(0)->datetimeField, kDatetimeYear);
+
+  // INTERVAL '2 MONTHS'
+  ASSERT_EQ(stmt->values->at(1)->type, kExprLiteralInterval);
+  ASSERT_EQ(stmt->values->at(1)->ival, 2);
+  ASSERT_EQ(stmt->values->at(1)->datetimeField, kDatetimeMonth);
+
+  // INTERVAL '1 DAY'
+  ASSERT_EQ(stmt->values->at(2)->type, kExprLiteralInterval);
+  ASSERT_EQ(stmt->values->at(2)->ival, 1);  // days
+  ASSERT_EQ(stmt->values->at(2)->datetimeField, kDatetimeDay);
+}
+
 }  // namespace hsql
 
 TEST_MAIN();

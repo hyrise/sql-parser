@@ -229,6 +229,9 @@ YEARS       TOKEN(YEARS)
 
 CURRENT[ \t\n]+ROW       TOKEN(CURRENT_ROW)
 CHARACTER[ \t\n]+VARYING TOKEN(CHARACTER_VARYING)
+CURRENT_TIMESTAMP        TOKEN(CURRENT_TIMESTAMP)
+CURRENT_DATE             TOKEN(CURRENT_DATE)
+CURRENT_TIME             TOKEN(CURRENT_TIME)
 
             /* Allow =/== see https://sqlite.org/lang_expr.html#collateop */
 "=="        TOKEN(EQUALS)

@@ -210,6 +210,7 @@
 
 /* SQL Keywords */
 %token DEALLOCATE PARAMETERS INTERSECT TEMPORARY TIMESTAMP
+%token CURRENT_TIMESTAMP CURRENT_DATE CURRENT_TIME
 %token DISTINCT NVARCHAR RESTRICT TRUNCATE ANALYZE BETWEEN
 %token CASCADE COLUMNS CONTROL DEFAULT EXECUTE EXPLAIN ENCODING
 %token INTEGER NATURAL PREPARE SCHEMAS CHARACTER_VARYING REAL DECIMAL SMALLINT BIGINT
@@ -265,6 +266,7 @@
 %type <expr>                   expr operand scalar_expr unary_expr binary_expr logic_expr exists_expr extract_expr cast_expr
 %type <expr>                   function_expr between_expr expr_alias param_expr
 %type <expr>                   column_name literal int_literal num_literal string_literal bool_literal date_literal interval_literal
+%type <expr>                   timestamp_literal time_literal current_timestamp current_date current_time
 %type <expr>                   comp_expr opt_where join_condition opt_having case_expr case_list in_expr hint
 %type <expr>                   array_expr array_index null_literal extended_literal casted_extended_literal
 %type <limit>                  opt_limit opt_top
@@ -643,7 +645,7 @@ column_type : BIGINT { $$ = ColumnType{DataType::BIGINT}; }
 | BOOLEAN { $$ = ColumnType{DataType::BOOLEAN}; }
 | CHAR '(' INTVAL ')' { $$ = ColumnType{DataType::CHAR, $3}; }
 | CHARACTER_VARYING '(' INTVAL ')' { $$ = ColumnType{DataType::VARCHAR, $3}; }
-| DATE { $$ = ColumnType{DataType::DATE}; };
+| DATE { $$ = ColumnType{DataType::DATE}; }
 | DATETIME { $$ = ColumnType{DataType::DATETIME}; }
 | DECIMAL opt_decimal_specification {
   $$ = ColumnType{DataType::DECIMAL, 0, $2->first, $2->second};
@@ -653,6 +655,7 @@ column_type : BIGINT { $$ = ColumnType{DataType::BIGINT}; }
 | FLOAT { $$ = ColumnType{DataType::FLOAT}; }
 | INT { $$ = ColumnType{DataType::INT}; }
 | INTEGER { $$ = ColumnType{DataType::INT}; }
+| INTERVAL { $$ = ColumnType{DataType::INTERVAL}; }
 | LONG { $$ = ColumnType{DataType::LONG}; }
 | REAL { $$ = ColumnType{DataType::REAL}; }
 | SMALLINT { $$ = ColumnType{DataType::SMALLINT}; }
@@ -1008,7 +1011,7 @@ extended_literal : literal {
   }
   $$ = $1;
 }
-| '-' num_literal { $$ = Expr::makeOpUnary(kOpUnaryMinus, $2); };
+| '-' num_literal { $$ = Expr::makeOpUnary(kOpUnaryMinus, $2); }
 | '-' interval_literal { $$ = Expr::makeOpUnary(kOpUnaryMinus, $2); };
 
 expr_alias : expr opt_alias {
@@ -1139,7 +1142,8 @@ column_name : IDENTIFIER { $$ = Expr::makeColumnRef($1); }
 | '*' { $$ = Expr::makeStar(); }
 | IDENTIFIER '.' '*' { $$ = Expr::makeStar($1); };
 
-literal : string_literal | bool_literal | num_literal | null_literal | date_literal | interval_literal | param_expr;
+literal : string_literal | bool_literal | num_literal | null_literal | date_literal | interval_literal | param_expr
+| timestamp_literal | time_literal | current_timestamp | current_date | current_time;
 
 string_literal : STRING { $$ = Expr::makeLiteral($1); };
 
@@ -1164,6 +1168,14 @@ date_literal : DATE STRING {
   $$ = Expr::makeDateLiteral($2);
 };
 
+timestamp_literal : TIMESTAMP STRING {
+  $$ = Expr::makeTimestampLiteral($2);
+};
+
+time_literal : TIME STRING {
+  $$ = Expr::makeTimeLiteral($2);
+};
+
 interval_literal : INTVAL duration_field { $$ = Expr::makeIntervalLiteral($1, $2); }
 | INTERVAL STRING datetime_field {
   int duration{0}, chars_parsed{0};
@@ -1176,6 +1188,9 @@ interval_literal : INTVAL duration_field { $$ = Expr::makeIntervalLiteral($1, $2
   free($2);
   $$ = Expr::makeIntervalLiteral(duration, $3);
 }
+| INTERVAL INTVAL datetime_field {
+  $$ = Expr::makeIntervalLiteral($2, $3);
+}
 | INTERVAL STRING {
   int duration{0}, chars_parsed{0};
   // 'seconds' and 'minutes' are the longest accepted interval qualifiers (7 chars) + null byte
@@ -1183,12 +1198,12 @@ interval_literal : INTVAL duration_field { $$ = Expr::makeIntervalLiteral($1, $2
   // If the whole string is parsed, chars_parsed points to the terminating null byte after the last character
   if (sscanf($2, "%d %7s%n", &duration, unit_string, &chars_parsed) != 2 || $2[chars_parsed] != 0) {
     free($2);
-    yyerror(&yyloc, result, scanner, "Found incorrect interval format. Expected format: INTEGER INTERVAL_QUALIIFIER");
+    yyerror(&yyloc, result, scanner, "Found incorrect interval format. Expected format: INTEGER INTERVAL_QUALIFIER");
     YYERROR;
   }
   free($2);
 
-  DatetimeField unit;
+  DatetimeField unit = kDatetimeNone;
   if (strcasecmp(unit_string, "second") == 0 || strcasecmp(unit_string, "seconds") == 0) {
     unit = kDatetimeSecond;
   } else if (strcasecmp(unit_string, "minute") == 0 || strcasecmp(unit_string, "minutes") == 0) {
@@ -1213,6 +1228,12 @@ param_expr : '?' {
   $$->ival2 = yyloc.param_list.size();
   yyloc.param_list.push_back($$);
 };
+
+current_timestamp : CURRENT_TIMESTAMP { $$ = Expr::makeCurrentTimestamp(); };
+
+current_date : CURRENT_DATE { $$ = Expr::makeCurrentDate(); };
+
+current_time : CURRENT_TIME { $$ = Expr::makeCurrentTime(); };
 
 /******************************
  * Table
