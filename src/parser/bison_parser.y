@@ -230,6 +230,7 @@
 %token NOWAIT SKIP LOCKED SHARE
 %token RANGE ROWS GROUPS UNBOUNDED FOLLOWING PRECEDING CURRENT_ROW
 %token UNIQUE PRIMARY FOREIGN KEY REFERENCES
+%token DELIMITER QUOTE
 
 /*********************************
  ** Non-Terminal types (http://www.gnu.org/software/bison/manual/html_node/Type-Decl.html)
@@ -467,6 +468,18 @@ import_statement : IMPORT FROM file_type FILE file_path INTO table_name {
     $$->encoding = $5->encoding;
     $5->encoding = nullptr;
   }
+  if ($5->delimiter) {
+    $$->delimiter = $5->delimiter;
+    $5->delimiter = nullptr;
+  }
+  if ($5->null) {
+    $$->null = $5->null;
+    $5->null = nullptr;
+  }
+  if ($5->quote) {
+    $$->quote = $5->quote;
+    $5->quote = nullptr;
+  }
   delete $5;
 };
 
@@ -517,6 +530,48 @@ import_export_options : import_export_options ',' FORMAT file_type {
 | ENCODING STRING {
   $$ = new ImportExportOptions{};
   $$->encoding = $2;
+}
+| import_export_options ',' DELIMITER STRING {
+  if ($1->delimiter) {
+    delete $1;
+    free($4);
+    yyerror(&yyloc, result, scanner, "Delimiter must only be provided once.");
+    YYERROR;
+  }
+  $1->delimiter = $4;
+  $$ = $1;
+}
+| DELIMITER STRING {
+  $$ = new ImportExportOptions{};
+  $$->delimiter = $2;
+}
+| import_export_options ',' NULL STRING {
+  if ($1->null) {
+    delete $1;
+    free($4);
+    yyerror(&yyloc, result, scanner, "Null string must only be provided once.");
+    YYERROR;
+  }
+  $1->null = $4;
+  $$ = $1;
+}
+| NULL STRING {
+  $$ = new ImportExportOptions{};
+  $$->null = $2;
+}
+| import_export_options ',' QUOTE STRING {
+  if ($1->quote) {
+    delete $1;
+    free($4);
+    yyerror(&yyloc, result, scanner, "Quote string must only be provided once.");
+    YYERROR;
+  }
+  $1->quote = $4;
+  $$ = $1;
+}
+| QUOTE STRING {
+  $$ = new ImportExportOptions{};
+  $$->quote = $2;
 };
 
 /******************************
@@ -533,6 +588,18 @@ export_statement : COPY table_name TO file_path opt_import_export_options {
     $$->encoding = $5->encoding;
     $5->encoding = nullptr;
   }
+  if ($5->delimiter) {
+    $$->delimiter = $5->delimiter;
+    $5->delimiter = nullptr;
+  }
+  if ($5->null) {
+    $$->null = $5->null;
+    $5->null = nullptr;
+  }
+  if ($5->quote) {
+    $$->quote = $5->quote;
+    $5->quote = nullptr;
+  }
   delete $5;
 }
 | COPY select_with_paren TO file_path opt_import_export_options {
@@ -542,6 +609,18 @@ export_statement : COPY table_name TO file_path opt_import_export_options {
   if ($5->encoding) {
     $$->encoding = $5->encoding;
     $5->encoding = nullptr;
+  }
+  if ($5->delimiter) {
+    $$->delimiter = $5->delimiter;
+    $5->delimiter = nullptr;
+  }
+  if ($5->null) {
+    $$->null = $5->null;
+    $5->null = nullptr;
+  }
+  if ($5->quote) {
+    $$->quote = $5->quote;
+    $5->quote = nullptr;
   }
   delete $5;
 };

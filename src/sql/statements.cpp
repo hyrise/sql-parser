@@ -140,7 +140,10 @@ ExportStatement::ExportStatement(ImportType type)
       schema(nullptr),
       tableName(nullptr),
       select(nullptr),
-      encoding(nullptr) {}
+      encoding(nullptr),
+      delimiter(nullptr),
+      null(nullptr),
+      quote(nullptr) {}
 
 ExportStatement::~ExportStatement() {
   free(filePath);
@@ -148,11 +151,20 @@ ExportStatement::~ExportStatement() {
   free(tableName);
   delete select;
   free(encoding);
+  free(delimiter);
+  free(null);
+  free(quote);
 }
 
-ImportExportOptions::ImportExportOptions() : format(kImportAuto), encoding(nullptr) {}
+ImportExportOptions::ImportExportOptions()
+    : format(kImportAuto), encoding(nullptr), delimiter(nullptr), null(nullptr), quote(nullptr) {}
 
-ImportExportOptions::~ImportExportOptions() { free(encoding); }
+ImportExportOptions::~ImportExportOptions() {
+  free(encoding);
+  free(delimiter);
+  free(null);
+  free(quote);
+}
 
 // ImportStatement
 ImportStatement::ImportStatement(ImportType type)
@@ -162,7 +174,10 @@ ImportStatement::ImportStatement(ImportType type)
       schema(nullptr),
       tableName(nullptr),
       whereClause(nullptr),
-      encoding(nullptr) {}
+      encoding(nullptr),
+      delimiter(nullptr),
+      null(nullptr),
+      quote(nullptr) {}
 
 ImportStatement::~ImportStatement() {
   free(filePath);
@@ -170,6 +185,9 @@ ImportStatement::~ImportStatement() {
   free(tableName);
   delete whereClause;
   free(encoding);
+  free(delimiter);
+  free(null);
+  free(quote);
 }
 
 // InsertStatement

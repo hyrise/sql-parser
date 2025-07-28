@@ -19,6 +19,9 @@ struct ImportExportOptions {
 
   ImportType format;
   char* encoding;
+  char* delimiter;
+  char* null;
+  char* quote;
 };
 
 }  // namespace hsql

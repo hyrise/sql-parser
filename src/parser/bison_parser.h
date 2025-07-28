@@ -258,14 +258,16 @@ extern int hsql_debug;
     SQL_FOREIGN = 426,             /* FOREIGN  */
     SQL_KEY = 427,                 /* KEY  */
     SQL_REFERENCES = 428,          /* REFERENCES  */
-    SQL_EQUALS = 429,              /* EQUALS  */
-    SQL_NOTEQUALS = 430,           /* NOTEQUALS  */
-    SQL_LESS = 431,                /* LESS  */
-    SQL_GREATER = 432,             /* GREATER  */
-    SQL_LESSEQ = 433,              /* LESSEQ  */
-    SQL_GREATEREQ = 434,           /* GREATEREQ  */
-    SQL_NOTNULL = 435,             /* NOTNULL  */
-    SQL_UMINUS = 436               /* UMINUS  */
+    SQL_DELIMITER = 429,           /* DELIMITER  */
+    SQL_QUOTE = 430,               /* QUOTE  */
+    SQL_EQUALS = 431,              /* EQUALS  */
+    SQL_NOTEQUALS = 432,           /* NOTEQUALS  */
+    SQL_LESS = 433,                /* LESS  */
+    SQL_GREATER = 434,             /* GREATER  */
+    SQL_LESSEQ = 435,              /* LESSEQ  */
+    SQL_GREATEREQ = 436,           /* GREATEREQ  */
+    SQL_NOTNULL = 437,             /* NOTNULL  */
+    SQL_UMINUS = 438               /* UMINUS  */
   };
   typedef enum hsql_tokentype hsql_token_kind_t;
 #endif
@@ -347,7 +349,7 @@ union HSQL_STYPE
 
   // clang-format off
 
-#line 351 "bison_parser.h"
+#line 353 "bison_parser.h"
 
 };
 typedef union HSQL_STYPE HSQL_STYPE;

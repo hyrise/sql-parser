@@ -18,6 +18,9 @@ struct ExportStatement : SQLStatement {
   char* tableName;
   SelectStatement* select;
   char* encoding;
+  char* delimiter;
+  char* null;
+  char* quote;
 };
 
 }  // namespace hsql
