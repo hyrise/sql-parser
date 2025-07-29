@@ -964,7 +964,6 @@ opt_order_type : ASC { $$ = kOrderAsc; }
 opt_null_ordering : /* empty */ { $$ = NullOrdering::Undefined; }
 | IDENTIFIER IDENTIFIER {
   auto null_ordering = NullOrdering::Undefined;
-
   if (strcasecmp($1, "nulls") == 0) {
     if (strcasecmp($2, "first") == 0) {
       null_ordering = NullOrdering::First;
