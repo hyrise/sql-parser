@@ -172,8 +172,8 @@ TEST(SelectGroupDistinctTest) {
 }
 
 TEST(OrderByTest) {
-  TEST_PARSE_SINGLE_SQL("SELECT grade, city FROM students ORDER BY grade, city DESC NULLS FIRST, name NULLS LAST;", kStmtSelect, SelectStatement,
-                        result, stmt);
+  TEST_PARSE_SINGLE_SQL("SELECT grade, city FROM students ORDER BY grade, city DESC NULLS FIRST, name NULLS LAST;",
+                        kStmtSelect, SelectStatement, result, stmt);
 
   ASSERT_NULL(stmt->whereClause);
   ASSERT_NOTNULL(stmt->order);
