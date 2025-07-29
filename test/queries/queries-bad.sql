@@ -97,4 +97,8 @@
 !SELECT * FROM students ORDER BY name ASC NULL FIRST;
 !SELECT * FROM students ORDER BY name ASC gibberish LAST;
 !SELECT * FROM students ORDER BY name NULLS FIRS;
+!SELECT * FROM students ORDER BY name NULLS;
+!SELECT * FROM students ORDER BY name ASC NULLS;
+!SELECT * FROM students ORDER BY name FIRST;
+!SELECT * FROM students ORDER BY name ASC LAST;
 !SELECT * FROM students ORDER BY name DESC NULLS gibberish;
