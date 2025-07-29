@@ -963,22 +963,19 @@ opt_order_type : ASC { $$ = kOrderAsc; }
 
 opt_null_ordering : /* empty */ { $$ = NullOrdering::Undefined; }
 | IDENTIFIER IDENTIFIER {
-  auto error = false;
   auto null_ordering = NullOrdering::Undefined;
 
-  if (strcasecmp($1, "nulls") != 0) {
-    error = true;
+  if (strcasecmp($1, "nulls") == 0) {
+    if (strcasecmp($2, "first") == 0) {
+      null_ordering = NullOrdering::First;
+    } else if (strcasecmp($2, "last") == 0) {
+      null_ordering = NullOrdering::Last;
+    }
   }
   free($1);
-
-  if (strcasecmp($2, "first") == 0) {
-    null_ordering = NullOrdering::First;
-  } else if (strcasecmp($2, "last") == 0) {
-    null_ordering = NullOrdering::Last;
-  }
   free($2);
 
-  if (error || null_ordering == NullOrdering::Undefined) {
+  if (null_ordering == NullOrdering::Undefined) {
     yyerror(&yyloc, result, scanner, "Expected NULLS FIRST or NULLS LAST ordering.");
     YYERROR;
   }
