@@ -93,3 +93,8 @@
 !SELECT * FROM foo WITH HINT (?);
 !SELECT * FROM foo WITH HINT (CAST(column_a AS INT));
 !SELECT * FROM foo WITH HINT (AVG(another_column));
+# ORDER BY with NULL ordering.
+!SELECT * FROM students ORDER BY name ASC NULL FIRST;
+!SELECT * FROM students ORDER BY name ASC gibberish LAST;
+!SELECT * FROM students ORDER BY name NULLS FIRS;
+!SELECT * FROM students ORDER BY name DESC NULLS gibberish;
