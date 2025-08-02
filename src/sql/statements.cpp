@@ -141,9 +141,7 @@ ExportStatement::ExportStatement(ImportType type)
       tableName(nullptr),
       select(nullptr),
       encoding(nullptr),
-      delimiter(nullptr),
-      null(nullptr),
-      quote(nullptr) {}
+      csv_options(nullptr) {}
 
 ExportStatement::~ExportStatement() {
   free(filePath);
@@ -151,19 +149,21 @@ ExportStatement::~ExportStatement() {
   free(tableName);
   delete select;
   free(encoding);
+  delete csv_options;
+}
+
+CsvImportExportOptions::CsvImportExportOptions() : delimiter(nullptr), null(nullptr), quote(nullptr) {}
+CsvImportExportOptions::~CsvImportExportOptions() {
   free(delimiter);
   free(null);
   free(quote);
 }
 
-ImportExportOptions::ImportExportOptions()
-    : format(kImportAuto), encoding(nullptr), delimiter(nullptr), null(nullptr), quote(nullptr) {}
+ImportExportOptions::ImportExportOptions() : format(kImportAuto), encoding(nullptr), csv_options(nullptr) {}
 
 ImportExportOptions::~ImportExportOptions() {
   free(encoding);
-  free(delimiter);
-  free(null);
-  free(quote);
+  delete csv_options;
 }
 
 // ImportStatement
@@ -175,9 +175,7 @@ ImportStatement::ImportStatement(ImportType type)
       tableName(nullptr),
       whereClause(nullptr),
       encoding(nullptr),
-      delimiter(nullptr),
-      null(nullptr),
-      quote(nullptr) {}
+      csv_options(nullptr) {}
 
 ImportStatement::~ImportStatement() {
   free(filePath);
@@ -185,9 +183,7 @@ ImportStatement::~ImportStatement() {
   free(tableName);
   delete whereClause;
   free(encoding);
-  free(delimiter);
-  free(null);
-  free(quote);
+  delete csv_options;
 }
 
 // InsertStatement

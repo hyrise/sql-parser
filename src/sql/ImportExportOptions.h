@@ -1,6 +1,8 @@
 #ifndef SQLPARSER_IMPORT_EXPORT_OPTIONS_H
 #define SQLPARSER_IMPORT_EXPORT_OPTIONS_H
 
+#include "CsvImportExportOptions.h"
+
 namespace hsql {
 
 // Name unchanged for compatibility. Historically, this was only used for import statements before we introduced export
@@ -19,9 +21,7 @@ struct ImportExportOptions {
 
   ImportType format;
   char* encoding;
-  char* delimiter;
-  char* null;
-  char* quote;
+  CsvImportExportOptions* csv_options;
 };
 
 }  // namespace hsql

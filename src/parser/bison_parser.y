@@ -168,6 +168,7 @@
   hsql::RowLockWaitPolicy lock_wait_policy_t;
 
   hsql::ImportExportOptions* import_export_option_t;
+  hsql::CsvImportExportOptions* csv_import_export_option_t;
 
   // clang-format off
 }
@@ -230,7 +231,6 @@
 %token NOWAIT SKIP LOCKED SHARE
 %token RANGE ROWS GROUPS UNBOUNDED FOLLOWING PRECEDING CURRENT_ROW
 %token UNIQUE PRIMARY FOREIGN KEY REFERENCES
-%token DELIMITER QUOTE
 
 /*********************************
  ** Non-Terminal types (http://www.gnu.org/software/bison/manual/html_node/Type-Decl.html)
@@ -293,6 +293,7 @@
 // ImportType is used for compatibility reasons
 %type <import_type_t>          file_type
 %type <import_export_option_t> opt_import_export_options import_export_options
+%type <csv_import_export_option_t> csv_import_export_options
 
 %type <str_vec>                ident_commalist opt_column_list
 %type <expr_vec>               expr_list select_list opt_extended_literal_list extended_literal_list hint_list opt_hints opt_partition
@@ -468,17 +469,9 @@ import_statement : IMPORT FROM file_type FILE file_path INTO table_name {
     $$->encoding = $5->encoding;
     $5->encoding = nullptr;
   }
-  if ($5->delimiter) {
-    $$->delimiter = $5->delimiter;
-    $5->delimiter = nullptr;
-  }
-  if ($5->null) {
-    $$->null = $5->null;
-    $5->null = nullptr;
-  }
-  if ($5->quote) {
-    $$->quote = $5->quote;
-    $5->quote = nullptr;
+  if ($5->csv_options) {
+    $$->csv_options = $5->csv_options;
+    $5->csv_options = nullptr;
   }
   delete $5;
 };
@@ -510,6 +503,11 @@ import_export_options : import_export_options ',' FORMAT file_type {
     yyerror(&yyloc, result, scanner, "File type must only be provided once.");
     YYERROR;
   }
+  if ($1->csv_options && $4 != kImportCSV && $4 != kImportAuto) {
+    delete $1;
+    yyerror(&yyloc, result, scanner, "Cannot have CSV options (DELIMITER, NULL, QUOTE) without CSV import type.");
+    YYERROR;
+  }
   $1->format = $4;
   $$ = $1;
 }
@@ -531,48 +529,78 @@ import_export_options : import_export_options ',' FORMAT file_type {
   $$ = new ImportExportOptions{};
   $$->encoding = $2;
 }
-| import_export_options ',' DELIMITER STRING {
-  if ($1->delimiter) {
+| import_export_options ',' csv_import_export_options {
+  if ($1->format != kImportAuto && $1->format != kImportCSV) {
     delete $1;
-    free($4);
-    yyerror(&yyloc, result, scanner, "Delimiter must only be provided once.");
+    delete $3;
+    yyerror(&yyloc, result, scanner, "Cannot have CSV options (DELIMITER, NULL, QUOTE) without CSV import type.");
     YYERROR;
   }
-  $1->delimiter = $4;
+
+  if ($1->csv_options) {
+    if ($1->csv_options->delimiter && $3->delimiter) {
+      delete $1;
+      delete $3;
+      yyerror(&yyloc, result, scanner, "Delimiter must only be provided once.");
+      YYERROR;
+    }
+    if ($1->csv_options->null && $3->null) {
+      delete $1;
+      delete $3;
+      yyerror(&yyloc, result, scanner, "Null string must only be provided once.");
+      YYERROR;
+    }
+    if ($1->csv_options->quote && $3->quote) {
+      delete $1;
+      delete $3;
+      yyerror(&yyloc, result, scanner, "Quote must only be provided once.");
+      YYERROR;
+    }
+
+    if ($3->delimiter) {
+      $1->csv_options->delimiter = $3->delimiter;
+      $3->delimiter = nullptr;
+    }
+    if ($3->null) {
+      $1->csv_options->null = $3->null;
+      $3->null = nullptr;
+
+    }
+    if ($3->quote) {
+      $1->csv_options->quote = $3->quote;
+      $3->quote = nullptr;
+    }
+    delete $3;
+  } else {
+    $1->csv_options = $3;
+  }
+
   $$ = $1;
 }
-| DELIMITER STRING {
+| csv_import_export_options {
   $$ = new ImportExportOptions{};
-  $$->delimiter = $2;
+  $$->csv_options = $1;
 }
-| import_export_options ',' NULL STRING {
-  if ($1->null) {
-    delete $1;
-    free($4);
-    yyerror(&yyloc, result, scanner, "Null string must only be provided once.");
+
+csv_import_export_options : IDENTIFIER STRING {
+  $$ = new CsvImportExportOptions{};
+  if (strcasecmp($1, "DELIMITER") == 0) {
+    $$->delimiter = $2;
+  } else if (strcasecmp($1, "QUOTE") == 0) {
+    $$->quote = $2;
+  } else {
+    delete $$;
+    free($1);
+    free($2);
+    yyerror(&yyloc, result, scanner, "Unknown identifier when parsing CSV options.");
     YYERROR;
   }
-  $1->null = $4;
-  $$ = $1;
+  free($1);
 }
 | NULL STRING {
-  $$ = new ImportExportOptions{};
+  $$ = new CsvImportExportOptions{};
   $$->null = $2;
 }
-| import_export_options ',' QUOTE STRING {
-  if ($1->quote) {
-    delete $1;
-    free($4);
-    yyerror(&yyloc, result, scanner, "Quote string must only be provided once.");
-    YYERROR;
-  }
-  $1->quote = $4;
-  $$ = $1;
-}
-| QUOTE STRING {
-  $$ = new ImportExportOptions{};
-  $$->quote = $2;
-};
 
 /******************************
  * Export Statement
@@ -588,17 +616,9 @@ export_statement : COPY table_name TO file_path opt_import_export_options {
     $$->encoding = $5->encoding;
     $5->encoding = nullptr;
   }
-  if ($5->delimiter) {
-    $$->delimiter = $5->delimiter;
-    $5->delimiter = nullptr;
-  }
-  if ($5->null) {
-    $$->null = $5->null;
-    $5->null = nullptr;
-  }
-  if ($5->quote) {
-    $$->quote = $5->quote;
-    $5->quote = nullptr;
+  if ($5->csv_options) {
+    $$->csv_options = $5->csv_options;
+    $5->csv_options = nullptr;
   }
   delete $5;
 }
@@ -610,17 +630,9 @@ export_statement : COPY table_name TO file_path opt_import_export_options {
     $$->encoding = $5->encoding;
     $5->encoding = nullptr;
   }
-  if ($5->delimiter) {
-    $$->delimiter = $5->delimiter;
-    $5->delimiter = nullptr;
-  }
-  if ($5->null) {
-    $$->null = $5->null;
-    $5->null = nullptr;
-  }
-  if ($5->quote) {
-    $$->quote = $5->quote;
-    $5->quote = nullptr;
+  if ($5->csv_options) {
+    $$->csv_options = $5->csv_options;
+    $5->csv_options = nullptr;
   }
   delete $5;
 };
