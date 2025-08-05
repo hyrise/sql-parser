@@ -53,7 +53,6 @@
 !SELECT * FROM t WHERE a = DATE '2000-01-01' + x DAYS;
 !SELECT * FROM t WHERE a = DATE '2000-01-01' + INTERVAL 'x' DAY;
 !SELECT * FROM t WHERE a = DATE '2000-01-01' + INTERVAL '3.3 DAYS';
-!COPY students FROM 'file_path' WITH (FORMAT TBL, DELIMITER '|', NULL '', QUOTE '"'); # Cannot have CSV options with non-CSV format
 # ON is not supported by postgres. We follow postgres here since the sql-92 standard does not specify index
 # implementation details.
 !DROP INDEX myindex ON mytable;
@@ -94,3 +93,8 @@
 !SELECT * FROM foo WITH HINT (?);
 !SELECT * FROM foo WITH HINT (CAST(column_a AS INT));
 !SELECT * FROM foo WITH HINT (AVG(another_column));
+# CSV options
+!COPY students FROM 'file_path' WITH (FORMAT TBL, DELIMITER '|', NULL '', QUOTE '"');
+!COPY students FROM 'file_path' WITH (DELIMITER '|', NULL '', QUOTE '"', FORMAT TBL);
+!COPY students FROM 'file_path' WITH (DELIMITER '|', NULL '', QUOTE '"', NULL 'a');
+!COPY students FROM 'file_path' WITH (FORMAT CSV, QUOTE '"', DELIMINIMITER '|');

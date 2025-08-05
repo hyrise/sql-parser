@@ -1,7 +1,6 @@
 #ifndef SQLPARSER_IMPORT_STATEMENT_H
 #define SQLPARSER_IMPORT_STATEMENT_H
 
-#include "CsvImportExportOptions.h"
 #include "ImportExportOptions.h"
 #include "SQLStatement.h"
 
@@ -18,7 +17,7 @@ struct ImportStatement : SQLStatement {
   char* tableName;
   Expr* whereClause;
   char* encoding;
-  CsvImportExportOptions* csv_options;
+  CsvOptions* csv_options;
 };
 
 }  // namespace hsql

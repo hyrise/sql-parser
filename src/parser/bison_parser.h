@@ -344,7 +344,7 @@ union HSQL_STYPE
   hsql::RowLockWaitPolicy lock_wait_policy_t;
 
   hsql::ImportExportOptions* import_export_option_t;
-  hsql::CsvImportExportOptions* csv_import_export_option_t;
+  std::pair<hsql::CsvOptionType, char*>* csv_option_t;
 
   // clang-format off
 

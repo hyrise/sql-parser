@@ -168,7 +168,7 @@
   hsql::RowLockWaitPolicy lock_wait_policy_t;
 
   hsql::ImportExportOptions* import_export_option_t;
-  hsql::CsvImportExportOptions* csv_import_export_option_t;
+  std::pair<hsql::CsvOptionType, char*>* csv_option_t;
 
   // clang-format off
 }
@@ -293,7 +293,7 @@
 // ImportType is used for compatibility reasons
 %type <import_type_t>          file_type
 %type <import_export_option_t> opt_import_export_options import_export_options
-%type <csv_import_export_option_t> csv_import_export_options
+%type <csv_option_t>           csv_option
 
 %type <str_vec>                ident_commalist opt_column_list
 %type <expr_vec>               expr_list select_list opt_extended_literal_list extended_literal_list hint_list opt_hints opt_partition
@@ -505,7 +505,7 @@ import_export_options : import_export_options ',' FORMAT file_type {
   }
   if ($1->csv_options && $4 != kImportCSV && $4 != kImportAuto) {
     delete $1;
-    yyerror(&yyloc, result, scanner, "Cannot have CSV options (DELIMITER, NULL, QUOTE) without CSV import type.");
+    yyerror(&yyloc, result, scanner, "CSV options (DELIMITER, NULL, QUOTE) are only allowed for CSV files.");
     YYERROR;
   }
   $1->format = $4;
@@ -529,78 +529,83 @@ import_export_options : import_export_options ',' FORMAT file_type {
   $$ = new ImportExportOptions{};
   $$->encoding = $2;
 }
-| import_export_options ',' csv_import_export_options {
+| import_export_options ',' csv_option {
   if ($1->format != kImportAuto && $1->format != kImportCSV) {
     delete $1;
+    free($3->second);
     delete $3;
-    yyerror(&yyloc, result, scanner, "Cannot have CSV options (DELIMITER, NULL, QUOTE) without CSV import type.");
+    yyerror(&yyloc, result, scanner, "CSV options (DELIMITER, NULL, QUOTE) are only allowed for CSV files.");
     YYERROR;
   }
 
-  if ($1->csv_options) {
-    if ($1->csv_options->delimiter && $3->delimiter) {
-      delete $1;
-      delete $3;
-      yyerror(&yyloc, result, scanner, "Delimiter must only be provided once.");
-      YYERROR;
-    }
-    if ($1->csv_options->null && $3->null) {
-      delete $1;
-      delete $3;
-      yyerror(&yyloc, result, scanner, "Null string must only be provided once.");
-      YYERROR;
-    }
-    if ($1->csv_options->quote && $3->quote) {
-      delete $1;
-      delete $3;
-      yyerror(&yyloc, result, scanner, "Quote must only be provided once.");
-      YYERROR;
-    }
-
-    if ($3->delimiter) {
-      $1->csv_options->delimiter = $3->delimiter;
-      $3->delimiter = nullptr;
-    }
-    if ($3->null) {
-      $1->csv_options->null = $3->null;
-      $3->null = nullptr;
-
-    }
-    if ($3->quote) {
-      $1->csv_options->quote = $3->quote;
-      $3->quote = nullptr;
-    }
-    delete $3;
-  } else {
-    $1->csv_options = $3;
+  if ($1->csv_options == nullptr) {
+    $1->csv_options = new CsvOptions{};
   }
 
+#define ASSERT_IS_NULLPTR(ptr)                                                                                   \
+  if ((ptr) != nullptr) {                                                                                        \
+    delete $1;                                                                                                   \
+    free($3->second);                                                                                            \
+    delete $3;                                                                                                   \
+    yyerror(&yyloc, result, scanner, "CSV options (DELIMITER, NULL, QUOTE) cannot be provided more than once."); \
+    YYERROR;                                                                                                     \
+  }
+
+  if ($3->first == hsql::CsvOptionType::Delimiter) {
+    ASSERT_IS_NULLPTR($1->csv_options->delimiter);
+    $$->csv_options->delimiter = $3->second;
+  } else if ($3->first == hsql::CsvOptionType::Null) {
+    ASSERT_IS_NULLPTR($1->csv_options->null);
+    $$->csv_options->null = $3->second;
+  } else if ($3->first == hsql::CsvOptionType::Quote) {
+    ASSERT_IS_NULLPTR($1->csv_options->quote);
+    $$->csv_options->quote = $3->second;
+  } else {
+    delete $1;
+    free($3->second);
+    delete $3;
+    yyerror(&yyloc, result, scanner, "Unknown CSV option.");
+    YYERROR;
+  }
+
+  delete $3;
   $$ = $1;
 }
-| csv_import_export_options {
+| csv_option {
   $$ = new ImportExportOptions{};
-  $$->csv_options = $1;
+  $$->csv_options = new CsvOptions{};
+
+  if ($1->first == hsql::CsvOptionType::Delimiter) {
+    $$->csv_options->delimiter = $1->second;
+  } else if ($1->first == hsql::CsvOptionType::Null) {
+    $$->csv_options->null = $1->second;
+  } else if ($1->first == hsql::CsvOptionType::Quote) {
+    $$->csv_options->quote = $1->second;
+  } else {
+    free($1->second);
+    delete $1;
+    delete $$;
+    yyerror(&yyloc, result, scanner, "Unknown CSV option.");
+    YYERROR;
+  }
+
+  delete $1;
 }
 
-csv_import_export_options : IDENTIFIER STRING {
-  $$ = new CsvImportExportOptions{};
+csv_option : IDENTIFIER STRING {
   if (strcasecmp($1, "DELIMITER") == 0) {
-    $$->delimiter = $2;
+    $$ = new std::pair(hsql::CsvOptionType::Delimiter, $2);
   } else if (strcasecmp($1, "QUOTE") == 0) {
-    $$->quote = $2;
+    $$ = new std::pair(hsql::CsvOptionType::Quote, $2);
   } else {
-    delete $$;
     free($1);
     free($2);
-    yyerror(&yyloc, result, scanner, "Unknown identifier when parsing CSV options.");
+    yyerror(&yyloc, result, scanner, "Unknown CSV option.");
     YYERROR;
   }
   free($1);
 }
-| NULL STRING {
-  $$ = new CsvImportExportOptions{};
-  $$->null = $2;
-}
+| NULL STRING { $$ = new std::pair(hsql::CsvOptionType::Null, $2); }
 
 /******************************
  * Export Statement

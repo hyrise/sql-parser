@@ -152,8 +152,8 @@ ExportStatement::~ExportStatement() {
   delete csv_options;
 }
 
-CsvImportExportOptions::CsvImportExportOptions() : delimiter(nullptr), null(nullptr), quote(nullptr) {}
-CsvImportExportOptions::~CsvImportExportOptions() {
+CsvOptions::CsvOptions() : delimiter(nullptr), null(nullptr), quote(nullptr) {}
+CsvOptions::~CsvOptions() {
   free(delimiter);
   free(null);
   free(quote);
