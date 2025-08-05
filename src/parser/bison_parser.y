@@ -594,9 +594,9 @@ import_export_options : import_export_options ',' FORMAT file_type {
 
 csv_option : IDENTIFIER STRING {
   if (strcasecmp($1, "DELIMITER") == 0) {
-    $$ = new std::pair(hsql::CsvOptionType::Delimiter, $2);
+    $$ = new std::pair<hsql::CsvOptionType, char*>(hsql::CsvOptionType::Delimiter, $2);
   } else if (strcasecmp($1, "QUOTE") == 0) {
-    $$ = new std::pair(hsql::CsvOptionType::Quote, $2);
+    $$ = new std::pair<hsql::CsvOptionType, char*>(hsql::CsvOptionType::Quote, $2);
   } else {
     free($1);
     free($2);
@@ -605,7 +605,7 @@ csv_option : IDENTIFIER STRING {
   }
   free($1);
 }
-| NULL STRING { $$ = new std::pair(hsql::CsvOptionType::Null, $2); }
+| NULL STRING { $$ = new std::pair<hsql::CsvOptionType, char*>(hsql::CsvOptionType::Null, $2); }
 
 /******************************
  * Export Statement

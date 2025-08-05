@@ -3759,9 +3759,9 @@ yyreduce:
 #line 595 "bison_parser.y"
                                {
   if (strcasecmp((yyvsp[-1].sval), "DELIMITER") == 0) {
-    (yyval.csv_option_t) = new std::pair(hsql::CsvOptionType::Delimiter, (yyvsp[0].sval));
+    (yyval.csv_option_t) = new std::pair<hsql::CsvOptionType, char*>(hsql::CsvOptionType::Delimiter, (yyvsp[0].sval));
   } else if (strcasecmp((yyvsp[-1].sval), "QUOTE") == 0) {
-    (yyval.csv_option_t) = new std::pair(hsql::CsvOptionType::Quote, (yyvsp[0].sval));
+    (yyval.csv_option_t) = new std::pair<hsql::CsvOptionType, char*>(hsql::CsvOptionType::Quote, (yyvsp[0].sval));
   } else {
     free((yyvsp[-1].sval));
     free((yyvsp[0].sval));
@@ -3775,7 +3775,7 @@ yyreduce:
 
   case 49: /* csv_option: NULL STRING  */
 #line 608 "bison_parser.y"
-              { (yyval.csv_option_t) = new std::pair(hsql::CsvOptionType::Null, (yyvsp[0].sval)); }
+              { (yyval.csv_option_t) = new std::pair<hsql::CsvOptionType, char*>(hsql::CsvOptionType::Null, (yyvsp[0].sval)); }
 #line 3780 "bison_parser.cpp"
     break;
 
