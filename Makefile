@@ -43,6 +43,9 @@ ifeq ($(relaxed_build), on)
     $(warning $(NAME) will be built with most compiler warnings deactivated. This is fine if you want to test $(NAME) but will become an issue when you want to contribute code.)
 else
     LIB_CFLAGS += -Wall -Werror
+    ifneq (,$(findstring clang,$(shell $(CXX) --version 2>/dev/null)))
+        LIB_CFLAGS += -Wnewline-eof
+    endif
 endif
 
 static ?= no
@@ -104,7 +107,7 @@ install:
 
 #######################################
 ############## Benchmark ##############
-#######################################
+########################################
 BM_BUILD  = $(BIN)/benchmark
 BM_CFLAGS = -std=c++17 -Wall -Isrc/ -L./ $(OPT_FLAG)
 BM_PATH   = benchmark
