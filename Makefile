@@ -43,6 +43,8 @@ ifeq ($(relaxed_build), on)
     $(warning $(NAME) will be built with most compiler warnings deactivated. This is fine if you want to test $(NAME) but will become an issue when you want to contribute code.)
 else
     LIB_CFLAGS += -Wall -Werror
+    # Clang: ensure files end with newline. Missing final newlines here triggered
+    # -Wnewline-eof warnings in downstream projects (e.g., Hyrise).
     ifneq (,$(findstring clang,$(shell $(CXX) --version 2>/dev/null)))
         LIB_CFLAGS += -Wnewline-eof
     endif
