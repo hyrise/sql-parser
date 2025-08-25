@@ -97,4 +97,6 @@
 !COPY students FROM 'file_path' WITH (FORMAT TBL, DELIMITER '|', NULL '', QUOTE '"');
 !COPY students FROM 'file_path' WITH (DELIMITER '|', NULL '', QUOTE '"', FORMAT TBL);
 !COPY students FROM 'file_path' WITH (DELIMITER '|', NULL '', QUOTE '"', NULL 'a');
+!COPY students FROM 'file_path' WITH (NULL '', QUOTE '"', DELIMITER '|', DELIMITER '/');
+!COPY students FROM 'file_path' WITH (QUOTE '"', NULL '', DELIMITER '/', QUOTE '_',);
 !COPY students FROM 'file_path' WITH (FORMAT CSV, QUOTE '"', DELIMINIMITER '|');

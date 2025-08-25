@@ -199,6 +199,7 @@
   }
   delete ($$);
 } <table_vec> <table_element_vec> <update_vec> <expr_vec> <order_vec> <stmt_vec>
+%destructor { free($$->second); delete ($$); } <csv_option_t>
 %destructor { delete ($$); } <*>
 
 
@@ -542,51 +543,64 @@ import_export_options : import_export_options ',' FORMAT file_type {
     $1->csv_options = new CsvOptions{};
   }
 
-#define ASSERT_IS_NULLPTR(ptr)                                                                                   \
-  if ((ptr) != nullptr) {                                                                                        \
-    delete $1;                                                                                                   \
-    free($3->second);                                                                                            \
-    delete $3;                                                                                                   \
-    yyerror(&yyloc, result, scanner, "CSV options (DELIMITER, NULL, QUOTE) cannot be provided more than once."); \
-    YYERROR;                                                                                                     \
-  }
+  bool freed_ptr = false;
+  auto free_if_necessary = [&](char* ptr) {
+    if (ptr != nullptr) {
+      free(ptr);
+      freed_ptr = true;
+    }
+  };
 
-  if ($3->first == hsql::CsvOptionType::Delimiter) {
-    ASSERT_IS_NULLPTR($1->csv_options->delimiter);
-    $$->csv_options->delimiter = $3->second;
-  } else if ($3->first == hsql::CsvOptionType::Null) {
-    ASSERT_IS_NULLPTR($1->csv_options->null);
-    $$->csv_options->null = $3->second;
-  } else if ($3->first == hsql::CsvOptionType::Quote) {
-    ASSERT_IS_NULLPTR($1->csv_options->quote);
-    $$->csv_options->quote = $3->second;
-  } else {
+  switch ($3->first) {
+    case CsvOptionType::Delimiter:
+      free_if_necessary($1->csv_options->delimiter);
+      $1->csv_options->delimiter = $3->second;
+      break;
+    case CsvOptionType::Null:
+      free_if_necessary($1->csv_options->null);
+      $1->csv_options->null = $3->second;
+      break;
+    case CsvOptionType::Quote:
+      free_if_necessary($1->csv_options->quote);
+      $1->csv_options->quote = $3->second;
+      break;
+    default:
+      free($3->second);
+      delete $3;
+      delete $1;
+      yyerror(&yyloc, result, scanner, "Unknown CSV option.");
+      YYERROR;
+  }
+  delete $3;
+
+  if (freed_ptr) {
     delete $1;
-    free($3->second);
-    delete $3;
-    yyerror(&yyloc, result, scanner, "Unknown CSV option.");
+    yyerror(&yyloc, result, scanner, "CSV options (DELIMITER, NULL, QUOTE) cannot be provided more than once.");
     YYERROR;
   }
 
-  delete $3;
   $$ = $1;
 }
 | csv_option {
   $$ = new ImportExportOptions{};
   $$->csv_options = new CsvOptions{};
 
-  if ($1->first == hsql::CsvOptionType::Delimiter) {
-    $$->csv_options->delimiter = $1->second;
-  } else if ($1->first == hsql::CsvOptionType::Null) {
-    $$->csv_options->null = $1->second;
-  } else if ($1->first == hsql::CsvOptionType::Quote) {
-    $$->csv_options->quote = $1->second;
-  } else {
-    free($1->second);
-    delete $1;
-    delete $$;
-    yyerror(&yyloc, result, scanner, "Unknown CSV option.");
-    YYERROR;
+  switch ($1->first) {
+    case CsvOptionType::Delimiter:
+      $$->csv_options->delimiter = $1->second;
+      break;
+    case CsvOptionType::Null:
+      $$->csv_options->null = $1->second;
+      break;
+    case CsvOptionType::Quote:
+      $$->csv_options->quote = $1->second;
+      break;
+    default:
+      free($1->second);
+      delete $1;
+      delete $$;
+      yyerror(&yyloc, result, scanner, "Unknown CSV option.");
+      YYERROR;
   }
 
   delete $1;
@@ -594,9 +608,9 @@ import_export_options : import_export_options ',' FORMAT file_type {
 
 csv_option : IDENTIFIER STRING {
   if (strcasecmp($1, "DELIMITER") == 0) {
-    $$ = new std::pair<hsql::CsvOptionType, char*>(hsql::CsvOptionType::Delimiter, $2);
+    $$ = new std::pair<CsvOptionType, char*>(CsvOptionType::Delimiter, $2);
   } else if (strcasecmp($1, "QUOTE") == 0) {
-    $$ = new std::pair<hsql::CsvOptionType, char*>(hsql::CsvOptionType::Quote, $2);
+    $$ = new std::pair<CsvOptionType, char*>(CsvOptionType::Quote, $2);
   } else {
     free($1);
     free($2);
@@ -605,7 +619,7 @@ csv_option : IDENTIFIER STRING {
   }
   free($1);
 }
-| NULL STRING { $$ = new std::pair<hsql::CsvOptionType, char*>(hsql::CsvOptionType::Null, $2); }
+| NULL STRING { $$ = new std::pair<CsvOptionType, char*>(CsvOptionType::Null, $2); }
 
 /******************************
  * Export Statement
