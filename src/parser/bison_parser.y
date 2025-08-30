@@ -543,65 +543,21 @@ import_export_options : import_export_options ',' FORMAT file_type {
     $1->csv_options = new CsvOptions{};
   }
 
-  bool freed_ptr = false;
-  auto free_if_necessary = [&](char* ptr) {
-    if (ptr != nullptr) {
-      free(ptr);
-      freed_ptr = true;
-    }
-  };
-
-  switch ($3->first) {
-    case CsvOptionType::Delimiter:
-      free_if_necessary($1->csv_options->delimiter);
-      $1->csv_options->delimiter = $3->second;
-      break;
-    case CsvOptionType::Null:
-      free_if_necessary($1->csv_options->null);
-      $1->csv_options->null = $3->second;
-      break;
-    case CsvOptionType::Quote:
-      free_if_necessary($1->csv_options->quote);
-      $1->csv_options->quote = $3->second;
-      break;
-    default:
-      free($3->second);
-      delete $3;
-      delete $1;
-      yyerror(&yyloc, result, scanner, "Unknown CSV option.");
-      YYERROR;
-  }
-  delete $3;
-
-  if (freed_ptr) {
+  if (!$1->accept_csv_option($3)) {
+    free($3->second);
+    delete $3;
     delete $1;
     yyerror(&yyloc, result, scanner, "CSV options (DELIMITER, NULL, QUOTE) cannot be provided more than once.");
     YYERROR;
   }
 
+  delete $3;
   $$ = $1;
 }
 | csv_option {
   $$ = new ImportExportOptions{};
   $$->csv_options = new CsvOptions{};
-
-  switch ($1->first) {
-    case CsvOptionType::Delimiter:
-      $$->csv_options->delimiter = $1->second;
-      break;
-    case CsvOptionType::Null:
-      $$->csv_options->null = $1->second;
-      break;
-    case CsvOptionType::Quote:
-      $$->csv_options->quote = $1->second;
-      break;
-    default:
-      free($1->second);
-      delete $1;
-      delete $$;
-      yyerror(&yyloc, result, scanner, "Unknown CSV option.");
-      YYERROR;
-  }
+  $$->accept_csv_option($1);
 
   delete $1;
 }

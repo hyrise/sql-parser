@@ -1,6 +1,8 @@
 #ifndef SQLPARSER_IMPORT_EXPORT_OPTIONS_H
 #define SQLPARSER_IMPORT_EXPORT_OPTIONS_H
 
+#include <utility>
+
 namespace hsql {
 
 // Name unchanged for compatibility. Historically, this was only used for import statements before we introduced export
@@ -35,6 +37,8 @@ struct ImportExportOptions {
   ImportType format;
   char* encoding;
   CsvOptions* csv_options;
+
+  bool accept_csv_option(std::pair<CsvOptionType, char*>* option);
 };
 
 }  // namespace hsql
