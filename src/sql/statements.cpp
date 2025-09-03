@@ -159,30 +159,30 @@ CsvOptions::~CsvOptions() {
   free(quote);
 }
 
+bool CsvOptions::accept_csv_option(std::pair<CsvOptionType, char*>* option) {
+  switch (option->first) {
+    case CsvOptionType::Delimiter:
+      if (delimiter != nullptr) return false;
+      delimiter = option->second;
+      break;
+    case CsvOptionType::Null:
+      if (null != nullptr) return false;
+      null = option->second;
+      break;
+    case CsvOptionType::Quote:
+      if (quote != nullptr) return false;
+      quote = option->second;
+      break;
+  }
+
+  return true;
+}
+
 ImportExportOptions::ImportExportOptions() : format(kImportAuto), encoding(nullptr), csv_options(nullptr) {}
 
 ImportExportOptions::~ImportExportOptions() {
   free(encoding);
   delete csv_options;
-}
-
-bool ImportExportOptions::accept_csv_option(std::pair<CsvOptionType, char*>* option) {
-  switch (option->first) {
-    case CsvOptionType::Delimiter:
-      if (csv_options->delimiter != nullptr) return false;
-      csv_options->delimiter = option->second;
-      break;
-    case CsvOptionType::Null:
-      if (csv_options->null != nullptr) return false;
-      csv_options->null = option->second;
-      break;
-    case CsvOptionType::Quote:
-      if (csv_options->quote != nullptr) return false;
-      csv_options->quote = option->second;
-      break;
-  }
-
-  return true;
 }
 
 // ImportStatement

@@ -545,7 +545,7 @@ import_export_options : import_export_options ',' FORMAT file_type {
     $1->csv_options = new CsvOptions{};
   }
 
-  if (!$1->accept_csv_option($3)) {
+  if (!$1->csv_options->accept_csv_option($3)) {
     free($3->second);
     delete $3;
     delete $1;
@@ -559,7 +559,7 @@ import_export_options : import_export_options ',' FORMAT file_type {
 | csv_option {
   $$ = new ImportExportOptions{};
   $$->csv_options = new CsvOptions{};
-  $$->accept_csv_option($1);
+  $$->csv_options->accept_csv_option($1);
 
   delete $1;
 }

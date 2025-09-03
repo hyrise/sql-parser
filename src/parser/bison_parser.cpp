@@ -3721,7 +3721,7 @@ yyreduce:
     (yyvsp[-2].import_export_option_t)->csv_options = new CsvOptions{};
   }
 
-  if (!(yyvsp[-2].import_export_option_t)->accept_csv_option((yyvsp[0].csv_option_t))) {
+  if (!(yyvsp[-2].import_export_option_t)->csv_options->accept_csv_option((yyvsp[0].csv_option_t))) {
     free((yyvsp[0].csv_option_t)->second);
     delete (yyvsp[0].csv_option_t);
     delete (yyvsp[-2].import_export_option_t);
@@ -3740,7 +3740,7 @@ yyreduce:
              {
   (yyval.import_export_option_t) = new ImportExportOptions{};
   (yyval.import_export_option_t)->csv_options = new CsvOptions{};
-  (yyval.import_export_option_t)->accept_csv_option((yyvsp[0].csv_option_t));
+  (yyval.import_export_option_t)->csv_options->accept_csv_option((yyvsp[0].csv_option_t));
 
   delete (yyvsp[0].csv_option_t);
 }

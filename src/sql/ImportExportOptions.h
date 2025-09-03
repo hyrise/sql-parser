@@ -28,6 +28,8 @@ struct CsvOptions {
   char* delimiter;
   char* null;
   char* quote;
+
+  bool accept_csv_option(std::pair<CsvOptionType, char*>* option);
 };
 
 struct ImportExportOptions {
@@ -37,8 +39,6 @@ struct ImportExportOptions {
   ImportType format;
   char* encoding;
   CsvOptions* csv_options;
-
-  bool accept_csv_option(std::pair<CsvOptionType, char*>* option);
 };
 
 }  // namespace hsql
