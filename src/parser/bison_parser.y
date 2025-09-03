@@ -142,6 +142,7 @@
   hsql::LockingClause* locking_t;
   hsql::OrderDescription* order;
   hsql::OrderType order_type;
+  hsql::NullOrdering null_ordering_t;
   hsql::ReferencesSpecification* references_spec_t;
   hsql::SetOperation* set_operator_t;
   hsql::TableConstraint* table_constraint_t;
@@ -177,7 +178,7 @@
  ** Destructor symbols
  *********************************/
 
-%destructor { } <fval> <ival> <bval> <join_type> <order_type> <datetime_field> <column_type_t> <column_constraint_t> <import_type_t> <lock_mode_t> <lock_wait_policy_t> <frame_type>
+%destructor { } <fval> <ival> <bval> <join_type> <order_type> <datetime_field> <column_type_t> <column_constraint_t> <import_type_t> <lock_mode_t> <lock_wait_policy_t> <frame_type> <null_ordering_t>
 %destructor {
   free($$.name);
   free($$.schema);
@@ -272,6 +273,7 @@
 %type <limit>                  opt_limit opt_top
 %type <order>                  order_desc
 %type <order_type>             opt_order_type
+%type <null_ordering_t>        opt_null_ordering
 %type <datetime_field>         datetime_field datetime_field_plural duration_field
 %type <column_t>               column_def
 %type <table_element_t>        table_elem
@@ -1019,11 +1021,32 @@ order_list : order_desc {
   $$ = $1;
 };
 
-order_desc : expr opt_order_type { $$ = new OrderDescription($2, $1); };
+order_desc : expr opt_order_type opt_null_ordering { $$ = new OrderDescription($2, $1, $3); };
 
 opt_order_type : ASC { $$ = kOrderAsc; }
 | DESC { $$ = kOrderDesc; }
 | /* empty */ { $$ = kOrderAsc; };
+
+opt_null_ordering : /* empty */ { $$ = NullOrdering::Undefined; }
+| IDENTIFIER IDENTIFIER {
+  auto null_ordering = NullOrdering::Undefined;
+  if (strcasecmp($1, "nulls") == 0) {
+    if (strcasecmp($2, "first") == 0) {
+      null_ordering = NullOrdering::First;
+    } else if (strcasecmp($2, "last") == 0) {
+      null_ordering = NullOrdering::Last;
+    }
+  }
+  free($1);
+  free($2);
+
+  if (null_ordering == NullOrdering::Undefined) {
+    yyerror(&yyloc, result, scanner, "Expected NULLS FIRST or NULLS LAST ordering.");
+    YYERROR;
+  }
+
+  $$ = null_ordering;
+};
 
 // TODO: TOP and LIMIT can take more than just int literals.
 

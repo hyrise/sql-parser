@@ -246,7 +246,8 @@ ShowStatement::~ShowStatement() {
 // SelectStatement.h
 
 // OrderDescription
-OrderDescription::OrderDescription(OrderType type, Expr* expr) : type(type), expr(expr) {}
+OrderDescription::OrderDescription(OrderType type, Expr* expr, NullOrdering null_ordering)
+    : type(type), expr(expr), null_ordering(null_ordering) {}
 
 OrderDescription::~OrderDescription() { delete expr; }
 

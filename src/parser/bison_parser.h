@@ -318,6 +318,7 @@ union HSQL_STYPE
   hsql::LockingClause* locking_t;
   hsql::OrderDescription* order;
   hsql::OrderType order_type;
+  hsql::NullOrdering null_ordering_t;
   hsql::ReferencesSpecification* references_spec_t;
   hsql::SetOperation* set_operator_t;
   hsql::TableConstraint* table_constraint_t;
@@ -348,7 +349,7 @@ union HSQL_STYPE
 
   // clang-format off
 
-#line 352 "bison_parser.h"
+#line 353 "bison_parser.h"
 
 };
 typedef union HSQL_STYPE HSQL_STYPE;

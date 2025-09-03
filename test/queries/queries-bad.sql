@@ -93,6 +93,15 @@
 !SELECT * FROM foo WITH HINT (?);
 !SELECT * FROM foo WITH HINT (CAST(column_a AS INT));
 !SELECT * FROM foo WITH HINT (AVG(another_column));
+# ORDER BY with NULL ordering.
+!SELECT * FROM students ORDER BY name ASC NULL FIRST;
+!SELECT * FROM students ORDER BY name ASC gibberish LAST;
+!SELECT * FROM students ORDER BY name NULLS FIRS;
+!SELECT * FROM students ORDER BY name NULLS;
+!SELECT * FROM students ORDER BY name ASC NULLS;
+!SELECT * FROM students ORDER BY name FIRST;
+!SELECT * FROM students ORDER BY name ASC LAST;
+!SELECT * FROM students ORDER BY name DESC NULLS gibberish;
 # CSV options
 !COPY students FROM 'file_path' WITH (FORMAT TBL, DELIMITER '|', NULL '', QUOTE '"');
 !COPY students FROM 'file_path' WITH (DELIMITER '|', NULL '', QUOTE '"', FORMAT TBL);
