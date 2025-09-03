@@ -345,10 +345,11 @@ union HSQL_STYPE
   hsql::RowLockWaitPolicy lock_wait_policy_t;
 
   hsql::ImportExportOptions* import_export_option_t;
+  std::pair<hsql::CsvOptionType, char*>* csv_option_t;
 
   // clang-format off
 
-#line 352 "bison_parser.h"
+#line 353 "bison_parser.h"
 
 };
 typedef union HSQL_STYPE HSQL_STYPE;

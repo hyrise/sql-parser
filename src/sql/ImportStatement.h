@@ -17,6 +17,7 @@ struct ImportStatement : SQLStatement {
   char* tableName;
   Expr* whereClause;
   char* encoding;
+  CsvOptions* csv_options;
 };
 
 }  // namespace hsql
