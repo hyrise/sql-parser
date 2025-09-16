@@ -162,15 +162,21 @@ CsvOptions::~CsvOptions() {
 bool CsvOptions::accept_csv_option(std::pair<CsvOptionType, char*>* option) {
   switch (option->first) {
     case CsvOptionType::Delimiter:
-      if (delimiter != nullptr) return false;
+      if (delimiter != nullptr) {
+        return false;
+      }
       delimiter = option->second;
       break;
     case CsvOptionType::Null:
-      if (null != nullptr) return false;
+      if (null != nullptr) {
+        return false;
+      }
       null = option->second;
       break;
     case CsvOptionType::Quote:
-      if (quote != nullptr) return false;
+      if (quote != nullptr) {
+        return false;
+      }
       quote = option->second;
       break;
   }

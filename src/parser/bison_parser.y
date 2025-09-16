@@ -200,7 +200,10 @@
   }
   delete ($$);
 } <table_vec> <table_element_vec> <update_vec> <expr_vec> <order_vec> <stmt_vec>
-%destructor { free($$->second); delete ($$); } <csv_option_t>
+%destructor {
+  free($$->second);
+  delete ($$);
+} <csv_option_t>
 %destructor { delete ($$); } <*>
 
 
