@@ -169,6 +169,7 @@
   hsql::RowLockWaitPolicy lock_wait_policy_t;
 
   hsql::ImportExportOptions* import_export_option_t;
+  std::pair<hsql::CsvOptionType, char*>* csv_option_t;
 
   // clang-format off
 }
@@ -199,6 +200,10 @@
   }
   delete ($$);
 } <table_vec> <table_element_vec> <update_vec> <expr_vec> <order_vec> <stmt_vec>
+%destructor {
+  free($$->second);
+  delete ($$);
+} <csv_option_t>
 %destructor { delete ($$); } <*>
 
 
@@ -294,6 +299,7 @@
 // ImportType is used for compatibility reasons
 %type <import_type_t>          file_type
 %type <import_export_option_t> opt_import_export_options import_export_options
+%type <csv_option_t>           csv_option
 
 %type <str_vec>                ident_commalist opt_column_list
 %type <expr_vec>               expr_list select_list opt_extended_literal_list extended_literal_list hint_list opt_hints opt_partition
@@ -469,6 +475,10 @@ import_statement : IMPORT FROM file_type FILE file_path INTO table_name {
     $$->encoding = $5->encoding;
     $5->encoding = nullptr;
   }
+  if ($5->csv_options) {
+    $$->csv_options = $5->csv_options;
+    $5->csv_options = nullptr;
+  }
   delete $5;
 };
 
@@ -499,6 +509,11 @@ import_export_options : import_export_options ',' FORMAT file_type {
     yyerror(&yyloc, result, scanner, "File type must only be provided once.");
     YYERROR;
   }
+  if ($1->csv_options && $4 != kImportCSV && $4 != kImportAuto) {
+    delete $1;
+    yyerror(&yyloc, result, scanner, "CSV options (DELIMITER, NULL, QUOTE) are only allowed for CSV files.");
+    YYERROR;
+  }
   $1->format = $4;
   $$ = $1;
 }
@@ -519,7 +534,53 @@ import_export_options : import_export_options ',' FORMAT file_type {
 | ENCODING STRING {
   $$ = new ImportExportOptions{};
   $$->encoding = $2;
-};
+}
+| import_export_options ',' csv_option {
+  if ($1->format != kImportAuto && $1->format != kImportCSV) {
+    delete $1;
+    free($3->second);
+    delete $3;
+    yyerror(&yyloc, result, scanner, "CSV options (DELIMITER, NULL, QUOTE) are only allowed for CSV files.");
+    YYERROR;
+  }
+
+  if ($1->csv_options == nullptr) {
+    $1->csv_options = new CsvOptions{};
+  }
+
+  if (!$1->csv_options->accept_csv_option($3)) {
+    free($3->second);
+    delete $3;
+    delete $1;
+    yyerror(&yyloc, result, scanner, "CSV options (DELIMITER, NULL, QUOTE) cannot be provided more than once.");
+    YYERROR;
+  }
+
+  delete $3;
+  $$ = $1;
+}
+| csv_option {
+  $$ = new ImportExportOptions{};
+  $$->csv_options = new CsvOptions{};
+  $$->csv_options->accept_csv_option($1);
+
+  delete $1;
+}
+
+csv_option : IDENTIFIER STRING {
+  if (strcasecmp($1, "DELIMITER") == 0) {
+    $$ = new std::pair<CsvOptionType, char*>(CsvOptionType::Delimiter, $2);
+  } else if (strcasecmp($1, "QUOTE") == 0) {
+    $$ = new std::pair<CsvOptionType, char*>(CsvOptionType::Quote, $2);
+  } else {
+    free($1);
+    free($2);
+    yyerror(&yyloc, result, scanner, "Unknown CSV option.");
+    YYERROR;
+  }
+  free($1);
+}
+| NULL STRING { $$ = new std::pair<CsvOptionType, char*>(CsvOptionType::Null, $2); }
 
 /******************************
  * Export Statement
@@ -535,6 +596,10 @@ export_statement : COPY table_name TO file_path opt_import_export_options {
     $$->encoding = $5->encoding;
     $5->encoding = nullptr;
   }
+  if ($5->csv_options) {
+    $$->csv_options = $5->csv_options;
+    $5->csv_options = nullptr;
+  }
   delete $5;
 }
 | COPY select_with_paren TO file_path opt_import_export_options {
@@ -544,6 +609,10 @@ export_statement : COPY table_name TO file_path opt_import_export_options {
   if ($5->encoding) {
     $$->encoding = $5->encoding;
     $5->encoding = nullptr;
+  }
+  if ($5->csv_options) {
+    $$->csv_options = $5->csv_options;
+    $5->csv_options = nullptr;
   }
   delete $5;
 };
