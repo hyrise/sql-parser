@@ -1258,23 +1258,23 @@ TEST(WindowFunctions) {
 TEST(FunctionSchema) {
   TEST_PARSE_SQL_QUERY(
       "SELECT sys.uuid();"
-      "SELECT json.isarray('[1, 2, 3]');"
-      result, 1);
+      "SELECT json.isarray('[1, 2, 3]');",
+      result, 2);
 
   auto stmt = (SelectStatement*)result.getStatement(0);
   ASSERT_TRUE(stmt->selectList);
   ASSERT_EQ(stmt->selectList->size(), 1);
   ASSERT_STREQ(stmt->selectList->at(0)->schema, "sys");
   ASSERT_STREQ(stmt->selectList->at(0)->name, "uuid");
-  ASSERT_EQ(stmt->selectList->at(0)->exprList->size, 0);
+  ASSERT_EQ(stmt->selectList->at(0)->exprList->size(), 0);
 
-  auto stmt = (SelectStatement*)result.getStatement(1);
+  stmt = (SelectStatement*)result.getStatement(1);
   ASSERT_TRUE(stmt->selectList);
   ASSERT_EQ(stmt->selectList->size(), 1);
   ASSERT_STREQ(stmt->selectList->at(0)->schema, "json");
   ASSERT_STREQ(stmt->selectList->at(0)->name, "isarray");
-  ASSERT_EQ(stmt->selectList->at(0)->exprList->size, 1);
-  ASSERT_STREQ(stmt->selectList->at(0)->exprList->at(0)->name, "'[1, 2, 3]'");
+  ASSERT_EQ(stmt->selectList->at(0)->exprList->size(), 1);
+  ASSERT_STREQ(stmt->selectList->at(0)->exprList->at(0)->name, "[1, 2, 3]");
 }
 
 }  // namespace hsql
