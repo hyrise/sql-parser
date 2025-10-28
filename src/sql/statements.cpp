@@ -140,7 +140,8 @@ ExportStatement::ExportStatement(ImportType type)
       schema(nullptr),
       tableName(nullptr),
       select(nullptr),
-      encoding(nullptr) {}
+      encoding(nullptr),
+      csv_options(nullptr) {}
 
 ExportStatement::~ExportStatement() {
   free(filePath);
@@ -148,11 +149,47 @@ ExportStatement::~ExportStatement() {
   free(tableName);
   delete select;
   free(encoding);
+  delete csv_options;
 }
 
-ImportExportOptions::ImportExportOptions() : format(kImportAuto), encoding(nullptr) {}
+CsvOptions::CsvOptions() : delimiter(nullptr), null(nullptr), quote(nullptr) {}
+CsvOptions::~CsvOptions() {
+  free(delimiter);
+  free(null);
+  free(quote);
+}
 
-ImportExportOptions::~ImportExportOptions() { free(encoding); }
+bool CsvOptions::accept_csv_option(std::pair<CsvOptionType, char*>* option) {
+  switch (option->first) {
+    case CsvOptionType::Delimiter:
+      if (delimiter != nullptr) {
+        return false;
+      }
+      delimiter = option->second;
+      break;
+    case CsvOptionType::Null:
+      if (null != nullptr) {
+        return false;
+      }
+      null = option->second;
+      break;
+    case CsvOptionType::Quote:
+      if (quote != nullptr) {
+        return false;
+      }
+      quote = option->second;
+      break;
+  }
+
+  return true;
+}
+
+ImportExportOptions::ImportExportOptions() : format(kImportAuto), encoding(nullptr), csv_options(nullptr) {}
+
+ImportExportOptions::~ImportExportOptions() {
+  free(encoding);
+  delete csv_options;
+}
 
 // ImportStatement
 ImportStatement::ImportStatement(ImportType type)
@@ -162,7 +199,8 @@ ImportStatement::ImportStatement(ImportType type)
       schema(nullptr),
       tableName(nullptr),
       whereClause(nullptr),
-      encoding(nullptr) {}
+      encoding(nullptr),
+      csv_options(nullptr) {}
 
 ImportStatement::~ImportStatement() {
   free(filePath);
@@ -170,6 +208,7 @@ ImportStatement::~ImportStatement() {
   free(tableName);
   delete whereClause;
   free(encoding);
+  delete csv_options;
 }
 
 // InsertStatement

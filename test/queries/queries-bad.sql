@@ -102,3 +102,11 @@
 !SELECT * FROM students ORDER BY name FIRST;
 !SELECT * FROM students ORDER BY name ASC LAST;
 !SELECT * FROM students ORDER BY name DESC NULLS gibberish;
+# CSV options
+!COPY students FROM 'file_path' WITH (FORMAT TBL, DELIMITER '|', NULL '', QUOTE '"');
+!COPY students FROM 'file_path' WITH (DELIMITER '|', NULL '', QUOTE '"', FORMAT TBL);
+!COPY students FROM 'file_path' WITH (DELIMITER '|', NULL '', FORMAT TBL, QUOTE '"');
+!COPY students FROM 'file_path' WITH (DELIMITER '|', NULL '', QUOTE '"', NULL 'a');
+!COPY students FROM 'file_path' WITH (NULL '', QUOTE '"', DELIMITER '|', DELIMITER '/');
+!COPY students FROM 'file_path' WITH (QUOTE '"', NULL '', DELIMITER '/', QUOTE '_',);
+!COPY students FROM 'file_path' WITH (FORMAT CSV, QUOTE '"', DELIMINIMITER '|');
