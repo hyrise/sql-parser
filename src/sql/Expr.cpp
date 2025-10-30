@@ -49,6 +49,7 @@ Expr::Expr(ExprType type)
       select(nullptr),
       name(nullptr),
       table(nullptr),
+      schema(nullptr),
       alias(nullptr),
       fval(0),
       ival(0),
@@ -68,6 +69,7 @@ Expr::~Expr() {
 
   free(name);
   free(table);
+  free(schema);
   free(alias);
 
   if (exprList) {
@@ -213,6 +215,16 @@ Expr* Expr::makeStar(char* table) {
 Expr* Expr::makeFunctionRef(char* func_name, std::vector<Expr*>* exprList, bool distinct, WindowDescription* window) {
   Expr* e = new Expr(kExprFunctionRef);
   e->name = func_name;
+  e->exprList = exprList;
+  e->distinct = distinct;
+  e->windowDescription = window;
+  return e;
+}
+
+Expr* Expr::makeFunctionRef(char* func_name, char* schema, std::vector<Expr*>* exprList, bool distinct, WindowDescription* window) {
+  Expr* e = new Expr(kExprFunctionRef);
+  e->name = func_name;
+  e->schema = schema;
   e->exprList = exprList;
   e->distinct = distinct;
   e->windowDescription = window;

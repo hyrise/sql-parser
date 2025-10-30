@@ -1171,7 +1171,9 @@ comp_expr : operand '=' operand { $$ = Expr::makeOpBinary($1, kOpEquals, $3); }
 // `function_expr is used for window functions, aggregate expressions, and functions calls because we run into shift/
 // reduce conflicts when splitting them.
 function_expr : IDENTIFIER '(' ')' opt_window { $$ = Expr::makeFunctionRef($1, new std::vector<Expr*>(), false, $4); }
-| IDENTIFIER '(' opt_distinct expr_list ')' opt_window { $$ = Expr::makeFunctionRef($1, $4, $3, $6); };
+| IDENTIFIER '(' opt_distinct expr_list ')' opt_window { $$ = Expr::makeFunctionRef($1, $4, $3, $6); }
+| IDENTIFIER '.' IDENTIFIER '(' ')' opt_window { $$ = Expr::makeFunctionRef($3, $1, new std::vector<Expr*>(), false, $6); }
+| IDENTIFIER '.' IDENTIFIER '(' opt_distinct expr_list ')' opt_window { $$ = Expr::makeFunctionRef($3, $1, $6, $5, $8); };
 
 // Window function expressions, based on https://www.postgresql.org/docs/15/sql-expressions.html#SYNTAX-WINDOW-FUNCTIONS
 // We do not support named windows, collations and exclusions (for simplicity) and filters (not part of the SQL standard).
