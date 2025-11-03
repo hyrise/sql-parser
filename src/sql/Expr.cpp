@@ -188,6 +188,13 @@ Expr* Expr::makeIntervalLiteral(int64_t duration, DatetimeField unit) {
   return e;
 }
 
+Expr* Expr::makeIntervalLiteral(char* duration, DatetimeField unit) {
+  Expr* e = new Expr(kExprLiteralInterval);
+  e->name = duration;
+  e->datetimeField = unit;
+  return e;
+}
+
 Expr* Expr::makeColumnRef(char* name) {
   Expr* e = new Expr(kExprColumnRef);
   e->name = name;
