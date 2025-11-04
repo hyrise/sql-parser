@@ -47,11 +47,9 @@
 !SELECT * FROM t WHERE a = DATE '2000-01-01' + INTERVAL 30 'DAYS';
 !SELECT * FROM t WHERE a = DATE '2000-01-01' + INTERVAL 'DAYS';
 !SELECT * FROM t WHERE a = DATE '2000-01-01' + INTERVAL '1' ANYTHING;
-!SELECT * FROM t WHERE a = DATE '2000-01-01' + INTERVAL '1 DAY' DAY;
 !SELECT * FROM t WHERE a = DATE '2000-01-01' + INTERVAL '30 ANYTHING';
 !SELECT * FROM t WHERE a = DATE '2000-01-01' + INTERVAL '30' DAYS;
 !SELECT * FROM t WHERE a = DATE '2000-01-01' + x DAYS;
-!SELECT * FROM t WHERE a = DATE '2000-01-01' + INTERVAL 'x' DAY;
 !SELECT * FROM t WHERE a = DATE '2000-01-01' + INTERVAL '3.3 DAYS';
 # ON is not supported by postgres. We follow postgres here since the sql-92 standard does not specify index
 # implementation details.

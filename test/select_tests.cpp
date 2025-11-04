@@ -1277,4 +1277,76 @@ TEST(FunctionSchema) {
   ASSERT_STREQ(stmt->selectList->at(0)->exprList->at(0)->name, "[1, 2, 3]");
 }
 
+TEST(IntervalTypes) {
+  TEST_PARSE_SQL_QUERY(
+    "select "
+      "cast('12' as interval year), "
+      "cast('12' as interval month), "
+      "cast('12' as interval day), "
+      "cast('12' as interval hour), "
+      "cast('12' as interval minute), "
+      "cast('12' as interval second); ",
+    result, 1);
+
+  auto stmt = (SelectStatement*)result.getStatement(0);
+  ASSERT_TRUE(stmt->selectList);
+  ASSERT_EQ(stmt->selectList->size(), 6);
+  ASSERT_EQ(stmt->selectList->at(0)->type, ExprType::kExprCast);
+  ASSERT_EQ(stmt->selectList->at(0)->columnType.data_type, DataType::INTERVAL_YEAR);
+  ASSERT_STREQ(stmt->selectList->at(0)->expr->name, "12");
+  ASSERT_EQ(stmt->selectList->at(1)->type, ExprType::kExprCast);
+  ASSERT_EQ(stmt->selectList->at(1)->columnType.data_type, DataType::INTERVAL_MONTH);
+  ASSERT_STREQ(stmt->selectList->at(1)->expr->name, "12");
+  ASSERT_EQ(stmt->selectList->at(2)->type, ExprType::kExprCast);
+  ASSERT_EQ(stmt->selectList->at(2)->columnType.data_type, DataType::INTERVAL_DAY);
+  ASSERT_STREQ(stmt->selectList->at(2)->expr->name, "12");
+  ASSERT_EQ(stmt->selectList->at(3)->type, ExprType::kExprCast);
+  ASSERT_EQ(stmt->selectList->at(3)->columnType.data_type, DataType::INTERVAL_HOUR);
+  ASSERT_STREQ(stmt->selectList->at(3)->expr->name, "12");
+  ASSERT_EQ(stmt->selectList->at(4)->type, ExprType::kExprCast);
+  ASSERT_EQ(stmt->selectList->at(4)->columnType.data_type, DataType::INTERVAL_MINUTE);
+  ASSERT_STREQ(stmt->selectList->at(4)->expr->name, "12");
+  ASSERT_EQ(stmt->selectList->at(5)->type, ExprType::kExprCast);
+  ASSERT_EQ(stmt->selectList->at(5)->columnType.data_type, DataType::INTERVAL_SECOND);
+  ASSERT_STREQ(stmt->selectList->at(5)->expr->name, "12");
+}
+
+TEST(IntervalToIntervalTypes) {
+  TEST_PARSE_SQL_QUERY(
+      "select "
+        "cast('1-2' as interval year to month), "
+        "cast('2 1' as interval day to hour), "
+        "cast('2 04:30' as interval day to minute), "
+        "cast('2 21:46:20.123' as interval day to second), "
+        "cast('10:30' as interval hour to minute), "
+        "cast('21:46:20' as interval hour to second), "
+        "cast('5:30.123' as interval minute to second);",
+    result, 1);
+
+  auto stmt = (SelectStatement*)result.getStatement(0);
+  ASSERT_TRUE(stmt->selectList);
+  ASSERT_EQ(stmt->selectList->size(), 7);
+  ASSERT_EQ(stmt->selectList->at(0)->type, ExprType::kExprCast);
+  ASSERT_EQ(stmt->selectList->at(0)->columnType.data_type, DataType::INTERVAL_YEAR_TO_MONTH);
+  ASSERT_STREQ(stmt->selectList->at(0)->expr->name, "1-2");
+  ASSERT_EQ(stmt->selectList->at(1)->type, ExprType::kExprCast);
+  ASSERT_EQ(stmt->selectList->at(1)->columnType.data_type, DataType::INTERVAL_DAY_TO_HOUR);
+  ASSERT_STREQ(stmt->selectList->at(1)->expr->name, "2 1");
+  ASSERT_EQ(stmt->selectList->at(2)->type, ExprType::kExprCast);
+  ASSERT_EQ(stmt->selectList->at(2)->columnType.data_type, DataType::INTERVAL_DAY_TO_MINUTE);
+  ASSERT_STREQ(stmt->selectList->at(2)->expr->name, "2 04:30");
+  ASSERT_EQ(stmt->selectList->at(3)->type, ExprType::kExprCast);
+  ASSERT_EQ(stmt->selectList->at(3)->columnType.data_type, DataType::INTERVAL_DAY_TO_SECOND);
+  ASSERT_STREQ(stmt->selectList->at(3)->expr->name, "2 21:46:20.123");
+  ASSERT_EQ(stmt->selectList->at(4)->type, ExprType::kExprCast);
+  ASSERT_EQ(stmt->selectList->at(4)->columnType.data_type, DataType::INTERVAL_HOUR_TO_MINUTE);
+  ASSERT_STREQ(stmt->selectList->at(4)->expr->name, "10:30");
+  ASSERT_EQ(stmt->selectList->at(5)->type, ExprType::kExprCast);
+  ASSERT_EQ(stmt->selectList->at(5)->columnType.data_type, DataType::INTERVAL_HOUR_TO_SECOND);
+  ASSERT_STREQ(stmt->selectList->at(5)->expr->name, "21:46:20");
+  ASSERT_EQ(stmt->selectList->at(6)->type, ExprType::kExprCast);
+  ASSERT_EQ(stmt->selectList->at(6)->columnType.data_type, DataType::INTERVAL_MINUTE_TO_SECOND);
+  ASSERT_STREQ(stmt->selectList->at(6)->expr->name, "5:30.123");
+}
+
 }  // namespace hsql

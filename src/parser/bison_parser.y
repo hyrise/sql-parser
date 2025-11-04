@@ -730,7 +730,20 @@ column_type : BIGINT { $$ = ColumnType{DataType::BIGINT}; }
 | TEXT { $$ = ColumnType{DataType::TEXT}; }
 | TIME opt_time_precision { $$ = ColumnType{DataType::TIME, 0, $2}; }
 | TIMESTAMP { $$ = ColumnType{DataType::DATETIME}; }
-| VARCHAR '(' INTVAL ')' { $$ = ColumnType{DataType::VARCHAR, $3}; };
+| VARCHAR '(' INTVAL ')' { $$ = ColumnType{DataType::VARCHAR, $3}; }
+| INTERVAL YEAR { $$ = ColumnType{DataType::INTERVAL_YEAR}; }
+| INTERVAL MONTH { $$ = ColumnType{DataType::INTERVAL_MONTH}; }
+| INTERVAL DAY { $$ = ColumnType{DataType::INTERVAL_DAY}; }
+| INTERVAL HOUR { $$ = ColumnType{DataType::INTERVAL_HOUR}; }
+| INTERVAL MINUTE { $$ = ColumnType{DataType::INTERVAL_MINUTE}; }
+| INTERVAL SECOND { $$ = ColumnType{DataType::INTERVAL_SECOND}; }
+| INTERVAL YEAR TO MONTH { $$ = ColumnType{DataType::INTERVAL_YEAR_TO_MONTH}; }
+| INTERVAL DAY TO HOUR { $$ = ColumnType{DataType::INTERVAL_DAY_TO_HOUR}; }
+| INTERVAL DAY TO MINUTE { $$ = ColumnType{DataType::INTERVAL_DAY_TO_MINUTE}; }
+| INTERVAL DAY TO SECOND { $$ = ColumnType{DataType::INTERVAL_DAY_TO_SECOND}; }
+| INTERVAL HOUR TO MINUTE { $$ = ColumnType{DataType::INTERVAL_HOUR_TO_MINUTE}; }
+| INTERVAL HOUR TO SECOND { $$ = ColumnType{DataType::INTERVAL_HOUR_TO_SECOND}; }
+| INTERVAL MINUTE TO SECOND { $$ = ColumnType{DataType::INTERVAL_MINUTE_TO_SECOND}; };
 
 opt_time_precision : '(' INTVAL ')' { $$ = $2; }
 | /* empty */ { $$ = 0; };
@@ -1211,7 +1224,14 @@ datetime_field : SECOND { $$ = kDatetimeSecond; }
 | HOUR { $$ = kDatetimeHour; }
 | DAY { $$ = kDatetimeDay; }
 | MONTH { $$ = kDatetimeMonth; }
-| YEAR { $$ = kDatetimeYear; };
+| YEAR { $$ = kDatetimeYear; }
+| YEAR TO MONTH { $$ = kIntervalYearToMonth; }
+| DAY TO HOUR { $$ = kIntervalDayToHour; }
+| DAY TO MINUTE { $$ = kIntervalDayToMinute; }
+| DAY TO SECOND { $$ = kIntervalDayToSecond; }
+| HOUR TO MINUTE { $$ = kIntervalHourToMinute; }
+| HOUR TO SECOND { $$ = kIntervalHourToSecond; }
+| MINUTE TO SECOND { $$ = kIntervalMinuteToSecond; };
 
 datetime_field_plural : SECONDS { $$ = kDatetimeSecond; }
 | MINUTES { $$ = kDatetimeMinute; }
@@ -1262,13 +1282,13 @@ interval_literal : INTVAL duration_field { $$ = Expr::makeIntervalLiteral($1, $2
 | INTERVAL STRING datetime_field {
   int duration{0}, chars_parsed{0};
   // If the whole string is parsed, chars_parsed points to the terminating null byte after the last character
-  if (sscanf($2, "%d%n", &duration, &chars_parsed) != 1 || $2[chars_parsed] != 0) {
+  if (sscanf($2, "%d%n", &duration, &chars_parsed) == 1 && $2[chars_parsed] == 0) {
     free($2);
-    yyerror(&yyloc, result, scanner, "Found incorrect interval format. Expected format: INTEGER");
-    YYERROR;
+    $$ = Expr::makeIntervalLiteral(duration, $3);
   }
-  free($2);
-  $$ = Expr::makeIntervalLiteral(duration, $3);
+  else {
+    $$ = Expr::makeIntervalLiteral($2, $3);
+  }
 }
 | INTERVAL STRING {
   int duration{0}, chars_parsed{0};

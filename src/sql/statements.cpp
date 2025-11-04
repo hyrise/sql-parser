@@ -63,6 +63,45 @@ std::ostream& operator<<(std::ostream& stream, const ColumnType& column_type) {
     case DataType::TIME:
       stream << "TIME";
       break;
+    case DataType::INTERVAL_YEAR:
+      stream << "INTERVAL YEAR";
+      break;
+    case DataType::INTERVAL_MONTH:
+      stream << "INTERVAL MONTH";
+      break;
+    case DataType::INTERVAL_DAY:
+      stream << "INTERVAL DAY";
+      break;
+    case DataType::INTERVAL_HOUR:
+      stream << "INTERVAL HOUR";
+      break;
+    case DataType::INTERVAL_MINUTE:
+      stream << "INTERVAL MINUTE";
+      break;
+    case DataType::INTERVAL_SECOND:
+      stream << "INTERVAL SECOND";
+      break;
+    case DataType::INTERVAL_YEAR_TO_MONTH:
+      stream << "INTERVAL YEAR TO MONTH";
+      break;
+    case DataType::INTERVAL_DAY_TO_HOUR:
+      stream << "INTERVAL DAY TO HOUR";
+      break;
+    case DataType::INTERVAL_DAY_TO_MINUTE:
+      stream << "INTERVAL DAY TO MINUTE";
+      break;
+    case DataType::INTERVAL_DAY_TO_SECOND:
+      stream << "INTERVAL DAY TO SECOND";
+      break;
+    case DataType::INTERVAL_HOUR_TO_MINUTE:
+      stream << "INTERVAL HOUR TO MINUTE";
+      break;
+    case DataType::INTERVAL_HOUR_TO_SECOND:
+      stream << "INTERVAL HOUR TO SECOND";
+      break;
+    case DataType::INTERVAL_MINUTE_TO_SECOND:
+      stream << "INTERVAL MINUTE TO SECOND";
+      break;
     case DataType::SMALLINT:
       stream << "SMALLINT";
       break;

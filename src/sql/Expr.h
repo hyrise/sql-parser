@@ -82,6 +82,13 @@ enum DatetimeField {
   kDatetimeDay,
   kDatetimeMonth,
   kDatetimeYear,
+  kIntervalYearToMonth,
+  kIntervalDayToHour,
+  kIntervalDayToMinute,
+  kIntervalDayToSecond,
+  kIntervalHourToMinute,
+  kIntervalHourToSecond,
+  kIntervalMinuteToSecond
 };
 
 // Description of the frame clause within a window expression.
@@ -190,6 +197,8 @@ struct Expr {
   static Expr* makeDateLiteral(char* val);
 
   static Expr* makeIntervalLiteral(int64_t duration, DatetimeField unit);
+
+  static Expr* makeIntervalLiteral(char* duration, DatetimeField unit);
 
   static Expr* makeColumnRef(char* name);
 
